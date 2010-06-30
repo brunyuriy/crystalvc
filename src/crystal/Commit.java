@@ -6,4 +6,5 @@ package crystal;
  */
 public interface Commit {
 
+	public Repository getRepository();
 }

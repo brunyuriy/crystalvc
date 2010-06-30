@@ -1,5 +1,6 @@
 package crystal;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -10,9 +11,10 @@ import java.util.List;
 public interface Repository {
 
 	public List<Commit> getCommits();
+	public File getLocalRepo();
+	public String getRemoteRepo();
 
 	// Should there be some sort of History object, which is like a graph, such that we can compare two of them for 
 	// same, ahead, behind, diverging?
-
 
 }
