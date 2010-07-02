@@ -3,7 +3,7 @@ package crystal;
 import java.io.File;
 import java.util.Vector;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class Constants {
 
@@ -15,6 +15,7 @@ public class Constants {
 		Vector<String> possiblePaths = new Vector<String>();
 		possiblePaths.add("/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/");
 		possiblePaths.add("/homes/gws/brun/tempCrystal/sourceRepo/");
+		possiblePaths.add("C:\\Users\\Yuriy\\Desktop\\work\\crystalSource");
 
 		for (String possiblePath : possiblePaths) {
 			if (new File(possiblePath).exists()) {
@@ -39,6 +40,7 @@ public class Constants {
 		 */
 		Vector<String> possiblePaths = new Vector<String>();
 		possiblePaths.add("/usr/local/bin/hg");
+		possiblePaths.add("C:\\Program Files (x86)\\TortoiseHg\\hg");
 		possiblePaths.add("hg");
 
 		for (String possiblePath : possiblePaths) {
