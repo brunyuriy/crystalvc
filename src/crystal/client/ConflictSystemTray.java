@@ -29,7 +29,9 @@ public class ConflictSystemTray {
 			}
 
 			private ClientPreferences loadPreferences() {
-				return new ClientPreferences("XXX");
+				// return new ClientPreferences("XXX");
+				// XXX:
+				return new ClientPreferences(null,null);
 			}
 		});
 	}
@@ -84,8 +86,8 @@ public class ConflictSystemTray {
 
 		preferencesItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				JOptionPane.showMessageDialog(null, "Show Preferences dialog.");
-				ClientPreferencesUI cp  = new ClientPreferencesUI();
+				// JOptionPane.showMessageDialog(null, "Show Preferences dialog.");
+				ClientPreferencesUI cp = new ClientPreferencesUI();
 				cp.createAndShowGUI(prefs);
 			}
 		});

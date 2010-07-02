@@ -2,10 +2,15 @@ package crystal.server;
 
 import java.io.IOException;
 
+import org.junit.Assert;
+
+import crystal.Constants;
+import crystal.client.ClientPreferences;
+import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
 import crystal.util.RunIt;
 
-public class StateChecker {
+public class HgStateChecker {
 
 	/*
 	 * @arg mine : path to my repository
@@ -14,10 +19,17 @@ public class StateChecker {
 	 * 
 	 * @returns whether my repository is same, behind, ahead, or in conflict with your repository.
 	 */
-	public static ResultStatus getState(String mine, String yours) throws IOException {
+	public static ResultStatus getState(ClientPreferences prefs, DataSource source) throws IOException {
 
-		String hg = "hg";
-		String tempWorkPath = "/homes/gws/brun/tempCrystal/";
+		Assert.assertNotNull(prefs);
+		Assert.assertNotNull(source);
+
+		String mine = prefs.getEnvironment().getCloneString();
+		String yours = source.getCloneString();
+
+		String hg = Constants.HG_COMMAND;
+		// String tempWorkPath = "/homes/gws/brun/tempCrystal/";
+		String tempWorkPath = prefs.getTempDirectory();
 		// tempWorkPath + tempMyName used to store a local copy of my repo
 		String tempMyName = "tempMine";
 		// tempWorkPath + tempYourName used to store a local copy of your repo
@@ -94,9 +106,9 @@ public class StateChecker {
 	}
 
 	// a super quick test function that checks the status of "one" and "two" and prints the result
-	public static void main(String[] args) throws IOException {
-		ResultStatus answer = getState("one", "two");
-		System.out.println(answer);
-	}
+	// public static void main(String[] args) throws IOException {
+	// ResultStatus answer = getState("one", "two");
+	// System.out.println(answer);
+	// }
 
 }

@@ -3,17 +3,17 @@ package crystal;
 import java.io.File;
 import java.util.Vector;
 
+import junit.framework.Assert;
+
 public class Constants {
 
-	public static String PROJECT_PATH = "";
+	public static String PROJECT_PATH = null;
 	static {
-
 		/**
 		 * This should contain the path to your workspace project location.
 		 */
 		Vector<String> possiblePaths = new Vector<String>();
-		possiblePaths.add("/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/"); // rtholmes -
-																											// laptop
+		possiblePaths.add("/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/");
 		possiblePaths.add("/homes/gws/brun/tempCrystal/sourceRepo/");
 
 		for (String possiblePath : possiblePaths) {
@@ -22,11 +22,38 @@ public class Constants {
 				break;
 			}
 		}
+
+		Assert.assertTrue("Make sure your project path is in possiblePaths above.", PROJECT_PATH != null);
+
 		if (!PROJECT_PATH.endsWith(File.separator)) {
 			PROJECT_PATH += File.separator;
 		}
 
-		System.out.println("Constants - Working path: " + PROJECT_PATH);
+		System.out.println("Constants::<clinit> - working path: " + PROJECT_PATH);
 	}
+
+	public static String HG_COMMAND = null;
+	static {
+		/**
+		 * This should contain the path to your hg binary.
+		 */
+		Vector<String> possiblePaths = new Vector<String>();
+		possiblePaths.add("/usr/local/bin/hg");
+		possiblePaths.add("hg");
+
+		for (String possiblePath : possiblePaths) {
+			if (new File(possiblePath).exists()) {
+				HG_COMMAND = possiblePath;
+				break;
+			}
+		}
+
+		Assert.assertTrue("Make sure your hg binary is in possiblePaths above.", HG_COMMAND != null);
+
+		System.out.println("Constants::<clinit> - HG path: " + HG_COMMAND);
+	}
+
+	public static final String TEST_REPOS = "test-repos" + File.separator;
+	public static final String TEST_TEMP = "test-temp" + File.separator;
 
 }

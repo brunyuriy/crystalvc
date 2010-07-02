@@ -173,8 +173,9 @@ public class ClientPreferencesUI {
 					for (int index : indices) {
 
 						// remove from model
-						DataSource removed = prefs.getDataSources().remove(index);
-						System.out.println("removed index: " + index + " ds: " + removed + " model: " + repoListModel.get(index));
+						// XXX: this is now broken
+//						DataSource removed = prefs.getDataSources().remove(index);
+//						System.out.println("removed index: " + index + " ds: " + removed + " model: " + repoListModel.get(index));
 
 						// remove from list
 						repoListModel.remove(index);
