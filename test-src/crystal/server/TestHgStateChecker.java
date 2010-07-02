@@ -22,7 +22,7 @@ import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
 import crystal.model.DataSource.RepoKind;
 
-public class TestStateChecker {
+public class TestHgStateChecker {
 
 	private ClientPreferences _prefs;
 
