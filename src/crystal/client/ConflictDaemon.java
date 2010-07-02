@@ -1,7 +1,9 @@
 package crystal.client;
 
-import crystal.client.ConflictResult.ResultStatus;
-import crystal.Commit;
+import crystal.model.Commit;
+import crystal.model.ConflictResult;
+import crystal.model.DataSource;
+import crystal.model.ConflictResult.ResultStatus;
 
 public class ConflictDaemon {
 	public static void computeConflicts(ClientPreferences preferences, IConflictClient client) {
@@ -27,9 +29,9 @@ public class ConflictDaemon {
 
 		client.setStatus(new ConflictResult(source, status));
 	}
-	
+
 	public static ConflictResult.ResultStatus calculateConflict(Commit mine, Commit other) {
-		
+
 		return null;
 	}
 }

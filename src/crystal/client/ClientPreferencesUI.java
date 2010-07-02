@@ -21,7 +21,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import crystal.client.DataSource.RepoKind;
+import crystal.model.DataSource;
+import crystal.model.DataSource.RepoKind;
 
 
 public class ClientPreferencesUI {

@@ -1,4 +1,4 @@
-package crystal;
+package crystal.model;
 
 import java.io.File;
 import java.util.List;

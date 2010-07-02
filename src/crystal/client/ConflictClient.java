@@ -7,8 +7,9 @@ import java.util.Hashtable;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import crystal.client.ConflictResult.ResultStatus;
-
+import crystal.model.ConflictResult;
+import crystal.model.DataSource;
+import crystal.model.ConflictResult.ResultStatus;
 
 public class ConflictClient implements IConflictClient {
 	private ClientPreferences _preferences;

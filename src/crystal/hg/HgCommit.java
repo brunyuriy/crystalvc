@@ -3,8 +3,8 @@
  */
 package crystal.hg;
 
-import crystal.Commit;
-import crystal.Repository;
+import crystal.model.Commit;
+import crystal.model.Repository;
 
 /**
  * @author Yuriy

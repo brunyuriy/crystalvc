@@ -1,4 +1,4 @@
-package crystal;
+package crystal.model;
 
 /**
  * @author Yuriy

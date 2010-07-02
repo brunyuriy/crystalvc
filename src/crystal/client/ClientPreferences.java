@@ -2,6 +2,8 @@ package crystal.client;
 
 import java.util.Vector;
 
+import crystal.model.DataSource;
+
 public class ClientPreferences {
 
 	Vector<DataSource> _dataSources;

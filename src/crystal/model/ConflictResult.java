@@ -1,4 +1,4 @@
-package crystal.client;
+package crystal.model;
 
 public class ConflictResult {
 
@@ -9,7 +9,7 @@ public class ConflictResult {
 	private final DataSource _source;
 	private final ResultStatus _status;
 
-	ConflictResult(DataSource source, ResultStatus status) {
+	public ConflictResult(DataSource source, ResultStatus status) {
 		_source = source;
 		_status = status;
 	}
@@ -19,11 +19,11 @@ public class ConflictResult {
 		return "ConflictResult - " + _source.getShortName() + " status: " + _status;
 	}
 
-	DataSource getDataSource() {
+	public DataSource getDataSource() {
 		return _source;
 	}
 
-	ResultStatus getStatus() {
+	public ResultStatus getStatus() {
 		return _status;
 	}
 }

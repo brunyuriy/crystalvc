@@ -1,4 +1,4 @@
-package crystal.client;
+package crystal.model;
 
 public class DataSource {
 
@@ -16,11 +16,11 @@ public class DataSource {
 		_repoKind = repoKind;
 	}
 
-	String getShortName() {
+	public String getShortName() {
 		return _shortName;
 	}
 
-	String getCloneString() {
+	public String getCloneString() {
 		return _cloneString;
 	}
 
