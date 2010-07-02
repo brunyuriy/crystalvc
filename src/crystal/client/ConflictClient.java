@@ -2,10 +2,15 @@ package crystal.client;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.SwingWorker;
 
 import crystal.model.ConflictResult;
 import crystal.model.DataSource;
@@ -21,9 +26,31 @@ public class ConflictClient implements IConflictClient {
 		// Create and set up the window.
 		_frame = new JFrame("Conflict Client");
 
+		for (DataSource source : _preferences.getDataSources()) {
+			resultMap.put(source, new ConflictResult(source, ResultStatus.PENDING));
+		}
+
 		refresh();
 
-		ConflictDaemon.computeConflicts(_preferences, this);
+		for (final DataSource source : _preferences.getDataSources()) {
+			//
+			// final ConflictClient client = this;
+			// Runnable runnable = new Runnable() {
+			//
+			// @Override
+			// public void run() {
+			//
+			// ConflictDaemon.calculateConflict(source, _preferences, client);
+			//
+			// }
+			// };
+			//
+			// SwingUtilities.invokeLater(runnable);
+			// }
+
+			CalculateTask ct = new CalculateTask(source, _preferences);
+			ct.execute();
+		}
 	}
 
 	private String createText(ClientPreferences prefs) {
@@ -41,7 +68,18 @@ public class ConflictClient implements IConflictClient {
 		// my status
 		rows += "<td>status</td>";
 
-		for (DataSource source : prefs.getDataSources()) {
+		Vector<DataSource> sources = new Vector<DataSource>();
+		sources.addAll(prefs.getDataSources());
+		Collections.sort(sources, new Comparator<DataSource>() {
+
+			@Override
+			public int compare(DataSource o1, DataSource o2) {
+				return o1.getShortName().compareTo(o2.getShortName());
+			}
+
+		});
+
+		for (DataSource source : sources) {
 			String rPre = "";
 
 			String rBody = "";
@@ -62,6 +100,9 @@ public class ConflictClient implements IConflictClient {
 				} else if (status.equals(ResultStatus.CONFLICT)) {
 					bgColour = "red";
 					icon = "stop.png";
+				} else if (status.equals(ResultStatus.PENDING)) {
+					bgColour = "#CCCCFF";
+					icon = "clock.png";
 				}
 				String iconPrefix = "http://www.cs.washington.edu/homes/rtholmes/tmp/speculationImages/";
 				rBody = "<td align='center' bgcolor='" + bgColour + "'>" + "<img src='" + iconPrefix + icon + "'/>" + "</td>";
@@ -119,6 +160,44 @@ public class ConflictClient implements IConflictClient {
 		// Display the window.
 		_frame.pack();
 		_frame.setVisible(true);
+
+	}
+
+	class CalculateTask extends SwingWorker<Void, ConflictResult> {
+		DataSource _source;
+		ClientPreferences _prefs;
+
+		CalculateTask(DataSource source, ClientPreferences prefs) {
+			_source = source;
+			_prefs = prefs;
+		}
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			// TODO Auto-generated method stub
+			ConflictResult result = ConflictDaemon.calculateConflict(_source, _prefs);
+
+			publish(result);
+			return null;
+		}
+
+		@Override
+		protected void process(List<ConflictResult> chunks) {
+			// TODO Auto-generated method stub
+			// super.process(chunks);
+			for (ConflictResult cr : chunks)
+				setStatus(cr);
+
+		}
+		//		
+		// @Override
+		// protected void process(List<FlipPair> pairs) {
+		// FlipPair pair = pairs.get(pairs.size() - 1);
+		// headsText.setText(String.format("%d", pair.heads));
+		// totalText.setText(String.format("%d", pair.total));
+		// devText.setText(String.format("%.10g",
+		// ((double) pair.heads)/((double) pair.total) - 0.5));
+		// }
 
 	}
 

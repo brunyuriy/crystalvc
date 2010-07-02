@@ -24,7 +24,6 @@ import javax.swing.event.ListSelectionListener;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
 
-
 public class ClientPreferencesUI {
 	private ClientPreferences _preferences;
 	JFrame _frame = null;
@@ -54,11 +53,13 @@ public class ClientPreferencesUI {
 		contentPane.add(myRepoLabel, c);
 
 		final JTextField myRepoText = new JTextField(30);
+		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 1;
 		c.gridy = 0;
 		contentPane.add(myRepoText, c);
 
 		JLabel myRepoKindLabel = new JLabel("My Repository Kind:");
+		c.fill = GridBagConstraints.NONE;
 		c.gridx = 0;
 		c.gridy = 1;
 		contentPane.add(myRepoKindLabel, c);
@@ -174,8 +175,9 @@ public class ClientPreferencesUI {
 
 						// remove from model
 						// XXX: this is now broken
-//						DataSource removed = prefs.getDataSources().remove(index);
-//						System.out.println("removed index: " + index + " ds: " + removed + " model: " + repoListModel.get(index));
+						// DataSource removed = prefs.getDataSources().remove(index);
+						// System.out.println("removed index: " + index + " ds: " + removed + " model: " +
+						// repoListModel.get(index));
 
 						// remove from list
 						repoListModel.remove(index);

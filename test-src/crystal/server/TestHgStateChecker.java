@@ -10,8 +10,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,8 +28,8 @@ public class TestHgStateChecker {
 	public TestHgStateChecker() {
 		generatePreferences();
 	}
-	
-	public ClientPreferences getPreferences(){
+
+	public ClientPreferences getPreferences() {
 		return _prefs;
 	}
 

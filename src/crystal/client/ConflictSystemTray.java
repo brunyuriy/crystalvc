@@ -17,6 +17,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import crystal.server.TestHgStateChecker;
+
 public class ConflictSystemTray {
 	public static void main(String[] args) {
 
@@ -29,9 +31,12 @@ public class ConflictSystemTray {
 			}
 
 			private ClientPreferences loadPreferences() {
-				// return new ClientPreferences("XXX");
-				// XXX:
-				return new ClientPreferences(null,null);
+				TestHgStateChecker thgsc = new TestHgStateChecker();
+				ClientPreferences prefs = thgsc.getPreferences();
+
+				// TODO: this should be from some persisted location
+
+				return prefs;
 			}
 		});
 	}
@@ -78,6 +83,16 @@ public class ConflictSystemTray {
 			return;
 		}
 
+		trayIcon.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ae) {
+				System.out.println("Tray icon action: " + ae);
+				// doesn't work on OS X; it doesn't register double clicks on the tray
+				ConflictClient cc = new ConflictClient();
+				cc.createAndShowGUI(prefs);
+			}
+		});
+
 		aboutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(null, "Built by Holmes, Brun, Ernst, and Notkin.");
@@ -120,6 +135,7 @@ public class ConflictSystemTray {
 				System.exit(0);
 			}
 		});
+
 	}
 
 	// Obtain the image URL
