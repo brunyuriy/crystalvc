@@ -2,7 +2,6 @@ package crystal.client;
 
 import java.util.Collection;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import crystal.model.DataSource;
 
