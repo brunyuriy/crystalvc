@@ -26,6 +26,14 @@ public class TestHgStateChecker {
 
 	private ClientPreferences _prefs;
 
+	public TestHgStateChecker() {
+		generatePreferences();
+	}
+	
+	public ClientPreferences getPreferences(){
+		return _prefs;
+	}
+
 	@BeforeClass
 	public static void ensureEnvironment() {
 		String projectPath = Constants.PROJECT_PATH;
