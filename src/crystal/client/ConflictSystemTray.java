@@ -16,12 +16,14 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import crystal.server.TestHgStateChecker;
 
 public class ConflictSystemTray {
 	private static ConflictClient _client;
 	private static ClientPreferences _prefs;
+	private static Timer _timer;
 
 	public static void main(String[] args) {
 
@@ -165,6 +167,28 @@ public class ConflictSystemTray {
 		_client = new ConflictClient();
 		_client.createAndShowGUI(_prefs);
 		_client.calculateConflicts();
+
+		// Set up timer to drive refreshes
+		int TIMER_CONSTANT = 10000;
+		if (_timer != null) {
+			_timer.stop();
+			_timer = null;
+		}
+
+		_timer = new Timer(TIMER_CONSTANT, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("ConflictSystemTray::showClient - Timer fired: " + e.getSource());
+				// get the client to nicely refresh its elements
+				_client.calculateConflicts();
+				// if (e.getSource() instanceof Timer) {
+				// ((Timer) e.getSource()).stop();
+				// }
+			}
+		});
+		_timer.setInitialDelay(TIMER_CONSTANT);
+		_timer.start();
 
 	}
 

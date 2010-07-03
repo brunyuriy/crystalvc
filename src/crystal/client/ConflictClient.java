@@ -163,7 +163,10 @@ public class ConflictClient implements IConflictClient {
 
 		@Override
 		protected Void doInBackground() throws Exception {
-			// TODO Auto-generated method stub
+
+			ConflictResult calculatingPlaceholder = new ConflictResult(_source, ResultStatus.PENDING);
+			publish(calculatingPlaceholder);
+
 			ConflictResult result = ConflictDaemon.calculateConflict(_source, _prefs);
 
 			publish(result);
@@ -172,22 +175,9 @@ public class ConflictClient implements IConflictClient {
 
 		@Override
 		protected void process(List<ConflictResult> chunks) {
-			// TODO Auto-generated method stub
-			// super.process(chunks);
 			for (ConflictResult cr : chunks)
 				setStatus(cr);
-
 		}
-		//		
-		// @Override
-		// protected void process(List<FlipPair> pairs) {
-		// FlipPair pair = pairs.get(pairs.size() - 1);
-		// headsText.setText(String.format("%d", pair.heads));
-		// totalText.setText(String.format("%d", pair.total));
-		// devText.setText(String.format("%.10g",
-		// ((double) pair.heads)/((double) pair.total) - 0.5));
-		// }
-
 	}
 
 	public void close() {
