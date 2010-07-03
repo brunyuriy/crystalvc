@@ -20,14 +20,18 @@ import javax.swing.SwingUtilities;
 import crystal.server.TestHgStateChecker;
 
 public class ConflictSystemTray {
+	private static ConflictClient _client;
+	private static ClientPreferences _prefs;
+
 	public static void main(String[] args) {
 
 		// UIManager.put("swing.boldMetal", Boolean.FALSE);
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				ClientPreferences prefs = loadPreferences();
-				createAndShowGUI(prefs);
+				_prefs = loadPreferences();
+
+				createAndShowGUI();
 			}
 
 			private ClientPreferences loadPreferences() {
@@ -41,7 +45,7 @@ public class ConflictSystemTray {
 		});
 	}
 
-	private static void createAndShowGUI(final ClientPreferences prefs) {
+	private static void createAndShowGUI() {
 		// Check the SystemTray support
 		if (!SystemTray.isSupported()) {
 			System.err.println("SystemTray is not supported");
@@ -58,7 +62,7 @@ public class ConflictSystemTray {
 		MenuItem aboutItem = new MenuItem("About");
 		MenuItem preferencesItem = new MenuItem("Preferences");
 		CheckboxMenuItem enabledItem = new CheckboxMenuItem("Daemon Enabled");
-		MenuItem showClientItem = new MenuItem("Show Client");
+		final MenuItem showClientItem = new MenuItem("Show Client");
 		MenuItem exitItem = new MenuItem("Exit");
 
 		// Add components to popup menu
@@ -88,9 +92,9 @@ public class ConflictSystemTray {
 			public void actionPerformed(ActionEvent ae) {
 				System.out.println("Tray icon action: " + ae);
 				// doesn't work on OS X; it doesn't register double clicks on the tray
-				ConflictClient cc = new ConflictClient();
-				cc.createAndShowGUI(prefs);
+				showClient();
 			}
+
 		});
 
 		aboutItem.addActionListener(new ActionListener() {
@@ -101,17 +105,32 @@ public class ConflictSystemTray {
 
 		preferencesItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// JOptionPane.showMessageDialog(null, "Show Preferences dialog.");
-				ClientPreferencesUI cp = new ClientPreferencesUI();
-				cp.createAndShowGUI(prefs);
+				if (_client != null) {
+					_client.close();
+					_client = null;
+				}
+
+				showClientItem.setEnabled(false);
+				ClientPreferencesUI cp = new ClientPreferencesUI(_prefs, new ClientPreferencesUI.IPreferencesListener() {
+					@Override
+					public void preferencesChanged(ClientPreferences preferences) {
+						// when the preferences are updated, show the client
+						_prefs = preferences;
+					}
+
+					@Override
+					public void preferencesDialogClosed() {
+						System.out.println("ConflictSystemTray::IPreferencesListener::preferencesDialogClosed()");
+						showClientItem.setEnabled(true);
+					}
+				});
+				cp.createAndShowGUI();
 			}
 		});
 
 		showClientItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// JOptionPane.showMessageDialog(null, "Show the client");
-				ConflictClient cc = new ConflictClient();
-				cc.createAndShowGUI(prefs);
+				showClient();
 			}
 		});
 
@@ -135,6 +154,17 @@ public class ConflictSystemTray {
 				System.exit(0);
 			}
 		});
+
+	}
+
+	private static void showClient() {
+		if (_client != null) {
+			_client.close();
+			_client = null;
+		}
+		_client = new ConflictClient();
+		_client.createAndShowGUI(_prefs);
+		_client.calculateConflicts();
 
 	}
 

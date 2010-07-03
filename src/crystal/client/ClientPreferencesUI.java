@@ -7,6 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
@@ -27,15 +30,22 @@ import crystal.model.DataSource.RepoKind;
 public class ClientPreferencesUI {
 	private ClientPreferences _preferences;
 	JFrame _frame = null;
+	private IPreferencesListener _listener;
 
-	public void createAndShowGUI(ClientPreferences prefs) {
+	private ClientPreferencesUI() {
+
+	}
+
+	public ClientPreferencesUI(ClientPreferences prefs, IPreferencesListener listener) {
 		_preferences = prefs;
+		_listener = listener;
+	}
 
+	public void createAndShowGUI() {
 		// Create and set up the window.
 		_frame = new JFrame("Conflict Client Preferences");
 
-		buildUI(prefs);
-
+		buildUI(_preferences);
 	}
 
 	private void buildUI(final ClientPreferences prefs) {
@@ -266,11 +276,27 @@ public class ClientPreferencesUI {
 				prefs.setTempDirectory(myTempText.getText());
 
 				_frame.setVisible(false);
+				_listener.preferencesChanged(prefs);
+				_listener.preferencesDialogClosed();
 			}
 		});
+
+		_frame.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent we) {
+				System.out.println("ClientPreferencesUI::WidnowListener - window closing: " + we);
+				_listener.preferencesDialogClosed();
+			}
+		});
+
 		// Display the window.
 		_frame.pack();
 		_frame.setVisible(true);
 
+	}
+
+	public interface IPreferencesListener {
+		void preferencesChanged(ClientPreferences preferences);
+
+		void preferencesDialogClosed();
 	}
 }
