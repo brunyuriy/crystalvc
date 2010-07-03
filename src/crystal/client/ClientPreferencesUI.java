@@ -244,15 +244,13 @@ public class ClientPreferencesUI {
 					if (_preferences.getDataSource(shortName) == null) {
 						// don't allow an element with a taken name to be added
 
-						repoListModel.addElement(label);
-						myAddCloneShortNameText.setText("");
-						myAddCloneText.setText("");
-
 						DataSource source = new DataSource(shortName, cloneName, kind);
 
-						// XXX: fires exception; thread problem?
-						// works with this line taken out
-						_preferences.getDataSources().add(source);
+						repoListModel.addElement(source);
+						myAddCloneShortNameText.setText("");
+						myAddCloneText.setText("");
+						_preferences.addDataSource(source);
+
 						_frame.pack();
 					}
 				}
