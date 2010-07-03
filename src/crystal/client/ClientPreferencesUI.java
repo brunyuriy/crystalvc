@@ -110,8 +110,6 @@ public class ClientPreferencesUI {
 
 		Vector<String> data = new Vector<String>();
 		for (DataSource source : _preferences.getDataSources()) {
-			// String label = source.getShortName() + "- " + source.getKind() + ": " + source.getCloneString();
-			// repoListModel.addElement(label);
 			repoListModel.addElement(source);
 		}
 
