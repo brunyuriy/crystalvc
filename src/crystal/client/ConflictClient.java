@@ -32,22 +32,11 @@ public class ConflictClient implements IConflictClient {
 
 		refresh();
 
-		for (final DataSource source : _preferences.getDataSources()) {
-			//
-			// final ConflictClient client = this;
-			// Runnable runnable = new Runnable() {
-			//
-			// @Override
-			// public void run() {
-			//
-			// ConflictDaemon.calculateConflict(source, _preferences, client);
-			//
-			// }
-			// };
-			//
-			// SwingUtilities.invokeLater(runnable);
-			// }
+		// calculateConflicts();
+	}
 
+	public void calculateConflicts() {
+		for (final DataSource source : _preferences.getDataSources()) {
 			CalculateTask ct = new CalculateTask(source, _preferences);
 			ct.execute();
 		}
@@ -199,6 +188,10 @@ public class ConflictClient implements IConflictClient {
 		// ((double) pair.heads)/((double) pair.total) - 0.5));
 		// }
 
+	}
+
+	public void close() {
+		_frame.setVisible(false);
 	}
 
 }
