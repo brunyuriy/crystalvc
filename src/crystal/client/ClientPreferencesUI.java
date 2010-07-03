@@ -9,7 +9,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
@@ -28,12 +27,30 @@ import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
 
 public class ClientPreferencesUI {
-	private ClientPreferences _preferences;
-	JFrame _frame = null;
+
+	public interface IPreferencesListener {
+
+		/**
+		 * Fired when the preferences are updated.
+		 * 
+		 * @param preferences
+		 */
+		void preferencesChanged(ClientPreferences preferences);
+
+		/**
+		 * Fired when the preferences dialog closes.
+		 */
+		void preferencesDialogClosed();
+	}
+
+	private JFrame _frame = null;
+	
 	private IPreferencesListener _listener;
 
-	private ClientPreferencesUI() {
+	private ClientPreferences _preferences;
 
+	private ClientPreferencesUI() {
+		// disallow
 	}
 
 	public ClientPreferencesUI(ClientPreferences prefs, IPreferencesListener listener) {
@@ -41,14 +58,7 @@ public class ClientPreferencesUI {
 		_listener = listener;
 	}
 
-	public void createAndShowGUI() {
-		// Create and set up the window.
-		_frame = new JFrame("Conflict Client Preferences");
-
-		buildUI(_preferences);
-	}
-
-	private void buildUI(final ClientPreferences prefs) {
+	private void buildUI() {
 		_frame.getContentPane().removeAll();
 
 		Container contentPane = _frame.getContentPane();
@@ -99,7 +109,7 @@ public class ClientPreferencesUI {
 		final DefaultListModel repoListModel = new DefaultListModel();
 
 		Vector<String> data = new Vector<String>();
-		for (DataSource source : prefs.getDataSources()) {
+		for (DataSource source : _preferences.getDataSources()) {
 			// data.add();
 			String label = source.getShortName() + "- " + source.getKind() + ": " + source.getCloneString();
 			repoListModel.addElement(label);
@@ -151,12 +161,12 @@ public class ClientPreferencesUI {
 		c.gridy = 7;
 		contentPane.add(myOkButton, c);
 
-		myRepoText.setText(prefs.getEnvironment().getCloneString());
-		myTempText.setText(prefs.getTempDirectory());
-		if (prefs.getEnvironment().getKind().equals(RepoKind.HG.toString())) {
+		myRepoText.setText(_preferences.getEnvironment().getCloneString());
+		myTempText.setText(_preferences.getTempDirectory());
+		if (_preferences.getEnvironment().getKind().equals(RepoKind.HG.toString())) {
 			myRepoKind.setSelectedIndex(0);
 		}
-		if (prefs.getEnvironment().getKind().equals(RepoKind.GIT.toString())) {
+		if (_preferences.getEnvironment().getKind().equals(RepoKind.GIT.toString())) {
 			myRepoKind.setSelectedIndex(1);
 		}
 
@@ -238,7 +248,7 @@ public class ClientPreferencesUI {
 					myAddCloneText.setText("");
 
 					DataSource source = new DataSource(shortName, cloneName, kind);
-					prefs.getDataSources().add(source);
+					_preferences.getDataSources().add(source);
 					_frame.pack();
 				}
 
@@ -271,12 +281,12 @@ public class ClientPreferencesUI {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				prefs.getEnvironment().setCloneString(myRepoText.getText());
-				prefs.getEnvironment().setKind(RepoKind.valueOf(myRepoKind.getSelectedItem().toString()));
-				prefs.setTempDirectory(myTempText.getText());
+				_preferences.getEnvironment().setCloneString(myRepoText.getText());
+				_preferences.getEnvironment().setKind(RepoKind.valueOf(myRepoKind.getSelectedItem().toString()));
+				_preferences.setTempDirectory(myTempText.getText());
 
 				_frame.setVisible(false);
-				_listener.preferencesChanged(prefs);
+				_listener.preferencesChanged(_preferences);
 				_listener.preferencesDialogClosed();
 			}
 		});
@@ -294,9 +304,10 @@ public class ClientPreferencesUI {
 
 	}
 
-	public interface IPreferencesListener {
-		void preferencesChanged(ClientPreferences preferences);
+	public void createAndShowGUI() {
+		// Create and set up the window.
+		_frame = new JFrame("Conflict Client Preferences");
 
-		void preferencesDialogClosed();
+		buildUI();
 	}
 }
