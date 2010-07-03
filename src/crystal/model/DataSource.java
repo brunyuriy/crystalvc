@@ -42,6 +42,6 @@ public class DataSource {
 
 	@Override
 	public String toString() {
-		return getShortName() + " - " + getCloneString();
+		return getShortName() + "- " + getKind() + ": " + getCloneString();
 	}
 }
