@@ -44,7 +44,7 @@ public class ClientPreferencesUI {
 	}
 
 	private JFrame _frame = null;
-	
+
 	private IPreferencesListener _listener;
 
 	private ClientPreferences _preferences;
@@ -110,10 +110,11 @@ public class ClientPreferencesUI {
 
 		Vector<String> data = new Vector<String>();
 		for (DataSource source : _preferences.getDataSources()) {
-			// data.add();
-			String label = source.getShortName() + "- " + source.getKind() + ": " + source.getCloneString();
-			repoListModel.addElement(label);
+			// String label = source.getShortName() + "- " + source.getKind() + ": " + source.getCloneString();
+			// repoListModel.addElement(label);
+			repoListModel.addElement(source);
 		}
+
 		final JList myRepositoryList = new JList(repoListModel);
 		myRepositoryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -193,13 +194,9 @@ public class ClientPreferencesUI {
 
 					for (int index : indices) {
 
-						// remove from model
-						// XXX: this is now broken
-						// DataSource removed = prefs.getDataSources().remove(index);
-						// System.out.println("removed index: " + index + " ds: " + removed + " model: " +
-						// repoListModel.get(index));
+						DataSource sourceToRemove = (DataSource) repoListModel.getElementAt(index);
+						_preferences.removeDataSource(sourceToRemove);
 
-						// remove from list
 						repoListModel.remove(index);
 					}
 					myRepositoryList.validate();
@@ -243,13 +240,21 @@ public class ClientPreferencesUI {
 					String shortName = myAddCloneShortNameText.getText();
 					String cloneName = myAddCloneText.getText();
 					String label = shortName + "- " + kind + ": " + cloneName;
-					repoListModel.addElement(label);
-					myAddCloneShortNameText.setText("");
-					myAddCloneText.setText("");
 
-					DataSource source = new DataSource(shortName, cloneName, kind);
-					_preferences.getDataSources().add(source);
-					_frame.pack();
+					if (_preferences.getDataSource(shortName) == null) {
+						// don't allow an element with a taken name to be added
+
+						repoListModel.addElement(label);
+						myAddCloneShortNameText.setText("");
+						myAddCloneText.setText("");
+
+						DataSource source = new DataSource(shortName, cloneName, kind);
+
+						// XXX: fires exception; thread problem?
+						// works with this line taken out
+						_preferences.getDataSources().add(source);
+						_frame.pack();
+					}
 				}
 
 			}

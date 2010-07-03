@@ -41,6 +41,8 @@ public class ClientPreferences {
 	// }
 
 	public void addDataSource(DataSource source) {
+		assert !_dataSources.containsKey(source.getShortName());
+		
 		_dataSources.put(source.getShortName(), source);
 	}
 
@@ -62,5 +64,10 @@ public class ClientPreferences {
 
 	public DataSource getDataSource(String key) {
 		return _dataSources.get(key);
+	}
+
+	public void removeDataSource(DataSource sourceToRemove) {
+		_dataSources.remove(sourceToRemove.getShortName());
+
 	}
 }
