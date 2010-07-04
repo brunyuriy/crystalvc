@@ -55,7 +55,7 @@ public class ConflictClient implements IConflictClient {
 		String rows = "";
 
 		// my status
-		rows += "<td>status</td>";
+		rows += "<td>" + prefs.getEnvironment().getShortName() + "</td>";
 
 		Vector<DataSource> sources = new Vector<DataSource>();
 		sources.addAll(prefs.getDataSources());

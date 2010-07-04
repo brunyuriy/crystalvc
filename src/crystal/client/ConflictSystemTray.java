@@ -11,14 +11,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-import crystal.server.TestHgStateChecker;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+
+import crystal.model.DataSource;
+import crystal.model.DataSource.RepoKind;
 
 public class ConflictSystemTray {
 	private static ConflictClient _client;
@@ -36,11 +44,60 @@ public class ConflictSystemTray {
 				createAndShowGUI();
 			}
 
+			@SuppressWarnings("unchecked")
 			private ClientPreferences loadPreferences() {
-				TestHgStateChecker thgsc = new TestHgStateChecker();
-				ClientPreferences prefs = thgsc.getPreferences();
+				// TestHgStateChecker thgsc = new TestHgStateChecker();
+				// ClientPreferences prefs = thgsc.getPreferences();
+				ClientPreferences prefs = null;
 
-				// TODO: this should be from some persisted location
+				SAXBuilder builder = new SAXBuilder(false);
+				Document doc = null;
+
+				try {
+
+					doc = builder.build(this.getClass().getResourceAsStream("config.xml"));
+
+					Element rootElement = doc.getRootElement();
+					String tempDirectory = rootElement.getAttributeValue("tempDirectory");
+					assert tempDirectory != null;
+
+					List<Element> projectElements = rootElement.getChildren("project");
+					for (Element projectElement : projectElements) {
+						String myKind = projectElement.getAttributeValue("myKind");
+						String myShortName = projectElement.getAttributeValue("myShortName");
+						String myClone = projectElement.getAttributeValue("myClone");
+
+						assert myKind != null;
+						assert myShortName != null;
+						assert myClone != null;
+
+						DataSource myEnvironment = new DataSource(myShortName, myClone, RepoKind.valueOf(myKind));
+
+						prefs = new ClientPreferences(myEnvironment, tempDirectory);
+
+						if (projectElement.getChild("sources") != null) {
+							List<Element> sourceElements = projectElement.getChild("sources").getChildren("source");
+							for (Element sourceElement : sourceElements) {
+								String kind = sourceElement.getAttributeValue("kind");
+								String shortName = sourceElement.getAttributeValue("shortName");
+								String clone = sourceElement.getAttributeValue("clone");
+
+								assert kind != null;
+								assert shortName != null;
+								assert clone != null;
+
+								DataSource source = new DataSource(shortName, clone, RepoKind.valueOf(kind));
+								prefs.addDataSource(source);
+							}
+						}
+					}
+				} catch (JDOMException jdome) {
+					System.err.println(jdome);
+				} catch (IOException ioe) {
+					System.err.println(ioe);
+				}
+
+				assert prefs != null;
 
 				return prefs;
 			}
