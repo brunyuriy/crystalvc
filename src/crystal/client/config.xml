@@ -9,13 +9,24 @@
 			<source kind="HG" shortName="five" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/five/" />
 		</sources>
 	</project>
-	<project myKind="HG" myShortName="secondProject"
+	<project myKind="HG" myShortName="2_testProject"
 		myClone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/one/">
 		<sources>
-			<source kind="HG" shortName="two" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/two/" />
-			<source kind="HG" shortName="three" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/three/" />
-			<source kind="HG" shortName="four" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/four/" />
-			<source kind="HG" shortName="five" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/five/" />
+			<source kind="HG" shortName="2_two" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/two/" />
+			<source kind="HG" shortName="2_three" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/three/" />
+			<source kind="HG" shortName="2_four" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/four/" />
+<!--		<source kind="HG" shortName="five" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/five/" />-->
 		</sources>
 	</project>
+	<project myKind="HG" myShortName="3_testProject"
+		myClone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/one/">
+		<sources>
+			<source kind="HG" shortName="3_two" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/two/" />
+			<source kind="HG" shortName="3_three" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/three/" />
+			<source kind="HG" shortName="3_four" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/four/" />
+			<source kind="HG" shortName="3_fourB" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/four/" />
+			<source kind="HG" shortName="3_five" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/five/" />
+			<source kind="HG" shortName="3_fiveB" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/five/" />
+		</sources>
+	</project>	
 </ccConfig>

@@ -17,39 +17,57 @@ import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
 
 public class ConflictClient implements IConflictClient {
-	private ProjectPreferences _preferences;
+	private ClientPreferences _preferences;
 	JFrame _frame = null;
 
-	public void createAndShowGUI(ProjectPreferences prefs) {
+	public void createAndShowGUI(ClientPreferences prefs) {
 		_preferences = prefs;
 
 		// Create and set up the window.
 		_frame = new JFrame("Conflict Client");
 
-		for (DataSource source : _preferences.getDataSources()) {
-			resultMap.put(source, new ConflictResult(source, ResultStatus.PENDING));
+		// set all cells to pending on initial load
+		// NOTE: caching might be a good idea here in the future.
+		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
+			for (DataSource source : projPref.getDataSources()) {
+				resultMap.put(source, new ConflictResult(source, ResultStatus.PENDING));
+			}
 		}
 
 		refresh();
-
-		// calculateConflicts();
 	}
 
 	public void calculateConflicts() {
-		for (final DataSource source : _preferences.getDataSources()) {
-			CalculateTask ct = new CalculateTask(source, _preferences);
-			ct.execute();
+		for (ProjectPreferences projPref : _preferences.getProjectPreference()) {
+			for (final DataSource source : projPref.getDataSources()) {
+				CalculateTask ct = new CalculateTask(source, projPref);
+				ct.execute();
+			}
 		}
 	}
 
-	private String createText(ProjectPreferences prefs) {
+	private String createText(ClientPreferences prefs) {
 		String pre = "<html>";
 		String post = "</html>";
 
-		return pre + createHeader(prefs) + createBody(prefs) + post;
+		String body = "";
+		int maxSources = 0;
+		for (ProjectPreferences pPref : prefs.getProjectPreference()) {
+			int numSources = pPref.getDataSources().size();
+			if (numSources > maxSources)
+				maxSources = numSources;
+		}
+
+		// NOTE: off by one on maxSources?
+
+		for (ProjectPreferences pPref : prefs.getProjectPreference()) {
+			body += createHeader(pPref, maxSources) + createBody(pPref, maxSources);
+		}
+		// return pre + createHeader(prefs) + createBody(prefs) + post;
+		return pre + body + post;
 	}
 
-	private String createBody(ProjectPreferences prefs) {
+	private String createBody(ProjectPreferences prefs, int numColumns) {
 		String pre = "<tr>";
 
 		String rows = "";
@@ -98,7 +116,14 @@ public class ConflictClient implements IConflictClient {
 			} else {
 				rBody = "<td align='center'>" + "n/a" + "</td>";
 			}
+
 			String rPost = "";
+			if (numColumns > sources.size()) {
+				for (int i = 0; i < numColumns - sources.size(); i++) {
+					rPost += "<td></td>";
+				}
+			}
+
 			rows += rPre + rBody + rPost;
 		}
 
@@ -106,7 +131,7 @@ public class ConflictClient implements IConflictClient {
 		return pre + rows + post;
 	}
 
-	private String createHeader(ProjectPreferences prefs) {
+	private String createHeader(ProjectPreferences prefs, int numColumns) {
 		String pre = "<tr>";
 
 		String rows = "";
@@ -121,7 +146,15 @@ public class ConflictClient implements IConflictClient {
 			rows += rPre + rBody + rPost;
 		}
 
-		String post = "</tr>";
+		String post = "";
+		if (numColumns > prefs.getDataSources().size()) {
+			for (int i = 0; i < numColumns - prefs.getDataSources().size(); i++) {
+				post += "<td></td>";
+			}
+		}
+
+		post += "</tr>";
+
 		return pre + rows + post;
 	}
 

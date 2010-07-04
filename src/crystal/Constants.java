@@ -57,5 +57,7 @@ public class Constants {
 
 	public static final String TEST_REPOS = "test-repos" + File.separator;
 	public static final String TEST_TEMP = "test-temp" + File.separator;
-
+	
+	// 30 second timer delay
+	public static int TIMER_CONSTANT = 30000;
 }

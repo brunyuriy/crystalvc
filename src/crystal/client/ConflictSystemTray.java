@@ -25,12 +25,13 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+import crystal.Constants;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
 
 public class ConflictSystemTray {
 	private static ConflictClient _client;
-	private static ProjectPreferences _prefs;
+	private static ClientPreferences _prefs;
 	private static Timer _timer;
 
 	public static void main(String[] args) {
@@ -45,10 +46,10 @@ public class ConflictSystemTray {
 			}
 
 			@SuppressWarnings("unchecked")
-			private ProjectPreferences loadPreferences() {
+			private ClientPreferences loadPreferences() {
 				// TestHgStateChecker thgsc = new TestHgStateChecker();
 				// ClientPreferences prefs = thgsc.getPreferences();
-				ProjectPreferences prefs = null;
+				ClientPreferences prefs = new ClientPreferences();
 
 				SAXBuilder builder = new SAXBuilder(false);
 				Document doc = null;
@@ -73,7 +74,8 @@ public class ConflictSystemTray {
 
 						DataSource myEnvironment = new DataSource(myShortName, myClone, RepoKind.valueOf(myKind));
 
-						prefs = new ProjectPreferences(myEnvironment, tempDirectory);
+						ProjectPreferences projectPreferences = new ProjectPreferences(myEnvironment, tempDirectory);
+						prefs.addProjectPreferences(projectPreferences);
 
 						if (projectElement.getChild("sources") != null) {
 							List<Element> sourceElements = projectElement.getChild("sources").getChildren("source");
@@ -87,7 +89,7 @@ public class ConflictSystemTray {
 								assert clone != null;
 
 								DataSource source = new DataSource(shortName, clone, RepoKind.valueOf(kind));
-								prefs.addDataSource(source);
+								projectPreferences.addDataSource(source);
 							}
 						}
 					}
@@ -170,19 +172,23 @@ public class ConflictSystemTray {
 				}
 
 				showClientItem.setEnabled(false);
-				ClientPreferencesUI cp = new ClientPreferencesUI(_prefs, new ClientPreferencesUI.IPreferencesListener() {
-					@Override
-					public void preferencesChanged(ProjectPreferences preferences) {
-						// when the preferences are updated, show the client
-						_prefs = preferences;
-					}
+				// XXX: prefs UI broken by multiple project refactor (horrible hack in the constructor here)
+				ClientPreferencesUI cp = new ClientPreferencesUI((ProjectPreferences) _prefs.getProjectPreference().toArray()[0],
+						new ClientPreferencesUI.IPreferencesListener() {
+							@Override
+							public void preferencesChanged(ProjectPreferences preferences) {
+								// when the preferences are updated, show the client
+								// _prefs = preferences;
+								// XXX: prefs UI broken by multiple project refactor
+							}
 
-					@Override
-					public void preferencesDialogClosed() {
-						System.out.println("ConflictSystemTray::IPreferencesListener::preferencesDialogClosed()");
-						showClientItem.setEnabled(true);
-					}
-				});
+							@Override
+							public void preferencesDialogClosed() {
+								// System.out.println("ConflictSystemTray::IPreferencesListener::preferencesDialogClosed()");
+								// showClientItem.setEnabled(true);
+								// XXX: prefs UI broken by multiple project refactor
+							}
+						});
 				cp.createAndShowGUI();
 			}
 		});
@@ -226,25 +232,22 @@ public class ConflictSystemTray {
 		_client.calculateConflicts();
 
 		// Set up timer to drive refreshes
-		int TIMER_CONSTANT = 10000;
+
 		if (_timer != null) {
 			_timer.stop();
 			_timer = null;
 		}
 
-		_timer = new Timer(TIMER_CONSTANT, new ActionListener() {
+		_timer = new Timer(Constants.TIMER_CONSTANT, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("ConflictSystemTray::showClient - Timer fired: " + e.getSource());
 				// get the client to nicely refresh its elements
 				_client.calculateConflicts();
-				// if (e.getSource() instanceof Timer) {
-				// ((Timer) e.getSource()).stop();
-				// }
 			}
 		});
-		_timer.setInitialDelay(TIMER_CONSTANT);
+		_timer.setInitialDelay(Constants.TIMER_CONSTANT);
 		_timer.start();
 
 	}
