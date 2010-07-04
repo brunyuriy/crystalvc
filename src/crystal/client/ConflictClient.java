@@ -61,10 +61,14 @@ public class ConflictClient implements IConflictClient {
 		// NOTE: off by one on maxSources?
 
 		for (ProjectPreferences pPref : prefs.getProjectPreference()) {
-			body += createHeader(pPref, maxSources) + createBody(pPref, maxSources);
+			String rowText = createHeader(pPref, maxSources) + createBody(pPref, maxSources);
+			System.out.println("ConflictClient::createText(..) - row text: " + rowText);
+			body += rowText;
 		}
 		// return pre + createHeader(prefs) + createBody(prefs) + post;
-		return pre + body + post;
+		String retValue = pre + body + post;
+		System.out.println("ConflictClient::createText(..): " + retValue);
+		return retValue;
 	}
 
 	private String createBody(ProjectPreferences prefs, int numColumns) {
@@ -116,30 +120,31 @@ public class ConflictClient implements IConflictClient {
 			} else {
 				rBody = "<td align='center'>" + "n/a" + "</td>";
 			}
-
+			
 			String rPost = "";
-			if (numColumns > sources.size()) {
-				for (int i = 0; i < numColumns - sources.size(); i++) {
-					rPost += "<td></td>";
-				}
-			}
-
 			rows += rPre + rBody + rPost;
 		}
 
-		String post = "</tr>";
+		String post = "";
+		if (numColumns > sources.size()) {
+			for (int i = 0; i < numColumns - sources.size(); i++) {
+				post += "<td></td>";
+			}
+		}
+		post += "</tr>";
+
 		return pre + rows + post;
 	}
 
-	private String createHeader(ProjectPreferences prefs, int numColumns) {
+	private String createHeader(ProjectPreferences projectPreferences, int numColumns) {
 		String pre = "<tr>";
 
 		String rows = "";
 
 		// my status
-		rows += "<td><b>My Status</b></td>";
+		rows += "<td><b></b></td>";
 
-		for (DataSource source : prefs.getDataSources()) {
+		for (DataSource source : projectPreferences.getDataSources()) {
 			String rPre = "";
 			String rBody = "<td><b>" + source.getShortName() + "</b></td>";
 			String rPost = "";
@@ -147,8 +152,8 @@ public class ConflictClient implements IConflictClient {
 		}
 
 		String post = "";
-		if (numColumns > prefs.getDataSources().size()) {
-			for (int i = 0; i < numColumns - prefs.getDataSources().size(); i++) {
+		if (numColumns > projectPreferences.getDataSources().size()) {
+			for (int i = 0; i < numColumns - projectPreferences.getDataSources().size(); i++) {
 				post += "<td></td>";
 			}
 		}
