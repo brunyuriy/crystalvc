@@ -17,32 +17,9 @@ public class ClientPreferences {
 		_dataSources = new Hashtable<String, DataSource>();
 	}
 
-	// ClientPreferences(String fName) {
-	// loadPreferences(fName);
-	// }
-	//
-	// private void loadPreferences(String fName) {
-	// // TODO: load from a properties or XML file
-	//
-	// _myEnvironment = new DataSource("brun", "http://github.com/brun/voldemort.git", DataSource.RepoKind.GIT);
-	// _tempDirectory = "/tmp/";
-	//		
-	//		
-	// _dataSources = new Vector<DataSource>();
-	// _dataSources.add(new DataSource("master", "http://github.com/voldemort/voldemort.git", DataSource.RepoKind.GIT));
-	// _dataSources.add(new DataSource("kirktrue", "http://github.com/kirktrue/voldemort.git",
-	// DataSource.RepoKind.GIT));
-	// _dataSources.add(new DataSource("afeinberg", "http://github.com/afeinberg/voldemort.git",
-	// DataSource.RepoKind.GIT));
-	// _dataSources.add(new DataSource("rsumbaly", "http://github.com/rsumbaly/voldemort.git",
-	// DataSource.RepoKind.GIT));
-	//
-	//		
-	// }
-
 	public void addDataSource(DataSource source) {
 		assert !_dataSources.containsKey(source.getShortName());
-		
+
 		_dataSources.put(source.getShortName(), source);
 	}
 

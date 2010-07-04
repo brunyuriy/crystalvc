@@ -11,6 +11,10 @@ public class DataSource {
 	private RepoKind _repoKind;
 
 	public DataSource(String shortName, String cloneString, RepoKind repoKind) {
+		assert shortName != null;
+		assert cloneString != null;
+		assert repoKind != null;
+
 		_shortName = shortName;
 		_cloneString = cloneString;
 		_repoKind = repoKind;

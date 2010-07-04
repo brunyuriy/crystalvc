@@ -97,11 +97,13 @@ public class ClientPreferencesUI {
 		contentPane.add(myTempLabel, c);
 
 		final JTextField myTempText = new JTextField(30);
+		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 1;
 		c.gridy = 2;
 		contentPane.add(myTempText, c);
 
 		JLabel myRepositoriesLabel = new JLabel("Repositories:");
+		c.fill = GridBagConstraints.NONE;
 		c.gridx = 0;
 		c.gridy = 3;
 		contentPane.add(myRepositoriesLabel, c);

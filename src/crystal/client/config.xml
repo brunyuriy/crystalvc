@@ -1,0 +1,21 @@
+<ccConfig
+	tempDirectory="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-tmp/">
+	<project myKind="HG" myShortName="testProject"
+		myClone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/one/">
+		<sources>
+			<source kind="HG" shortName="two" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/two/" />
+			<source kind="HG" shortName="three" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/three/" />
+			<source kind="HG" shortName="four" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/four/" />
+			<source kind="HG" shortName="five" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/five/" />
+		</sources>
+	</project>
+	<project myKind="HG" myShortName="secondProject"
+		myClone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/one/">
+		<sources>
+			<source kind="HG" shortName="two" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/two/" />
+			<source kind="HG" shortName="three" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/three/" />
+			<source kind="HG" shortName="four" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/four/" />
+			<source kind="HG" shortName="five" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/five/" />
+		</sources>
+	</project>
+</ccConfig>
