@@ -9,7 +9,7 @@ import crystal.model.ConflictResult.ResultStatus;
 import crystal.server.HgStateChecker;
 
 public class ConflictDaemon {
-	public static void computeConflicts(ClientPreferences preferences, IConflictClient client) {
+	public static void computeConflicts(ProjectPreferences preferences, IConflictClient client) {
 
 		for (DataSource source : preferences.getDataSources()) {
 			calculateConflict(source, preferences, client);
@@ -17,7 +17,7 @@ public class ConflictDaemon {
 
 	}
 
-	public static void calculateConflict(DataSource source, ClientPreferences preferences, IConflictClient client) {
+	public static void calculateConflict(DataSource source, ProjectPreferences preferences, IConflictClient client) {
 
 		// double val = Math.random();
 		// ResultStatus status = ConflictResult.ResultStatus.SAME;
@@ -45,7 +45,7 @@ public class ConflictDaemon {
 		return null;
 	}
 
-	public static ConflictResult calculateConflict(DataSource source, ClientPreferences prefs) {
+	public static ConflictResult calculateConflict(DataSource source, ProjectPreferences prefs) {
 		ResultStatus status;
 		try {
 			status = HgStateChecker.getState(prefs, source);

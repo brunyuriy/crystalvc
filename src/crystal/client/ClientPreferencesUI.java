@@ -35,7 +35,7 @@ public class ClientPreferencesUI {
 		 * 
 		 * @param preferences
 		 */
-		void preferencesChanged(ClientPreferences preferences);
+		void preferencesChanged(ProjectPreferences preferences);
 
 		/**
 		 * Fired when the preferences dialog closes.
@@ -47,13 +47,13 @@ public class ClientPreferencesUI {
 
 	private IPreferencesListener _listener;
 
-	private ClientPreferences _preferences;
+	private ProjectPreferences _preferences;
 
 	private ClientPreferencesUI() {
 		// disallow
 	}
 
-	public ClientPreferencesUI(ClientPreferences prefs, IPreferencesListener listener) {
+	public ClientPreferencesUI(ProjectPreferences prefs, IPreferencesListener listener) {
 		_preferences = prefs;
 		_listener = listener;
 	}

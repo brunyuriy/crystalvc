@@ -16,20 +16,20 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import crystal.Constants;
-import crystal.client.ClientPreferences;
+import crystal.client.ProjectPreferences;
 import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
 import crystal.model.DataSource.RepoKind;
 
 public class TestHgStateChecker {
 
-	private ClientPreferences _prefs;
+	private ProjectPreferences _prefs;
 
 	public TestHgStateChecker() {
 		generatePreferences();
 	}
 
-	public ClientPreferences getPreferences() {
+	public ProjectPreferences getPreferences() {
 		return _prefs;
 	}
 
@@ -153,7 +153,7 @@ public class TestHgStateChecker {
 		DataSource fourSource = new DataSource("fourRepository", path + "four", RepoKind.HG);
 		DataSource fiveSource = new DataSource("fiveRepository", path + "five", RepoKind.HG);
 
-		_prefs = new ClientPreferences(myEnvironment, tempDirectory);
+		_prefs = new ProjectPreferences(myEnvironment, tempDirectory);
 		_prefs.addDataSource(twoSource);
 		_prefs.addDataSource(threeSource);
 		_prefs.addDataSource(fourSource);

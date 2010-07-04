@@ -17,10 +17,10 @@ import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
 
 public class ConflictClient implements IConflictClient {
-	private ClientPreferences _preferences;
+	private ProjectPreferences _preferences;
 	JFrame _frame = null;
 
-	public void createAndShowGUI(ClientPreferences prefs) {
+	public void createAndShowGUI(ProjectPreferences prefs) {
 		_preferences = prefs;
 
 		// Create and set up the window.
@@ -42,14 +42,14 @@ public class ConflictClient implements IConflictClient {
 		}
 	}
 
-	private String createText(ClientPreferences prefs) {
+	private String createText(ProjectPreferences prefs) {
 		String pre = "<html>";
 		String post = "</html>";
 
 		return pre + createHeader(prefs) + createBody(prefs) + post;
 	}
 
-	private String createBody(ClientPreferences prefs) {
+	private String createBody(ProjectPreferences prefs) {
 		String pre = "<tr>";
 
 		String rows = "";
@@ -106,7 +106,7 @@ public class ConflictClient implements IConflictClient {
 		return pre + rows + post;
 	}
 
-	private String createHeader(ClientPreferences prefs) {
+	private String createHeader(ProjectPreferences prefs) {
 		String pre = "<tr>";
 
 		String rows = "";
@@ -154,9 +154,9 @@ public class ConflictClient implements IConflictClient {
 
 	class CalculateTask extends SwingWorker<Void, ConflictResult> {
 		DataSource _source;
-		ClientPreferences _prefs;
+		ProjectPreferences _prefs;
 
-		CalculateTask(DataSource source, ClientPreferences prefs) {
+		CalculateTask(DataSource source, ProjectPreferences prefs) {
 			_source = source;
 			_prefs = prefs;
 		}
