@@ -120,7 +120,7 @@ public class ConflictClient implements IConflictClient {
 			} else {
 				rBody = "<td align='center'>" + "n/a" + "</td>";
 			}
-			
+
 			String rPost = "";
 			rows += rPre + rBody + rPost;
 		}
@@ -144,7 +144,18 @@ public class ConflictClient implements IConflictClient {
 		// my status
 		rows += "<td><b></b></td>";
 
-		for (DataSource source : projectPreferences.getDataSources()) {
+		Vector<DataSource> sources = new Vector<DataSource>();
+		sources.addAll(projectPreferences.getDataSources());
+		Collections.sort(sources, new Comparator<DataSource>() {
+
+			@Override
+			public int compare(DataSource o1, DataSource o2) {
+				return o1.getShortName().compareTo(o2.getShortName());
+			}
+
+		});
+
+		for (DataSource source : sources) {
 			String rPre = "";
 			String rBody = "<td><b>" + source.getShortName() + "</b></td>";
 			String rPost = "";
