@@ -5,13 +5,13 @@ import java.util.Hashtable;
 
 import crystal.model.DataSource;
 
-public class ClientPreferences {
+public class ProjectPreferences {
 
 	Hashtable<String, DataSource> _dataSources;
 	DataSource _myEnvironment = null;
 	String _tempDirectory = null;
 
-	public ClientPreferences(DataSource myEnvironment, String tempDirectory) {
+	public ProjectPreferences(DataSource myEnvironment, String tempDirectory) {
 		_myEnvironment = myEnvironment;
 		_tempDirectory = tempDirectory;
 		_dataSources = new Hashtable<String, DataSource>();

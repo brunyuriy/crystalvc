@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.junit.Assert;
 
 import crystal.Constants;
-import crystal.client.ClientPreferences;
+import crystal.client.ProjectPreferences;
 import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
 import crystal.util.RunIt;
@@ -19,7 +19,7 @@ public class HgStateChecker {
 	 * 
 	 * @returns whether my repository is same, behind, ahead, or in conflict with your repository.
 	 */
-	public static ResultStatus getState(ClientPreferences prefs, DataSource source) throws IOException {
+	public static ResultStatus getState(ProjectPreferences prefs, DataSource source) throws IOException {
 
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);

@@ -30,7 +30,7 @@ import crystal.model.DataSource.RepoKind;
 
 public class ConflictSystemTray {
 	private static ConflictClient _client;
-	private static ClientPreferences _prefs;
+	private static ProjectPreferences _prefs;
 	private static Timer _timer;
 
 	public static void main(String[] args) {
@@ -45,10 +45,10 @@ public class ConflictSystemTray {
 			}
 
 			@SuppressWarnings("unchecked")
-			private ClientPreferences loadPreferences() {
+			private ProjectPreferences loadPreferences() {
 				// TestHgStateChecker thgsc = new TestHgStateChecker();
 				// ClientPreferences prefs = thgsc.getPreferences();
-				ClientPreferences prefs = null;
+				ProjectPreferences prefs = null;
 
 				SAXBuilder builder = new SAXBuilder(false);
 				Document doc = null;
@@ -73,7 +73,7 @@ public class ConflictSystemTray {
 
 						DataSource myEnvironment = new DataSource(myShortName, myClone, RepoKind.valueOf(myKind));
 
-						prefs = new ClientPreferences(myEnvironment, tempDirectory);
+						prefs = new ProjectPreferences(myEnvironment, tempDirectory);
 
 						if (projectElement.getChild("sources") != null) {
 							List<Element> sourceElements = projectElement.getChild("sources").getChildren("source");
@@ -172,7 +172,7 @@ public class ConflictSystemTray {
 				showClientItem.setEnabled(false);
 				ClientPreferencesUI cp = new ClientPreferencesUI(_prefs, new ClientPreferencesUI.IPreferencesListener() {
 					@Override
-					public void preferencesChanged(ClientPreferences preferences) {
+					public void preferencesChanged(ProjectPreferences preferences) {
 						// when the preferences are updated, show the client
 						_prefs = preferences;
 					}
