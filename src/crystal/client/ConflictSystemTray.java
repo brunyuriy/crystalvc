@@ -11,101 +11,40 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-
 import crystal.Constants;
-import crystal.model.DataSource;
-import crystal.model.DataSource.RepoKind;
 
+/**
+ * This is the UI that lives in the system tray (windows), title bar (OS X) or somewhere else (linux). It contains the
+ * menu options and provides a lightweight home for bringing up the ConflictClient UI.
+ * 
+ * @author rtholmes
+ */
 public class ConflictSystemTray {
+	/**
+	 * Conflict client UI.
+	 */
 	private static ConflictClient _client;
+
+	/**
+	 * Main preference reference.
+	 */
 	private static ClientPreferences _prefs;
+
+	/**
+	 * Timer used for refreshing the results.
+	 */
 	private static Timer _timer;
 
-	public static void main(String[] args) {
-
-		// UIManager.put("swing.boldMetal", Boolean.FALSE);
-
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				_prefs = loadPreferences();
-
-				createAndShowGUI();
-			}
-
-			@SuppressWarnings("unchecked")
-			private ClientPreferences loadPreferences() {
-				// TestHgStateChecker thgsc = new TestHgStateChecker();
-				// ClientPreferences prefs = thgsc.getPreferences();
-				ClientPreferences prefs = new ClientPreferences();
-
-				SAXBuilder builder = new SAXBuilder(false);
-				Document doc = null;
-
-				try {
-
-					doc = builder.build(this.getClass().getResourceAsStream("config.xml"));
-
-					Element rootElement = doc.getRootElement();
-					String tempDirectory = rootElement.getAttributeValue("tempDirectory");
-					assert tempDirectory != null;
-
-					List<Element> projectElements = rootElement.getChildren("project");
-					for (Element projectElement : projectElements) {
-						String myKind = projectElement.getAttributeValue("myKind");
-						String myShortName = projectElement.getAttributeValue("myShortName");
-						String myClone = projectElement.getAttributeValue("myClone");
-
-						assert myKind != null;
-						assert myShortName != null;
-						assert myClone != null;
-
-						DataSource myEnvironment = new DataSource(myShortName, myClone, RepoKind.valueOf(myKind));
-
-						ProjectPreferences projectPreferences = new ProjectPreferences(myEnvironment, tempDirectory);
-						prefs.addProjectPreferences(projectPreferences);
-
-						if (projectElement.getChild("sources") != null) {
-							List<Element> sourceElements = projectElement.getChild("sources").getChildren("source");
-							for (Element sourceElement : sourceElements) {
-								String kind = sourceElement.getAttributeValue("kind");
-								String shortName = sourceElement.getAttributeValue("shortName");
-								String clone = sourceElement.getAttributeValue("clone");
-
-								assert kind != null;
-								assert shortName != null;
-								assert clone != null;
-
-								DataSource source = new DataSource(shortName, clone, RepoKind.valueOf(kind));
-								projectPreferences.addDataSource(source);
-							}
-						}
-					}
-				} catch (JDOMException jdome) {
-					System.err.println(jdome);
-				} catch (IOException ioe) {
-					System.err.println(ioe);
-				}
-
-				assert prefs != null;
-
-				return prefs;
-			}
-		});
-	}
-
+	/**
+	 * Create the tray icon and get it installed in the tray.
+	 */
 	private static void createAndShowGUI() {
 		// Check the SystemTray support
 		if (!SystemTray.isSupported()) {
@@ -222,6 +161,45 @@ public class ConflictSystemTray {
 
 	}
 
+	/**
+	 * Create the image to use in the tray.
+	 * 
+	 * @param path
+	 * @param description
+	 * @return
+	 */
+	protected static Image createImage(String path, String description) {
+		URL imageURL = ConflictSystemTray.class.getResource(path);
+
+		if (imageURL == null) {
+			System.err.println("Resource not found: " + path);
+			return null;
+		} else {
+			return (new ImageIcon(imageURL, description)).getImage();
+		}
+	}
+
+	/**
+	 * Main execution point.
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+
+		// UIManager.put("swing.boldMetal", Boolean.FALSE);
+
+		SwingUtilities.invokeLater(new Runnable() {
+
+			public void run() {
+				_prefs = ClientPreferences.loadPreferencesFromXML();
+				createAndShowGUI();
+			}
+		});
+	}
+
+	/**
+	 * Show the client and set up the timer.
+	 */
 	private static void showClient() {
 		if (_client != null) {
 			_client.close();
@@ -230,8 +208,6 @@ public class ConflictSystemTray {
 		_client = new ConflictClient();
 		_client.createAndShowGUI(_prefs);
 		_client.calculateConflicts();
-
-		// Set up timer to drive refreshes
 
 		if (_timer != null) {
 			_timer.stop();
@@ -249,18 +225,5 @@ public class ConflictSystemTray {
 		});
 		_timer.setInitialDelay(Constants.TIMER_CONSTANT);
 		_timer.start();
-
-	}
-
-	// Obtain the image URL
-	protected static Image createImage(String path, String description) {
-		URL imageURL = ConflictSystemTray.class.getResource(path);
-
-		if (imageURL == null) {
-			System.err.println("Resource not found: " + path);
-			return null;
-		} else {
-			return (new ImageIcon(imageURL, description)).getImage();
-		}
 	}
 }

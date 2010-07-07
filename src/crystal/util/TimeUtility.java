@@ -6,6 +6,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Formatter;
 
+/**
+ * Some handy time utilities.
+ * 
+ * @author rtholmes
+ */
 public class TimeUtility {
 
 	/**
@@ -17,6 +22,12 @@ public class TimeUtility {
 	// e.g., 2009-01-27T15-57-21.111-800
 	private static String LSMR_DATE_FORMAT = "yyyy-MM-dd'T'HH-mm-ss.SSSZ";
 
+	/**
+	 * Parse a standard date format.
+	 * 
+	 * @param dateString
+	 * @return
+	 */
 	public static Date parseLSMRDate(String dateString) {
 
 		try {
@@ -27,10 +38,21 @@ public class TimeUtility {
 		}
 	}
 
+	/**
+	 * Format a date instance.
+	 * 
+	 * @param date
+	 * @return
+	 */
 	public static String formatLSMRDate(Date date) {
 		return new SimpleDateFormat(LSMR_DATE_FORMAT).format(date);
 	}
 
+	/**
+	 * Format the current time.
+	 * 
+	 * @return
+	 */
 	public static String getCurrentLSMRDateString() {
 		return formatLSMRDate(Calendar.getInstance().getTime());
 	}
@@ -68,7 +90,7 @@ public class TimeUtility {
 	}
 
 	/**
-	 * 
+	 * Write the given timestamp in a 'nice' format (e.g.h 3h4m instead of 188m) 
 	 * @param start
 	 *            The start time of the period of interest.
 	 * @return A human readable representation of the start time less the time at which the method was called.
