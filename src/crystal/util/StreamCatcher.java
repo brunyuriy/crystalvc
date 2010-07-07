@@ -1,8 +1,13 @@
 package crystal.util;
 
-
 import java.io.BufferedInputStream;
 
+/**
+ * Catches the output streams; used by RunIt.
+ * 
+ * @author rtholmes
+ * 
+ */
 class StreamCatcher implements Runnable {
 
 	BufferedInputStream in = null;
@@ -19,7 +24,6 @@ class StreamCatcher implements Runnable {
 		int readBytes = 0;
 		try {
 			while ((readBytes = in.read(buffer)) > 0) {
-				// System.out.print(new String(buffer, 0, readBytes));
 				synchronized (this) {
 					_output.append(new String(buffer, 0, readBytes));
 				}

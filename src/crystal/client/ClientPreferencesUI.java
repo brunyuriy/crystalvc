@@ -26,8 +26,23 @@ import javax.swing.event.ListSelectionListener;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
 
+/**
+ * UI for managing preferences.
+ * 
+ * NOTE: currently this class doesn't work for managing the preferences from multiple projects; use the configuration
+ * file instead.
+ * 
+ * @author rtholmes
+ * 
+ */
 public class ClientPreferencesUI {
 
+	/**
+	 * Listener enabling the PreferenceUI to let a client know when it is updated and closed.
+	 * 
+	 * @author rtholmes
+	 * 
+	 */
 	public interface IPreferencesListener {
 
 		/**
@@ -53,11 +68,24 @@ public class ClientPreferencesUI {
 		// disallow
 	}
 
+	/**
+	 * Main constructor.
+	 * 
+	 * @param prefs
+	 *            The preferences to populate the UI with
+	 * @param listener
+	 *            The listener that should be notified when the UI changes
+	 */
 	public ClientPreferencesUI(ProjectPreferences prefs, IPreferencesListener listener) {
 		_preferences = prefs;
 		_listener = listener;
 	}
 
+	/**
+	 * Build the UI elements.
+	 * 
+	 * This is unfortunately hand-crafted Swing. Not very pretty.
+	 */
 	private void buildUI() {
 		_frame.getContentPane().removeAll();
 
@@ -171,6 +199,9 @@ public class ClientPreferencesUI {
 			myRepoKind.setSelectedIndex(1);
 		}
 
+		/**
+		 * Enables / disables the remove repo button based on whether a selection is made.
+		 */
 		myRepositoryList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
@@ -184,6 +215,9 @@ public class ClientPreferencesUI {
 
 		myRemoveRepoButton.setActionCommand("click");
 
+		/**
+		 * Removes any selected repositories when the remove button is pressed.
+		 */
 		myRemoveRepoButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -207,6 +241,9 @@ public class ClientPreferencesUI {
 
 		myAddRepoButton.setEnabled(false);
 
+		/**
+		 * Enables the 'add repository' button when the required fields have valid values.
+		 */
 		myAddCloneText.addKeyListener(new KeyListener() {
 
 			@Override
@@ -230,6 +267,9 @@ public class ClientPreferencesUI {
 		});
 
 		myAddRepoButton.setActionCommand("click");
+		/**
+		 * Adds the repositories to the preferences when the 'add repository' button is clicked.
+		 */
 		myAddRepoButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -258,6 +298,9 @@ public class ClientPreferencesUI {
 			}
 		});
 
+		/**
+		 * Enables the 'add repository' button when the required fields are populated.
+		 */
 		myAddCloneShortNameText.addKeyListener(new KeyListener() {
 
 			@Override
@@ -280,6 +323,9 @@ public class ClientPreferencesUI {
 
 		});
 
+		/**
+		 * Updates the preferences when the 'ok' button is clicked and notifies the listener.
+		 */
 		myOkButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -294,6 +340,9 @@ public class ClientPreferencesUI {
 			}
 		});
 
+		/**
+		 * Fires when the window is closed; notifies the listener.
+		 */
 		_frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
 				System.out.println("ClientPreferencesUI::WidnowListener - window closing: " + we);
@@ -307,6 +356,9 @@ public class ClientPreferencesUI {
 
 	}
 
+	/**
+	 * Creates the UI and brings it to the foreground.
+	 */
 	public void createAndShowGUI() {
 		// Create and set up the window.
 		_frame = new JFrame("Conflict Client Preferences");

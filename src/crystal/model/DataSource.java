@@ -28,8 +28,8 @@ public class DataSource {
 		return _cloneString;
 	}
 
-	public String getKind() {
-		return _repoKind.toString();
+	public RepoKind getKind() {
+		return _repoKind;
 	}
 
 	public void setKind(RepoKind kind) {
