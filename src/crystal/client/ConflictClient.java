@@ -209,22 +209,22 @@ public class ConflictClient implements IConflictClient {
 				String icon = "";
 				if (status.equals(ResultStatus.SAME)) {
 					bgColour = "white";
-					icon = "look.png";
+					icon = "same.png";
 				} else if (status.equals(ResultStatus.AHEAD)) {
 					bgColour = "yellow";
-					icon = "split.png";
+					icon = "ahead.png";
 				} else if (status.equals(ResultStatus.BEHIND)) {
 					bgColour = "#FFA500";
-					icon = "yield.png";
+					icon = "behind.png";
 				} else if (status.equals(ResultStatus.CONFLICT)) {
 					bgColour = "red";
-					icon = "stop.png";
+					icon = "mergeconflict.png";
 				} else if (status.equals(ResultStatus.PENDING)) {
 					bgColour = "#CCCCFF";
 					icon = "clock.png";
 				}
 				String iconPrefix = "http://www.cs.washington.edu/homes/rtholmes/tmp/speculationImages/";
-				rBody = "<td align='center' bgcolor='" + bgColour + "'>" + "<img src='" + iconPrefix + icon + "'/>" + "</td>";
+				rBody = "<td align='center' bgcolor='" + bgColour + "'>" + "<img src='" + iconPrefix + icon + "' height='32px'/>" + "</td>";
 			} else {
 				rBody = "<td align='center'>" + "n/a" + "</td>";
 			}
