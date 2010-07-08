@@ -207,20 +207,21 @@ public class ConflictClient implements IConflictClient {
 
 				String bgColour = "";
 				String icon = "";
+				String DEFAULT_BG = "grey";
 				if (status.equals(ResultStatus.SAME)) {
-					bgColour = "white";
+					bgColour = DEFAULT_BG;//"white";
 					icon = "same.png";
 				} else if (status.equals(ResultStatus.AHEAD)) {
-					bgColour = "yellow";
+					bgColour = DEFAULT_BG;//"yellow";
 					icon = "ahead.png";
 				} else if (status.equals(ResultStatus.BEHIND)) {
-					bgColour = "#FFA500";
+					bgColour = DEFAULT_BG;//"#FFA500";
 					icon = "behind.png";
 				} else if (status.equals(ResultStatus.CONFLICT)) {
-					bgColour = "red";
+					bgColour = DEFAULT_BG;//"red";
 					icon = "mergeconflict.png";
 				} else if (status.equals(ResultStatus.PENDING)) {
-					bgColour = "#CCCCFF";
+					bgColour = DEFAULT_BG;//"#CCCCFF";
 					icon = "clock.png";
 				}
 				String iconPrefix = "http://www.cs.washington.edu/homes/rtholmes/tmp/speculationImages/";
