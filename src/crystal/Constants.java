@@ -7,6 +7,9 @@ import org.junit.Assert;
 
 public class Constants {
 
+	// 90 second timer delay
+	public static int TIMER_CONSTANT = 90000;
+	
 	public static String PROJECT_PATH = null;
 	static {
 		/**
@@ -14,6 +17,7 @@ public class Constants {
 		 */
 		Vector<String> possiblePaths = new Vector<String>();
 		possiblePaths.add("/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/");
+		possiblePaths.add("/Users/rtholmes/Documents/Crystal/"); // MBP
 		possiblePaths.add("/homes/gws/brun/tempCrystal/sourceRepo/");
 		possiblePaths.add("C:\\Users\\Yuriy\\Desktop\\work\\crystalSource");
 
@@ -58,6 +62,5 @@ public class Constants {
 	public static final String TEST_REPOS = "test-repos" + File.separator;
 	public static final String TEST_TEMP = "test-temp" + File.separator;
 	
-	// 30 second timer delay
-	public static int TIMER_CONSTANT = 30000;
+
 }
