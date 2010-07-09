@@ -20,6 +20,7 @@ import crystal.client.ProjectPreferences;
 import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
 import crystal.model.DataSource.RepoKind;
+import crystal.util.RunIt;
 
 public class TestHgStateChecker {
 
@@ -60,7 +61,7 @@ public class TestHgStateChecker {
 		File repoDir = new File(projectPath + Constants.TEST_REPOS);
 		if (repoDir.exists()) {
 			Assert.assertTrue(repoDir.isDirectory());
-			deleteDirectory(repoDir);
+			RunIt.deleteDirectory(repoDir);
 			Assert.assertFalse(repoDir.exists());
 		}
 
@@ -72,7 +73,7 @@ public class TestHgStateChecker {
 		// clean the temp space
 		File testTempDir = new File(projectPath + Constants.TEST_TEMP);
 		if (testTempDir.exists()) {
-			deleteDirectory(testTempDir);
+			RunIt.deleteDirectory(testTempDir);
 			Assert.assertFalse(testTempDir.exists());
 		}
 		boolean testTempDirCreated = testTempDir.mkdir();
@@ -80,20 +81,6 @@ public class TestHgStateChecker {
 		Assert.assertTrue(testTempDir.exists());
 		Assert.assertTrue(testTempDir.isDirectory());
 
-	}
-
-	static private boolean deleteDirectory(File path) {
-		if (path.exists()) {
-			File[] files = path.listFiles();
-			for (int i = 0; i < files.length; i++) {
-				if (files[i].isDirectory()) {
-					deleteDirectory(files[i]);
-				} else {
-					files[i].delete();
-				}
-			}
-		}
-		return (path.delete());
 	}
 
 	@SuppressWarnings("unchecked")
