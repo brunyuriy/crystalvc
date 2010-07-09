@@ -18,6 +18,7 @@ public class Constants {
 		possiblePaths.add("/Users/rtholmes/Documents/Crystal/"); // MBP
 		possiblePaths.add("/homes/gws/brun/tempCrystal/sourceRepo/");
 		possiblePaths.add("C:\\Users\\Yuriy\\Desktop\\work\\crystalSource");
+		possiblePaths.add("C:\\Users\\brun\\work\\crystalCode");
 
 		for (String possiblePath : possiblePaths) {
 			if (new File(possiblePath).exists()) {
@@ -44,6 +45,8 @@ public class Constants {
 		possiblePaths.add("/usr/local/bin/hg");
 		possiblePaths.add("C:\\Program Files (x86)\\TortoiseHg\\hg");
 		possiblePaths.add("hg");
+		possiblePaths.add("C:\\Program Files\\TortoiseHg\\hg.exe");
+//		possiblePaths.add("\"C:\\Program Files\\TortoiseHg\\hg.exe\"");
 
 		for (String possiblePath : possiblePaths) {
 			if (new File(possiblePath).exists()) {
