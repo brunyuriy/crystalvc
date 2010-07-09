@@ -106,6 +106,8 @@ public class ClientPreferences {
 	/**
 	 * Load the saved preferences from config.xml.
 	 * 
+	 * TODO: Sensibly display when a preference is invalid.
+	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -148,14 +150,10 @@ public class ClientPreferences {
 
 			Element rootElement = doc.getRootElement();
 			String tempDirectory = rootElement.getAttributeValue("tempDirectory");
-			assert tempDirectory != null;
-			assert new File(tempDirectory).exists();
-			assert new File(tempDirectory).isDirectory();
+			verifyPath(tempDirectory);
 
 			String hgPath = rootElement.getAttributeValue("hgPath");
-			assert hgPath != null;
-			assert new File(hgPath).exists();
-			assert new File(hgPath).isDirectory();
+			verifyFile(hgPath);
 
 			prefs = new ClientPreferences(tempDirectory, hgPath);
 
@@ -165,11 +163,10 @@ public class ClientPreferences {
 				String myShortName = projectElement.getAttributeValue("myShortName");
 				String myClone = projectElement.getAttributeValue("myClone");
 
+				verifyPath(myClone);
+
 				assert myKind != null;
 				assert myShortName != null;
-				assert myClone != null;
-				assert new File(myClone).exists();
-				assert new File(myClone).isDirectory();
 
 				DataSource myEnvironment = new DataSource(myShortName, myClone, RepoKind.valueOf(myKind));
 
@@ -194,15 +191,50 @@ public class ClientPreferences {
 			}
 		} catch (JDOMException jdome) {
 			System.err.println(jdome);
+			throw new RuntimeException("Error parsing configuration file.", jdome);
 		} catch (IOException ioe) {
 			System.err.println(ioe);
+			throw new RuntimeException("Error reading configuration file.", ioe);
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println(e);
+			throw new RuntimeException("Error parsing configuration file.", e);
 		}
 
 		assert prefs != null;
 
 		return prefs;
+	}
+
+	/**
+	 * Check to ensure the provided file exists.
+	 * 
+	 * @param fName
+	 */
+	private static void verifyFile(String fName) {
+
+		assert fName != null;
+		assert new File(fName).exists();
+		assert !new File(fName).isDirectory();
+
+		if (fName == null || !new File(fName).exists() || !new File(fName).isDirectory()) {
+			throw new RuntimeException("ConflictClient::verifyFile( " + fName + " ) - File does not exist.");
+		}
+	}
+
+	/**
+	 * Check to ensure the provided path is a valid directory.
+	 * 
+	 * @param path
+	 */
+	private static void verifyPath(String path) {
+
+		assert path != null;
+		assert new File(path).exists();
+		assert new File(path).isDirectory();
+
+		if (path == null || !new File(path).exists() || !new File(path).isDirectory()) {
+			throw new RuntimeException("ConflictClient::verifyPath( " + path + " ) - Path does not exist.");
+		}
 	}
 
 	/**

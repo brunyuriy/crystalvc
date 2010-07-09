@@ -15,7 +15,6 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import crystal.Constants;
@@ -30,22 +29,37 @@ public class ConflictSystemTray {
 	/**
 	 * Conflict client UI.
 	 */
-	private static ConflictClient _client;
+	private ConflictClient _client;
 
 	/**
 	 * Main preference reference.
 	 */
-	private static ClientPreferences _prefs;
+	private ClientPreferences _prefs;
 
 	/**
 	 * Timer used for refreshing the results.
 	 */
-	private static Timer _timer;
+	private Timer _timer;
 
 	/**
 	 * Create the tray icon and get it installed in the tray.
 	 */
-	private static void createAndShowGUI() {
+	private void createAndShowGUI() {
+
+		try {
+
+			_prefs = ClientPreferences.loadPreferencesFromXML();
+			
+			if (_prefs != null) {
+				System.out.println("ConflictClient preferences loaded successfully.");
+			} else {
+				System.out.println("ConflictClient - Error loading preferences.");
+			}
+			
+		} catch (Exception e) {
+			System.err.println("Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )");
+			System.exit(-1);
+		}
 		// Check the SystemTray support
 		if (!SystemTray.isSupported()) {
 			System.err.println("SystemTray is not supported");
@@ -196,19 +210,21 @@ public class ConflictSystemTray {
 
 		// UIManager.put("swing.boldMetal", Boolean.FALSE);
 
-		SwingUtilities.invokeLater(new Runnable() {
+		// SwingUtilities.invokeLater(new Runnable() {
+		//
+		// public void run() {
 
-			public void run() {
-				_prefs = ClientPreferences.loadPreferencesFromXML();
-				createAndShowGUI();
-			}
-		});
+		ConflictSystemTray cst = new ConflictSystemTray();
+		cst.createAndShowGUI();
+
+		// }
+		// });
 	}
 
 	/**
 	 * Show the client and set up the timer.
 	 */
-	private static void showClient() {
+	private void showClient() {
 		if (_client != null) {
 			_client.close();
 			_client = null;
