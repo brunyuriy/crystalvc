@@ -21,8 +21,9 @@ import javax.swing.Timer;
 import crystal.Constants;
 
 /**
- * This is the UI that lives in the system tray (windows), title bar (OS X) or somewhere else (linux). It contains the
- * menu options and provides a lightweight home for bringing up the ConflictClient UI.
+ * This is the UI that lives in the system tray (windows), title bar (OS X) or
+ * somewhere else (linux). It contains the menu options and provides a
+ * lightweight home for bringing up the ConflictClient UI.
  * 
  * @author rtholmes
  */
@@ -53,7 +54,8 @@ public class ConflictSystemTray {
 		}
 
 		final PopupMenu trayMenu = new PopupMenu();
-		final TrayIcon trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
+		final TrayIcon trayIcon = new TrayIcon(createImage("images/bulb.gif",
+				"tray icon"));
 		final SystemTray tray = SystemTray.getSystemTray();
 
 		trayIcon.setToolTip("ConflictClient");
@@ -91,7 +93,8 @@ public class ConflictSystemTray {
 			@Override
 			public void actionPerformed(ActionEvent ae) {
 				System.out.println("Tray icon action: " + ae);
-				// doesn't work on OS X; it doesn't register double clicks on the tray
+				// doesn't work on OS X; it doesn't register double clicks on
+				// the tray
 				showClient();
 			}
 
@@ -99,7 +102,8 @@ public class ConflictSystemTray {
 
 		aboutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Built by Holmes, Brun, Ernst, and Notkin.");
+				JOptionPane.showMessageDialog(null,
+						"Built by Holmes, Brun, Ernst, and Notkin.");
 			}
 		});
 
@@ -111,21 +115,28 @@ public class ConflictSystemTray {
 				}
 
 				showClientItem.setEnabled(false);
-				// XXX: prefs UI broken by multiple project refactor (horrible hack in the constructor here)
-				ClientPreferencesUI cp = new ClientPreferencesUI((ProjectPreferences) _prefs.getProjectPreference().toArray()[0],
+				// XXX: prefs UI broken by multiple project refactor (horrible
+				// hack in the constructor here)
+				ClientPreferencesUI cp = new ClientPreferencesUI(
+						(ProjectPreferences) _prefs.getProjectPreference()
+								.toArray()[0],
 						new ClientPreferencesUI.IPreferencesListener() {
 							@Override
-							public void preferencesChanged(ProjectPreferences preferences) {
-								// when the preferences are updated, show the client
+							public void preferencesChanged(
+									ProjectPreferences preferences) {
+								// when the preferences are updated, show the
+								// client
 								// _prefs = preferences;
-								// XXX: prefs UI broken by multiple project refactor
+								// XXX: prefs UI broken by multiple project
+								// refactor
 							}
 
 							@Override
 							public void preferencesDialogClosed() {
 								// System.out.println("ConflictSystemTray::IPreferencesListener::preferencesDialogClosed()");
-								// showClientItem.setEnabled(true);
-								// XXX: prefs UI broken by multiple project refactor
+								showClientItem.setEnabled(true);
+								// XXX: prefs UI broken by multiple project
+								// refactor
 							}
 						});
 				cp.createAndShowGUI();
@@ -143,10 +154,12 @@ public class ConflictSystemTray {
 				int cb1Id = e.getStateChange();
 				if (cb1Id == ItemEvent.SELECTED) {
 					// daemon enabled
-					System.out.println("ConflictClient - ConflictDaemon enabled");
+					System.out
+							.println("ConflictClient - ConflictDaemon enabled");
 				} else {
 					// daemon disabled
-					System.out.println("ConflictClient - ConflictDaemon disabled");
+					System.out
+							.println("ConflictClient - ConflictDaemon disabled");
 				}
 			}
 		});
@@ -218,7 +231,9 @@ public class ConflictSystemTray {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("ConflictSystemTray::showClient - Timer fired: " + e.getSource());
+				System.out
+						.println("ConflictSystemTray::showClient - Timer fired: "
+								+ e.getSource());
 				// get the client to nicely refresh its elements
 				_client.calculateConflicts();
 			}

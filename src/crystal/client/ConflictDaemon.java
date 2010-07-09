@@ -9,8 +9,8 @@ import crystal.model.DataSource.RepoKind;
 import crystal.server.HgStateChecker;
 
 /**
- * Daemon that decouples the UI from the analysis. This class can be extended to perform the analysis on an external
- * machine, enable caching, or serve tea without having to update the UI.
+ * Daemon that decouples the UI from the analysis. This class can be extended to perform the analysis on an external machine,
+ * enable caching, or serve tea without having to update the UI.
  * 
  * @author rtholmes
  */
@@ -27,11 +27,16 @@ public class ConflictDaemon {
 	 */
 	public static ConflictResult calculateConflict(DataSource source, ProjectPreferences prefs) {
 		ResultStatus status = null;
+		
 		try {
 			if (source.getKind().equals(RepoKind.HG)) {
 
+				System.out.println("ConflictDaemon::calculateConflict( " + source + ", ... )");
+				
 				status = HgStateChecker.getState(prefs, source);
-
+				
+				System.out.println("ConflictDaemon::calculateConflict( " + source + ", ... ) - caluculated: " + status);
+				
 			} else if (source.getKind().equals(RepoKind.GIT)) {
 				// Git isn't implemented yet
 				System.err.println("ConflictDaemon::caluclateConflict(..) - Cannot handle RepoKind: " + source.getKind());
@@ -45,6 +50,9 @@ public class ConflictDaemon {
 		} catch (IOException ioe) {
 			System.err.println("ConflictDaemon::calculateConflict(..) - error: " + ioe.getMessage());
 			ioe.printStackTrace();
+		} catch (Exception e){
+			System.err.println("ConflictDaemon::calculateConflict(..) - caught exception: "+e.getMessage());
+			e.printStackTrace();
 		}
 		return null;
 	}

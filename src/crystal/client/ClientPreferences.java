@@ -1,5 +1,6 @@
 package crystal.client;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -81,6 +82,8 @@ public class ClientPreferences {
 			Element rootElement = doc.getRootElement();
 			String tempDirectory = rootElement.getAttributeValue("tempDirectory");
 			assert tempDirectory != null;
+			assert new File(tempDirectory).exists();
+			assert new File(tempDirectory).isDirectory();
 
 			List<Element> projectElements = rootElement.getChildren("project");
 			for (Element projectElement : projectElements) {
@@ -91,7 +94,9 @@ public class ClientPreferences {
 				assert myKind != null;
 				assert myShortName != null;
 				assert myClone != null;
-
+				assert new File(myClone).exists();
+				assert new File(myClone).isDirectory();
+				
 				DataSource myEnvironment = new DataSource(myShortName, myClone, RepoKind.valueOf(myKind));
 
 				ProjectPreferences projectPreferences = new ProjectPreferences(myEnvironment, tempDirectory);
