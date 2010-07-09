@@ -165,7 +165,7 @@ public class TestHgStateChecker {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("twoRepository"));
-			Assert.assertEquals(answer, ResultStatus.CONFLICT);
+			Assert.assertEquals(answer, ResultStatus.MERGECONFLICT);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();

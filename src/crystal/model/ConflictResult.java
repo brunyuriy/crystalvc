@@ -3,7 +3,7 @@ package crystal.model;
 public class ConflictResult {
 
 	public enum ResultStatus {
-		SAME, AHEAD, BEHIND, CONFLICT, PENDING
+		SAME, AHEAD, BEHIND, MERGE, MERGECONFLICT, PENDING
 	}
 
 	private final DataSource _source;

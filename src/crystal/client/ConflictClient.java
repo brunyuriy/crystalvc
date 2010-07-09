@@ -217,7 +217,10 @@ public class ConflictClient implements IConflictClient {
 				} else if (status.equals(ResultStatus.BEHIND)) {
 					bgColour = DEFAULT_BG;//"#FFA500";
 					icon = "behind.png";
-				} else if (status.equals(ResultStatus.CONFLICT)) {
+				} else if (status.equals(ResultStatus.MERGE)) {
+					bgColour = DEFAULT_BG;//i dunno;
+					icon = "merge.png";
+				} else if (status.equals(ResultStatus.MERGECONFLICT)) {
 					bgColour = DEFAULT_BG;//"red";
 					icon = "mergeconflict.png";
 				} else if (status.equals(ResultStatus.PENDING)) {
