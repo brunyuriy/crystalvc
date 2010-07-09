@@ -3,13 +3,11 @@ package crystal;
 import java.io.File;
 import java.util.Vector;
 
-import org.junit.Assert;
-
 public class Constants {
 
 	// 90 second timer delay
 	public static int TIMER_CONSTANT = 90000;
-	
+
 	public static String PROJECT_PATH = null;
 	static {
 		/**
@@ -28,7 +26,7 @@ public class Constants {
 			}
 		}
 
-		Assert.assertTrue("Make sure your project path is in possiblePaths above.", PROJECT_PATH != null);
+		assert PROJECT_PATH != null : "Make sure your project path is in possiblePaths above.";
 
 		if (!PROJECT_PATH.endsWith(File.separator)) {
 			PROJECT_PATH += File.separator;
@@ -54,13 +52,13 @@ public class Constants {
 			}
 		}
 
-		Assert.assertTrue("Make sure your hg binary is in possiblePaths above.", HG_COMMAND != null);
+		assert HG_COMMAND != null : "Make sure your hg binary is in possiblePaths above.";
+		assert new File(HG_COMMAND).exists() : "Cannot find hg executable; this must be defined";
 
 		System.out.println("Constants::<clinit> - HG path: " + HG_COMMAND);
 	}
 
 	public static final String TEST_REPOS = "test-repos" + File.separator;
 	public static final String TEST_TEMP = "test-temp" + File.separator;
-	
 
 }
