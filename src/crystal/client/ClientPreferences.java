@@ -1,7 +1,10 @@
 package crystal.client;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
@@ -21,7 +24,16 @@ import crystal.model.DataSource.RepoKind;
  * 
  */
 public class ClientPreferences {
+	public static String CONFIG_PATH;
 
+	static {
+		String path = System.getProperty("user.home");
+		if (!path.endsWith(File.separator))
+			path += File.separator;
+
+		CONFIG_PATH = path + ".conflictClient.xml";
+
+	}
 	/**
 	 * Maps a short name (usually project id) to a preference.
 	 */
@@ -77,7 +89,34 @@ public class ClientPreferences {
 
 		try {
 
-			doc = builder.build(ClientPreferences.class.getResourceAsStream("config.xml"));
+			File configFile = new File(CONFIG_PATH);
+			if (!configFile.exists()) {
+				configFile.createNewFile();
+
+				InputStream is = ClientPreferences.class.getResourceAsStream("defaultConfig.xml");
+				assert is != null;
+
+				OutputStream os = new FileOutputStream(configFile);
+				assert os != null;
+
+				byte[] buffer = new byte[1024];
+				int len;
+
+				while ((len = is.read(buffer)) >= 0)
+					os.write(buffer, 0, len);
+
+				is.close();
+				os.close();
+
+				System.out.println("ClientPreferences::loadPreferencesFromXML(..) - Created new configuration file: " + configFile.getAbsolutePath());
+
+			} else {
+
+				System.out.println("ClientPreferences::loadPreferencesFromXML(..) - Using existing config file: " + configFile.getAbsolutePath());
+
+			}
+
+			doc = builder.build(CONFIG_PATH);
 
 			Element rootElement = doc.getRootElement();
 			String tempDirectory = rootElement.getAttributeValue("tempDirectory");
@@ -96,7 +135,7 @@ public class ClientPreferences {
 				assert myClone != null;
 				assert new File(myClone).exists();
 				assert new File(myClone).isDirectory();
-				
+
 				DataSource myEnvironment = new DataSource(myShortName, myClone, RepoKind.valueOf(myKind));
 
 				ProjectPreferences projectPreferences = new ProjectPreferences(myEnvironment, tempDirectory);
@@ -122,11 +161,12 @@ public class ClientPreferences {
 			System.err.println(jdome);
 		} catch (IOException ioe) {
 			System.err.println(ioe);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		assert prefs != null;
 
 		return prefs;
 	}
-
 }

@@ -166,7 +166,7 @@ public class ConflictSystemTray {
 
 		exitItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("ConflictClient - Client explicitly exited");
+				System.out.println("ConflictSystemTray::createAndShowGUI() - Client explicitly exited");
 				tray.remove(trayIcon);
 				System.exit(0);
 			}
