@@ -32,9 +32,9 @@ public class HgStateChecker {
 		// String tempWorkPath = "/homes/gws/brun/tempCrystal/";
 		String tempWorkPath = prefs.getTempDirectory();
 		// tempWorkPath + tempMyName used to store a local copy of my repo
-		String tempMyName = "tempMine"+TimeUtility.getCurrentLSMRDateString();
+		String tempMyName = "tempMine_"+TimeUtility.getCurrentLSMRDateString();
 		// tempWorkPath + tempYourName used to store a local copy of your repo
-		String tempYourName = "tempYour"+TimeUtility.getCurrentLSMRDateString();
+		String tempYourName = "tempYour_"+TimeUtility.getCurrentLSMRDateString();
 
 		ResultStatus answer;
 
