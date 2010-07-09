@@ -1,0 +1,11 @@
+<!-- This is the default configuration file -->
+<ccConfig tempDirectory="/Users/rtholmes/tmp/hgTmp/">
+	<project myKind="HG" myShortName="tortoise"
+		myClone="/Users/rtholmes/dev/hgRepos/tortoiseHg/">
+		<sources>
+			<source kind="HG" shortName="face" clone="https://bitbucket.org/face/tortoisehgqueue" />
+			<source kind="HG" shortName="pyQt" clone="https://bitbucket.org/tortoisehg/thg" />
+			<source kind="HG" shortName="HEAD" clone="http://bitbucket.org/tortoisehg/stable" />
+		</sources>
+	</project>
+</ccConfig>
