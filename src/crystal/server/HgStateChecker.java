@@ -95,7 +95,7 @@ public class HgStateChecker {
 		 */
 		else if (output.indexOf("(run 'hg heads' to see heads, 'hg merge' to merge)") >= 0) {
 			// there are two heads, so let's see if they merge cleanly
-			String[] mergeArgs = { "merge", tempWorkPath + tempYourName };
+			String[] mergeArgs = { "merge"};
 			output = RunIt.execute(hg, mergeArgs, tempWorkPath + tempMyName);
 			// if the merge goes through cleanly, we can try to compile and test
 			if (output.indexOf("(branch merge, don't forget to commit)") >= 0) {
