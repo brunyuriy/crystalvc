@@ -1,5 +1,6 @@
 package crystal.server;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.Assert;
@@ -118,7 +119,8 @@ public class HgStateChecker {
 
 		// Clean up temp directories:
 		String[] cleanupArgs = { "-rf", tempMyName, tempYourName };
-		RunIt.execute("rm", cleanupArgs, tempWorkPath);
+		RunIt.deleteDirectory(new File(tempWorkPath + tempMyName));
+		RunIt.deleteDirectory(new File(tempWorkPath + tempYourName));
 		return answer;
 	}
 
