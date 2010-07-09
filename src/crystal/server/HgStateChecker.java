@@ -29,7 +29,7 @@ public class HgStateChecker {
 		String yours = source.getCloneString();
 
 		String hg = Constants.HG_COMMAND;
-		// String tempWorkPath = "/homes/gws/brun/tempCrystal/";
+
 		String tempWorkPath = prefs.getTempDirectory();
 		// tempWorkPath + tempMyName used to store a local copy of my repo
 		String tempMyName = "tempMine_"+TimeUtility.getCurrentLSMRDateString();
