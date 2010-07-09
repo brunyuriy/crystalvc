@@ -114,25 +114,24 @@ public class ConflictSystemTray {
 				showClientItem.setEnabled(false);
 				// XXX: prefs UI broken by multiple project refactor (horrible
 				// hack in the constructor here)
-				ClientPreferencesUI cp = new ClientPreferencesUI((ProjectPreferences) _prefs.getProjectPreference().toArray()[0],
-						new ClientPreferencesUI.IPreferencesListener() {
-							@Override
-							public void preferencesChanged(ProjectPreferences preferences) {
-								// when the preferences are updated, show the
-								// client
-								// _prefs = preferences;
-								// XXX: prefs UI broken by multiple project
-								// refactor
-							}
+				ClientPreferencesUI cp = new ClientPreferencesUI(new ClientPreferencesUI.IPreferencesListener() {
+					@Override
+					public void preferencesChanged(ProjectPreferences preferences) {
+						// when the preferences are updated, show the
+						// client
+						// _prefs = preferences;
+						// XXX: prefs UI broken by multiple project
+						// refactor
+					}
 
-							@Override
-							public void preferencesDialogClosed() {
-								// System.out.println("ConflictSystemTray::IPreferencesListener::preferencesDialogClosed()");
-								showClientItem.setEnabled(true);
-								// XXX: prefs UI broken by multiple project
-								// refactor
-							}
-						});
+					@Override
+					public void preferencesDialogClosed() {
+						// System.out.println("ConflictSystemTray::IPreferencesListener::preferencesDialogClosed()");
+						showClientItem.setEnabled(true);
+						// XXX: prefs UI broken by multiple project
+						// refactor
+					}
+				});
 				cp.createAndShowGUI();
 			}
 		});

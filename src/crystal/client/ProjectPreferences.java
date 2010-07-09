@@ -24,9 +24,9 @@ public class ProjectPreferences {
 	private DataSource _myEnvironment = null;
 
 	/**
-	 * The temporary directory that should be used as scratch space to compute analysis results.
+	 * Client preferences; this isn't a great design since it's a bidirectional relationship (e.g., it's a hack)
 	 */
-	private String _tempDirectory = null;
+	private ClientPreferences _clientPreferences = null;
 
 	/**
 	 * Constructor.
@@ -34,9 +34,9 @@ public class ProjectPreferences {
 	 * @param myEnvironment
 	 * @param tempDirectory
 	 */
-	public ProjectPreferences(DataSource myEnvironment, String tempDirectory) {
+	public ProjectPreferences(DataSource myEnvironment, ClientPreferences clientPrefs) {
 		_myEnvironment = myEnvironment;
-		_tempDirectory = tempDirectory;
+		_clientPreferences = clientPrefs;
 		_dataSources = new Hashtable<String, DataSource>();
 	}
 
@@ -71,24 +71,6 @@ public class ProjectPreferences {
 	}
 
 	/**
-	 * Returns the temp directory (scratch space).
-	 * 
-	 * @return
-	 */
-	public String getTempDirectory() {
-		return _tempDirectory;
-	}
-
-	/**
-	 * Updates the temp directory.
-	 * 
-	 * @param name
-	 */
-	void setTempDirectory(String name) {
-		_tempDirectory = name;
-	}
-
-	/**
 	 * Returns a specific data source
 	 * 
 	 * @param shortName
@@ -106,6 +88,14 @@ public class ProjectPreferences {
 	 */
 	public void removeDataSource(DataSource sourceToRemove) {
 		_dataSources.remove(sourceToRemove.getShortName());
+	}
 
+	/**
+	 * Returns the high-level preferences for this project.
+	 * 
+	 * @return
+	 */
+	public ClientPreferences getClientPreferences() {
+		return _clientPreferences;
 	}
 }
