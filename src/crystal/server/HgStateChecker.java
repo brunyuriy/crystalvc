@@ -93,9 +93,25 @@ public class HgStateChecker {
 		 * changesets adding manifests adding file changes added 1 changesets with 1 changes to 1 files (+1 heads) (run
 		 * 'hg heads' to see heads, 'hg merge' to merge)
 		 */
-		else if (output.indexOf("(run 'hg heads' to see heads, 'hg merge' to merge)") >= 0)
-			answer = ResultStatus.CONFLICT;
-
+		else if (output.indexOf("(run 'hg heads' to see heads, 'hg merge' to merge)") >= 0) {
+			// there are two heads, so let's see if they merge cleanly
+			String[] mergeArgs = { "merge", tempWorkPath + tempYourName };
+			output = RunIt.execute(hg, mergeArgs, tempWorkPath + tempMyName);
+			// if the merge goes through cleanly, we can try to compile and test
+			if (output.indexOf("(branch merge, don't forget to commit)") >= 0) {
+				// try to compile {
+				//   if successful, try to test {
+				//		if successful: 
+				answer = ResultStatus.MERGE;
+				//		if unsuccessful:
+				//			answer = ResultStatus.TESTCONFLICT;
+				// 	}
+				//	if unsuccessful (compile):
+				//		answer = ResultStatus.COMPILECONFLICT;
+			}
+			// otherwise, the merge failed
+			else answer = ResultStatus.MERGECONFLICT;
+		}
 		else
 			throw new RuntimeException("Unknown pull output: " + output + "\n Could not determine the relative state of " + mine + " and " + yours);
 
