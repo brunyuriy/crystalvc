@@ -152,20 +152,35 @@ public class TestHgStateChecker {
 		DataSource threeSource = new DataSource("threeRepository", path + "three", RepoKind.HG);
 		DataSource fourSource = new DataSource("fourRepository", path + "four", RepoKind.HG);
 		DataSource fiveSource = new DataSource("fiveRepository", path + "five", RepoKind.HG);
+		DataSource sixSource = new DataSource("sixRepository", path + "six", RepoKind.HG);
 
 		_prefs = new ProjectPreferences(myEnvironment, tempDirectory);
 		_prefs.addDataSource(twoSource);
 		_prefs.addDataSource(threeSource);
 		_prefs.addDataSource(fourSource);
 		_prefs.addDataSource(fiveSource);
+		_prefs.addDataSource(sixSource);
 	}
 
 	@Test
-	public void testBasicConflict() {
+	public void testBasicMergeConflict() {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("twoRepository"));
-			Assert.assertEquals(answer, ResultStatus.MERGECONFLICT);
+			Assert.assertEquals(ResultStatus.MERGECONFLICT, answer);
+
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+			Assert.fail(ioe.getMessage());
+		}
+	}
+
+	@Test
+	public void testBasicCleanMerge() {
+		try {
+
+			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("sixRepository"));
+			Assert.assertEquals(ResultStatus.MERGECLEAN, answer);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -178,7 +193,7 @@ public class TestHgStateChecker {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("threeRepository"));
-			Assert.assertEquals(answer, ResultStatus.AHEAD);
+			Assert.assertEquals(ResultStatus.AHEAD, answer);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -191,7 +206,7 @@ public class TestHgStateChecker {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("fourRepository"));
-			Assert.assertEquals(answer, ResultStatus.BEHIND);
+			Assert.assertEquals(ResultStatus.BEHIND, answer);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -204,7 +219,7 @@ public class TestHgStateChecker {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("fiveRepository"));
-			Assert.assertEquals(answer, ResultStatus.SAME);
+			Assert.assertEquals(ResultStatus.SAME, answer);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
