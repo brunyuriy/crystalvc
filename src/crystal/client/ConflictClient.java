@@ -24,9 +24,9 @@ import crystal.model.ConflictResult.ResultStatus;
  */
 public class ConflictClient implements IConflictClient {
 	/**
-	 * This class enables the calcualtions to happen on a background thread but _STILL_ update the UI. When we were
-	 * doing the analysis on a regular Thread the UI woudln't update until all of the tasks were done; the UI didn't
-	 * block, but it didn't update either. This fixes that problem.
+	 * This class enables the calcualtions to happen on a background thread but _STILL_ update the UI. When we were doing the
+	 * analysis on a regular Thread the UI woudln't update until all of the tasks were done; the UI didn't block, but it didn't
+	 * update either. This fixes that problem.
 	 * 
 	 * @author rtholmes
 	 */
@@ -53,6 +53,7 @@ public class ConflictClient implements IConflictClient {
 
 			ConflictResult result = ConflictDaemon.calculateConflict(_source, _prefs);
 
+			System.out.println("ConflictClient::CalcualteTask::publish( " + result + " )");
 			publish(result);
 			return null;
 		}
@@ -60,6 +61,7 @@ public class ConflictClient implements IConflictClient {
 		@Override
 		protected void process(List<ConflictResult> chunks) {
 			for (ConflictResult cr : chunks) {
+				System.out.println("ConflictClient::CalcualteTask::process( " + cr + " )");
 				setStatus(cr);
 			}
 		}
@@ -76,8 +78,7 @@ public class ConflictClient implements IConflictClient {
 	private ClientPreferences _preferences;
 
 	/**
-	 * Stores the results of the analysis. This provides a simple decoupling between the DataSource and the
-	 * ConflictResult.
+	 * Stores the results of the analysis. This provides a simple decoupling between the DataSource and the ConflictResult.
 	 */
 	Hashtable<DataSource, ConflictResult> resultMap = new Hashtable<DataSource, ConflictResult>();
 
@@ -209,22 +210,22 @@ public class ConflictClient implements IConflictClient {
 				String icon = "";
 				String DEFAULT_BG = "grey";
 				if (status.equals(ResultStatus.SAME)) {
-					bgColour = DEFAULT_BG;//"white";
+					bgColour = DEFAULT_BG;// "white";
 					icon = "same.png";
 				} else if (status.equals(ResultStatus.AHEAD)) {
-					bgColour = DEFAULT_BG;//"yellow";
+					bgColour = DEFAULT_BG;// "yellow";
 					icon = "ahead.png";
 				} else if (status.equals(ResultStatus.BEHIND)) {
-					bgColour = DEFAULT_BG;//"#FFA500";
+					bgColour = DEFAULT_BG;// "#FFA500";
 					icon = "behind.png";
 				} else if (status.equals(ResultStatus.MERGECLEAN)) {
-					bgColour = DEFAULT_BG;//i dunno;
+					bgColour = DEFAULT_BG;// i dunno;
 					icon = "merge.png";
 				} else if (status.equals(ResultStatus.MERGECONFLICT)) {
-					bgColour = DEFAULT_BG;//"red";
+					bgColour = DEFAULT_BG;// "red";
 					icon = "mergeconflict.png";
 				} else if (status.equals(ResultStatus.PENDING)) {
-					bgColour = DEFAULT_BG;//"#CCCCFF";
+					bgColour = DEFAULT_BG;// "#CCCCFF";
 					icon = "clock.png";
 				}
 				String iconPrefix = "http://www.cs.washington.edu/homes/rtholmes/tmp/speculationImages/";
@@ -249,8 +250,8 @@ public class ConflictClient implements IConflictClient {
 	}
 
 	/**
-	 * Creates the body of the ConflictClient UI. Right now this simply makes a HTML table and fires it into the space
-	 * since that is a lot easier than dealing with Swing UI elements.
+	 * Creates the body of the ConflictClient UI. Right now this simply makes a HTML table and fires it into the space since that
+	 * is a lot easier than dealing with Swing UI elements.
 	 * 
 	 * @param prefs
 	 *            preferences used to create the body representaiton.

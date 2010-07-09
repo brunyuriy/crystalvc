@@ -9,7 +9,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -29,8 +28,8 @@ import crystal.model.DataSource.RepoKind;
 /**
  * UI for managing preferences.
  * 
- * NOTE: currently this class doesn't work for managing the preferences from multiple projects; use the configuration
- * file instead.
+ * NOTE: currently this class doesn't work for managing the preferences from multiple projects; use the configuration file
+ * instead.
  * 
  * @author rtholmes
  * 
@@ -64,6 +63,7 @@ public class ClientPreferencesUI {
 
 	private ProjectPreferences _preferences;
 
+	@SuppressWarnings("unused")
 	private ClientPreferencesUI() {
 		// disallow
 	}
@@ -138,7 +138,7 @@ public class ClientPreferencesUI {
 
 		final DefaultListModel repoListModel = new DefaultListModel();
 
-		Vector<String> data = new Vector<String>();
+		// Vector<String> data = new Vector<String>();
 		for (DataSource source : _preferences.getDataSources()) {
 			repoListModel.addElement(source);
 		}
@@ -279,7 +279,7 @@ public class ClientPreferencesUI {
 					RepoKind kind = RepoKind.valueOf(myAddRepoKind.getSelectedItem().toString());
 					String shortName = myAddCloneShortNameText.getText();
 					String cloneName = myAddCloneText.getText();
-					String label = shortName + "- " + kind + ": " + cloneName;
+					// String label = shortName + "- " + kind + ": " + cloneName;
 
 					if (_preferences.getDataSource(shortName) == null) {
 						// don't allow an element with a taken name to be added
