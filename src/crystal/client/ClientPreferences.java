@@ -40,6 +40,35 @@ public class ClientPreferences {
 	Hashtable<String, ProjectPreferences> _projectPreferences = new Hashtable<String, ProjectPreferences>();
 
 	/**
+	 * Points to the user's scratch space. Directory must exist.
+	 */
+	private String _tempDirectory;
+
+	/**
+	 * Poits to the user's hg path.
+	 */
+	private String _hgPath;
+
+	/**
+	 * Private constructor to restrict usage.
+	 */
+	@SuppressWarnings("unused")
+	private ClientPreferences() {
+		// disabled
+	}
+
+	/**
+	 * Default constructor.
+	 * 
+	 * @param tempDirectory
+	 * @param hgPath
+	 */
+	public ClientPreferences(String tempDirectory, String hgPath) {
+		_tempDirectory = tempDirectory;
+		_hgPath = hgPath;
+	}
+
+	/**
 	 * Adds the preference to the project.
 	 * 
 	 * @param pref
@@ -81,8 +110,7 @@ public class ClientPreferences {
 	 */
 	@SuppressWarnings("unchecked")
 	public static ClientPreferences loadPreferencesFromXML() {
-
-		ClientPreferences prefs = new ClientPreferences();
+		ClientPreferences prefs = null;
 
 		SAXBuilder builder = new SAXBuilder(false);
 		Document doc = null;
@@ -124,6 +152,13 @@ public class ClientPreferences {
 			assert new File(tempDirectory).exists();
 			assert new File(tempDirectory).isDirectory();
 
+			String hgPath = rootElement.getAttributeValue("hgPath");
+			assert hgPath != null;
+			assert new File(hgPath).exists();
+			assert new File(hgPath).isDirectory();
+
+			prefs = new ClientPreferences(tempDirectory, hgPath);
+
 			List<Element> projectElements = rootElement.getChildren("project");
 			for (Element projectElement : projectElements) {
 				String myKind = projectElement.getAttributeValue("myKind");
@@ -138,7 +173,7 @@ public class ClientPreferences {
 
 				DataSource myEnvironment = new DataSource(myShortName, myClone, RepoKind.valueOf(myKind));
 
-				ProjectPreferences projectPreferences = new ProjectPreferences(myEnvironment, tempDirectory);
+				ProjectPreferences projectPreferences = new ProjectPreferences(myEnvironment, prefs);
 				prefs.addProjectPreferences(projectPreferences);
 
 				if (projectElement.getChild("sources") != null) {
@@ -168,5 +203,21 @@ public class ClientPreferences {
 		assert prefs != null;
 
 		return prefs;
+	}
+
+	/**
+	 * 
+	 * @return path to the user's hg binary
+	 */
+	public String getHgPath() {
+		return _hgPath;
+	}
+
+	/**
+	 * 
+	 * @return path to the user's scratch space
+	 */
+	public String getTempDirectory() {
+		return _tempDirectory;
 	}
 }

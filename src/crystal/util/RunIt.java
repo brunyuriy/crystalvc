@@ -101,7 +101,7 @@ public class RunIt {
 		}
 
 		output += "*****-START-OUTPUT-*****\n";
-		output += outCatcher.getOutput();
+		output += goodOutput;
 		output += "*****-END-OUTPUT-*****\n";
 
 		// System.out.println("\t\tRunIt::execute(..) - output: " + output);

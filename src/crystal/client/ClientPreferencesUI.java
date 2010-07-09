@@ -44,23 +44,30 @@ public class ClientPreferencesUI {
 
 	private IPreferencesListener _listener;
 
-	private ProjectPreferences _preferences;
+	// private ProjectPreferences _preferences;
 
 	@SuppressWarnings("unused")
 	private ClientPreferencesUI() {
 		// disallow
 	}
 
+	// /**
+	// * Main constructor.
+	// *
+	// * @param prefs
+	// * The preferences to populate the UI with
+	// * @param listener
+	// * The listener that should be notified when the UI changes
+	// */
+	// public ClientPreferencesUI(ProjectPreferences prefs, IPreferencesListener listener) {
+	// _preferences = prefs;
+	// _listener = listener;
+	// }
+
 	/**
 	 * Main constructor.
-	 * 
-	 * @param prefs
-	 *            The preferences to populate the UI with
-	 * @param listener
-	 *            The listener that should be notified when the UI changes
 	 */
-	public ClientPreferencesUI(ProjectPreferences prefs, IPreferencesListener listener) {
-		_preferences = prefs;
+	public ClientPreferencesUI(IPreferencesListener listener) {
 		_listener = listener;
 	}
 
@@ -73,14 +80,14 @@ public class ClientPreferencesUI {
 		_frame.getContentPane().removeAll();
 
 		Container contentPane = _frame.getContentPane();
-		
+
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));
-		
+
 		Label l = new Label("Edit the configuration file to suit your environment: ");
 		contentPane.add(l);
 		Label cl = new Label(ClientPreferences.CONFIG_PATH);
 		contentPane.add(cl);
-		
+
 		// GridBagLayout layout = new GridBagLayout();
 		// GridBagConstraints c = new GridBagConstraints();
 		// contentPane.setLayout(layout);

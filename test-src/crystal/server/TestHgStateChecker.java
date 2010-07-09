@@ -15,10 +15,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import crystal.Constants;
+import crystal.client.ClientPreferences;
 import crystal.client.ProjectPreferences;
-import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
+import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
 import crystal.util.RunIt;
 
@@ -34,9 +34,12 @@ public class TestHgStateChecker {
 		return _prefs;
 	}
 
+	/**
+	 * Rebuild the test environment by erasing the old one and extracting a new set of repositories from a zip file.
+	 */
 	@BeforeClass
 	public static void ensureEnvironment() {
-		String projectPath = Constants.PROJECT_PATH;
+		String projectPath = TestConstants.PROJECT_PATH;
 		Assert.assertNotNull(projectPath);
 
 		File pp = new File(projectPath);
@@ -48,17 +51,18 @@ public class TestHgStateChecker {
 
 		// make sure the repo zip file exists
 		File repoZipFile = null;
-		File repoTestDirectory = null;
 		for (File f : files) {
 			if (f.getAbsolutePath().endsWith("test-repos.zip"))
 				repoZipFile = f;
-			if (f.getAbsolutePath().endsWith(Constants.TEST_REPOS) && f.isDirectory())
-				repoTestDirectory = f;
+			if (f.getAbsolutePath().endsWith(TestConstants.TEST_REPOS) && f.isDirectory()) {
+				// not sure what the significance of this test is anymore
+			}
+
 		}
 		Assert.assertNotNull(repoZipFile);
 
 		// clear the output location
-		File repoDir = new File(projectPath + Constants.TEST_REPOS);
+		File repoDir = new File(projectPath + TestConstants.TEST_REPOS);
 		if (repoDir.exists()) {
 			Assert.assertTrue(repoDir.isDirectory());
 			RunIt.deleteDirectory(repoDir);
@@ -71,7 +75,7 @@ public class TestHgStateChecker {
 		Assert.assertTrue(repoDir.exists());
 
 		// clean the temp space
-		File testTempDir = new File(projectPath + Constants.TEST_TEMP);
+		File testTempDir = new File(projectPath + TestConstants.TEST_TEMP);
 		if (testTempDir.exists()) {
 			RunIt.deleteDirectory(testTempDir);
 			Assert.assertFalse(testTempDir.exists());
@@ -83,7 +87,6 @@ public class TestHgStateChecker {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private static void unzipTestRepositories(File repoZipFile, File zipOutDir) {
 		try {
 
@@ -95,6 +98,7 @@ public class TestHgStateChecker {
 
 			ZipFile zipFile = new ZipFile(repoZipFile);
 
+			@SuppressWarnings("rawtypes")
 			Enumeration entries = zipFile.entries();
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry) entries.nextElement();
@@ -102,7 +106,7 @@ public class TestHgStateChecker {
 				if (entry.isDirectory()) {
 					File outDir = new File(outPath + entry.getName());
 
-					boolean dirsCreated = outDir.mkdirs();
+					outDir.mkdirs();
 					continue;
 				}
 
@@ -130,10 +134,10 @@ public class TestHgStateChecker {
 
 	@Before
 	public void generatePreferences() {
-		String path = Constants.PROJECT_PATH + Constants.TEST_REPOS;
+		String path = TestConstants.PROJECT_PATH + TestConstants.TEST_REPOS;
 
 		DataSource myEnvironment = new DataSource("myRepository", path + "one", RepoKind.HG);
-		String tempDirectory = Constants.PROJECT_PATH + Constants.TEST_TEMP;
+		String tempDirectory = TestConstants.PROJECT_PATH + TestConstants.TEST_TEMP;
 
 		DataSource twoSource = new DataSource("twoRepository", path + "two", RepoKind.HG);
 		DataSource threeSource = new DataSource("threeRepository", path + "three", RepoKind.HG);
@@ -141,7 +145,10 @@ public class TestHgStateChecker {
 		DataSource fiveSource = new DataSource("fiveRepository", path + "five", RepoKind.HG);
 		DataSource sixSource = new DataSource("sixRepository", path + "six", RepoKind.HG);
 
-		_prefs = new ProjectPreferences(myEnvironment, tempDirectory);
+		ClientPreferences prefs = new ClientPreferences(tempDirectory, TestConstants.HG_COMMAND);
+
+		_prefs = new ProjectPreferences(myEnvironment, prefs);
+
 		_prefs.addDataSource(twoSource);
 		_prefs.addDataSource(threeSource);
 		_prefs.addDataSource(fourSource);
