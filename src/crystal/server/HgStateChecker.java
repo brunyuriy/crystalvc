@@ -9,6 +9,7 @@ import crystal.client.ProjectPreferences;
 import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
 import crystal.util.RunIt;
+import crystal.util.TimeUtility;
 
 public class HgStateChecker {
 
@@ -31,9 +32,9 @@ public class HgStateChecker {
 		// String tempWorkPath = "/homes/gws/brun/tempCrystal/";
 		String tempWorkPath = prefs.getTempDirectory();
 		// tempWorkPath + tempMyName used to store a local copy of my repo
-		String tempMyName = "tempMine";
+		String tempMyName = "tempMine"+TimeUtility.getCurrentLSMRDateString();
 		// tempWorkPath + tempYourName used to store a local copy of your repo
-		String tempYourName = "tempYour";
+		String tempYourName = "tempYour"+TimeUtility.getCurrentLSMRDateString();
 
 		ResultStatus answer;
 
@@ -95,7 +96,7 @@ public class HgStateChecker {
 		 */
 		else if (output.indexOf("(run 'hg heads' to see heads, 'hg merge' to merge)") >= 0) {
 			// there are two heads, so let's see if they merge cleanly
-			String[] mergeArgs = { "merge"};
+			String[] mergeArgs = { "merge", "--noninteractive"};
 			output = RunIt.execute(hg, mergeArgs, tempWorkPath + tempMyName);
 			// if the merge goes through cleanly, we can try to compile and test
 			if (output.indexOf("(branch merge, don't forget to commit)") >= 0) {

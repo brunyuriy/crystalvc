@@ -27,7 +27,6 @@
 			<source kind="HG" shortName="Maggie2" clone="/Users/rtholmes/Documents/Crystal/test-repos/four/" />
 			<source kind="HG" shortName="Homer" clone="/Users/rtholmes/Documents/Crystal/test-repos/five/" />
 			<source kind="HG" shortName="Homer2" clone="/Users/rtholmes/Documents/Crystal/test-repos/five/" />
-			<source kind="HG" shortName="Bart" clone="/Users/rtholmes/Documents/Crystal/test-repos/six/" />
 		</sources>
 	</project>	
 </ccConfig>
