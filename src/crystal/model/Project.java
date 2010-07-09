@@ -25,4 +25,8 @@ public class Project {
 	public void addClone(Repository r) {
 		clones.add(r);
 	}
+	
+	public String getName() {
+		return name;
+	}
 }
