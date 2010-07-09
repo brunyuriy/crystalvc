@@ -214,9 +214,9 @@ public class ClientPreferences {
 
 		assert fName != null;
 		assert new File(fName).exists();
-		assert !new File(fName).isDirectory();
+		assert new File(fName).isFile();
 
-		if (fName == null || !new File(fName).exists() || !new File(fName).isDirectory()) {
+		if (fName == null || !new File(fName).exists() || !new File(fName).isFile()) {
 			throw new RuntimeException("ConflictClient::verifyFile( " + fName + " ) - File does not exist.");
 		}
 	}
