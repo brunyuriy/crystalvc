@@ -102,7 +102,7 @@ public class HgStateChecker {
 				// try to compile {
 				//   if successful, try to test {
 				//		if successful: 
-				answer = ResultStatus.MERGE;
+				answer = ResultStatus.MERGECLEAN;
 				//		if unsuccessful:
 				//			answer = ResultStatus.TESTCONFLICT;
 				// 	}
