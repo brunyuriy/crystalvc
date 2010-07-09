@@ -228,7 +228,7 @@ public class ConflictClient implements IConflictClient {
 					icon = "clock.png";
 				}
 				String iconPrefix = "http://www.cs.washington.edu/homes/rtholmes/tmp/speculationImages/";
-				rBody = "<td align='center' bgcolor='" + bgColour + "'>" + "<img src='" + iconPrefix + icon + "' height='32px'/>" + "</td>";
+				rBody = "<td align='center' bgcolor='" + bgColour + "'>" + "<img src='" + iconPrefix + icon + "'/>" + "</td>";
 			} else {
 				rBody = "<td align='center'>" + "n/a" + "</td>";
 			}
