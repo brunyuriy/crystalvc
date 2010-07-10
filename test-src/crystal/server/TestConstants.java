@@ -40,7 +40,7 @@ public class TestConstants {
 		 */
 		Vector<String> possiblePaths = new Vector<String>();
 		possiblePaths.add("/usr/local/bin/hg");
-		possiblePaths.add("C:\\Program Files (x86)\\TortoiseHg\\hg");
+		possiblePaths.add("C:\\Program Files (x86)\\TortoiseHg\\hg.exe");
 		possiblePaths.add("hg");
 		possiblePaths.add("C:\\Program Files\\TortoiseHg\\hg.exe");
 		// possiblePaths.add("\"C:\\Program Files\\TortoiseHg\\hg.exe\"");
