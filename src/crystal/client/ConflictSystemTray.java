@@ -18,14 +18,17 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 import crystal.Constants;
+import crystal.client.ConflictDaemon.ComputationListener;
+import crystal.model.ConflictResult;
+import crystal.model.ConflictResult.ResultStatus;
 
 /**
- * This is the UI that lives in the system tray (windows), title bar (OS X) or somewhere else (linux). It contains the menu
- * options and provides a lightweight home for bringing up the ConflictClient UI.
+ * This is the UI that lives in the system tray (windows), title bar (OS X) or somewhere else (linux). It contains the
+ * menu options and provides a lightweight home for bringing up the ConflictClient UI.
  * 
  * @author rtholmes
  */
-public class ConflictSystemTray {
+public class ConflictSystemTray implements ComputationListener {
 	/**
 	 * Conflict client UI.
 	 */
@@ -41,6 +44,8 @@ public class ConflictSystemTray {
 	 */
 	private Timer _timer;
 
+	final private TrayIcon _trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
+
 	/**
 	 * Create the tray icon and get it installed in the tray.
 	 */
@@ -49,13 +54,13 @@ public class ConflictSystemTray {
 		try {
 
 			_prefs = ClientPreferences.loadPreferencesFromXML();
-			
+
 			if (_prefs != null) {
 				System.out.println("ConflictClient preferences loaded successfully.");
 			} else {
 				System.out.println("ConflictClient - Error loading preferences.");
 			}
-			
+
 		} catch (Exception e) {
 			System.err.println("Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )");
 			System.exit(-1);
@@ -67,10 +72,12 @@ public class ConflictSystemTray {
 		}
 
 		final PopupMenu trayMenu = new PopupMenu();
-		final TrayIcon trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
+		// _trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
+		_trayIcon.setImage(createImage("images/16X16/greenp.png", ""));
+
 		final SystemTray tray = SystemTray.getSystemTray();
 
-		trayIcon.setToolTip("ConflictClient");
+		_trayIcon.setToolTip("ConflictClient");
 
 		// Create a popup menu components
 		MenuItem aboutItem = new MenuItem("About");
@@ -89,19 +96,19 @@ public class ConflictSystemTray {
 		trayMenu.addSeparator();
 		trayMenu.add(exitItem);
 
-		trayIcon.setPopupMenu(trayMenu);
+		_trayIcon.setPopupMenu(trayMenu);
 
 		// make sure the client is enabled by default
 		enabledItem.setState(true);
 
 		try {
-			tray.add(trayIcon);
+			tray.add(_trayIcon);
 		} catch (AWTException e) {
 			System.out.println("TrayIcon could not be added.");
 			return;
 		}
 
-		trayIcon.addActionListener(new ActionListener() {
+		_trayIcon.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ae) {
 				System.out.println("Tray icon action: " + ae);
@@ -176,11 +183,12 @@ public class ConflictSystemTray {
 		exitItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("ConflictSystemTray::createAndShowGUI() - Client explicitly exited");
-				tray.remove(trayIcon);
+				tray.remove(_trayIcon);
 				System.exit(0);
 			}
 		});
 
+		ConflictDaemon.getInstance().addListener(this);
 	}
 
 	/**
@@ -250,4 +258,44 @@ public class ConflictSystemTray {
 		_timer.setInitialDelay(Constants.TIMER_CONSTANT);
 		_timer.start();
 	}
+
+	@Override
+	public void update() {
+
+		boolean anyGreen = false;
+		boolean anyPull = false;
+		boolean anyYellow = false;
+		boolean anyRed = false;
+
+		for (ConflictResult result : ConflictDaemon.getInstance().getResults()) {
+			if (result.getStatus().equals(ResultStatus.SAME)) {
+				anyGreen = true;
+			}
+
+			if (result.getStatus().equals(ResultStatus.MERGECLEAN)) {
+				anyPull = true;
+			}
+
+			if (result.getStatus().equals(ResultStatus.MERGECONFLICT)) {
+				anyRed = true;
+			}
+
+			if (result.getStatus().equals(ResultStatus.BEHIND)) {
+				anyYellow = true;
+			}
+		}
+
+		if (anyRed) {
+			// TODO: should flush old images
+			// _trayIcon.getImage().flush();
+			_trayIcon.setImage(createImage("images/16X16/redstatus.png", ""));
+		} else if (anyYellow) {
+			_trayIcon.setImage(createImage("images/16X16/yellowstatus.png", ""));
+		} else if (anyPull) {
+			_trayIcon.setImage(createImage("images/16X16/greenp.png", ""));
+		} else if (anyGreen) {
+			_trayIcon.setImage(createImage("images/16X16/greenstatus.png", ""));
+		}
+	}
+
 }
