@@ -1,22 +1,38 @@
 package crystal.model;
 
+/**
+ * Describes a repository.
+ * 
+ * @author rtholmes & brun
+ * 
+ */
 public class DataSource {
 
 	public enum RepoKind {
 		GIT, HG
 	}
 
+	// _shortName 
 	private String _shortName;
+	
+	// the path to the remote repository
 	private String _cloneString;
+	
+	// the path to the local clone of the remote repository
+	private String _localString;
+	
+	// the kind of this repo
 	private RepoKind _repoKind;
 
-	public DataSource(String shortName, String cloneString, RepoKind repoKind) {
+	public DataSource(String shortName, String cloneString, String localString, RepoKind repoKind) {
 		assert shortName != null;
 		assert cloneString != null;
+		assert localString != null;
 		assert repoKind != null;
 
 		_shortName = shortName;
 		_cloneString = cloneString;
+		_localString = localString;
 		_repoKind = repoKind;
 	}
 
@@ -26,6 +42,10 @@ public class DataSource {
 
 	public String getCloneString() {
 		return _cloneString;
+	}
+	
+	public String getLocalString() {
+		return _localString;
 	}
 
 	public RepoKind getKind() {
@@ -43,6 +63,10 @@ public class DataSource {
 	public void setCloneString(String name) {
 		_cloneString = name;
 	}
+	
+	public void setLocalString(String name) {
+		_localString = name;
+	}	
 
 	@Override
 	public String toString() {

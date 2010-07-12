@@ -136,9 +136,11 @@ public class TestHgStateChecker {
 	public void generatePreferences() {
 		String path = TestConstants.PROJECT_PATH + TestConstants.TEST_REPOS;
 
+		//TODO: we need to come up with a name for the local master copy of the repository and add it as the 3rd argument below
 		DataSource myEnvironment = new DataSource("myRepository", path + "one", RepoKind.HG);
 		String tempDirectory = TestConstants.PROJECT_PATH + TestConstants.TEST_TEMP;
 
+		//TODO: we need to come up with a name for the local master copy of the repository and add it as the 3rd argument below
 		DataSource twoSource = new DataSource("twoRepository", path + "two", RepoKind.HG);
 		DataSource threeSource = new DataSource("threeRepository", path + "three", RepoKind.HG);
 		DataSource fourSource = new DataSource("fourRepository", path + "four", RepoKind.HG);

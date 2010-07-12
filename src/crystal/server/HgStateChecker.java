@@ -12,12 +12,48 @@ import crystal.util.RunIt;
 import crystal.util.TimeUtility;
 
 public class HgStateChecker {
+	
+	/*
+	 * @arg prefs: a set of preferences
+	 * @arg String nameOfLocalHGRepo: the path that will be created with a local clone of that repository
+	 */
+	private static void createLocalRepository(String pathToHg, String pathToRemoteRepo, String pathToLocalRepo, String tempWorkPath) throws IOException  {
+		Assert.assertNotNull(pathToHg);
+		Assert.assertNotNull(pathToRemoteRepo);
+		Assert.assertNotNull(pathToLocalRepo);
+		Assert.assertNotNull(tempWorkPath);
+
+//		String hg = prefs.getClientPreferences().getHgPath();
+
+//		String tempWorkPath = prefs.getClientPreferences().getTempDirectory();
+//		String pathToRemoteHGRepo = prefs.getEnvironment().getCloneString();
+//		String pathToLocalHGRepo = prefs.getClientPreferences().getTempDirectory() + prefs.getEnvironment().getLocalPath();
+		
+		String[] myArgs = { "clone", pathToRemoteRepo, pathToLocalRepo };
+		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath);
+		
+		if (output.indexOf("updating to branch") < 0)
+			throw new RuntimeException("Could not clone repository " + pathToRemoteRepo + " to " + pathToLocalRepo + "\n" + output);
+	}
+	
+	/*
+	 * @arg prefs: a set of preferences
+	 * @arg String nameOfLocalHGRepo: the path that will be created with a local clone of that repository
+	 */
+	private static void updateLocalRepository(String pathToHg, String pathToLocalRepo, String tempWorkPath) throws IOException  {
+		Assert.assertNotNull(pathToHg);
+		Assert.assertNotNull(pathToLocalRepo);
+		Assert.assertNotNull(tempWorkPath);
+		
+		String[] myArgs = { "pull -u" };
+		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath + pathToLocalRepo );
+		
+		if ((output.indexOf("files updated") < 0) && (output.indexOf("no changes found") < 0))
+			throw new RuntimeException("Could not update repository " + pathToLocalRepo + ": " + output);
+	}
 
 	/*
-	 * @arg mine : path to my repository
-	 * 
-	 * @arg yours : path to your repository
-	 * 
+	 * @arg prefs: a set of preferences 
 	 * @returns whether my repository is same, behind, ahead, or in conflict with your repository.
 	 */
 	public static ResultStatus getState(ProjectPreferences prefs, DataSource source) throws IOException {
@@ -25,8 +61,8 @@ public class HgStateChecker {
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);
 
-		String mine = prefs.getEnvironment().getCloneString();
-		String yours = source.getCloneString();
+		String mine = prefs.getEnvironment().getLocalString();
+		String yours = source.getLocalString();
 
 		// String hg = Constants.HG_COMMAND;
 		String hg = prefs.getClientPreferences().getHgPath();
@@ -36,6 +72,18 @@ public class HgStateChecker {
 		String tempMyName = "tempMine_" + TimeUtility.getCurrentLSMRDateString();
 		// tempWorkPath + tempYourName used to store a local copy of your repo
 		String tempYourName = "tempYour_" + TimeUtility.getCurrentLSMRDateString();
+		
+		// Check if a local copy of my repository exists.  If it does, update it.  If it does not, create it.
+		if ((new File(tempWorkPath + mine)).exists())
+			updateLocalRepository(hg, mine, tempWorkPath);
+		else 
+			createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath);
+		
+		// Check if a local copy of your repository exists.  If it does, update it.  If it does not, create it.
+		if ((new File(tempWorkPath + yours)).exists())
+			updateLocalRepository(hg, yours, tempWorkPath);
+		else 
+			createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath);
 
 		ResultStatus answer;
 

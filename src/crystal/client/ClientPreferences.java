@@ -168,6 +168,7 @@ public class ClientPreferences {
 				assert myKind != null;
 				assert myShortName != null;
 
+				//TODO: we need to come up with a name for the local master copy of the repository and add it as the 3rd argument below
 				DataSource myEnvironment = new DataSource(myShortName, myClone, RepoKind.valueOf(myKind));
 
 				ProjectPreferences projectPreferences = new ProjectPreferences(myEnvironment, prefs);
@@ -184,6 +185,7 @@ public class ClientPreferences {
 						assert shortName != null;
 						assert clone != null;
 
+						//TODO: we need to come up with a name for the local master copy of the repository and add it as the 3rd argument below
 						DataSource source = new DataSource(shortName, clone, RepoKind.valueOf(kind));
 						projectPreferences.addDataSource(source);
 					}

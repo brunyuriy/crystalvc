@@ -8,7 +8,7 @@ import crystal.model.DataSource;
 /**
  * Stores the preferences for a specific project.
  * 
- * @author rtholmes
+ * @author rtholmes & brun
  * 
  */
 public class ProjectPreferences {
@@ -24,7 +24,7 @@ public class ProjectPreferences {
 	private DataSource _myEnvironment = null;
 
 	/**
-	 * Client preferences; this isn't a great design since it's a bidirectional relationship (e.g., it's a hack)
+	 * Client preferences; this isn't a great design since it's a bidirectional relationship (i.e., it's a hack)
 	 */
 	private ClientPreferences _clientPreferences = null;
 
