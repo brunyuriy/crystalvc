@@ -1,5 +1,6 @@
 package crystal.client;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Hashtable;
 
@@ -97,5 +98,13 @@ public class ProjectPreferences {
 	 */
 	public ClientPreferences getClientPreferences() {
 		return _clientPreferences;
+	}
+
+	public String getProjectCheckoutLocation(DataSource source) {
+		String basePath = getClientPreferences().getTempDirectory();
+		if (!basePath.endsWith(File.separator))
+			basePath += File.separator;
+
+		return basePath+getEnvironment().getShortName() + "_" + source.getShortName();
 	}
 }

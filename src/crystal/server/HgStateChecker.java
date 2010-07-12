@@ -12,48 +12,53 @@ import crystal.util.RunIt;
 import crystal.util.TimeUtility;
 
 public class HgStateChecker {
-	
+
 	/*
 	 * @arg prefs: a set of preferences
+	 * 
 	 * @arg String nameOfLocalHGRepo: the path that will be created with a local clone of that repository
 	 */
-	private static void createLocalRepository(String pathToHg, String pathToRemoteRepo, String pathToLocalRepo, String tempWorkPath) throws IOException  {
+	private static void createLocalRepository(String pathToHg, String pathToRemoteRepo, String pathToLocalRepo, String tempWorkPath)
+			throws IOException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToRemoteRepo);
 		Assert.assertNotNull(pathToLocalRepo);
 		Assert.assertNotNull(tempWorkPath);
 
-//		String hg = prefs.getClientPreferences().getHgPath();
+		// String hg = prefs.getClientPreferences().getHgPath();
 
-//		String tempWorkPath = prefs.getClientPreferences().getTempDirectory();
-//		String pathToRemoteHGRepo = prefs.getEnvironment().getCloneString();
-//		String pathToLocalHGRepo = prefs.getClientPreferences().getTempDirectory() + prefs.getEnvironment().getLocalPath();
-		
+		// String tempWorkPath = prefs.getClientPreferences().getTempDirectory();
+		// String pathToRemoteHGRepo = prefs.getEnvironment().getCloneString();
+		// String pathToLocalHGRepo = prefs.getClientPreferences().getTempDirectory() +
+		// prefs.getEnvironment().getLocalPath();
+
 		String[] myArgs = { "clone", pathToRemoteRepo, pathToLocalRepo };
 		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath);
-		
+
 		if (output.indexOf("updating to branch") < 0)
 			throw new RuntimeException("Could not clone repository " + pathToRemoteRepo + " to " + pathToLocalRepo + "\n" + output);
 	}
-	
+
 	/*
 	 * @arg prefs: a set of preferences
+	 * 
 	 * @arg String nameOfLocalHGRepo: the path that will be created with a local clone of that repository
 	 */
-	private static void updateLocalRepository(String pathToHg, String pathToLocalRepo, String tempWorkPath) throws IOException  {
+	private static void updateLocalRepository(String pathToHg, String pathToLocalRepo, String tempWorkPath) throws IOException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToLocalRepo);
 		Assert.assertNotNull(tempWorkPath);
-		
+
 		String[] myArgs = { "pull -u" };
-		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath + pathToLocalRepo );
-		
+		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath + pathToLocalRepo);
+
 		if ((output.indexOf("files updated") < 0) && (output.indexOf("no changes found") < 0))
 			throw new RuntimeException("Could not update repository " + pathToLocalRepo + ": " + output);
 	}
 
 	/*
-	 * @arg prefs: a set of preferences 
+	 * @arg prefs: a set of preferences
+	 * 
 	 * @returns whether my repository is same, behind, ahead, or in conflict with your repository.
 	 */
 	public static ResultStatus getState(ProjectPreferences prefs, DataSource source) throws IOException {
@@ -61,8 +66,11 @@ public class HgStateChecker {
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);
 
-		String mine = prefs.getEnvironment().getLocalString();
-		String yours = source.getLocalString();
+		// String mine = prefs.getEnvironment().getLocalString();
+		// String yours = source.getLocalString();
+
+		String mine = prefs.getProjectCheckoutLocation(prefs.getEnvironment());
+		String yours = prefs.getProjectCheckoutLocation(source);
 
 		// String hg = Constants.HG_COMMAND;
 		String hg = prefs.getClientPreferences().getHgPath();
@@ -72,17 +80,17 @@ public class HgStateChecker {
 		String tempMyName = "tempMine_" + TimeUtility.getCurrentLSMRDateString();
 		// tempWorkPath + tempYourName used to store a local copy of your repo
 		String tempYourName = "tempYour_" + TimeUtility.getCurrentLSMRDateString();
-		
-		// Check if a local copy of my repository exists.  If it does, update it.  If it does not, create it.
+
+		// Check if a local copy of my repository exists. If it does, update it. If it does not, create it.
 		if ((new File(tempWorkPath + mine)).exists())
 			updateLocalRepository(hg, mine, tempWorkPath);
-		else 
+		else
 			createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath);
-		
-		// Check if a local copy of your repository exists.  If it does, update it.  If it does not, create it.
+
+		// Check if a local copy of your repository exists. If it does, update it. If it does not, create it.
 		if ((new File(tempWorkPath + yours)).exists())
 			updateLocalRepository(hg, yours, tempWorkPath);
-		else 
+		else
 			createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath);
 
 		ResultStatus answer;
@@ -92,36 +100,37 @@ public class HgStateChecker {
 		String[] myArgs = { "clone", mine, tempMyName };
 		output = RunIt.execute(hg, myArgs, tempWorkPath);
 		/*
-		 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0 files
-		 * removed, 0 files unresolved
+		 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0
+		 * files removed, 0 files unresolved
 		 */
 
 		String[] yourArgs = { "clone", yours, tempYourName };
 		output = RunIt.execute(hg, yourArgs, tempWorkPath);
 		/*
-		 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0 files
-		 * removed, 0 files unresolved
+		 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0
+		 * files removed, 0 files unresolved
 		 */
 
 		String[] pullArgs = { "pull", tempWorkPath + tempYourName };
 		output = RunIt.execute(hg, pullArgs, tempWorkPath + tempMyName);
 		/*
-		 * SAME or AHEAD if output looks something like this: pulling from /homes/gws/brun/temp/orig searching for changes no
-		 * changes found
+		 * SAME or AHEAD if output looks something like this: pulling from /homes/gws/brun/temp/orig searching for
+		 * changes no changes found
 		 */
 		if (output.indexOf("no changes found") >= 0) {
 			// Mine is either the same or ahead, so let's check if yours is ahead
 			String[] reversePullArgs = { "pull", tempWorkPath + tempMyName };
 			output = RunIt.execute(hg, reversePullArgs, tempWorkPath + tempYourName);
 			/*
-			 * SAME if output looks something like this: pulling from /homes/gws/brun/temp/orig searching for changes no changes
-			 * found
+			 * SAME if output looks something like this: pulling from /homes/gws/brun/temp/orig searching for changes no
+			 * changes found
 			 */
 			if (output.indexOf("no changes found") >= 0)
 				answer = ResultStatus.SAME;
 			/*
-			 * mine is AHEAD (yours is BEHIND) if output looks something like this: searching for changes adding changesets adding
-			 * manifests adding file changes added 1 changesets with 1 changes to 1 files (run 'hg update' to get a working copy)
+			 * mine is AHEAD (yours is BEHIND) if output looks something like this: searching for changes adding
+			 * changesets adding manifests adding file changes added 1 changesets with 1 changes to 1 files (run 'hg
+			 * update' to get a working copy)
 			 */
 			else if (output.indexOf("(run 'hg update' to get a working copy)") >= 0)
 				answer = ResultStatus.AHEAD;
@@ -131,16 +140,16 @@ public class HgStateChecker {
 		}
 
 		/*
-		 * BEHIND if output looks something like this: searching for changes adding changesets adding manifests adding file
-		 * changes added 1 changesets with 1 changes to 1 files (run 'hg update' to get a working copy)
+		 * BEHIND if output looks something like this: searching for changes adding changesets adding manifests adding
+		 * file changes added 1 changesets with 1 changes to 1 files (run 'hg update' to get a working copy)
 		 */
 		else if (output.indexOf("(run 'hg update' to get a working copy)") >= 0)
 			answer = ResultStatus.BEHIND;
 
 		/*
-		 * CONFLICT if output looks something like this: pulling from ../firstcopy/ searching for changes adding changesets adding
-		 * manifests adding file changes added 1 changesets with 1 changes to 1 files (+1 heads) (run 'hg heads' to see heads, 'hg
-		 * merge' to merge)
+		 * CONFLICT if output looks something like this: pulling from ../firstcopy/ searching for changes adding
+		 * changesets adding manifests adding file changes added 1 changesets with 1 changes to 1 files (+1 heads) (run
+		 * 'hg heads' to see heads, 'hg merge' to merge)
 		 */
 		else if (output.indexOf("(run 'hg heads' to see heads, 'hg merge' to merge)") >= 0) {
 			// there are two heads, so let's see if they merge cleanly
