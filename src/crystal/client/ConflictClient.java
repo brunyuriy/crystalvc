@@ -301,13 +301,6 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_frame.setVisible(true);
 	}
 
-	// @Override
-	// public void setStatus(ConflictResult result) {
-	// System.out.println("ConflictClient::setStatus( " + result + ")");
-	// // resultMap.put(result.getDataSource(), result);
-	// refresh();
-	// }
-
 	@Override
 	public void update() {
 		refresh();
