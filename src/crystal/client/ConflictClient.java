@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
@@ -22,11 +21,11 @@ import crystal.model.ConflictResult.ResultStatus;
  * @author rtholmes
  * 
  */
-public class ConflictClient implements IConflictClient {
+public class ConflictClient implements ConflictDaemon.ComputationListener {
 	/**
-	 * This class enables the calcualtions to happen on a background thread but _STILL_ update the UI. When we were doing the
-	 * analysis on a regular Thread the UI woudln't update until all of the tasks were done; the UI didn't block, but it didn't
-	 * update either. This fixes that problem.
+	 * This class enables the calcualtions to happen on a background thread but _STILL_ update the UI. When we were
+	 * doing the analysis on a regular Thread the UI woudln't update until all of the tasks were done; the UI didn't
+	 * block, but it didn't update either. This fixes that problem.
 	 * 
 	 * @author rtholmes
 	 */
@@ -51,7 +50,7 @@ public class ConflictClient implements IConflictClient {
 			ConflictResult calculatingPlaceholder = new ConflictResult(_source, ResultStatus.PENDING);
 			publish(calculatingPlaceholder);
 
-			ConflictResult result = ConflictDaemon.calculateConflict(_source, _prefs);
+			ConflictResult result = ConflictDaemon.getInstance().calculateConflicts(_source, _prefs);
 
 			System.out.println("ConflictClient::CalcualteTask::publish( " + result + " )");
 			publish(result);
@@ -62,7 +61,8 @@ public class ConflictClient implements IConflictClient {
 		protected void process(List<ConflictResult> chunks) {
 			for (ConflictResult cr : chunks) {
 				System.out.println("ConflictClient::CalcualteTask::process( " + cr + " )");
-				setStatus(cr);
+				// setStatus(cr);
+				refresh();
 			}
 		}
 	}
@@ -76,11 +76,6 @@ public class ConflictClient implements IConflictClient {
 	 * Preference store used by the client.
 	 */
 	private ClientPreferences _preferences;
-
-	/**
-	 * Stores the results of the analysis. This provides a simple decoupling between the DataSource and the ConflictResult.
-	 */
-	Hashtable<DataSource, ConflictResult> resultMap = new Hashtable<DataSource, ConflictResult>();
 
 	/**
 	 * Runs the analysis on any any projects described by the preferences.
@@ -117,7 +112,11 @@ public class ConflictClient implements IConflictClient {
 		// NOTE: caching might be a good idea here in the future.
 		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
 			for (DataSource source : projPref.getDataSources()) {
-				resultMap.put(source, new ConflictResult(source, ResultStatus.PENDING));
+
+				// XXX: should set pending status for new requests
+				// ConflictDaemon.getInstance().calculateConflicts(source, projPref);
+				ConflictDaemon.getInstance().getStatus(source);
+				// resultMap.put(source, new ConflictResult(source, ResultStatus.PENDING));
 			}
 		}
 
@@ -203,36 +202,38 @@ public class ConflictClient implements IConflictClient {
 			String rPre = "";
 
 			String rBody = "";
-			if (resultMap.containsKey(source)) {
-				ResultStatus status = resultMap.get(source).getStatus();
+			// if (resultMap.containsKey(source)) {
+			// ResultStatus status = resultMap.get(source).getStatus();
+			ConflictResult conflictStatus = ConflictDaemon.getInstance().getStatus(source);
+			ResultStatus status = conflictStatus.getStatus();
 
-				String bgColour = "";
-				String icon = "";
-				String DEFAULT_BG = "grey";
-				if (status.equals(ResultStatus.SAME)) {
-					bgColour = DEFAULT_BG;// "white";
-					icon = "same.png";
-				} else if (status.equals(ResultStatus.AHEAD)) {
-					bgColour = DEFAULT_BG;// "yellow";
-					icon = "ahead.png";
-				} else if (status.equals(ResultStatus.BEHIND)) {
-					bgColour = DEFAULT_BG;// "#FFA500";
-					icon = "behind.png";
-				} else if (status.equals(ResultStatus.MERGECLEAN)) {
-					bgColour = DEFAULT_BG;// i dunno;
-					icon = "merge.png";
-				} else if (status.equals(ResultStatus.MERGECONFLICT)) {
-					bgColour = DEFAULT_BG;// "red";
-					icon = "mergeconflict.png";
-				} else if (status.equals(ResultStatus.PENDING)) {
-					bgColour = DEFAULT_BG;// "#CCCCFF";
-					icon = "clock.png";
-				}
-				String iconPrefix = "http://www.cs.washington.edu/homes/rtholmes/tmp/speculationImages/";
-				rBody = "<td align='center' bgcolor='" + bgColour + "'>" + "<img src='" + iconPrefix + icon + "'/>" + "</td>";
-			} else {
-				rBody = "<td align='center'>" + "n/a" + "</td>";
+			String bgColour = "";
+			String icon = "";
+			String DEFAULT_BG = "grey";
+			if (status.equals(ResultStatus.SAME)) {
+				bgColour = DEFAULT_BG;// "white";
+				icon = "same.png";
+			} else if (status.equals(ResultStatus.AHEAD)) {
+				bgColour = DEFAULT_BG;// "yellow";
+				icon = "ahead.png";
+			} else if (status.equals(ResultStatus.BEHIND)) {
+				bgColour = DEFAULT_BG;// "#FFA500";
+				icon = "behind.png";
+			} else if (status.equals(ResultStatus.MERGECLEAN)) {
+				bgColour = DEFAULT_BG;// i dunno;
+				icon = "merge.png";
+			} else if (status.equals(ResultStatus.MERGECONFLICT)) {
+				bgColour = DEFAULT_BG;// "red";
+				icon = "mergeconflict.png";
+			} else if (status.equals(ResultStatus.PENDING)) {
+				bgColour = DEFAULT_BG;// "#CCCCFF";
+				icon = "clock.png";
 			}
+			String iconPrefix = "http://www.cs.washington.edu/homes/rtholmes/tmp/speculationImages/";
+			rBody = "<td align='center' bgcolor='" + bgColour + "'>" + "<img src='" + iconPrefix + icon + "'/>" + "</td>";
+			// } else {
+			// rBody = "<td align='center'>" + "n/a" + "</td>";
+			// }
 
 			String rPost = "";
 			rows += rPre + rBody + rPost;
@@ -250,8 +251,8 @@ public class ConflictClient implements IConflictClient {
 	}
 
 	/**
-	 * Creates the body of the ConflictClient UI. Right now this simply makes a HTML table and fires it into the space since that
-	 * is a lot easier than dealing with Swing UI elements.
+	 * Creates the body of the ConflictClient UI. Right now this simply makes a HTML table and fires it into the space
+	 * since that is a lot easier than dealing with Swing UI elements.
 	 * 
 	 * @param prefs
 	 *            preferences used to create the body representaiton.
@@ -300,10 +301,15 @@ public class ConflictClient implements IConflictClient {
 		_frame.setVisible(true);
 	}
 
+	// @Override
+	// public void setStatus(ConflictResult result) {
+	// System.out.println("ConflictClient::setStatus( " + result + ")");
+	// // resultMap.put(result.getDataSource(), result);
+	// refresh();
+	// }
+
 	@Override
-	public void setStatus(ConflictResult result) {
-		System.out.println("ConflictClient::setStatus( " + result + ")");
-		resultMap.put(result.getDataSource(), result);
+	public void update() {
 		refresh();
 	}
 
