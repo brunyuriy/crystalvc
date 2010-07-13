@@ -1,46 +1,46 @@
-<!-- This is the default Conflict Client configuration file 			-->
-<!--										-->
-<!-- Provided values are for example only.					-->
-<!--										-->
-<!-- NOTE ABOUT PATHS: Please ensure all paths are properly escaped.		-->
-<!--	e.g., (on windows) c:\\Program\ Files\\path\\to\\hg			-->
-<!--										-->
+<!-- This is the default Conflict Client configuration file             -->
+<!--                                                                    -->
+<!-- Provided values are for example only.                              -->
+<!--                                                                    -->
+<!-- NOTE ABOUT PATHS: Please ensure all paths are properly escaped.    -->
+<!--    e.g., (on windows) c:\\Program\ Files\\path\\to\\hg             -->
+<!--                                                                    -->
 
-<!--										-->
-<!-- The root ccConfig element must contain two attributes:			-->
-<!--	tempDirectory: 	this is a path to scratch space				-->
-<!--	hgPath: 		this is the path to your hg executable		-->
-<!--										-->
+<!--                                                                    -->
+<!-- The root ccConfig element must contain two attributes:             -->
+<!-- tempDirectory: 	this is a path to scratch space                 -->
+<!--    hgPath: 		this is the path to your hg executable          -->
+<!--                                                                    -->
 
-<!--										-->
-<!-- The project element must contain three attributes: 			-->
-<!--	myKind: 		this can only be HG (for now)			-->
-<!--	myShortName:	the name of your project				-->
-<!--		myClone:		the path to your project		-->
-<!--										-->
+<!--                                                                    -->
+<!-- The project element must contain three attributes:                 -->
+<!--    myKind:         this can only be HG (for now)                   -->
+<!--	myShortName:    the name of your project                        -->
+<!--        myClone:        the path to your project                    -->
+<!--                                                                    -->
 
-<!--										-->
-<!-- A project can contain any number of sources elements.			-->
-<!-- These pertain to your team mates repositories, forks, or other 		-->
-<!-- clones you may be interested in following.					-->
-<!--										-->
+<!--                                                                    -->
+<!-- A project can contain any number of sources elements.              -->
+<!-- These pertain to your team mates repositories, forks, or other     -->
+<!-- clones you may be interested in following.                         -->
+<!--                                                                    -->
 
-<!--										-->
-<!-- The source element must contain three attributes: 				-->
-<!--	kind: 		this can only be HG (for now)				-->
-<!--	shortName:	the name of your project				-->
-<!--	clone:		the string you would provide to hg clone 		-->
-<!--										-->
+<!--                                                                    -->
+<!-- The source element must contain three attributes:                  -->
+<!--    kind:       this can only be HG (for now)                       -->
+<!--    shortName:  the name of your project                            -->
+<!--    clone:      the string you would provide to hg clone            -->
+<!--                                                                    -->
 
-<ccConfig tempDirectory="/tmp/" hgPath="/usr/local/bin/hg">
+<ccConfig tempDirectory="/tmp/" hgPath="/path/to/hg">
 
-	<project myKind="HG" myShortName="myProject" myClone="/dev/myProject/">
+  <project myKind="HG" myShortName="myProject" myClone="/dev/myProject/">
 	
-		<sources>
-			<source kind="HG" shortName="face" clone="https://bitbucket.org/face/tortoisehgqueue" />
-			<source kind="HG" shortName="HEAD" clone="http://bitbucket.org/tortoisehg/stable" />
-		</sources>
+    <sources>
+      <source kind="HG" shortName="jim" clone="https://path/to/repo" />
+      <source kind="HG" shortName="HEAD" clone="http://path/to/repo" />
+    </sources>
 		
-	</project>
-	
+  </project>
+
 </ccConfig>
