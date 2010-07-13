@@ -70,6 +70,6 @@ public class DataSource {
 
 	@Override
 	public String toString() {
-		return getShortName() + "- " + getKind() + ": " + getCloneString();
+		return getShortName() + " - " + getKind() + ": " + getCloneString();
 	}
 }
