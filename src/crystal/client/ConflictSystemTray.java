@@ -169,13 +169,19 @@ public class ConflictSystemTray implements ComputationListener {
 				if (cb1Id == ItemEvent.SELECTED) {
 					// daemon enabled
 					System.out.println("ConflictClient - ConflictDaemon enabled");
-					if (_timer != null)
+					if (_timer != null) {
+						// do it
 						_timer.start();
+					} else {
+						createTimer();
+					}
 				} else {
 					// daemon disabled
 					System.out.println("ConflictClient - ConflictDaemon disabled");
-					if (_timer != null)
+					if (_timer != null) {
 						_timer.stop();
+						_timer = null;
+					}
 				}
 			}
 		});
@@ -240,6 +246,13 @@ public class ConflictSystemTray implements ComputationListener {
 			_client.createAndShowGUI(_prefs);
 			_client.calculateConflicts();
 		}
+
+		createTimer();
+
+	}
+
+	private void createTimer() {
+
 		if (_timer != null) {
 			_timer.stop();
 			_timer = null;
@@ -249,13 +262,14 @@ public class ConflictSystemTray implements ComputationListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("ConflictSystemTray::showClient - Timer fired: " + e.getSource());
+				System.out.println("ConflictSystemTray::showClient - Timer fired.");
 				// get the client to nicely refresh its elements
 				_client.calculateConflicts();
 			}
 		});
 		_timer.setInitialDelay(Constants.TIMER_CONSTANT);
 		_timer.start();
+
 	}
 
 	@Override
