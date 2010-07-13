@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
+import crystal.Constants;
+
 /**
  * The main runner. This performs system commands and captures their output.
  * 
@@ -66,7 +68,9 @@ public class RunIt {
 			builder.command(cmd);
 		}
 
-		System.out.println("\tRunIt::execute(..) - command: " + builder.command().toString() + "; in path: " + builder.directory());
+		if (Constants.DEBUG_RUNIT) {
+			System.out.println("\tRunIt::execute(..) - command: " + builder.command().toString() + "; in path: " + builder.directory());
+		}
 
 		Process proc = builder.start();
 
@@ -85,7 +89,9 @@ public class RunIt {
 		try {
 			errCatcherThread.join();
 			outCatcherThread.join();
-			System.out.println("\t\tRunIt::execute(..) - Threads joined peacefully after: " + TimeUtility.msToHumanReadableDelta(start));
+			if (Constants.DEBUG_RUNIT) {
+				System.out.println("\t\tRunIt::execute(..) - Threads joined peacefully after: " + TimeUtility.msToHumanReadableDelta(start));
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -108,7 +114,7 @@ public class RunIt {
 
 		return output;
 	}
-	
+
 	static public boolean deleteDirectory(File path) {
 		if (path.exists()) {
 			File[] files = path.listFiles();

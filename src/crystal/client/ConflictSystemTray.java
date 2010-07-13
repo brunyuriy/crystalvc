@@ -261,7 +261,8 @@ public class ConflictSystemTray implements ComputationListener {
 
 	@Override
 	public void update() {
-
+		System.out.println("ConflictSystemTray::update()");
+		
 		boolean anyGreen = false;
 		boolean anyPull = false;
 		boolean anyYellow = false;

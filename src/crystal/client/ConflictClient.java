@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 
+import crystal.Constants;
 import crystal.model.ConflictResult;
 import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
@@ -272,12 +273,16 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		for (ProjectPreferences pPref : prefs.getProjectPreference()) {
 			String rowText = createHeader(pPref, maxSources) + createProjectRow(pPref, maxSources);
-			System.out.println("ConflictClient::createText(..) - row text: " + rowText);
+			if (Constants.DEBUG_UI) {
+				System.out.println("ConflictClient::createText(..) - row text: " + rowText);
+			}
 			body += rowText;
 		}
 
 		String retValue = pre + body + post;
-		System.out.println("ConflictClient::createText(..): " + retValue);
+		if (Constants.DEBUG_UI) {
+			System.out.println("ConflictClient::createText(..): " + retValue);
+		}
 		return retValue;
 	}
 

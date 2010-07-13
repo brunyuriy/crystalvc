@@ -38,7 +38,7 @@ public class ConflictDaemon {
 	}
 
 	public void addListener(ComputationListener listener) {
-		if (_listeners.contains(listener))
+		if (!_listeners.contains(listener))
 			_listeners.add(listener);
 	}
 
