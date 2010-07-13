@@ -46,7 +46,6 @@ public class ClientPreferencesUI {
 
 	// private ProjectPreferences _preferences;
 
-	@SuppressWarnings("unused")
 	private ClientPreferencesUI() {
 		// disallow
 	}
