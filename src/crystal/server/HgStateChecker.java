@@ -49,8 +49,8 @@ public class HgStateChecker {
 		Assert.assertNotNull(pathToLocalRepo);
 		Assert.assertNotNull(tempWorkPath);
 
-		String[] myArgs = { "pull -u" };
-		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath + pathToLocalRepo);
+		String[] myArgs = { "pull", "-u" };
+		String output = RunIt.execute(pathToHg, myArgs, pathToLocalRepo);
 
 		if ((output.indexOf("files updated") < 0) && (output.indexOf("no changes found") < 0))
 			throw new RuntimeException("Could not update repository " + pathToLocalRepo + ": " + output);
@@ -82,13 +82,14 @@ public class HgStateChecker {
 		String tempYourName = "tempYour_" + TimeUtility.getCurrentLSMRDateString();
 
 		// Check if a local copy of my repository exists. If it does, update it. If it does not, create it.
-		if ((new File(tempWorkPath + mine)).exists())
+//		System.out.println("*** " + tempWorkPath + " *** " + mine + " ***\n");
+		if ((new File(mine)).exists())
 			updateLocalRepository(hg, mine, tempWorkPath);
 		else
 			createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath);
 
 		// Check if a local copy of your repository exists. If it does, update it. If it does not, create it.
-		if ((new File(tempWorkPath + yours)).exists())
+		if ((new File(yours)).exists())
 			updateLocalRepository(hg, yours, tempWorkPath);
 		else
 			createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath);
