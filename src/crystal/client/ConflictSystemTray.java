@@ -20,7 +20,9 @@ import javax.swing.Timer;
 import crystal.Constants;
 import crystal.client.ConflictDaemon.ComputationListener;
 import crystal.model.ConflictResult;
+import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
+import crystal.util.TimeUtility;
 
 /**
  * This is the UI that lives in the system tray (windows), title bar (OS X) or somewhere else (linux). It contains the
@@ -133,7 +135,7 @@ public class ConflictSystemTray implements ComputationListener {
 				}
 
 				showClientItem.setEnabled(false);
-				// XXX: prefs UI broken by multiple project refactor (horrible
+				// NOTE: prefs UI broken by multiple project refactor (horrible
 				// hack in the constructor here)
 				ClientPreferencesUI cp = new ClientPreferencesUI(new ClientPreferencesUI.IPreferencesListener() {
 					@Override
@@ -141,7 +143,7 @@ public class ConflictSystemTray implements ComputationListener {
 						// when the preferences are updated, show the
 						// client
 						// _prefs = preferences;
-						// XXX: prefs UI broken by multiple project
+						// NOTE: prefs UI broken by multiple project
 						// refactor
 					}
 
@@ -149,7 +151,7 @@ public class ConflictSystemTray implements ComputationListener {
 					public void preferencesDialogClosed() {
 						// System.out.println("ConflictSystemTray::IPreferencesListener::preferencesDialogClosed()");
 						showClientItem.setEnabled(true);
-						// XXX: prefs UI broken by multiple project
+						// NOTE: prefs UI broken by multiple project
 						// refactor
 					}
 				});
@@ -195,6 +197,29 @@ public class ConflictSystemTray implements ComputationListener {
 		});
 
 		ConflictDaemon.getInstance().addListener(this);
+
+		performCalculations();
+	}
+
+	/**
+	 * Perform the initial calculations
+	 */
+	private void performCalculations() {
+
+		long start = System.currentTimeMillis();
+		for (ProjectPreferences pp : _prefs.getProjectPreference()) {
+			for (DataSource source : pp.getDataSources()) {
+				ConflictDaemon.getInstance().calculateConflicts(source, pp);
+			}
+		}
+		long end = System.currentTimeMillis();
+
+		long delta = end - start;
+		Constants.TIMER_CONSTANT = delta * Constants.TIMER_MULTIPLIER;
+
+		System.out.println("ConflictSystemTray::performCalculations() - took: " + TimeUtility.msToHumanReadable(delta) + " new timer interval: "
+				+ TimeUtility.msToHumanReadable(Constants.TIMER_CONSTANT));
+
 	}
 
 	/**
@@ -244,7 +269,9 @@ public class ConflictSystemTray implements ComputationListener {
 		} else {
 			_client = new ConflictClient();
 			_client.createAndShowGUI(_prefs);
-			_client.calculateConflicts();
+			// only update when the timer fires
+			// initial update is fired manually
+			// _client.calculateConflicts();
 		}
 
 		createTimer();
@@ -258,7 +285,7 @@ public class ConflictSystemTray implements ComputationListener {
 			_timer = null;
 		}
 
-		_timer = new Timer(Constants.TIMER_CONSTANT, new ActionListener() {
+		_timer = new Timer((int) Constants.TIMER_CONSTANT, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -267,7 +294,7 @@ public class ConflictSystemTray implements ComputationListener {
 				_client.calculateConflicts();
 			}
 		});
-		_timer.setInitialDelay(Constants.TIMER_CONSTANT);
+		_timer.setInitialDelay((int) Constants.TIMER_CONSTANT);
 		_timer.start();
 
 	}
@@ -309,6 +336,10 @@ public class ConflictSystemTray implements ComputationListener {
 			_trayIcon.setImage(createImage("images/16X16/greenp.png", ""));
 		} else if (anyGreen) {
 			_trayIcon.setImage(createImage("images/16X16/greenstatus.png", ""));
+		}
+
+		if (_client != null) {
+			_client.update();
 		}
 	}
 

@@ -124,4 +124,6 @@ public class ConflictDaemon {
 	public Collection<ConflictResult> getResults() {
 		return _resultMap.values();
 	}
+	
+	
 }
