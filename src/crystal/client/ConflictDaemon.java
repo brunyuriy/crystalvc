@@ -10,6 +10,7 @@ import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
 import crystal.model.DataSource.RepoKind;
 import crystal.server.HgStateChecker;
+import crystal.util.TimeUtility;
 
 /**
  * Daemon that decouples the UI from the analysis. This class can be extended to perform the analysis on an external
@@ -52,6 +53,7 @@ public class ConflictDaemon {
 	 */
 	private ConflictResult calculateConflict(DataSource source, ProjectPreferences prefs) {
 		ResultStatus status = null;
+		long start = System.currentTimeMillis();
 
 		try {
 			if (source.getKind().equals(RepoKind.HG)) {
@@ -60,7 +62,8 @@ public class ConflictDaemon {
 
 				status = HgStateChecker.getState(prefs, source);
 
-				System.out.println("ConflictDaemon::calculateConflict( " + source + ", ... ) - caluculated: " + status);
+				// System.out.println("ConflictDaemon::calculateConflict( " + source + ", ... ) - caluculated: " +
+				// status);
 
 			} else if (source.getKind().equals(RepoKind.GIT)) {
 				// Git isn't implemented yet
@@ -69,7 +72,7 @@ public class ConflictDaemon {
 			} else {
 				System.err.println("ConflictDaemon::caluclateConflict(..) - Cannot handle RepoKind: " + source.getKind());
 			}
-
+			System.out.println("ConflictDaemon::calculateConflict(..) - computed conflicts in: " + TimeUtility.msToHumanReadableDelta(start));
 			ConflictResult result = new ConflictResult(source, status);
 			return result;
 		} catch (IOException ioe) {
