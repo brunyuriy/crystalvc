@@ -234,13 +234,12 @@ public class ConflictSystemTray implements ComputationListener {
 	 */
 	private void showClient() {
 		if (_client != null) {
-			_client.close();
-			_client = null;
+			_client.show();
+		} else {
+			_client = new ConflictClient();
+			_client.createAndShowGUI(_prefs);
+			_client.calculateConflicts();
 		}
-		_client = new ConflictClient();
-		_client.createAndShowGUI(_prefs);
-		_client.calculateConflicts();
-
 		if (_timer != null) {
 			_timer.stop();
 			_timer = null;
@@ -262,7 +261,7 @@ public class ConflictSystemTray implements ComputationListener {
 	@Override
 	public void update() {
 		System.out.println("ConflictSystemTray::update()");
-		
+
 		boolean anyGreen = false;
 		boolean anyPull = false;
 		boolean anyYellow = false;
