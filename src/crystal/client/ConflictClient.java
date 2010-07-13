@@ -122,6 +122,9 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		}
 
 		refresh();
+		
+		_frame.setVisible(true);
+		_frame.toFront();
 	}
 
 	/**
@@ -303,7 +306,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		// Display the window.
 		_frame.pack();
-		_frame.setVisible(true);
+//		_frame.setVisible(true);
 	}
 
 	@Override
