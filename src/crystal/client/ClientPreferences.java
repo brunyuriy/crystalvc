@@ -51,7 +51,6 @@ public class ClientPreferences {
 	/**
 	 * Private constructor to restrict usage.
 	 */
-	@SuppressWarnings("unused")
 	private ClientPreferences() {
 		// disabled
 	}

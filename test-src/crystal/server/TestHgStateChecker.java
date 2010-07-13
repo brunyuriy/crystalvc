@@ -87,6 +87,7 @@ public class TestHgStateChecker {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void unzipTestRepositories(File repoZipFile, File zipOutDir) {
 		try {
 
@@ -98,7 +99,6 @@ public class TestHgStateChecker {
 
 			ZipFile zipFile = new ZipFile(repoZipFile);
 
-			@SuppressWarnings("rawtypes")
 			Enumeration entries = zipFile.entries();
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry) entries.nextElement();
