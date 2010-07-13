@@ -308,7 +308,13 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 	@Override
 	public void update() {
+		System.out.println("ConflictClient::update()");
 		refresh();
+	}
+	
+	public void show() {
+		_frame.setVisible(true);
+		_frame.toFront();
 	}
 
 }
