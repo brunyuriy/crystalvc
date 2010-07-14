@@ -200,7 +200,7 @@ public class ClientPreferences {
 
 						// assert clone != null;
 						if (clone == null || clone.equals("")) {
-							throw new RuntimeException("ClientPreferences - clone must be specified for source: "+shortName);
+							throw new RuntimeException("ClientPreferences - clone must be specified for source: " + shortName);
 						}
 
 						// TODO: we need to come up with a name for the local master copy of the repository and add it
@@ -233,9 +233,9 @@ public class ClientPreferences {
 	 */
 	private static void verifyFile(String fName) {
 
-		assert fName != null;
-		assert new File(fName).exists();
-		assert new File(fName).isFile();
+		// assert fName != null;
+		// assert new File(fName).exists();
+		// assert new File(fName).isFile();
 
 		if (fName == null || !new File(fName).exists() || !new File(fName).isFile()) {
 			throw new RuntimeException("ConflictClient::verifyFile( " + fName + " ) - File does not exist.");
