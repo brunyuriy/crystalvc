@@ -17,11 +17,15 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import crystal.Constants;
 import crystal.client.ConflictDaemon.ComputationListener;
 import crystal.model.ConflictResult;
 import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
+import crystal.util.LSMRLogger;
 import crystal.util.TimeUtility;
 
 /**
@@ -31,6 +35,9 @@ import crystal.util.TimeUtility;
  * @author rtholmes
  */
 public class ConflictSystemTray implements ComputationListener {
+
+	private Logger _log = Logger.getLogger(this.getClass());
+
 	/**
 	 * Conflict client UI.
 	 */
@@ -48,6 +55,10 @@ public class ConflictSystemTray implements ComputationListener {
 
 	final private TrayIcon _trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
 
+	public ConflictSystemTray() {
+		_log.info("ConflictSystemTray - started at: " + TimeUtility.getCurrentLSMRDateString());
+	}
+
 	/**
 	 * Create the tray icon and get it installed in the tray.
 	 */
@@ -58,19 +69,30 @@ public class ConflictSystemTray implements ComputationListener {
 			_prefs = ClientPreferences.loadPreferencesFromXML();
 
 			if (_prefs != null) {
-				System.out.println("ConflictClient preferences loaded successfully.");
+				_log.info("Preferences loaded successfully.");
 			} else {
-				System.out.println("ConflictClient - Error loading preferences.");
+				String msg = "Error loading preferences.";
+
+				System.err.println(msg);
+				_log.error(msg);
 			}
 
 		} catch (Exception e) {
-			System.err.println("Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )");
-			System.exit(-1);
+			String msg = "Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )";
+
+			System.err.println(msg);
+			_log.error(msg);
+
+			quit(-1);
 		}
 		// Check the SystemTray support
 		if (!SystemTray.isSupported()) {
-			System.err.println("SystemTray is not supported");
-			return;
+			String msg = "SystemTray is not supported on this system";
+
+			System.err.println(msg);
+			_log.error(msg);
+
+			quit(-1);
 		}
 
 		final PopupMenu trayMenu = new PopupMenu();
@@ -106,14 +128,14 @@ public class ConflictSystemTray implements ComputationListener {
 		try {
 			tray.add(_trayIcon);
 		} catch (AWTException e) {
-			System.out.println("TrayIcon could not be added.");
+			_log.error("TrayIcon could not be added.");
 			return;
 		}
 
 		_trayIcon.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ae) {
-				System.out.println("Tray icon action: " + ae);
+				_log.trace("Tray icon ActionEvent: " + ae.getActionCommand());
 				// doesn't work on OS X; it doesn't register double clicks on
 				// the tray
 				showClient();
@@ -149,7 +171,6 @@ public class ConflictSystemTray implements ComputationListener {
 
 					@Override
 					public void preferencesDialogClosed() {
-						// System.out.println("ConflictSystemTray::IPreferencesListener::preferencesDialogClosed()");
 						showClientItem.setEnabled(true);
 						// NOTE: prefs UI broken by multiple project
 						// refactor
@@ -170,7 +191,7 @@ public class ConflictSystemTray implements ComputationListener {
 				int cb1Id = e.getStateChange();
 				if (cb1Id == ItemEvent.SELECTED) {
 					// daemon enabled
-					System.out.println("ConflictClient - ConflictDaemon enabled");
+					_log.info("ConflictDaemon enabled");
 					if (_timer != null) {
 						// do it
 						_timer.start();
@@ -179,7 +200,7 @@ public class ConflictSystemTray implements ComputationListener {
 					}
 				} else {
 					// daemon disabled
-					System.out.println("ConflictClient - ConflictDaemon disabled");
+					_log.info("ConflictDaemon disabled");
 					if (_timer != null) {
 						_timer.stop();
 						_timer = null;
@@ -190,15 +211,25 @@ public class ConflictSystemTray implements ComputationListener {
 
 		exitItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("ConflictSystemTray::createAndShowGUI() - Client explicitly exited");
 				tray.remove(_trayIcon);
-				System.exit(0);
+
+				String msg = "ConflictClient exited successfully.";
+				System.out.println(msg);
+				_log.trace("Exit action selected");
+
+				quit(0);
 			}
 		});
 
 		ConflictDaemon.getInstance().addListener(this);
 
 		performCalculations();
+	}
+
+	private void quit(int status) {
+		_log.info("ConflictSystemTray exited - code: " + status + " at: " + TimeUtility.getCurrentLSMRDateString());
+
+		System.exit(status);
 	}
 
 	/**
@@ -217,7 +248,7 @@ public class ConflictSystemTray implements ComputationListener {
 		long delta = end - start;
 		Constants.TIMER_CONSTANT = delta * Constants.TIMER_MULTIPLIER;
 
-		System.out.println("ConflictSystemTray::performCalculations() - took: " + TimeUtility.msToHumanReadable(delta) + " new timer interval: "
+		_log.info("ConflictSystemTray::performCalculations() - took: " + TimeUtility.msToHumanReadable(delta) + " new timer interval: "
 				+ TimeUtility.msToHumanReadable(Constants.TIMER_CONSTANT));
 
 	}
@@ -229,11 +260,11 @@ public class ConflictSystemTray implements ComputationListener {
 	 * @param description
 	 * @return
 	 */
-	protected static Image createImage(String path, String description) {
+	protected Image createImage(String path, String description) {
 		URL imageURL = ConflictSystemTray.class.getResource(path);
 
 		if (imageURL == null) {
-			System.err.println("Resource not found: " + path);
+			_log.error("Resource not found: " + path);
 			return null;
 		} else {
 			return (new ImageIcon(imageURL, description)).getImage();
@@ -247,17 +278,12 @@ public class ConflictSystemTray implements ComputationListener {
 	 */
 	public static void main(String[] args) {
 
-		// UIManager.put("swing.boldMetal", Boolean.FALSE);
+		LSMRLogger.startLog4J(true, Level.INFO, System.getProperty("user.home"), ".conflictClientLog");
 
-		// SwingUtilities.invokeLater(new Runnable() {
-		//
-		// public void run() {
+		// UIManager.put("swing.boldMetal", Boolean.FALSE);
 
 		ConflictSystemTray cst = new ConflictSystemTray();
 		cst.createAndShowGUI();
-
-		// }
-		// });
 	}
 
 	/**
@@ -289,7 +315,8 @@ public class ConflictSystemTray implements ComputationListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("ConflictSystemTray::showClient - Timer fired.");
+				_log.info("ConflictSystemTray::showClient - Timer fired at: " + TimeUtility.getCurrentLSMRDateString());
+
 				// get the client to nicely refresh its elements
 				_client.calculateConflicts();
 			}

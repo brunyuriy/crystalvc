@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -24,7 +25,12 @@ import crystal.model.DataSource.RepoKind;
  * 
  */
 public class ClientPreferences {
+	/**
+	 * Path to the configuration (user.home)
+	 */
 	public static String CONFIG_PATH;
+
+	public Logger _log = Logger.getLogger(this.getClass());
 
 	static {
 		String path = System.getProperty("user.home");

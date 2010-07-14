@@ -87,6 +87,11 @@ public class ConflictDaemon {
 
 	public ConflictResult calculateConflicts(DataSource source, ProjectPreferences prefs) {
 		ConflictResult result = calculateConflict(source, prefs);
+
+		if (result == null) {
+			result = new ConflictResult(source, ResultStatus.ERROR);
+		}
+
 		_resultMap.put(source, result);
 
 		for (ComputationListener cl : _listeners) {
@@ -124,6 +129,5 @@ public class ConflictDaemon {
 	public Collection<ConflictResult> getResults() {
 		return _resultMap.values();
 	}
-	
-	
+
 }

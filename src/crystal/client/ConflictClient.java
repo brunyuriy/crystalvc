@@ -232,6 +232,9 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			} else if (status.equals(ResultStatus.PENDING)) {
 				bgColour = DEFAULT_BG;// "#CCCCFF";
 				icon = "clock.png";
+			} else if (status.equals(ResultStatus.ERROR)) {
+				bgColour = DEFAULT_BG;// "#CCCCFF";
+				icon = "error.png";
 			}
 			String iconPrefix = "http://www.cs.washington.edu/homes/rtholmes/tmp/speculationImages/";
 			rBody = "<td align='center' bgcolor='" + bgColour + "'>" + "<img src='" + iconPrefix + icon + "'/>" + "</td>";
