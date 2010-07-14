@@ -163,8 +163,15 @@ public class ClientPreferences {
 
 				verifyPath(myClone);
 
-				assert myKind != null;
-				assert myShortName != null;
+				// assert myKind != null;
+				if (myKind == null || !myKind.equals("HG")) {
+					throw new RuntimeException("ClientPreferences - myKind not valid. (currently only HG is supported).");
+				}
+
+				// assert myShortName != null;
+				if (myShortName == null || myShortName.equals("")) {
+					throw new RuntimeException("ClientPreferences - myShortName must be specified.");
+				}
 
 				// TODO: we need to come up with a name for the local master copy of the repository and add it as the
 				// 3rd argument below
@@ -180,9 +187,21 @@ public class ClientPreferences {
 						String shortName = sourceElement.getAttributeValue("shortName");
 						String clone = sourceElement.getAttributeValue("clone");
 
-						assert kind != null;
-						assert shortName != null;
-						assert clone != null;
+						// assert kind != null;
+						if (kind == null || !kind.equals("HG")) {
+							throw new RuntimeException("ClientPreferences - kind not valid. (currently only HG is supported) for source : "
+									+ shortName);
+						}
+
+						// assert shortName != null;
+						if (shortName == null || shortName.equals("")) {
+							throw new RuntimeException("ClientPreferences - shortName must be specified.");
+						}
+
+						// assert clone != null;
+						if (clone == null || clone.equals("")) {
+							throw new RuntimeException("ClientPreferences - clone must be specified for source: "+shortName);
+						}
 
 						// TODO: we need to come up with a name for the local master copy of the repository and add it
 						// as the 3rd argument below
@@ -230,9 +249,9 @@ public class ClientPreferences {
 	 */
 	private static void verifyPath(String path) {
 
-		assert path != null;
-		assert new File(path).exists();
-		assert new File(path).isDirectory();
+		// assert path != null;
+		// assert new File(path).exists();
+		// assert new File(path).isDirectory();
 
 		if (path == null || !new File(path).exists() || !new File(path).isDirectory()) {
 			throw new RuntimeException("ConflictClient::verifyPath( " + path + " ) - Path does not exist.");
