@@ -301,12 +301,28 @@ public class ClientPreferences {
 	public String getHgPath() {
 		return _hgPath;
 	}
-
+	
+	/**
+	 * 
+	 * @effect set the path to the user's hg binary
+	 */
+	public void setHgPath(String hgPath) {
+		_hgPath = hgPath;
+	}
+	
 	/**
 	 * 
 	 * @return path to the user's scratch space
 	 */
 	public String getTempDirectory() {
 		return _tempDirectory;
+	}	
+
+	/**
+	 * 
+	 * @effect set the path to the user's scratch space
+	 */
+	public void setTempDirectory(String tempDirectory) {
+		_tempDirectory = tempDirectory;
 	}
 }
