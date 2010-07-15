@@ -11,12 +11,39 @@ import crystal.model.DataSource;
 import crystal.util.RunIt;
 import crystal.util.TimeUtility;
 
+/**
+ * Performs hg clone operations.  
+ * Acts as the back end for Crystal.
+ * 
+ * @author brun
+ * 
+ */
 public class HgStateChecker {
 
+
 	/*
-	 * @arg prefs: a set of preferences
-	 * 
-	 * @arg String nameOfLocalHGRepo: the path that will be created with a local clone of that repository
+	 * @arg String pathToHg: the path to the hg executable
+	 * @arg String pathToRepo: the full path to the remote repo
+	 * @arg String tempWorkPath: path to a temp directory
+	 * @return: Whether or not the pathToRepo is a valid hg repository
+	 */
+	public static boolean isHGRepository(String pathToHg, String pathToRepo, String tempWorkPath) throws IOException {
+		Assert.assertNotNull(pathToHg);
+		Assert.assertNotNull(pathToRepo);
+		Assert.assertNotNull(tempWorkPath);
+		
+		String[] myArgs = { "status", pathToRepo };
+		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath);
+		
+		return (output.indexOf("There is no Mercurial repository here") < 0);
+	}
+
+	/*
+	 * @arg String pathToHg: the path to the hg executable
+	 * @arg String pathToRemoteRepo: the full path to the remote repo
+	 * @arg String pathToLocalRepo: the path to the local repo which this method creates
+	 * @arg String tempWorkPath: path to a temp directory
+	 * @effect: clones the pathToRemoteRepo repository to pathToLocalRepo
 	 */
 	private static void createLocalRepository(String pathToHg, String pathToRemoteRepo, String pathToLocalRepo, String tempWorkPath)
 			throws IOException {
@@ -40,9 +67,10 @@ public class HgStateChecker {
 	}
 
 	/*
-	 * @arg prefs: a set of preferences
-	 * 
-	 * @arg String nameOfLocalHGRepo: the path that will be created with a local clone of that repository
+	 * @arg String pathToHg: the path to the hg executable
+	 * @arg String pathToLocalRepo: the path to the local repo which this method creates
+	 * @arg String tempWorkPath: path to a temp directory
+	 * @effect: performs a pull and update on the pathToLocalRepo repository
 	 */
 	private static void updateLocalRepository(String pathToHg, String pathToLocalRepo, String tempWorkPath) throws IOException {
 		Assert.assertNotNull(pathToHg);
