@@ -8,16 +8,20 @@ import java.awt.event.WindowEvent;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 
+import org.apache.log4j.Logger;
+
 /**
  * UI for managing preferences.
  * 
- * NOTE: currently this class doesn't work for managing the preferences from multiple projects; use the configuration file
- * instead.
+ * NOTE: currently this class doesn't work for managing the preferences from multiple projects; use the configuration
+ * file instead.
  * 
  * @author rtholmes
  * 
  */
 public class ClientPreferencesUI {
+
+	private Logger _log = Logger.getLogger(this.getClass());
 
 	/**
 	 * Listener enabling the PreferenceUI to let a client know when it is updated and closed.
@@ -341,7 +345,7 @@ public class ClientPreferencesUI {
 		 */
 		_frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
-				System.out.println("ClientPreferencesUI::WidnowListener - window closing: " + we);
+				_log.trace("ClientPreferencesUI::WidnowListener - window closing: " + we);
 				_listener.preferencesDialogClosed();
 			}
 		});
