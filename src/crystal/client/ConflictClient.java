@@ -11,6 +11,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 
+import org.apache.log4j.Logger;
+
 import crystal.Constants;
 import crystal.model.ConflictResult;
 import crystal.model.DataSource;
@@ -23,6 +25,8 @@ import crystal.model.ConflictResult.ResultStatus;
  * 
  */
 public class ConflictClient implements ConflictDaemon.ComputationListener {
+	private Logger _log = Logger.getLogger(this.getClass());
+
 	/**
 	 * This class enables the calcualtions to happen on a background thread but _STILL_ update the UI. When we were
 	 * doing the analysis on a regular Thread the UI woudln't update until all of the tasks were done; the UI didn't
@@ -53,7 +57,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 			ConflictResult result = ConflictDaemon.getInstance().calculateConflicts(_source, _prefs);
 
-			System.out.println("ConflictClient::CalcualteTask::publish( " + result + " )");
+			_log.trace("ConflictClient::CalcualteTask::publish( " + result + " )");
 			publish(result);
 			return null;
 		}
@@ -61,8 +65,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		@Override
 		protected void process(List<ConflictResult> chunks) {
 			for (ConflictResult cr : chunks) {
-				System.out.println("ConflictClient::CalcualteTask::process( " + cr + " )");
-				// setStatus(cr);
+				_log.trace("ConflictClient::CalcualteTask::process( " + cr + " )");
 				refresh();
 			}
 		}
@@ -122,7 +125,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		}
 
 		refresh();
-		
+
 		_frame.setVisible(true);
 		_frame.toFront();
 	}
@@ -280,14 +283,14 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		for (ProjectPreferences pPref : prefs.getProjectPreference()) {
 			String rowText = createHeader(pPref, maxSources) + createProjectRow(pPref, maxSources);
 			if (Constants.DEBUG_UI) {
-				System.out.println("ConflictClient::createText(..) - row text: " + rowText);
+				_log.trace("ConflictClient::createText(..) - row text: " + rowText);
 			}
 			body += rowText;
 		}
 
 		String retValue = pre + body + post;
 		if (Constants.DEBUG_UI) {
-			System.out.println("ConflictClient::createText(..): " + retValue);
+			_log.trace("ConflictClient::createText(..): " + retValue);
 		}
 		return retValue;
 	}
@@ -309,15 +312,15 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		// Display the window.
 		_frame.pack();
-//		_frame.setVisible(true);
+		// _frame.setVisible(true);
 	}
 
 	@Override
 	public void update() {
-		System.out.println("ConflictClient::update()");
+		_log.trace("ConflictClient::update()");
 		refresh();
 	}
-	
+
 	public void show() {
 		_frame.setVisible(true);
 		_frame.toFront();

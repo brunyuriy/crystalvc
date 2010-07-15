@@ -36,12 +36,12 @@ import crystal.util.TimeUtility;
  */
 public class ConflictSystemTray implements ComputationListener {
 
-	private Logger _log = Logger.getLogger(this.getClass());
-
 	/**
 	 * Conflict client UI.
 	 */
 	private ConflictClient _client;
+
+	private Logger _log = Logger.getLogger(this.getClass());
 
 	/**
 	 * Main preference reference.
@@ -226,33 +226,6 @@ public class ConflictSystemTray implements ComputationListener {
 		performCalculations();
 	}
 
-	private void quit(int status) {
-		_log.info("ConflictSystemTray exited - code: " + status + " at: " + TimeUtility.getCurrentLSMRDateString());
-
-		System.exit(status);
-	}
-
-	/**
-	 * Perform the initial calculations
-	 */
-	private void performCalculations() {
-
-		long start = System.currentTimeMillis();
-		for (ProjectPreferences pp : _prefs.getProjectPreference()) {
-			for (DataSource source : pp.getDataSources()) {
-				ConflictDaemon.getInstance().calculateConflicts(source, pp);
-			}
-		}
-		long end = System.currentTimeMillis();
-
-		long delta = end - start;
-		Constants.TIMER_CONSTANT = delta * Constants.TIMER_MULTIPLIER;
-
-		_log.info("ConflictSystemTray::performCalculations() - took: " + TimeUtility.msToHumanReadable(delta) + " new timer interval: "
-				+ TimeUtility.msToHumanReadable(Constants.TIMER_CONSTANT));
-
-	}
-
 	/**
 	 * Create the image to use in the tray.
 	 * 
@@ -271,25 +244,65 @@ public class ConflictSystemTray implements ComputationListener {
 		}
 	}
 
+	private void createTimer() {
+
+		if (_timer != null) {
+			_timer.stop();
+			_timer = null;
+		}
+
+		_timer = new Timer((int) Constants.TIMER_CONSTANT, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				_log.info("Timer fired at: " + TimeUtility.getCurrentLSMRDateString());
+
+				if (_client != null) {
+					// get the client to nicely refresh its elements
+					_client.calculateConflicts();
+				} else {
+					performCalculations();
+				}
+			}
+		});
+		_timer.setInitialDelay((int) Constants.TIMER_CONSTANT);
+		_timer.start();
+		_log.info("Timer created - will fire in: " + TimeUtility.msToHumanReadable(_timer.getInitialDelay()));
+	}
+
 	/**
-	 * Main execution point.
-	 * 
-	 * @param args
+	 * Perform the initial calculations
 	 */
-	public static void main(String[] args) {
+	private void performCalculations() {
 
-		LSMRLogger.startLog4J(true, Level.INFO, System.getProperty("user.home"), ".conflictClientLog");
+		long start = System.currentTimeMillis();
+		for (ProjectPreferences pp : _prefs.getProjectPreference()) {
+			for (DataSource source : pp.getDataSources()) {
+				ConflictDaemon.getInstance().calculateConflicts(source, pp);
+			}
+		}
+		long end = System.currentTimeMillis();
 
-		// UIManager.put("swing.boldMetal", Boolean.FALSE);
+		long delta = end - start;
+		Constants.TIMER_CONSTANT = delta * Constants.TIMER_MULTIPLIER;
 
-		ConflictSystemTray cst = new ConflictSystemTray();
-		cst.createAndShowGUI();
+		_log.info("Computation took: " + TimeUtility.msToHumanReadable(delta));
+		// _log.info("Adaptive timer interval now: " + TimeUtility.msToHumanReadable(Constants.TIMER_CONSTANT));
+
+		createTimer();
+	}
+
+	private void quit(int status) {
+		_log.info("ConflictSystemTray exited - code: " + status + " at: " + TimeUtility.getCurrentLSMRDateString());
+
+		System.exit(status);
 	}
 
 	/**
 	 * Show the client and set up the timer.
 	 */
 	private void showClient() {
+		_log.info("Show client requested");
 		if (_client != null) {
 			_client.show();
 		} else {
@@ -304,31 +317,9 @@ public class ConflictSystemTray implements ComputationListener {
 
 	}
 
-	private void createTimer() {
-
-		if (_timer != null) {
-			_timer.stop();
-			_timer = null;
-		}
-
-		_timer = new Timer((int) Constants.TIMER_CONSTANT, new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				_log.info("ConflictSystemTray::showClient - Timer fired at: " + TimeUtility.getCurrentLSMRDateString());
-
-				// get the client to nicely refresh its elements
-				_client.calculateConflicts();
-			}
-		});
-		_timer.setInitialDelay((int) Constants.TIMER_CONSTANT);
-		_timer.start();
-
-	}
-
 	@Override
 	public void update() {
-		System.out.println("ConflictSystemTray::update()");
+		_log.trace("ConflictSystemTray::update()");
 
 		boolean anyGreen = false;
 		boolean anyPull = false;
@@ -368,6 +359,21 @@ public class ConflictSystemTray implements ComputationListener {
 		if (_client != null) {
 			_client.update();
 		}
+	}
+
+	/**
+	 * Main execution point.
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+
+		LSMRLogger.startLog4J(true, Level.INFO, System.getProperty("user.home"), ".conflictClientLog");
+
+		// UIManager.put("swing.boldMetal", Boolean.FALSE);
+
+		ConflictSystemTray cst = new ConflictSystemTray();
+		cst.createAndShowGUI();
 	}
 
 }

@@ -30,7 +30,7 @@ public class ClientPreferences {
 	 */
 	public static String CONFIG_PATH;
 
-	public Logger _log = Logger.getLogger(this.getClass());
+	public static Logger _log = Logger.getLogger(ClientPreferences.class);
 
 	static {
 		String path = System.getProperty("user.home");
@@ -142,11 +142,11 @@ public class ClientPreferences {
 				is.close();
 				os.close();
 
-				System.out.println("ClientPreferences::loadPreferencesFromXML(..) - Created new configuration file: " + configFile.getAbsolutePath());
+				_log.info("Created new configuration file: " + configFile.getAbsolutePath());
 
 			} else {
 
-				System.out.println("ClientPreferences::loadPreferencesFromXML(..) - Using existing config file: " + configFile.getAbsolutePath());
+				_log.info("Using existing config file: " + configFile.getAbsolutePath());
 
 			}
 
@@ -217,17 +217,14 @@ public class ClientPreferences {
 				}
 			}
 		} catch (JDOMException jdome) {
-			System.err.println(jdome);
-			throw new RuntimeException("Error parsing configuration file.", jdome);
+			_log.error("Error parsing configuration file.", jdome);
 		} catch (IOException ioe) {
-			System.err.println(ioe);
 			throw new RuntimeException("Error reading configuration file.", ioe);
 		} catch (Exception e) {
-			System.err.println(e);
 			throw new RuntimeException("Error parsing configuration file.", e);
 		}
 
-		assert prefs != null;
+		// assert prefs != null;
 
 		return prefs;
 	}

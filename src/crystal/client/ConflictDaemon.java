@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 import crystal.model.ConflictResult;
 import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
@@ -19,6 +21,8 @@ import crystal.util.TimeUtility;
  * @author rtholmes
  */
 public class ConflictDaemon {
+
+	private Logger _log = Logger.getLogger(this.getClass());
 
 	Vector<ComputationListener> _listeners = new Vector<ComputationListener>();
 
@@ -58,7 +62,7 @@ public class ConflictDaemon {
 		try {
 			if (source.getKind().equals(RepoKind.HG)) {
 
-				System.out.println("ConflictDaemon::calculateConflict( " + source + ", ... )");
+				_log.trace("ConflictDaemon::calculateConflict( " + source + ", ... )");
 
 				status = HgStateChecker.getState(prefs, source);
 
@@ -67,20 +71,20 @@ public class ConflictDaemon {
 
 			} else if (source.getKind().equals(RepoKind.GIT)) {
 				// Git isn't implemented yet
-				System.err.println("ConflictDaemon::caluclateConflict(..) - Cannot handle RepoKind: " + source.getKind());
+				_log.error("ConflictDaemon::caluclateConflict(..) - Cannot handle RepoKind: " + source.getKind());
 
 			} else {
-				System.err.println("ConflictDaemon::caluclateConflict(..) - Cannot handle RepoKind: " + source.getKind());
+				_log.error("ConflictDaemon::caluclateConflict(..) - Cannot handle RepoKind: " + source.getKind());
 			}
-			System.out.println("ConflictDaemon::calculateConflict(..) - computed conflicts in: " + TimeUtility.msToHumanReadableDelta(start));
+			_log.info("Computed conflicts for: " + source + " in: " + TimeUtility.msToHumanReadableDelta(start));
 			ConflictResult result = new ConflictResult(source, status);
 			return result;
 		} catch (IOException ioe) {
-			System.err.println("ConflictDaemon::calculateConflict(..) - error: " + ioe.getMessage());
-			ioe.printStackTrace();
+			_log.error(ioe);
+		} catch (RuntimeException re) {
+			_log.error("Runtime Exception caught while getting state for: " + source);
 		} catch (Exception e) {
-			System.err.println("ConflictDaemon::calculateConflict(..) - caught exception: " + e.getMessage());
-			e.printStackTrace();
+			_log.error(e);
 		}
 		return null;
 	}
