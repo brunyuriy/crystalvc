@@ -66,6 +66,7 @@ public class ConflictDaemon {
 
 				status = HgStateChecker.getState(prefs, source);
 
+				_log.info("Conflicts Calculated::" + source + "::" + status);
 				// System.out.println("ConflictDaemon::calculateConflict( " + source + ", ... ) - caluculated: " +
 				// status);
 

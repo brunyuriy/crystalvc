@@ -11,9 +11,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -62,6 +66,7 @@ public class ConflictSystemTray implements ComputationListener {
 	}
 
 	private MenuItem updateNowItem;
+	private CheckboxMenuItem daemonEnabledItem;
 
 	/**
 	 * Create the tray icon and get it installed in the tray.
@@ -113,7 +118,7 @@ public class ConflictSystemTray implements ComputationListener {
 		// Create a popup menu components
 		MenuItem aboutItem = new MenuItem("About");
 		MenuItem preferencesItem = new MenuItem("Preferences");
-		CheckboxMenuItem enabledItem = new CheckboxMenuItem("Daemon Enabled");
+		daemonEnabledItem = new CheckboxMenuItem("Daemon Enabled");
 		updateNowItem = new MenuItem("Update Now");
 		final MenuItem showClientItem = new MenuItem("Show Client");
 		MenuItem exitItem = new MenuItem("Exit");
@@ -122,7 +127,7 @@ public class ConflictSystemTray implements ComputationListener {
 		trayMenu.add(aboutItem);
 		trayMenu.addSeparator();
 		trayMenu.add(preferencesItem);
-		trayMenu.add(enabledItem);
+		trayMenu.add(daemonEnabledItem);
 		trayMenu.addSeparator();
 		trayMenu.add(updateNowItem);
 		trayMenu.addSeparator();
@@ -133,7 +138,7 @@ public class ConflictSystemTray implements ComputationListener {
 		_trayIcon.setPopupMenu(trayMenu);
 
 		// make sure the client is enabled by default
-		enabledItem.setState(true);
+		daemonEnabledItem.setState(true);
 
 		try {
 			tray.add(_trayIcon);
@@ -203,7 +208,7 @@ public class ConflictSystemTray implements ComputationListener {
 			}
 		});
 
-		enabledItem.addItemListener(new ItemListener() {
+		daemonEnabledItem.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				int cb1Id = e.getStateChange();
 				if (cb1Id == ItemEvent.SELECTED) {
@@ -222,6 +227,11 @@ public class ConflictSystemTray implements ComputationListener {
 						_timer.stop();
 						_timer = null;
 					}
+					for (CalculateTask ct : tasks) {
+						_log.info("disabling ct of state: " + ct.getState());
+						ct.cancel(true);
+					}
+					update();
 				}
 			}
 		});
@@ -273,15 +283,17 @@ public class ConflictSystemTray implements ComputationListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				_log.info("Timer fired at: " + TimeUtility.getCurrentLSMRDateString());
-
-				if (_client != null) {
-					// get the client to nicely refresh its elements
-					_client.calculateConflicts();
-				} else {
-					performCalculations();
-				}
+				//
+				// if (_client != null) {
+				// // get the client to nicely refresh its elements
+				// // _client.calculateConflicts();
+				// performCalculations();
+				// } else {
+				performCalculations();
+				// }
 			}
 		});
+
 		_timer.setInitialDelay((int) Constants.TIMER_CONSTANT);
 		_timer.start();
 
@@ -291,32 +303,42 @@ public class ConflictSystemTray implements ComputationListener {
 				+ new SimpleDateFormat("HH:mm:ss").format(new Date(nextFire)) + ")");
 	}
 
+	HashSet<CalculateTask> tasks = new HashSet<CalculateTask>();
+	long startCalculations = 0L;
+
 	/**
-	 * Perform the initial calculations
+	 * Perform the conflict calculations
 	 */
 	private void performCalculations() {
+
+		if (tasks.size() > 0) {
+			for (CalculateTask ct : tasks) {
+				_log.info("ct state: " + ct.getState());
+			}
+			throw new RuntimeException("PerformCalculations being called in error; tasks > 0");
+		}
 
 		updateNowItem.setLabel("Updating...");
 		updateNowItem.setEnabled(false);
 
-		long start = System.currentTimeMillis();
-		for (ProjectPreferences pp : _prefs.getProjectPreference()) {
-			for (DataSource source : pp.getDataSources()) {
-				ConflictDaemon.getInstance().calculateConflicts(source, pp);
+		startCalculations = System.currentTimeMillis();
+
+		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
+			for (final DataSource source : projPref.getDataSources()) {
+				final CalculateTask ct = new CalculateTask(source, projPref, this, _client);
+				tasks.add(ct);
+				ct.execute();
+				ct.addPropertyChangeListener(new PropertyChangeListener() {
+
+					@Override
+					public void propertyChange(PropertyChangeEvent evt) {
+						update();
+					}
+
+				});
 			}
 		}
-		long end = System.currentTimeMillis();
 
-		long delta = end - start;
-		Constants.TIMER_CONSTANT = delta * Constants.TIMER_MULTIPLIER;
-
-		_log.info("Computation took: " + TimeUtility.msToHumanReadable(delta));
-		// _log.info("Adaptive timer interval now: " + TimeUtility.msToHumanReadable(Constants.TIMER_CONSTANT));
-
-		updateNowItem.setEnabled(true);
-		updateNowItem.setLabel("Update now");
-
-		createTimer();
 	}
 
 	private void quit(int status) {
@@ -335,18 +357,36 @@ public class ConflictSystemTray implements ComputationListener {
 		} else {
 			_client = new ConflictClient();
 			_client.createAndShowGUI(_prefs);
-			// only update when the timer fires
-			// initial update is fired manually
-			// _client.calculateConflicts();
 		}
-
-		createTimer();
-
 	}
 
 	@Override
 	public void update() {
 		_log.trace("ConflictSystemTray::update()");
+
+		Iterator<CalculateTask> ctIterator = tasks.iterator();
+		if (ctIterator.hasNext()) {
+			CalculateTask ct = ctIterator.next();
+			_log.trace("Current state: " + ct.getState());
+			if (ct.isDone()) {
+				ctIterator.remove();
+			}
+		}
+
+		_log.trace("Task size in update: " + tasks.size());
+		if (tasks.size() == 0) {
+
+			if (daemonEnabledItem.getState()) {
+				long end = System.currentTimeMillis();
+				long delta = end - startCalculations;
+				_log.info("Computation took: " + TimeUtility.msToHumanReadable(delta));
+				Constants.TIMER_CONSTANT = delta * Constants.TIMER_MULTIPLIER;
+				createTimer();
+			}
+
+			updateNowItem.setEnabled(true);
+			updateNowItem.setLabel("Update now");
+		}
 
 		boolean anyGreen = false;
 		boolean anyPull = false;
