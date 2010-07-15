@@ -313,7 +313,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		if (tasks.size() > 0) {
 			for (CalculateTask ct : tasks) {
-				_log.info("ct state: " + ct.getState());
+				_log.trace("CT state: " + ct.getState());
 			}
 			throw new RuntimeException("PerformCalculations being called in error; tasks > 0");
 		}
@@ -332,9 +332,11 @@ public class ConflictSystemTray implements ComputationListener {
 
 					@Override
 					public void propertyChange(PropertyChangeEvent evt) {
+						// NOTE: this is a poor hack; update() should be called by the handlers automatically, but it
+						// seems that when this call is made the CT's state isn't always DONE so it fails to clear the
+						// tasks vector correctly.
 						update();
 					}
-
 				});
 			}
 		}
