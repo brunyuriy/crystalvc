@@ -219,9 +219,9 @@ public class ClientPreferences {
 		} catch (JDOMException jdome) {
 			_log.error("Error parsing configuration file.", jdome);
 		} catch (IOException ioe) {
-			throw new RuntimeException("Error reading configuration file.", ioe);
+			throw new RuntimeException("Error reading configuration file; " + ioe.getMessage(), ioe);
 		} catch (Exception e) {
-			throw new RuntimeException("Error parsing configuration file.", e);
+			throw new RuntimeException("Error parsing configuration file; " + e.getMessage(), e);
 		}
 
 		// assert prefs != null;
@@ -241,7 +241,7 @@ public class ClientPreferences {
 		// assert new File(fName).isFile();
 
 		if (fName == null || !new File(fName).exists() || !new File(fName).isFile()) {
-			throw new RuntimeException("ConflictClient::verifyFile( " + fName + " ) - File does not exist.");
+			throw new RuntimeException("File does not exist: " + fName);
 		}
 	}
 
@@ -257,7 +257,7 @@ public class ClientPreferences {
 		// assert new File(path).isDirectory();
 
 		if (path == null || !new File(path).exists() || !new File(path).isDirectory()) {
-			throw new RuntimeException("ConflictClient::verifyPath( " + path + " ) - Path does not exist.");
+			throw new RuntimeException("Path does not exist: " + path);
 		}
 	}
 

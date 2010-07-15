@@ -82,7 +82,10 @@ public class ConflictSystemTray implements ComputationListener {
 
 			System.err.println(msg);
 			_log.error(msg);
-
+			
+			System.err.println(e.getMessage());
+			_log.error(e.getMessage());
+			
 			quit(-1);
 		}
 		// Check the SystemTray support
