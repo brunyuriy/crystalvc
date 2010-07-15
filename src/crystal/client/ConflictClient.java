@@ -2,12 +2,10 @@ package crystal.client;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.SwingWorker;
 
 import org.apache.log4j.Logger;
 
@@ -25,49 +23,7 @@ import crystal.model.ConflictResult.ResultStatus;
 public class ConflictClient implements ConflictDaemon.ComputationListener {
 	private Logger _log = Logger.getLogger(this.getClass());
 
-	/**
-	 * This class enables the calcualtions to happen on a background thread but _STILL_ update the UI. When we were
-	 * doing the analysis on a regular Thread the UI woudln't update until all of the tasks were done; the UI didn't
-	 * block, but it didn't update either. This fixes that problem.
-	 * 
-	 * @author rtholmes
-	 */
-	class CalculateTask extends SwingWorker<Void, ConflictResult> {
-		ProjectPreferences _prefs;
-		DataSource _source;
-
-		/**
-		 * Constructor.
-		 * 
-		 * @param source
-		 * @param prefs
-		 */
-		CalculateTask(DataSource source, ProjectPreferences prefs) {
-			_source = source;
-			_prefs = prefs;
-		}
-
-		@Override
-		protected Void doInBackground() throws Exception {
-
-			ConflictResult calculatingPlaceholder = new ConflictResult(_source, ResultStatus.PENDING);
-			publish(calculatingPlaceholder);
-
-			ConflictResult result = ConflictDaemon.getInstance().calculateConflicts(_source, _prefs);
-
-			_log.trace("ConflictClient::CalcualteTask::publish( " + result + " )");
-			publish(result);
-			return null;
-		}
-
-		@Override
-		protected void process(List<ConflictResult> chunks) {
-			for (ConflictResult cr : chunks) {
-				_log.trace("ConflictClient::CalcualteTask::process( " + cr + " )");
-				refresh();
-			}
-		}
-	}
+	
 
 	/**
 	 * UI frame.
@@ -79,17 +35,17 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 	 */
 	private ClientPreferences _preferences;
 
-	/**
-	 * Runs the analysis on any any projects described by the preferences.
-	 */
-	public void calculateConflicts() {
-		for (ProjectPreferences projPref : _preferences.getProjectPreference()) {
-			for (final DataSource source : projPref.getDataSources()) {
-				CalculateTask ct = new CalculateTask(source, projPref);
-				ct.execute();
-			}
-		}
-	}
+//	/**
+//	 * Runs the analysis on any any projects described by the preferences.
+//	 */
+//	public void calculateConflicts() {
+//		for (ProjectPreferences projPref : _preferences.getProjectPreference()) {
+//			for (final DataSource source : projPref.getDataSources()) {
+//				CalculateTask ct = new CalculateTask(source, projPref);
+//				ct.execute();
+//			}
+//		}
+//	}
 
 	/**
 	 * Close the ConflictClient UI.
