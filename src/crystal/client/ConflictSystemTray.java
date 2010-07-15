@@ -61,6 +61,8 @@ public class ConflictSystemTray implements ComputationListener {
 		_log.info("ConflictSystemTray - started at: " + TimeUtility.getCurrentLSMRDateString());
 	}
 
+	private MenuItem updateNowItem;
+
 	/**
 	 * Create the tray icon and get it installed in the tray.
 	 */
@@ -112,6 +114,7 @@ public class ConflictSystemTray implements ComputationListener {
 		MenuItem aboutItem = new MenuItem("About");
 		MenuItem preferencesItem = new MenuItem("Preferences");
 		CheckboxMenuItem enabledItem = new CheckboxMenuItem("Daemon Enabled");
+		updateNowItem = new MenuItem("Update Now");
 		final MenuItem showClientItem = new MenuItem("Show Client");
 		MenuItem exitItem = new MenuItem("Exit");
 
@@ -120,6 +123,8 @@ public class ConflictSystemTray implements ComputationListener {
 		trayMenu.addSeparator();
 		trayMenu.add(preferencesItem);
 		trayMenu.add(enabledItem);
+		trayMenu.addSeparator();
+		trayMenu.add(updateNowItem);
 		trayMenu.addSeparator();
 		trayMenu.add(showClientItem);
 		trayMenu.addSeparator();
@@ -151,6 +156,13 @@ public class ConflictSystemTray implements ComputationListener {
 		aboutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(null, "Built by Holmes, Brun, Ernst, and Notkin.");
+			}
+		});
+
+		updateNowItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				_log.info("Update now manually selected.");
+				performCalculations();
 			}
 		});
 
@@ -284,6 +296,9 @@ public class ConflictSystemTray implements ComputationListener {
 	 */
 	private void performCalculations() {
 
+		updateNowItem.setLabel("Updating...");
+		updateNowItem.setEnabled(false);
+
 		long start = System.currentTimeMillis();
 		for (ProjectPreferences pp : _prefs.getProjectPreference()) {
 			for (DataSource source : pp.getDataSources()) {
@@ -297,6 +312,9 @@ public class ConflictSystemTray implements ComputationListener {
 
 		_log.info("Computation took: " + TimeUtility.msToHumanReadable(delta));
 		// _log.info("Adaptive timer interval now: " + TimeUtility.msToHumanReadable(Constants.TIMER_CONSTANT));
+
+		updateNowItem.setEnabled(true);
+		updateNowItem.setLabel("Update now");
 
 		createTimer();
 	}
