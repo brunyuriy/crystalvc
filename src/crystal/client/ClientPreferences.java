@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.jdom.Document;
@@ -25,6 +25,17 @@ import crystal.model.DataSource.RepoKind;
  * 
  */
 public class ClientPreferences {
+	private interface IPrefXML {
+		static final String KIND = "kind";
+		static final String CLONE = "clone";
+		static final String LABEL = "label";
+
+		static final String SOURCES = "sources";
+		static final String SOURCE = "source";
+
+		static final String PROJECT = "project";
+	}
+
 	/**
 	 * Path to the configuration (user.home)
 	 */
@@ -42,7 +53,8 @@ public class ClientPreferences {
 	/**
 	 * Maps a short name (usually project id) to a preference.
 	 */
-	Hashtable<String, ProjectPreferences> _projectPreferences = new Hashtable<String, ProjectPreferences>();
+	// Hashtable<String, ProjectPreferences> _projectPreferences = new Hashtable<String, ProjectPreferences>();
+	Vector<ProjectPreferences> _projectPreferences = new Vector<ProjectPreferences>();
 
 	/**
 	 * Points to the user's scratch space. Directory must exist.
@@ -81,9 +93,13 @@ public class ClientPreferences {
 	public void addProjectPreferences(ProjectPreferences pref) {
 		String shortName = pref.getEnvironment().getShortName();
 
-		assert !_projectPreferences.containsKey(shortName);
+		for (ProjectPreferences pp : _projectPreferences) {
+			if (pp.getEnvironment().getShortName().equals(pref.getEnvironment().getShortName())) {
+				throw new RuntimeException("Duplicate project name: " + pp.getEnvironment().getShortName());
+			}
+		}
 
-		_projectPreferences.put(shortName, pref);
+		_projectPreferences.add(pref);
 	}
 
 	/**
@@ -92,7 +108,7 @@ public class ClientPreferences {
 	 * @return
 	 */
 	public Collection<ProjectPreferences> getProjectPreference() {
-		return _projectPreferences.values();
+		return _projectPreferences;
 	}
 
 	/**
@@ -102,9 +118,13 @@ public class ClientPreferences {
 	 * @return
 	 */
 	public ProjectPreferences getProjectPreferences(String shortName) {
-		assert _projectPreferences.containsKey(shortName);
-
-		return _projectPreferences.get(shortName);
+		// assert _projectPreferences.containsKey(shortName);
+		for (ProjectPreferences pp : _projectPreferences) {
+			if (pp.getEnvironment().getShortName().equals(shortName)) {
+				return pp;
+			}
+		}
+		throw new RuntimeException("Project preferences: " + shortName + " does not exist.");
 	}
 
 	/**
@@ -161,57 +181,72 @@ public class ClientPreferences {
 
 			prefs = new ClientPreferences(tempDirectory, hgPath);
 
-			List<Element> projectElements = rootElement.getChildren("project");
+			List<Element> projectElements = rootElement.getChildren(IPrefXML.PROJECT);
 			for (Element projectElement : projectElements) {
-				String myKind = projectElement.getAttributeValue("myKind");
-				String myShortName = projectElement.getAttributeValue("myShortName");
-				String myClone = projectElement.getAttributeValue("myClone");
+				String projectKind = projectElement.getAttributeValue(IPrefXML.KIND);
+				String projectLabel = projectElement.getAttributeValue(IPrefXML.LABEL);
+				String projectClone = projectElement.getAttributeValue(IPrefXML.CLONE);
 
-				verifyPath(myClone);
+				if (projectKind == null) {
+					throw new RuntimeException("Kind attribute must be set for project element.");
+				}
+				if (projectLabel == null) {
+					throw new RuntimeException("Label attribute must be set for project element.");
+				}
+				if (projectClone == null) {
+					throw new RuntimeException("Clone attribute must be set for project element.");
+				}
 
-				// assert myKind != null;
-				if (myKind == null || !myKind.equals("HG")) {
+				// XXX: bring this back to validate the repositories
+				// if (kind.equals(RepoKind.HG)) {
+				// boolean isRepo = HgStateChecker.isHGRepository(hgPath, projectClone, tempDirectory);
+				// if (!isRepo) {
+				// throw new RuntimeException("Provided clone is not a valid Hg repository: " + projectClone);
+				// }
+				// }
+
+				RepoKind kind = RepoKind.valueOf(projectKind);
+
+				verifyPath(projectClone);
+
+				if (kind == null || !kind.equals(RepoKind.HG)) {
 					throw new RuntimeException("ClientPreferences - myKind not valid. (currently only HG is supported).");
 				}
 
-				// assert myShortName != null;
-				if (myShortName == null || myShortName.equals("")) {
+				if (projectLabel == null || projectLabel.equals("")) {
 					throw new RuntimeException("ClientPreferences - myShortName must be specified.");
 				}
 
 				// TODO: we need to come up with a name for the local master copy of the repository and add it as the
 				// 3rd argument below
-				DataSource myEnvironment = new DataSource(myShortName, myClone, RepoKind.valueOf(myKind));
+				DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind);
 
 				ProjectPreferences projectPreferences = new ProjectPreferences(myEnvironment, prefs);
 				prefs.addProjectPreferences(projectPreferences);
 
-				if (projectElement.getChild("sources") != null) {
-					List<Element> sourceElements = projectElement.getChild("sources").getChildren("source");
+				if (projectElement.getChild(IPrefXML.SOURCES) != null) {
+					List<Element> sourceElements = projectElement.getChild(IPrefXML.SOURCES).getChildren(IPrefXML.SOURCE);
 					for (Element sourceElement : sourceElements) {
-						String kind = sourceElement.getAttributeValue("kind");
-						String shortName = sourceElement.getAttributeValue("shortName");
-						String clone = sourceElement.getAttributeValue("clone");
+						String sourceLabel = sourceElement.getAttributeValue(IPrefXML.LABEL);
+						String sourceClone = sourceElement.getAttributeValue(IPrefXML.CLONE);
 
-						// assert kind != null;
-						if (kind == null || !kind.equals("HG")) {
-							throw new RuntimeException("ClientPreferences - kind not valid. (currently only HG is supported) for source : "
-									+ shortName);
+						if (sourceLabel == null || sourceLabel.equals("")) {
+							throw new RuntimeException("Label attribute must be set for source element.");
 						}
 
-						// assert shortName != null;
-						if (shortName == null || shortName.equals("")) {
-							throw new RuntimeException("ClientPreferences - shortName must be specified.");
+						if (sourceClone == null || sourceClone.equals("")) {
+							throw new RuntimeException("Clone attribute must be set for source element.");
 						}
 
-						// assert clone != null;
-						if (clone == null || clone.equals("")) {
-							throw new RuntimeException("ClientPreferences - clone must be specified for source: " + shortName);
-						}
+						// XXX: bring this back to validate the repositories
+						// if (kind.equals(RepoKind.HG)) {
+						// boolean isRepo = HgStateChecker.isHGRepository(hgPath, sourceClone, tempDirectory);
+						// if (!isRepo) {
+						// throw new RuntimeException("Provided clone is not a valid Hg repository: " + sourceClone);
+						// }
+						// }
 
-						// TODO: we need to come up with a name for the local master copy of the repository and add it
-						// as the 3rd argument below
-						DataSource source = new DataSource(shortName, clone, RepoKind.valueOf(kind));
+						DataSource source = new DataSource(sourceLabel, sourceClone, kind);
 						projectPreferences.addDataSource(source);
 					}
 				}
@@ -223,8 +258,6 @@ public class ClientPreferences {
 		} catch (Exception e) {
 			throw new RuntimeException("Error parsing configuration file; " + e.getMessage(), e);
 		}
-
-		// assert prefs != null;
 
 		return prefs;
 	}

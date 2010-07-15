@@ -34,11 +34,11 @@
 
 <ccConfig tempDirectory="/tmp/" hgPath="/path/to/hg">
 
-  <project myKind="HG" myShortName="myProject" myClone="/dev/myProject/">
+  <project kind="HG" label="myProject" clone="/dev/myProject/">
 	
     <sources>
-      <source kind="HG" shortName="jim" clone="https://path/to/repo" />
-      <source kind="HG" shortName="HEAD" clone="http://path/to/repo" />
+      <source label="jim" clone="https://path/to/repo" />
+      <source label="HEAD" clone="http://path/to/repo" />
     </sources>
 		
   </project>
