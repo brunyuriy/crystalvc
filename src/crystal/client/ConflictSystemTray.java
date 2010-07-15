@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -82,10 +84,10 @@ public class ConflictSystemTray implements ComputationListener {
 
 			System.err.println(msg);
 			_log.error(msg);
-			
+
 			System.err.println(e.getMessage());
 			_log.error(e.getMessage());
-			
+
 			quit(-1);
 		}
 		// Check the SystemTray support
@@ -270,7 +272,11 @@ public class ConflictSystemTray implements ComputationListener {
 		});
 		_timer.setInitialDelay((int) Constants.TIMER_CONSTANT);
 		_timer.start();
-		_log.info("Timer created - will fire in: " + TimeUtility.msToHumanReadable(_timer.getInitialDelay()));
+
+		long nextFire = System.currentTimeMillis() + _timer.getDelay();
+
+		_log.info("Timer created - will fire in: " + TimeUtility.msToHumanReadable(_timer.getInitialDelay()) + " (@ "
+				+ new SimpleDateFormat("HH:mm:ss").format(new Date(nextFire)) + ")");
 	}
 
 	/**
@@ -371,7 +377,7 @@ public class ConflictSystemTray implements ComputationListener {
 	 */
 	public static void main(String[] args) {
 
-		LSMRLogger.startLog4J(true, true, Level.INFO, System.getProperty("user.home"), ".conflictClientLog");
+		LSMRLogger.startLog4J(Constants.QUIET_CONSOLE, true, Level.INFO, System.getProperty("user.home"), ".conflictClientLog");
 
 		// UIManager.put("swing.boldMetal", Boolean.FALSE);
 
