@@ -7,4 +7,6 @@ public class Constants {
 
 	public static final boolean DEBUG_RUNIT = false;
 	public static final boolean DEBUG_UI = false;
+
+	public static final boolean QUIET_CONSOLE = false;
 }
