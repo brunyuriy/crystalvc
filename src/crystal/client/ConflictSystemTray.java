@@ -368,7 +368,7 @@ public class ConflictSystemTray implements ComputationListener {
 	 */
 	public static void main(String[] args) {
 
-		LSMRLogger.startLog4J(true, Level.INFO, System.getProperty("user.home"), ".conflictClientLog");
+		LSMRLogger.startLog4J(true, true, Level.INFO, System.getProperty("user.home"), ".conflictClientLog");
 
 		// UIManager.put("swing.boldMetal", Boolean.FALSE);
 

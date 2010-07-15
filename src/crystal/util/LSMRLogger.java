@@ -13,6 +13,7 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.Priority;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.xml.XMLLayout;
 
@@ -81,7 +82,7 @@ public class LSMRLogger {
 	 * @param logFNamePrefix
 	 *            the filename prefix of the log files; if the log directory is set to null this won't be used.
 	 */
-	public static void startLog4J(boolean verbose, Level level, String logDirectory, String logFNamePrefix) {
+	public static void startLog4J(boolean shipping, boolean verbose, Level level, String logDirectory, String logFNamePrefix) {
 		// We don't want any duplicate appenders laying around
 		Logger.getRootLogger().removeAllAppenders();
 
@@ -89,6 +90,9 @@ public class LSMRLogger {
 
 		// This is bad form but BasicConfigurator only adds one appender so it works out just fine
 		ConsoleAppender ca = (ConsoleAppender) Logger.getRootLogger().getAllAppenders().nextElement();
+		if (shipping) {
+			ca.setThreshold(Level.ERROR);
+		}
 
 		if (logDirectory != null && !logDirectory.endsWith(File.separator))
 			logDirectory = logDirectory + File.separator;
