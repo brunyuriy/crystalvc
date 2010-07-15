@@ -2,8 +2,6 @@ package crystal.client;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
@@ -146,18 +144,18 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		rows += "<td><b></b></td>";
 
-		Vector<DataSource> sources = new Vector<DataSource>();
-		sources.addAll(projectPreferences.getDataSources());
-		Collections.sort(sources, new Comparator<DataSource>() {
+		// Vector<DataSource> sources = new Vector<DataSource>();
+		// sources.addAll(projectPreferences.getDataSources());
+		// Collections.sort(sources, new Comparator<DataSource>() {
+		//
+		// @Override
+		// public int compare(DataSource o1, DataSource o2) {
+		// return o1.getShortName().compareTo(o2.getShortName());
+		// }
+		//
+		// });
 
-			@Override
-			public int compare(DataSource o1, DataSource o2) {
-				return o1.getShortName().compareTo(o2.getShortName());
-			}
-
-		});
-
-		for (DataSource source : sources) {
+		for (DataSource source : projectPreferences.getDataSources()) {
 			String rPre = "";
 			String rBody = "<td><b>" + source.getShortName() + "</b></td>";
 			String rPost = "";
@@ -196,16 +194,16 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		// sort the columns so they're stable in subsequent runs of the client
 		Vector<DataSource> sources = new Vector<DataSource>();
 		sources.addAll(prefs.getDataSources());
-		Collections.sort(sources, new Comparator<DataSource>() {
+		// Collections.sort(sources, new Comparator<DataSource>() {
+		//
+		// @Override
+		// public int compare(DataSource o1, DataSource o2) {
+		// return o1.getShortName().compareTo(o2.getShortName());
+		// }
+		//
+		// });
 
-			@Override
-			public int compare(DataSource o1, DataSource o2) {
-				return o1.getShortName().compareTo(o2.getShortName());
-			}
-
-		});
-
-		for (DataSource source : sources) {
+		for (DataSource source : prefs.getDataSources()) {
 			String rPre = "";
 
 			String rBody = "";

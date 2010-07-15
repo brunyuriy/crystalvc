@@ -2,7 +2,7 @@ package crystal.client;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.Vector;
 
 import crystal.model.DataSource;
 
@@ -17,7 +17,7 @@ public class ProjectPreferences {
 	/**
 	 * Shortname -> data source map.
 	 */
-	private Hashtable<String, DataSource> _dataSources;
+	private Vector<DataSource> _dataSources;
 
 	/**
 	 * The developer's environment; this corresponds to their own repository.
@@ -38,7 +38,7 @@ public class ProjectPreferences {
 	public ProjectPreferences(DataSource myEnvironment, ClientPreferences clientPrefs) {
 		_myEnvironment = myEnvironment;
 		_clientPreferences = clientPrefs;
-		_dataSources = new Hashtable<String, DataSource>();
+		_dataSources = new Vector<DataSource>();
 	}
 
 	/**
@@ -48,9 +48,15 @@ public class ProjectPreferences {
 	 *            The source to add; the short name must be unique or an assertion will fail.
 	 */
 	public void addDataSource(DataSource source) {
-		assert !_dataSources.containsKey(source.getShortName());
-
-		_dataSources.put(source.getShortName(), source);
+		// assert !_dataSources.containsKey(source.getShortName());
+		for (DataSource ds : _dataSources) {
+			if (ds.getShortName().equals(source.getShortName())) {
+				throw new RuntimeException("Error adding new source; short name: " + source.getShortName() + " already exists for project: "
+						+ _myEnvironment.getShortName());
+			}
+		}
+		// _dataSources.put(source.getShortName(), source);
+		_dataSources.add(source);
 	}
 
 	/**
@@ -59,7 +65,7 @@ public class ProjectPreferences {
 	 * @return
 	 */
 	public Collection<DataSource> getDataSources() {
-		return _dataSources.values();
+		return _dataSources;
 	}
 
 	/**
@@ -79,7 +85,13 @@ public class ProjectPreferences {
 	 * @return
 	 */
 	public DataSource getDataSource(String shortName) {
-		return _dataSources.get(shortName);
+		// return _dataSources.get(shortName);
+		for (DataSource ds : _dataSources) {
+			if (ds.getShortName().equals(shortName)) {
+				return ds;
+			}
+		}
+		throw new RuntimeException("Data source: " + shortName + " does not exist.");
 	}
 
 	/**
@@ -105,6 +117,6 @@ public class ProjectPreferences {
 		if (!basePath.endsWith(File.separator))
 			basePath += File.separator;
 
-		return basePath+getEnvironment().getShortName() + "_" + source.getShortName();
+		return basePath + getEnvironment().getShortName() + "_" + source.getShortName();
 	}
 }
