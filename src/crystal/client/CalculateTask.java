@@ -49,7 +49,8 @@ class CalculateTask extends SwingWorker<Void, ConflictResult> {
 
 		ConflictResult result = ConflictDaemon.getInstance().calculateConflicts(_source, _prefs);
 
-		_log.trace("ConflictClient::CalcualteTask::publish( " + result + " )");
+		_log.trace("Result computed: " + result);
+		
 		publish(result);
 		return null;
 	}
@@ -57,7 +58,7 @@ class CalculateTask extends SwingWorker<Void, ConflictResult> {
 	@Override
 	protected void process(List<ConflictResult> chunks) {
 		for (ConflictResult cr : chunks) {
-			_log.trace("ConflictClient::CalcualteTask::process( " + cr + " )");
+			_log.trace("Processing computed result: " + cr);
 
 			if (_trayListener != null)
 				_trayListener.update();

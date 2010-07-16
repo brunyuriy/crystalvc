@@ -15,6 +15,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+import crystal.Constants;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
 
@@ -30,7 +31,6 @@ public class ClientPreferences {
 		static final String CLONE = "clone";
 		static final String LABEL = "label";
 
-		static final String SOURCES = "sources";
 		static final String SOURCE = "source";
 
 		static final String PROJECT = "project";
@@ -197,6 +197,14 @@ public class ClientPreferences {
 					throw new RuntimeException("Clone attribute must be set for project element.");
 				}
 
+				if (projectClone.startsWith(Constants.HOME)) {
+					String firstPart = System.getProperty("user.home");
+					String lastPart = projectClone.substring(Constants.HOME.length());
+					projectClone = firstPart + lastPart;
+
+					_log.trace("$HOME in project path: " + (firstPart + lastPart));
+				}
+
 				// XXX: bring this back to validate the repositories
 				// if (kind.equals(RepoKind.HG)) {
 				// boolean isRepo = HgStateChecker.isHGRepository(hgPath, projectClone, tempDirectory);
@@ -221,11 +229,13 @@ public class ClientPreferences {
 				// 3rd argument below
 				DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind);
 
+				_log.trace("Loaded project: " + myEnvironment);
+
 				ProjectPreferences projectPreferences = new ProjectPreferences(myEnvironment, prefs);
 				prefs.addProjectPreferences(projectPreferences);
 
-				if (projectElement.getChild(IPrefXML.SOURCES) != null) {
-					List<Element> sourceElements = projectElement.getChild(IPrefXML.SOURCES).getChildren(IPrefXML.SOURCE);
+				if (projectElement.getChild(IPrefXML.SOURCE) != null) {
+					List<Element> sourceElements = projectElement.getChildren(IPrefXML.SOURCE);
 					for (Element sourceElement : sourceElements) {
 						String sourceLabel = sourceElement.getAttributeValue(IPrefXML.LABEL);
 						String sourceClone = sourceElement.getAttributeValue(IPrefXML.CLONE);
@@ -238,6 +248,14 @@ public class ClientPreferences {
 							throw new RuntimeException("Clone attribute must be set for source element.");
 						}
 
+						if (sourceClone.startsWith(Constants.HOME)) {
+							String firstPart = System.getProperty("user.home");
+							String lastPart = sourceClone.substring(Constants.HOME.length());
+							sourceClone = firstPart + lastPart;
+
+							_log.trace("$HOME in project path: " + (firstPart + lastPart));
+						}
+
 						// XXX: bring this back to validate the repositories
 						// if (kind.equals(RepoKind.HG)) {
 						// boolean isRepo = HgStateChecker.isHGRepository(hgPath, sourceClone, tempDirectory);
@@ -247,6 +265,8 @@ public class ClientPreferences {
 						// }
 
 						DataSource source = new DataSource(sourceLabel, sourceClone, kind);
+						_log.trace("Loaded data source: " + source);
+
 						projectPreferences.addDataSource(source);
 					}
 				}
@@ -301,7 +321,7 @@ public class ClientPreferences {
 	public String getHgPath() {
 		return _hgPath;
 	}
-	
+
 	/**
 	 * 
 	 * @effect set the path to the user's hg binary
@@ -309,14 +329,14 @@ public class ClientPreferences {
 	public void setHgPath(String hgPath) {
 		_hgPath = hgPath;
 	}
-	
+
 	/**
 	 * 
 	 * @return path to the user's scratch space
 	 */
 	public String getTempDirectory() {
 		return _tempDirectory;
-	}	
+	}
 
 	/**
 	 * 

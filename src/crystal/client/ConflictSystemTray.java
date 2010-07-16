@@ -23,7 +23,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import crystal.Constants;
@@ -437,7 +436,7 @@ public class ConflictSystemTray implements ComputationListener {
 	 */
 	public static void main(String[] args) {
 
-		LSMRLogger.startLog4J(Constants.QUIET_CONSOLE, true, Level.INFO, System.getProperty("user.home"), ".conflictClientLog");
+		LSMRLogger.startLog4J(Constants.QUIET_CONSOLE, true, Constants.LOG_LEVEL, System.getProperty("user.home"), ".conflictClientLog");
 
 		// UIManager.put("swing.boldMetal", Boolean.FALSE);
 
