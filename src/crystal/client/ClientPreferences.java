@@ -18,6 +18,7 @@ import org.jdom.input.SAXBuilder;
 import crystal.Constants;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
+import crystal.util.XMLTools;
 
 /**
  * Maintains multiple sets of preferences, rather than just one.
@@ -27,13 +28,19 @@ import crystal.model.DataSource.RepoKind;
  */
 public class ClientPreferences {
 	private interface IPrefXML {
-		static final String KIND = "kind";
-		static final String CLONE = "clone";
-		static final String LABEL = "label";
+
+		static final String ROOT = "ccConfig";
+
+		static final String TMP_DIR = "tempDirectory";
+		static final String HG_PATH = "hgPath";
+
+		static final String PROJECT = "project";
 
 		static final String SOURCE = "source";
 
-		static final String PROJECT = "project";
+		static final String KIND = "kind";
+		static final String CLONE = "clone";
+		static final String LABEL = "label";
 	}
 
 	/**
@@ -182,11 +189,8 @@ public class ClientPreferences {
 				_log.trace("$HOME in temporary path: " + (firstPart + lastPart));
 			}
 
-			
 			verifyPath(tempDirectory);
 
-			
-			
 			String hgPath = rootElement.getAttributeValue("hgPath");
 			verifyFile(hgPath);
 
@@ -291,6 +295,38 @@ public class ClientPreferences {
 		}
 
 		return prefs;
+	}
+
+	/**
+	 * Save preferences to fName
+	 * 
+	 * 
+	 * @return
+	 */
+	public static void savePreferencesToXML(ClientPreferences prefs, String fName) {
+
+		Document doc = XMLTools.newXMLDocument();
+
+		Element rootElem = new Element(IPrefXML.ROOT);
+		rootElem.setAttribute(IPrefXML.TMP_DIR, prefs.getTempDirectory());
+		rootElem.setAttribute(IPrefXML.HG_PATH, prefs.getHgPath());
+		doc.setRootElement(rootElem);
+
+		for (ProjectPreferences pp : prefs.getProjectPreference()) {
+			Element projectElem = new Element(IPrefXML.PROJECT);
+			projectElem.setAttribute(IPrefXML.KIND, pp.getEnvironment().getKind().name());
+			projectElem.setAttribute(IPrefXML.CLONE, pp.getEnvironment().getCloneString());
+			rootElem.addContent(projectElem);
+
+			for (DataSource src : pp.getDataSources()) {
+				Element sourceElem = new Element(IPrefXML.SOURCE);
+				sourceElem.setAttribute(IPrefXML.LABEL, src.getShortName());
+				sourceElem.setAttribute(IPrefXML.CLONE, src.getCloneString());
+				projectElem.addContent(sourceElem);
+			}
+		}
+
+		XMLTools.writeXMLDocument(doc, fName);
 	}
 
 	/**
