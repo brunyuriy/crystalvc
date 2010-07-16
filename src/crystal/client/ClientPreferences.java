@@ -174,8 +174,19 @@ public class ClientPreferences {
 
 			Element rootElement = doc.getRootElement();
 			String tempDirectory = rootElement.getAttributeValue("tempDirectory");
+			if (tempDirectory.startsWith(Constants.HOME)) {
+				String firstPart = System.getProperty("user.home");
+				String lastPart = tempDirectory.substring(Constants.HOME.length());
+				tempDirectory = firstPart + lastPart;
+
+				_log.trace("$HOME in temporary path: " + (firstPart + lastPart));
+			}
+
+			
 			verifyPath(tempDirectory);
 
+			
+			
 			String hgPath = rootElement.getAttributeValue("hgPath");
 			verifyFile(hgPath);
 
