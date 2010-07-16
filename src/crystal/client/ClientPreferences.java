@@ -327,7 +327,7 @@ public class ClientPreferences {
 		}
 
 		XMLTools.writeXMLDocument(doc, fName);
-	}
+	} 
 
 	/**
 	 * Check to ensure the provided file exists.
