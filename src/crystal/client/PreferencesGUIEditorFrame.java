@@ -13,7 +13,9 @@ import org.junit.Assert;
 import crystal.model.DataSource;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -32,32 +34,48 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		Assert.assertNotNull(prefs);
 		_prefs = prefs;
 		
-		setLayout(new FlowLayout());
+		setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
 		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		
-		JPanel hgPanel = new JPanel();		
-		hgPanel.setLayout(new FlowLayout());
-		hgPanel.add(new JLabel("Path to hg executable:"), BorderLayout.CENTER);
+		JPanel hgPanel = new JPanel();
+		hgPanel.setLayout(new BoxLayout(hgPanel, BoxLayout.X_AXIS));
+		hgPanel.add(new JLabel("Path to hg executable:"));
 		final JTextField hgPath = new JTextField(prefs.getClientPreferences().getHgPath());
-		hgPanel.add(hgPath, BorderLayout.CENTER);
+		hgPanel.add(hgPath);
 		hgPath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_prefs.getClientPreferences().setHgPath(hgPath.getText());
 			}	
 		});
+		JButton hgButton = new JButton("find");
+		hgPanel.add(hgButton);
+		hgButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new MyPathChooser("Path to hg executable", hgPath, JFileChooser.FILES_ONLY);
+			}
+		});
+		
 		getContentPane().add(hgPanel);
 		
 		JPanel tempPanel = new JPanel();		
-		tempPanel.setLayout(new FlowLayout());
-		tempPanel.add(new JLabel("Path to scratchspace:"), BorderLayout.CENTER);
+		tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
+		tempPanel.add(new JLabel("Path to scratchspace:"));
 		final JTextField tempPath = new JTextField(prefs.getClientPreferences().getTempDirectory());
-		tempPanel.add(tempPath, BorderLayout.CENTER);
+		tempPanel.add(tempPath);
 		tempPath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_prefs.getClientPreferences().setTempDirectory(tempPath.getText());
-			}	
+			}
 		});
+		JButton tempButton = new JButton("find");
+		tempPanel.add(tempButton);
+		tempButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new MyPathChooser("Path to scratch directory", tempPath, JFileChooser.DIRECTORIES_ONLY);
+			}
+		});
+		
 		getContentPane().add(tempPanel);
 		
 		getContentPane().add(repoPanel(_prefs.getEnvironment()));
@@ -73,9 +91,9 @@ public class PreferencesGUIEditorFrame extends JFrame {
 	
 	private JPanel repoPanel(final DataSource source) {
 		JPanel repoPanel = new JPanel();		
-		repoPanel.setLayout(new FlowLayout());
+		repoPanel.setLayout(new BoxLayout(repoPanel, BoxLayout.X_AXIS));
 
-		repoPanel.add(new JLabel("Repo Type (only HG for now)"), BorderLayout.CENTER);
+		repoPanel.add(new JLabel("Repo Type"));
 		final JComboBox type = new JComboBox();
 		type.addItem(DataSource.RepoKind.HG);
 		type.addItem(DataSource.RepoKind.GIT);
@@ -87,7 +105,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			}
 		});
 		
-		repoPanel.add(new JLabel("Short Name"), BorderLayout.CENTER);
+		repoPanel.add(new JLabel("Short Name"));
 		final JTextField shortName = new JTextField(source.getShortName());
 		repoPanel.add(shortName, BorderLayout.CENTER);
 		shortName.addActionListener(new ActionListener() {
@@ -96,7 +114,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			}
 		});
 		
-		repoPanel.add(new JLabel("Clone Address"), BorderLayout.CENTER);
+		repoPanel.add(new JLabel("Clone Address"));
 		final JTextField cloneAddress = new JTextField(source.getCloneString());
 		repoPanel.add(cloneAddress, BorderLayout.CENTER);
 		cloneAddress.addActionListener(new ActionListener() {
@@ -106,6 +124,30 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		});
 
 		return repoPanel;
+	}
+	
+	private static class MyPathChooser extends JFrame {
+		MyPathChooser(String name, final JTextField path, int fileSelectionMode) {
+			super(name);
+			
+			final JFrame chooserFrame = this;
+
+			setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+
+			final JFileChooser chooser = new JFileChooser(path.getText());
+			chooser.setFileSelectionMode(fileSelectionMode);
+			getContentPane().add(chooser);
+
+			pack();
+			setVisible(true);
+
+			chooser.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					path.setText(chooser.getSelectedFile().getAbsolutePath());
+					chooserFrame.setVisible(false);
+				}	
+			});
+		}
 	}
 
 
