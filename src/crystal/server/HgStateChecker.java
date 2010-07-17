@@ -32,10 +32,10 @@ public class HgStateChecker {
 		Assert.assertNotNull(pathToRepo);
 		Assert.assertNotNull(tempWorkPath);
 		
-		String[] myArgs = { "status", pathToRepo };
+		String[] myArgs = { "clone", pathToRepo };
 		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath);
 		
-		return (output.indexOf("There is no Mercurial repository here") < 0);
+		return (output.indexOf("does not appear to be an hg repository!") < 0);
 	}
 
 	/*
