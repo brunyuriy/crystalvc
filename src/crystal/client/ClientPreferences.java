@@ -300,8 +300,7 @@ public class ClientPreferences {
 	/**
 	 * Save preferences to fName
 	 * 
-	 * 
-	 * @return
+	 * @effect saves preferences to a file fName
 	 */
 	public static void savePreferencesToXML(ClientPreferences prefs, String fName) {
 
@@ -332,7 +331,7 @@ public class ClientPreferences {
 	/**
 	 * Check to ensure the provided file exists.
 	 * 
-	 * @param fName
+	 * @param fName 
 	 */
 	private static void verifyFile(String fName) {
 
