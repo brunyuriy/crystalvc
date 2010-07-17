@@ -32,7 +32,7 @@
 <!--    clone:      the string you would provide to hg clone            -->
 <!--                                                                    -->
 
-<ccConfig tempDirectory="/tmp/" hgPath="/path/to/hg">
+<ccConfig tempDirectory="/tmp/conflictClient" hgPath="/path/to/hg">
 
   <project kind="HG" label="myProject" clone="$HOME/dev/myProject/">
       <source label="jim" clone="https://path/to/repo" />
