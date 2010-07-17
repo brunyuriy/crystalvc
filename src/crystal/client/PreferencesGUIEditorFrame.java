@@ -7,6 +7,8 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
@@ -54,13 +56,20 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		hgPanel.add(new JLabel("Path to hg executable:"));
 		final JTextField hgPath = new JTextField(prefs.get(0).getClientPreferences().getHgPath());
 		hgPanel.add(hgPath);
-		hgPath.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		hgPath.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent arg0) {				
+			}
+
+			public void keyReleased(KeyEvent arg0) {
+			}
+
+			public void keyTyped(KeyEvent arg0) {
 				for (ProjectPreferences pref : prefs)
 					pref.getClientPreferences().setHgPath(hgPath.getText());
 				frame.pack();
 			}
 		});
+		
 		JButton hgButton = new JButton("find");
 		hgPanel.add(hgButton);
 		hgButton.addActionListener(new ActionListener() {
@@ -75,8 +84,14 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		tempPanel.add(new JLabel("Path to scratchspace:"));
 		final JTextField tempPath = new JTextField(prefs.get(0).getClientPreferences().getTempDirectory());
 		tempPanel.add(tempPath);
-		tempPath.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		tempPath.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent arg0) {				
+			}
+
+			public void keyReleased(KeyEvent arg0) {
+			}
+
+			public void keyTyped(KeyEvent arg0) {
 				for (ProjectPreferences pref : prefs)
 					pref.getClientPreferences().setTempDirectory(tempPath.getText());
 				frame.pack();
@@ -94,7 +109,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 		final JTabbedPane projectsTabs = new JTabbedPane(JTabbedPane.TOP);
 		for (ProjectPreferences pref : prefs) {
-			ProjectPanel current = new ProjectPanel(pref);
+			ProjectPanel current = new ProjectPanel(pref, frame);
 			projectsTabs.addTab(current.getName(), current);
 			//			getContentPane().add(current);
 		}
@@ -112,7 +127,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 					client = prefs.get(0).getClientPreferences();	
 				ProjectPreferences newGuy = new ProjectPreferences(new DataSource("", "", DataSource.RepoKind.HG), client); 
 				prefs.add(newGuy);
-				ProjectPanel newGuyPanel = new ProjectPanel(newGuy);
+				ProjectPanel newGuyPanel = new ProjectPanel(newGuy, frame);
 				projectsTabs.addTab("New Project", newGuyPanel);
 				frame.pack();
 			}
@@ -157,6 +172,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			chooser.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					path.setText(chooser.getSelectedFile().getAbsolutePath());
+// need to make the keyboard event fire for path					path.fire;
 					chooserFrame.setVisible(false);
 				}	
 			});
@@ -165,7 +181,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 
 	/**
-	 * @param args
+	 * @param args none
 	 */
 	public static void main(String[] args) {
 		ClientPreferences client = new ClientPreferences("temp", "hgPath");
