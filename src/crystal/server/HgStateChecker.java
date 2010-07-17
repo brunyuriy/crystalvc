@@ -33,7 +33,9 @@ public class HgStateChecker {
 		Assert.assertNotNull(tempWorkPath);
 		
 		String[] myArgs = { "clone", pathToRepo };
-		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath);
+		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath + "status_check");
+		
+		RunIt.deleteDirectory(new File(tempWorkPath + "status_check"));
 		
 		return (output.indexOf("does not appear to be an hg repository!") < 0);
 	}
