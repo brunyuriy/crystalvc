@@ -1,11 +1,5 @@
-/**
- * 
- */
 package crystal.client;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -27,6 +21,7 @@ import crystal.model.DataSource;
  */
 public class ProjectPanel extends JPanel {
 	
+	private static final long serialVersionUID = 5244512987255240473L;
 	private String _name;
 
 	/**

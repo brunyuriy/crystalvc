@@ -1,27 +1,18 @@
-/**
- * 
- */
 package crystal.client;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.List;
 import java.util.Vector;
 
 import org.junit.Assert;
 
 import crystal.model.DataSource;
-import crystal.model.DataSource.RepoKind;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,6 +25,8 @@ import javax.swing.JTextField;
  *
  */
 public class PreferencesGUIEditorFrame extends JFrame {
+
+	private static final long serialVersionUID = 4574346360968958312L;
 
 	public PreferencesGUIEditorFrame(final List<ProjectPreferences> prefs) {
 		super("Crystal Configuration Editor");
@@ -81,7 +74,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 		JPanel tempPanel = new JPanel();		
 		tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-		tempPanel.add(new JLabel("Path to scratchspace:"));
+		tempPanel.add(new JLabel("Path to scratch space:"));
 		final JTextField tempPath = new JTextField(prefs.get(0).getClientPreferences().getTempDirectory());
 		tempPanel.add(tempPath);
 		tempPath.addKeyListener(new KeyListener() {
@@ -107,7 +100,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		getContentPane().add(tempPanel);
 
 
-		final JTabbedPane projectsTabs = new JTabbedPane(JTabbedPane.TOP);
+		final JTabbedPane projectsTabs = new JTabbedPane(JTabbedPane.TOP,  JTabbedPane.SCROLL_TAB_LAYOUT);
 		for (ProjectPreferences pref : prefs) {
 			ProjectPanel current = new ProjectPanel(pref, frame);
 			projectsTabs.addTab(current.getName(), current);
@@ -151,10 +144,11 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 		pack();
 		setVisible(true);
-		
 	}
 
 	private static class MyPathChooser extends JFrame {
+		private static final long serialVersionUID = 4078764196578702307L;
+
 		MyPathChooser(String name, final JTextField path, int fileSelectionMode) {
 			super(name);
 
