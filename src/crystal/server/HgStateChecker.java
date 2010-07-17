@@ -65,7 +65,8 @@ public class HgStateChecker {
 		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath);
 
 		if (output.indexOf("updating to branch") < 0)
-			throw new RuntimeException("Could not clone repository " + pathToRemoteRepo + " to " + pathToLocalRepo + "\n" + output);
+			throw new InvalidHgRepositoryException(pathToRemoteRepo, output);
+//			throw new RuntimeException("Could not clone repository " + pathToRemoteRepo + " to " + pathToLocalRepo + "\n" + output);
 	}
 
 	/*
@@ -216,7 +217,7 @@ public class HgStateChecker {
 	// System.out.println(answer);
 	// }
 
-	public class InvalidHgRepositoryException extends Exception {
+	public static class InvalidHgRepositoryException extends Exception {
 
 		private static final long serialVersionUID = 136849480836706393L;
 
