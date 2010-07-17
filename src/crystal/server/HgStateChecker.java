@@ -31,12 +31,12 @@ public class HgStateChecker {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToRepo);
 		Assert.assertNotNull(tempWorkPath);
-		
+
 		String[] myArgs = { "clone", pathToRepo };
 		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath + "status_check");
-		
+
 		RunIt.deleteDirectory(new File(tempWorkPath + "status_check"));
-		
+
 		return (output.indexOf("does not appear to be an hg repository!") < 0);
 	}
 
@@ -48,7 +48,7 @@ public class HgStateChecker {
 	 * @effect: clones the pathToRemoteRepo repository to pathToLocalRepo
 	 */
 	private static void createLocalRepository(String pathToHg, String pathToRemoteRepo, String pathToLocalRepo, String tempWorkPath)
-			throws IOException {
+	throws IOException, InvalidHgRepositoryException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToRemoteRepo);
 		Assert.assertNotNull(pathToLocalRepo);
@@ -91,7 +91,7 @@ public class HgStateChecker {
 	 * 
 	 * @returns whether my repository is same, behind, ahead, or in conflict with your repository.
 	 */
-	public static ResultStatus getState(ProjectPreferences prefs, DataSource source) throws IOException {
+	public static ResultStatus getState(ProjectPreferences prefs, DataSource source) throws IOException, InvalidHgRepositoryException {
 
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);
@@ -112,7 +112,7 @@ public class HgStateChecker {
 		String tempYourName = "tempYour_" + TimeUtility.getCurrentLSMRDateString();
 
 		// Check if a local copy of my repository exists. If it does, update it. If it does not, create it.
-//		System.out.println("*** " + tempWorkPath + " *** " + mine + " ***\n");
+		//		System.out.println("*** " + tempWorkPath + " *** " + mine + " ***\n");
 		if ((new File(mine)).exists())
 			updateLocalRepository(hg, mine, tempWorkPath);
 		else
@@ -216,4 +216,13 @@ public class HgStateChecker {
 	// System.out.println(answer);
 	// }
 
+	public class InvalidHgRepositoryException extends Exception {
+
+		private static final long serialVersionUID = 136849480836706393L;
+
+		public InvalidHgRepositoryException(String invalidRepoAddress, String errorMessage) {
+			super("The address " + invalidRepoAddress + " does not contain an hg repository:\n" + errorMessage);
+		}
+	}
 }
+
