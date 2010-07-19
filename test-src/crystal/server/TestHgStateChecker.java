@@ -20,6 +20,7 @@ import crystal.client.ProjectPreferences;
 import crystal.model.ConflictResult.ResultStatus;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
+import crystal.server.HgStateChecker.InvalidHgRepositoryException;
 import crystal.util.RunIt;
 
 public class TestHgStateChecker {
@@ -159,7 +160,7 @@ public class TestHgStateChecker {
 	}
 
 	@Test
-	public void testBasicMergeConflict() {
+	public void testBasicMergeConflict() throws InvalidHgRepositoryException {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("twoRepository"));
@@ -172,7 +173,7 @@ public class TestHgStateChecker {
 	}
 
 	@Test
-	public void testBasicCleanMerge() {
+	public void testBasicCleanMerge() throws InvalidHgRepositoryException {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("sixRepository"));
@@ -185,7 +186,7 @@ public class TestHgStateChecker {
 	}
 
 	@Test
-	public void testBasicAhead() {
+	public void testBasicAhead() throws InvalidHgRepositoryException {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("threeRepository"));
@@ -198,7 +199,7 @@ public class TestHgStateChecker {
 	}
 
 	@Test
-	public void testBasicBehind() {
+	public void testBasicBehind() throws InvalidHgRepositoryException {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("fourRepository"));
@@ -211,7 +212,7 @@ public class TestHgStateChecker {
 	}
 
 	@Test
-	public void testBasicSame() {
+	public void testBasicSame() throws InvalidHgRepositoryException {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("fiveRepository"));
