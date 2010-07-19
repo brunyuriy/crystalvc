@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.HashSet;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -95,17 +96,25 @@ public class ProjectPanel extends JPanel {
 		
 		newRepoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DataSource newGuy = new DataSource("", "", DataSource.RepoKind.HG);
+				
+				HashSet<String> shortNameLookup = new HashSet<String>();
+				for (DataSource current : pref.getDataSources()) {
+					shortNameLookup.add(current.getShortName());
+				}
+				int count = 1;
+				while (shortNameLookup.contains("New Repo " + count++));
+				
+				DataSource newGuy = new DataSource("New Repo " + --count, "", DataSource.RepoKind.HG);
 				pref.addDataSource(newGuy);
-				add(repoPanel(newGuy, panel, mainFrame));
+				add(repoPanel(newGuy, pref, panel, mainFrame));
 				panel.validate();
-				mainFrame.pack();
+				mainFrame.pack();				
 			}
 		});
 		add(newRepoButton);
 
 		for (DataSource source : pref.getDataSources()) {
-			add(repoPanel(source, panel, mainFrame));			
+			add(repoPanel(source, pref, panel, mainFrame));			
 		}
 	}
 
@@ -113,8 +122,8 @@ public class ProjectPanel extends JPanel {
 		return _name;
 	}
 
-	private JPanel repoPanel(final DataSource source, final JPanel panel, final JFrame mainFrame) {
-		JPanel repoPanel = new JPanel();		
+	private JPanel repoPanel(final DataSource source, final ProjectPreferences pref, final JPanel panel, final JFrame mainFrame) {
+		final JPanel repoPanel = new JPanel();		
 		repoPanel.setLayout(new BoxLayout(repoPanel, BoxLayout.X_AXIS));
 
 		repoPanel.add(new JLabel("Repo Type"));
@@ -164,6 +173,16 @@ public class ProjectPanel extends JPanel {
 				mainFrame.pack();
 			}
 		});
+		
+		final JButton deleteRepoButton = new JButton("Delete");
+		deleteRepoButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pref.removeDataSource(source);
+				panel.remove(repoPanel);
+				mainFrame.pack();
+			}
+		});
+		repoPanel.add(deleteRepoButton);
 
 		return repoPanel;
 	}

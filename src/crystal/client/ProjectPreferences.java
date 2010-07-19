@@ -100,7 +100,7 @@ public class ProjectPreferences {
 	 * @param sourceToRemove
 	 */
 	public void removeDataSource(DataSource sourceToRemove) {
-		_dataSources.remove(sourceToRemove.getShortName());
+		_dataSources.remove(sourceToRemove);
 	}
 
 	/**

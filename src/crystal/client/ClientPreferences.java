@@ -23,7 +23,7 @@ import crystal.util.XMLTools;
 /**
  * Maintains multiple sets of preferences, rather than just one.
  * 
- * @author rtholmes
+ * @author rtholmes & brun
  * 
  */
 public class ClientPreferences {
@@ -98,7 +98,7 @@ public class ClientPreferences {
 	 *            Preference to add; the pref short name must be unique or an assertion will fail.
 	 */
 	public void addProjectPreferences(ProjectPreferences pref) {
-		String shortName = pref.getEnvironment().getShortName();
+		//String shortName = pref.getEnvironment().getShortName();
 
 		for (ProjectPreferences pp : _projectPreferences) {
 			if (pp.getEnvironment().getShortName().equals(pref.getEnvironment().getShortName())) {
@@ -108,6 +108,27 @@ public class ClientPreferences {
 
 		_projectPreferences.add(pref);
 	}
+	
+	/**
+	 * Removes the preference from the project.
+	 * 
+	 * @param pref: preference to remove; if pref is not present, do nothing.  
+	 */
+	public void removeProjectPreferences(ProjectPreferences pref) {
+
+		_projectPreferences.remove(pref);
+	}
+	
+	/**
+	 * Removes the preference from the project.
+	 * 
+	 * @param index: index of the preference to remove.  
+	 */
+	public void removeProjectPreferencesAtIndex(int index) {
+
+		_projectPreferences.remove(index);
+	}
+
 
 	/**
 	 * Returns the preferences.
