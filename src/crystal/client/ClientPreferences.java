@@ -317,6 +317,15 @@ public class ClientPreferences {
 
 		return prefs;
 	}
+	
+	/**
+	 * Save preferences to the default filename
+	 * 
+	 * @effect saves preferences to the default filename
+	 */
+	public static void savePreferencesToDefaultXML(ClientPreferences prefs) {
+		savePreferencesToXML(prefs, CONFIG_PATH);
+	}
 
 	/**
 	 * Save preferences to fName

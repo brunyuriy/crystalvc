@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
@@ -11,6 +13,7 @@ import java.util.Vector;
 import org.junit.Assert;
 
 import crystal.model.DataSource;
+import crystal.util.XMLTools;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -160,7 +163,19 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		getContentPane().add(projectsTabs);
 		getContentPane().add(deleteProjectButton);
 
+		addWindowListener(new WindowListener() {
+			public void windowClosing(WindowEvent arg0) {
+				ClientPreferences.savePreferencesToDefaultXML(prefs);
+			}
 
+			public void windowActivated(WindowEvent arg0) {}
+			public void windowClosed(WindowEvent arg0) {}
+			public void windowDeactivated(WindowEvent arg0) {}
+			public void windowDeiconified(WindowEvent arg0) {}
+			public void windowIconified(WindowEvent arg0) {}
+			public void windowOpened(WindowEvent arg0) {}
+		});
+		
 		pack();
 		setVisible(true);
 	}
