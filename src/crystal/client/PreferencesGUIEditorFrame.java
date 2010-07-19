@@ -166,7 +166,8 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			chooser.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					path.setText(chooser.getSelectedFile().getAbsolutePath());
-// need to make the keyboard event fire for path					path.fire;
+					// and pretend like you typed a key:
+					path.getKeyListeners()[0].keyTyped(new KeyEvent(path, 0, 0, 0, 0, ' '));
 					chooserFrame.setVisible(false);
 				}	
 			});
