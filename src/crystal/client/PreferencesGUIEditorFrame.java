@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -23,21 +24,39 @@ import javax.swing.JTextField;
 /**
  * @author brun
  *
+ * This class is a singleton.  
+ * A PreferencesGUIEditorFrame is a GUI to edit a ClientPreferences object by adding, 
+ * removing, and augmenting projects, and changing other attributes.
  */
 public class PreferencesGUIEditorFrame extends JFrame {
 
 	private static final long serialVersionUID = 4574346360968958312L;
+	
+	private static PreferencesGUIEditorFrame editorFrame;
+	
+	public static PreferencesGUIEditorFrame getPreferencesGUIEditorFrame(ClientPreferences prefs) {
+		if (editorFrame == null)
+			editorFrame = new PreferencesGUIEditorFrame(prefs);
+		editorFrame.setVisible(true);
+		return editorFrame;
+	}
+	
+	public static PreferencesGUIEditorFrame getPreferencesGUIEditorFrame() {
+		if (editorFrame != null)
+			editorFrame.setVisible(true);
+		return editorFrame;
+	}
 
-	public PreferencesGUIEditorFrame(final List<ProjectPreferences> prefs) {
+	private PreferencesGUIEditorFrame(final ClientPreferences prefs) {
 		super("Crystal Configuration Editor");
 		Assert.assertNotNull(prefs);
 
 		final JFrame frame = this;
 
-		if (prefs.isEmpty()) {
-			ClientPreferences client = new ClientPreferences("/usr/bin/hg", "/tmp/crystalClient");
-			ProjectPreferences newGuy = new ProjectPreferences(new DataSource("", "", DataSource.RepoKind.HG), client); 
-			prefs.add(newGuy);
+		if (prefs.getProjectPreference().isEmpty()) {
+//			ClientPreferences client = new ClientPreferences("/usr/bin/hg/", "/tmp/crystalClient/");
+			ProjectPreferences newGuy = new ProjectPreferences(new DataSource("", "", DataSource.RepoKind.HG), prefs); 
+			prefs.addProjectPreferences(newGuy);
 		}
 
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
@@ -47,7 +66,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		JPanel hgPanel = new JPanel();
 		hgPanel.setLayout(new BoxLayout(hgPanel, BoxLayout.X_AXIS));
 		hgPanel.add(new JLabel("Path to hg executable:"));
-		final JTextField hgPath = new JTextField(prefs.get(0).getClientPreferences().getHgPath());
+		final JTextField hgPath = new JTextField(prefs.getHgPath());
 		hgPanel.add(hgPath);
 		hgPath.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {				
@@ -57,8 +76,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			}
 
 			public void keyTyped(KeyEvent arg0) {
-				for (ProjectPreferences pref : prefs)
-					pref.getClientPreferences().setHgPath(hgPath.getText());
+				prefs.setHgPath(hgPath.getText());
 				frame.pack();
 			}
 		});
@@ -75,7 +93,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		JPanel tempPanel = new JPanel();		
 		tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
 		tempPanel.add(new JLabel("Path to scratch space:"));
-		final JTextField tempPath = new JTextField(prefs.get(0).getClientPreferences().getTempDirectory());
+		final JTextField tempPath = new JTextField(prefs.getTempDirectory());
 		tempPanel.add(tempPath);
 		tempPath.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {				
@@ -85,8 +103,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			}
 
 			public void keyTyped(KeyEvent arg0) {
-				for (ProjectPreferences pref : prefs)
-					pref.getClientPreferences().setTempDirectory(tempPath.getText());
+				prefs.setTempDirectory(tempPath.getText());
 				frame.pack();
 			}
 		});
@@ -101,7 +118,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 
 		final JTabbedPane projectsTabs = new JTabbedPane(JTabbedPane.TOP,  JTabbedPane.SCROLL_TAB_LAYOUT);
-		for (ProjectPreferences pref : prefs) {
+		for (ProjectPreferences pref : prefs.getProjectPreference()) {
 			ProjectPanel current = new ProjectPanel(pref, frame);
 			projectsTabs.addTab(current.getName(), current);
 			//			getContentPane().add(current);
@@ -112,16 +129,18 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 		newProjectButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ClientPreferences client ;
-				if (prefs.isEmpty()) {
-					client = new ClientPreferences("/usr/bin/hg", "/tmp/crystalClient");
-					deleteProjectButton.setEnabled(true);
-				} else
-					client = prefs.get(0).getClientPreferences();	
-				ProjectPreferences newGuy = new ProjectPreferences(new DataSource("", "", DataSource.RepoKind.HG), client); 
-				prefs.add(newGuy);
+				deleteProjectButton.setEnabled(true);
+				HashSet<String> shortNameLookup = new HashSet<String>();
+				for (ProjectPreferences current : prefs.getProjectPreference()) {
+					shortNameLookup.add(current.getEnvironment().getShortName());
+				}
+				int count = 1;
+				while (shortNameLookup.contains("New Project " + count++));
+				
+				ProjectPreferences newGuy = new ProjectPreferences(new DataSource("New Project " + --count, "", DataSource.RepoKind.HG), prefs); 
+				prefs.addProjectPreferences(newGuy);
 				ProjectPanel newGuyPanel = new ProjectPanel(newGuy, frame);
-				projectsTabs.addTab("New Project", newGuyPanel);
+				projectsTabs.addTab("New Project " + count, newGuyPanel);
 				frame.pack();
 			}
 		});
@@ -129,9 +148,9 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		deleteProjectButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int current = projectsTabs.getSelectedIndex();
-				prefs.remove(current);
+				prefs.removeProjectPreferencesAtIndex(current);
 				projectsTabs.remove(current);
-				if (prefs.isEmpty())
+				if (prefs.getProjectPreference().isEmpty())
 					deleteProjectButton.setEnabled(false);
 				frame.pack();
 			}
@@ -191,10 +210,10 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		two.addDataSource(threeOther);
 		two.addDataSource(oneOther);
 
-		Vector<ProjectPreferences> vec = new Vector<ProjectPreferences>();
-		vec.add(one);
-		vec.add(two);
-		new PreferencesGUIEditorFrame(vec);
+		client.addProjectPreferences(one);
+		client.addProjectPreferences(two);
+
+		getPreferencesGUIEditorFrame(client);
 
 		//		int i = 0;
 		//		while(true) {
