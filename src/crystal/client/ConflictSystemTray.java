@@ -116,10 +116,11 @@ public class ConflictSystemTray implements ComputationListener {
 
 		// Create a popup menu components
 		MenuItem aboutItem = new MenuItem("About");
-		MenuItem preferencesItem = new MenuItem("Preferences");
+		MenuItem preferencesItem = new MenuItem("Edit Configuration");
 		daemonEnabledItem = new CheckboxMenuItem("Daemon Enabled");
 		updateNowItem = new MenuItem("Update Now");
 		final MenuItem showClientItem = new MenuItem("Show Client");
+//		MenuItem editConfigurationItem = new MenuItem("Edit Configuration");
 		MenuItem exitItem = new MenuItem("Exit");
 
 		// Add components to popup menu
@@ -159,7 +160,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		aboutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Built by Holmes, Brun, Ernst, and Notkin.");
+				JOptionPane.showMessageDialog(null, "Built by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.");
 			}
 		});
 
@@ -178,9 +179,15 @@ public class ConflictSystemTray implements ComputationListener {
 				}
 
 				showClientItem.setEnabled(false);
-				// NOTE: prefs UI broken by multiple project refactor (horrible
-				// hack in the constructor here)
-				ClientPreferencesUI cp = new ClientPreferencesUI(new ClientPreferencesUI.IPreferencesListener() {
+				
+				// either creates (if one did not exist) or displays an existing 
+				// PreferencesGUIEditorFrame configuration editor.
+				PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
+				
+/*				Yuriy: Old Preferences UI code by Reid.  @deprecated.  
+
+ 				ClientPreferencesUI cp = new ClientPreferencesUI(new ClientPreferencesUI.IPreferencesListener() {
+
 					@Override
 					public void preferencesChanged(ProjectPreferences preferences) {
 						// when the preferences are updated, show the
@@ -196,8 +203,9 @@ public class ConflictSystemTray implements ComputationListener {
 						// NOTE: prefs UI broken by multiple project
 						// refactor
 					}
-				});
+				}); 
 				cp.createAndShowGUI();
+				*/
 			}
 		});
 
