@@ -160,7 +160,7 @@ public class TestHgStateChecker {
 	}
 
 	@Test
-	public void testBasicMergeConflict() throws InvalidHgRepositoryException {
+	public void testBasicMergeConflict() {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("twoRepository"));
@@ -169,11 +169,14 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
+		} catch (InvalidHgRepositoryException ioe) {
+			ioe.printStackTrace();
+			Assert.fail(ioe.getMessage());
 		}
 	}
 
 	@Test
-	public void testBasicCleanMerge() throws InvalidHgRepositoryException {
+	public void testBasicCleanMerge() {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("sixRepository"));
@@ -182,11 +185,14 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
+		} catch (InvalidHgRepositoryException ioe) {
+			ioe.printStackTrace();
+			Assert.fail(ioe.getMessage());
 		}
 	}
 
 	@Test
-	public void testBasicAhead() throws InvalidHgRepositoryException {
+	public void testBasicAhead() {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("threeRepository"));
@@ -195,11 +201,15 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
+		} catch (InvalidHgRepositoryException ioe) {
+			ioe.printStackTrace();
+			Assert.fail(ioe.getMessage());
 		}
+
 	}
 
 	@Test
-	public void testBasicBehind() throws InvalidHgRepositoryException {
+	public void testBasicBehind() {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("fourRepository"));
@@ -208,11 +218,15 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
+		} catch (InvalidHgRepositoryException ioe) {
+			ioe.printStackTrace();
+			Assert.fail(ioe.getMessage());
 		}
+
 	}
 
 	@Test
-	public void testBasicSame() throws InvalidHgRepositoryException {
+	public void testBasicSame() {
 		try {
 
 			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("fiveRepository"));
@@ -221,7 +235,11 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
+		} catch (InvalidHgRepositoryException ioe) {
+			ioe.printStackTrace();
+			Assert.fail(ioe.getMessage());
 		}
+
 	}
 
 }
