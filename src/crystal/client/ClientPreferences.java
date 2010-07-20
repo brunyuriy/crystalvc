@@ -49,6 +49,8 @@ public class ClientPreferences {
 	public static String CONFIG_PATH;
 
 	public static Logger _log = Logger.getLogger(ClientPreferences.class);
+	
+	public static ClientPreferences DEFAULT_CLIENT_PREFERENCES;
 
 	static {
 		String path = System.getProperty("user.home");
@@ -56,6 +58,12 @@ public class ClientPreferences {
 			path += File.separator;
 
 		CONFIG_PATH = path + ".conflictClient.xml";
+		
+		DEFAULT_CLIENT_PREFERENCES = new ClientPreferences("/tmp/conflictClient", "/path/to/hg");
+		ProjectPreferences pp = new ProjectPreferences(new DataSource("myProject", "$HOME/dev/myProject/", DataSource.RepoKind.HG), DEFAULT_CLIENT_PREFERENCES);
+		pp.addDataSource(new DataSource("jim", "https://path/to/repo", DataSource.RepoKind.HG));
+		pp.addDataSource(new DataSource("HEAD", "http://path/to/repo", DataSource.RepoKind.HG));
+		DEFAULT_CLIENT_PREFERENCES.addProjectPreferences(pp);
 	}
 	/**
 	 * Maps a short name (usually project id) to a preference.
