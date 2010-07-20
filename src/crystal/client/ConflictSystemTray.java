@@ -340,7 +340,7 @@ public class ConflictSystemTray implements ComputationListener {
 	 */
 	private void performCalculations() {
 		
-		// if the daemon is not enabled, don't perform calculations.
+		// if the daemon is disabled, don't perform calculations.
 		if (!daemonEnabledItem.getState())
 			return;
 
