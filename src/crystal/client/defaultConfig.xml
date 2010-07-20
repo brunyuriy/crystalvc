@@ -3,25 +3,26 @@
 <!-- Provided values are for example only.                              -->
 <!--                                                                    -->
 <!-- NOTE ABOUT PATHS: Please ensure all paths are properly escaped.    -->
-<!--    e.g., (on windows) c:\\Program\ Files\\path\\to\\hg             -->
+<!--    e.g., on windows use / instead of                               -->
+<!--    c:/Program Files/path/to/hg                                     -->
 <!--                                                                    -->
 
 <!--                                                                    -->
 <!-- The root ccConfig element must contain two attributes:             -->
-<!-- tempDirectory: 	this is a path to scratch space                 -->
-<!--    hgPath: 		this is the path to your hg executable          -->
+<!-- tempDirectory: 	this is a path to scratch space                    -->
+<!--        hgPath: 	this is the path to your hg executable             -->
 <!--                                                                    -->
 
 <!--                                                                    -->
 <!-- The project element must contain three attributes:                 -->
-<!--    myKind:         this can only be HG (for now)                   -->
-<!--	myShortName:    the name of your project                        -->
-<!--        myClone:        the path to your project                    -->
+<!--       myKind:    this can only be HG (for now)                     -->
+<!--  myShortName:    the name of your project                          -->
+<!--      myClone:    the path to your project                          -->
 <!--                                                                    -->
 
 <!--                                                                    -->
 <!-- A project can contain any number of sources elements.              -->
-<!-- These pertain to your team mates repositories, forks, or other     -->
+<!-- These pertain to your teammates' repositories, forks, or other     -->
 <!-- clones you may be interested in following.                         -->
 <!--                                                                    -->
 
