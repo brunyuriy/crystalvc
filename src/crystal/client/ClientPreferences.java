@@ -342,6 +342,7 @@ public class ClientPreferences {
 		for (ProjectPreferences pp : prefs.getProjectPreference()) {
 			Element projectElem = new Element(IPrefXML.PROJECT);
 			projectElem.setAttribute(IPrefXML.KIND, pp.getEnvironment().getKind().name());
+			projectElem.setAttribute(IPrefXML.LABEL, pp.getEnvironment().getShortName());
 			projectElem.setAttribute(IPrefXML.CLONE, pp.getEnvironment().getCloneString());
 			rootElem.addContent(projectElem);
 
@@ -349,6 +350,7 @@ public class ClientPreferences {
 				Element sourceElem = new Element(IPrefXML.SOURCE);
 				sourceElem.setAttribute(IPrefXML.LABEL, src.getShortName());
 				sourceElem.setAttribute(IPrefXML.CLONE, src.getCloneString());
+				sourceElem.setAttribute(IPrefXML.KIND, src.getKind().name());
 				projectElem.addContent(sourceElem);
 			}
 		}
