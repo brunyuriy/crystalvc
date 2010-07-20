@@ -38,9 +38,9 @@ public class ClientPreferences {
 
 		static final String SOURCE = "source";
 
-		static final String KIND = "kind";
-		static final String CLONE = "clone";
-		static final String LABEL = "label";
+		static final String KIND = "myKind";
+		static final String CLONE = "myClone";
+		static final String LABEL = "myShortName";
 	}
 
 	/**
@@ -261,8 +261,6 @@ public class ClientPreferences {
 					throw new RuntimeException("ClientPreferences - myShortName must be specified.");
 				}
 
-				// TODO: we need to come up with a name for the local master copy of the repository and add it as the
-				// 3rd argument below
 				DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind);
 
 				_log.trace("Loaded project: " + myEnvironment);
