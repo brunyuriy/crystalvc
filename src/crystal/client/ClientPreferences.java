@@ -59,7 +59,7 @@ public class ClientPreferences {
 
 		CONFIG_PATH = path + ".conflictClient.xml";
 		
-		DEFAULT_CLIENT_PREFERENCES = new ClientPreferences("/tmp/conflictClient", "/path/to/hg");
+		DEFAULT_CLIENT_PREFERENCES = new ClientPreferences("/tmp/conflictClient/", "/path/to/hg");
 		ProjectPreferences pp = new ProjectPreferences(new DataSource("myProject", "$HOME/dev/myProject/", DataSource.RepoKind.HG), DEFAULT_CLIENT_PREFERENCES);
 		pp.addDataSource(new DataSource("jim", "https://path/to/repo", DataSource.RepoKind.HG));
 		pp.addDataSource(new DataSource("HEAD", "http://path/to/repo", DataSource.RepoKind.HG));
