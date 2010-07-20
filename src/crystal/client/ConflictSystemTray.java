@@ -13,6 +13,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,6 +32,7 @@ import crystal.model.ConflictResult;
 import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
 import crystal.util.LSMRLogger;
+import crystal.util.RunIt;
 import crystal.util.TimeUtility;
 
 /**
@@ -71,7 +73,7 @@ public class ConflictSystemTray implements ComputationListener {
 	 * Create the tray icon and get it installed in the tray.
 	 */
 	private void createAndShowGUI() {
-		
+
 		// Create a popup menu components (we need to reference these (just deamonEnabledItem) if something goes wrong reading the config file.)
 		MenuItem aboutItem = new MenuItem("About");
 		MenuItem preferencesItem = new MenuItem("Edit Configuration");
@@ -79,7 +81,7 @@ public class ConflictSystemTray implements ComputationListener {
 		updateNowItem = new MenuItem("Update Now");
 		final MenuItem showClientItem = new MenuItem("Show Client");
 		MenuItem exitItem = new MenuItem("Exit");
-		
+
 		// make sure the client is enabled by default
 		daemonEnabledItem.setState(true);
 
@@ -111,7 +113,8 @@ public class ConflictSystemTray implements ComputationListener {
 			int answer = JOptionPane.showConfirmDialog(null, dialogMessage, "Invalid configuration file", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
 			if (answer == JOptionPane.YES_OPTION) {
-				PreferencesGUIEditorFrame editorFrame = PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(new ClientPreferences("temp", "hgPath"));
+				_prefs = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
+				PreferencesGUIEditorFrame editorFrame = PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
 				JOptionPane.showMessageDialog(editorFrame, "Please remember to restart the client after closing the configuraton editor.");
 				//and disable client
 				daemonEnabledItem.setState(false);
@@ -339,7 +342,7 @@ public class ConflictSystemTray implements ComputationListener {
 	 * Perform the conflict calculations
 	 */
 	private void performCalculations() {
-		
+
 		// if the daemon is disabled, don't perform calculations.
 		if (!daemonEnabledItem.getState())
 			return;
