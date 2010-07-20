@@ -86,7 +86,7 @@ public class ConflictSystemTray implements ComputationListener {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			//			e.printStackTrace();
 			String msg = "Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )";
 
 			System.err.println(msg);
@@ -95,7 +95,18 @@ public class ConflictSystemTray implements ComputationListener {
 			System.err.println(e.getMessage());
 			_log.error(e.getMessage());
 
-			quit(-1);
+			String dialogMessage = "The preferences file ( " + ClientPreferences.CONFIG_PATH + " ) is invalid and could not be loaded:\n > > > " + e.getMessage() + "\n" +
+			"Do you want to edit it using the GUI?  This may overwrite your previous configuration file.  Your alternative is to edit the .xml file directly.";
+			int answer = JOptionPane.showConfirmDialog(null, dialogMessage, "Invalid configuration file", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+			if (answer == JOptionPane.YES_OPTION) {
+				PreferencesGUIEditorFrame editorFrame = PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(new ClientPreferences("temp", "hgPath"));
+				//disable client
+			} else { // answer == JOptionPane.NO_OPTION
+				System.out.println("User decided to edit the configuration file by hand");
+				_log.trace("User decided to edit the configuration file by hand");
+				quit(0);
+			}
 		}
 		// Check the SystemTray support
 		if (!SystemTray.isSupported()) {
@@ -121,7 +132,7 @@ public class ConflictSystemTray implements ComputationListener {
 		daemonEnabledItem = new CheckboxMenuItem("Daemon Enabled");
 		updateNowItem = new MenuItem("Update Now");
 		final MenuItem showClientItem = new MenuItem("Show Client");
-//		MenuItem editConfigurationItem = new MenuItem("Edit Configuration");
+		//		MenuItem editConfigurationItem = new MenuItem("Edit Configuration");
 		MenuItem exitItem = new MenuItem("Exit");
 
 		// Add components to popup menu
@@ -180,12 +191,12 @@ public class ConflictSystemTray implements ComputationListener {
 				}
 
 				showClientItem.setEnabled(false);
-				
+
 				// either creates (if one did not exist) or displays an existing 
 				// PreferencesGUIEditorFrame configuration editor.
 				PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
-				
-/*				Yuriy: Old Preferences UI code by Reid.  @deprecated.  
+
+				/*				Yuriy: Old Preferences UI code by Reid.  @deprecated.  
 
  				ClientPreferencesUI cp = new ClientPreferencesUI(new ClientPreferencesUI.IPreferencesListener() {
 
@@ -206,7 +217,7 @@ public class ConflictSystemTray implements ComputationListener {
 					}
 				}); 
 				cp.createAndShowGUI();
-				*/
+				 */
 			}
 		});
 
