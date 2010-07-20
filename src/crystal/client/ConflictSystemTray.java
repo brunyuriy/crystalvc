@@ -86,6 +86,7 @@ public class ConflictSystemTray implements ComputationListener {
 			}
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			String msg = "Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )";
 
 			System.err.println(msg);
@@ -347,7 +348,6 @@ public class ConflictSystemTray implements ComputationListener {
 				});
 			}
 		}
-
 	}
 
 	private void quit(int status) {
