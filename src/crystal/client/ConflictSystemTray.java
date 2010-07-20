@@ -71,6 +71,17 @@ public class ConflictSystemTray implements ComputationListener {
 	 * Create the tray icon and get it installed in the tray.
 	 */
 	private void createAndShowGUI() {
+		
+		// Create a popup menu components (we need to reference these (just deamonEnabledItem) if something goes wrong reading the config file.)
+		MenuItem aboutItem = new MenuItem("About");
+		MenuItem preferencesItem = new MenuItem("Edit Configuration");
+		daemonEnabledItem = new CheckboxMenuItem("Daemon Enabled");
+		updateNowItem = new MenuItem("Update Now");
+		final MenuItem showClientItem = new MenuItem("Show Client");
+		MenuItem exitItem = new MenuItem("Exit");
+		
+		// make sure the client is enabled by default
+		daemonEnabledItem.setState(true);
 
 		try {
 
@@ -101,7 +112,17 @@ public class ConflictSystemTray implements ComputationListener {
 
 			if (answer == JOptionPane.YES_OPTION) {
 				PreferencesGUIEditorFrame editorFrame = PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(new ClientPreferences("temp", "hgPath"));
-				//disable client
+				JOptionPane.showMessageDialog(editorFrame, "Please remember to restart the client after closing the configuraton editor.");
+				//and disable client
+				daemonEnabledItem.setState(false);
+				if (_timer != null) {
+					_timer.stop();
+					_timer = null;
+				}
+				for (CalculateTask ct : tasks) {
+					_log.info("disabling ct of state: " + ct.getState());
+					ct.cancel(true);
+				}
 			} else { // answer == JOptionPane.NO_OPTION
 				System.out.println("User decided to edit the configuration file by hand");
 				_log.trace("User decided to edit the configuration file by hand");
@@ -126,14 +147,6 @@ public class ConflictSystemTray implements ComputationListener {
 
 		_trayIcon.setToolTip("ConflictClient");
 
-		// Create a popup menu components
-		MenuItem aboutItem = new MenuItem("About");
-		MenuItem preferencesItem = new MenuItem("Edit Configuration");
-		daemonEnabledItem = new CheckboxMenuItem("Daemon Enabled");
-		updateNowItem = new MenuItem("Update Now");
-		final MenuItem showClientItem = new MenuItem("Show Client");
-		//		MenuItem editConfigurationItem = new MenuItem("Edit Configuration");
-		MenuItem exitItem = new MenuItem("Exit");
 
 		// Add components to popup menu
 		trayMenu.add(aboutItem);
@@ -148,9 +161,6 @@ public class ConflictSystemTray implements ComputationListener {
 		trayMenu.add(exitItem);
 
 		_trayIcon.setPopupMenu(trayMenu);
-
-		// make sure the client is enabled by default
-		daemonEnabledItem.setState(true);
 
 		try {
 			tray.add(_trayIcon);
@@ -329,6 +339,10 @@ public class ConflictSystemTray implements ComputationListener {
 	 * Perform the conflict calculations
 	 */
 	private void performCalculations() {
+		
+		// if the daemon is not enabled, don't perform calculations.
+		if (!daemonEnabledItem.getState())
+			return;
 
 		if (tasks.size() > 0) {
 			for (CalculateTask ct : tasks) {
