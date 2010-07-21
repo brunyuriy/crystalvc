@@ -27,6 +27,7 @@ import crystal.util.XMLTools;
  * 
  */
 public class ClientPreferences {
+	
 	private interface IPrefXML {
 
 		static final String ROOT = "ccConfig";

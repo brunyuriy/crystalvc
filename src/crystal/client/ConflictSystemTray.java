@@ -42,6 +42,8 @@ import crystal.util.TimeUtility;
  * @author rtholmes
  */
 public class ConflictSystemTray implements ComputationListener {
+	
+	public static String VERSION_ID = "0.1.20100720";
 
 	/**
 	 * Conflict client UI.
@@ -185,7 +187,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		aboutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Built by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.");
+				JOptionPane.showMessageDialog(null, "Crystal version: " + VERSION_ID + "\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.");
 			}
 		});
 
