@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -207,6 +209,7 @@ public class ClientPreferences {
 
 			}
 
+			// will throw a JDOMExeption if the XML file cannot be parsed
 			doc = builder.build(CONFIG_PATH);
 
 			Element rootElement = doc.getRootElement();
@@ -219,8 +222,20 @@ public class ClientPreferences {
 				_log.trace("$HOME in temporary path: " + (firstPart + lastPart));
 			}
 
-			verifyPath(tempDirectory);
-
+			boolean happyTempPath = false;
+			while (!happyTempPath) {
+				try {
+					verifyPath(tempDirectory);
+					happyTempPath = true;
+				} catch (ConfigurationReadingException e) {
+					if (e.getType() == ConfigurationReadingException.PATH_INVALID)
+						if ((new File(tempDirectory)).mkdirs())
+							happyTempPath = true;
+						else
+							tempDirectory = JOptionPane.showInputDialog("The current temprorary path is invalid.\nPlease select another path.", tempDirectory);
+				}
+			}
+			
 			String hgPath = rootElement.getAttributeValue("hgPath");
 			verifyFile(hgPath);
 
@@ -371,32 +386,40 @@ public class ClientPreferences {
 	 * Check to ensure the provided file exists.
 	 * 
 	 * @param fName 
+	 * @throws ConfigurationReadingException 
 	 */
-	private static void verifyFile(String fName) {
+	private static void verifyFile(String fName) throws ConfigurationReadingException {
 
 		// assert fName != null;
 		// assert new File(fName).exists();
 		// assert new File(fName).isFile();
 
-		if (fName == null || !new File(fName).exists() || !new File(fName).isFile()) {
-			throw new RuntimeException("File does not exist: " + fName);
-		}
+		if (fName == null)
+			throw new NullPointerException("Null path checked");
+		if (!new File(fName).exists())
+			throw new ConfigurationReadingException("File does not exist: " + fName, ConfigurationReadingException.PATH_INVALID);
+		if (!new File(fName).isFile()) 
+			throw new ConfigurationReadingException("File is a directory: " + fName, ConfigurationReadingException.PATH_IS_DIRECTORY);
 	}
 
 	/**
 	 * Check to ensure the provided path is a valid directory.
 	 * 
 	 * @param path
+	 * @throws ConfigurationReadingException 
 	 */
-	private static void verifyPath(String path) {
+	private static void verifyPath(String path) throws ConfigurationReadingException {
 
 		// assert path != null;
 		// assert new File(path).exists();
 		// assert new File(path).isDirectory();
 
-		if (path == null || !new File(path).exists() || !new File(path).isDirectory()) {
-			throw new RuntimeException("Path does not exist: " + path);
-		}
+		if (path == null) 
+			throw new NullPointerException("Null path checked");
+		if (!new File(path).exists())
+			throw new ConfigurationReadingException("Path does not exist: " + path, ConfigurationReadingException.PATH_INVALID);
+		if (!new File(path).isDirectory()) 
+			throw new ConfigurationReadingException("Path is not a directory: " + path, ConfigurationReadingException.PATH_NOT_DIRECTORY);		
 	}
 
 	/**
@@ -429,5 +452,31 @@ public class ClientPreferences {
 	 */
 	public void setTempDirectory(String tempDirectory) {
 		_tempDirectory = tempDirectory;
+	}
+	
+	public static class ConfigurationReadingException extends Exception {
+		private static final long serialVersionUID = 3577953111265604385L;
+		
+		public static final int HG_PATH_INVALID = 0;
+		public static final int TEMP_PATH_INVALID = 1;
+		public static final int PATH_INVALID = 2;
+		public static final int PATH_NOT_DIRECTORY = 3;
+		public static final int PATH_IS_DIRECTORY = 4;
+		
+		private int _type;
+		
+		public ConfigurationReadingException(int type) {
+			super();
+			_type = type;
+		}
+		
+		public ConfigurationReadingException(String message, int type) {
+			super(message);
+			_type = type;
+		}
+		
+		public int getType() {
+			return _type;
+		}
 	}
 }
