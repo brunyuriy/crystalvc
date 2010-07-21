@@ -99,6 +99,8 @@ public class ConflictSystemTray implements ComputationListener {
 				System.err.println(msg);
 				_log.error(msg);
 			}
+			
+			ClientPreferences.savePreferencesToDefaultXML(_prefs);
 
 		} catch (Exception e) {
 			//			e.printStackTrace();
