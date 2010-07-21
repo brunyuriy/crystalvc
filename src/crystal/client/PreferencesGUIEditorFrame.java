@@ -75,10 +75,10 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			public void keyPressed(KeyEvent arg0) {				
 			}
 
-			public void keyReleased(KeyEvent arg0) {
+			public void keyTyped(KeyEvent arg0) {
 			}
 
-			public void keyTyped(KeyEvent arg0) {
+			public void keyReleased(KeyEvent arg0) {
 				prefs.setHgPath(hgPath.getText());
 				frame.pack();
 			}
@@ -102,10 +102,10 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			public void keyPressed(KeyEvent arg0) {				
 			}
 
-			public void keyReleased(KeyEvent arg0) {
+			public void keyTyped(KeyEvent arg0) {
 			}
 
-			public void keyTyped(KeyEvent arg0) {
+			public void keyReleased(KeyEvent arg0) {
 				prefs.setTempDirectory(tempPath.getText());
 				frame.pack();
 			}
