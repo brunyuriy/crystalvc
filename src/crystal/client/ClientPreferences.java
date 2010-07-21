@@ -222,6 +222,9 @@ public class ClientPreferences {
 				_log.trace("$HOME in temporary path: " + (firstPart + lastPart));
 			}
 
+			if (!tempDirectory.endsWith(File.separator))
+				tempDirectory += File.separator;
+			
 			boolean happyTempPath = false;
 			while (!happyTempPath) {
 				try {
