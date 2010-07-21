@@ -473,6 +473,13 @@ public class ConflictSystemTray implements ComputationListener {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		
+		if (args.length > 0) {
+			if (args[0].equals("--version")) {
+				System.out.println("Crystal version: " + VERSION_ID);
+				System.exit(0);
+			}
+		}
 
 		LSMRLogger.startLog4J(Constants.QUIET_CONSOLE, true, Constants.LOG_LEVEL, System.getProperty("user.home"), ".conflictClientLog");
 
