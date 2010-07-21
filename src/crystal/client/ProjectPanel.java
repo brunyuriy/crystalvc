@@ -44,10 +44,10 @@ public class ProjectPanel extends JPanel {
 			public void keyPressed(KeyEvent arg0) {				
 			}
 
-			public void keyReleased(KeyEvent arg0) {
+			public void keyTyped(KeyEvent arg0) {
 			}
 
-			public void keyTyped(KeyEvent arg0) {
+			public void keyReleased(KeyEvent arg0) {
 				pref.getEnvironment().setShortName(shortName.getText());
 				_name = shortName.getText();
 				panel.validate();
@@ -81,10 +81,10 @@ public class ProjectPanel extends JPanel {
 			public void keyPressed(KeyEvent arg0) {				
 			}
 
-			public void keyReleased(KeyEvent arg0) {
+			public void keyTyped(KeyEvent arg0) {
 			}
 
-			public void keyTyped(KeyEvent arg0) {
+			public void keyReleased(KeyEvent arg0) {
 				pref.getEnvironment().setCloneString(address.getText());
 				panel.validate();
 				mainFrame.pack();
@@ -147,10 +147,10 @@ public class ProjectPanel extends JPanel {
 			public void keyPressed(KeyEvent arg0) {				
 			}
 
-			public void keyReleased(KeyEvent arg0) {
+			public void keyTyped(KeyEvent arg0) {
 			}
 
-			public void keyTyped(KeyEvent arg0) {
+			public void keyReleased(KeyEvent arg0) {
 				source.setShortName(shortName.getText());
 				panel.validate();
 				mainFrame.pack();
@@ -164,10 +164,10 @@ public class ProjectPanel extends JPanel {
 			public void keyPressed(KeyEvent arg0) {				
 			}
 
-			public void keyReleased(KeyEvent arg0) {
+			public void keyTyped(KeyEvent arg0) {
 			}
 
-			public void keyTyped(KeyEvent arg0) {
+			public void keyReleased(KeyEvent arg0) {
 				source.setCloneString(cloneAddress.getText());
 				panel.validate();
 				mainFrame.pack();
