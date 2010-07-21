@@ -237,7 +237,17 @@ public class ClientPreferences {
 			}
 			
 			String hgPath = rootElement.getAttributeValue("hgPath");
-			verifyFile(hgPath);
+			boolean happyHgPath = false;
+			while (!happyHgPath) {
+				try {
+					verifyFile(hgPath);
+					happyHgPath = true;
+				} catch (ConfigurationReadingException e) {
+					// if the exception type is either ConfigurationReadingException.PATH_INVALID or ConfigurationReadingException.PATH_IS_DIRECTORY 
+					// (only two possibilities))
+					hgPath = JOptionPane.showInputDialog("The current path to hg is invalid.\nPlease select a proper path.", hgPath);
+				}
+			}
 
 			prefs = new ClientPreferences(tempDirectory, hgPath);
 
