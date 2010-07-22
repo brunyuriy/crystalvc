@@ -1,0 +1,13 @@
+-- Changing the clone address of a repository to a totally different repository causes errors.
+   Problem is because we cache a local copy of the repository, and if the clone address changes but the shortName does not, then the cache tries to just update and then make the comparison, but the comparison cannot happen because the repositories are different.
+
+-- If getting the status fails, must display ther error icon and not crash.  Also, may consider bringing some sort of info forward (possibly tool tip).
+
+-- If a repository is invalid, Crystal crashes.
+   This is because getStatus throws an exception.  Should catch it, put up error icon, etc.
+
+-- Document the xml file in the manual.  
+
+-- Add the website to the about box.
+
+-- Add an autoreplace for \ to /
