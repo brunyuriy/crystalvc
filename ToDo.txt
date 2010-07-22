@@ -6,7 +6,7 @@
 -- If a repository is invalid, Crystal crashes.
    This is because getStatus throws an exception.  Should catch it, put up error icon, etc.
 
--- Document the xml file in the manual.  
+DONE (20100722-brun) -- Document the xml file in the manual.  
 
 -- Add the website to the about box.
 
