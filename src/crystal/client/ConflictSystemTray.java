@@ -189,7 +189,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		aboutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Crystal version: " + VERSION_ID + "\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.");
+				JOptionPane.showMessageDialog(null, "Crystal version: " + VERSION_ID + "\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.\nhttp://www.cs.washington.edu/homes/brun/research/crystal");
 			}
 		});
 
