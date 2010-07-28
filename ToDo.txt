@@ -21,8 +21,6 @@
 
 * XML and config file issues (also start up)
 
--- fix order of myKind / other atributes.
-
 -- deal with Crystal trying to write to a file.
 
 -- add a load settings / save setting interface.
@@ -57,10 +55,14 @@ http://www.cs.washington.edu/homes/brun/research/crystal/ .
 but I don't think there is any "Kind" attribute.  Should this be "myKind"?
 Check what it prints out if the myKind is missing.
 
+DONE (20100722-brun) -- fix order of myKind / other atributes.
+
+
 * GUI
 
 -- The spacing in the GUI is poor.  Suppose that I have 2 projects with different numbers of repositories.  Then the input boxes (such as for "project name") are stretched to fill the window vertically, rather than permitting whitespace at the bottom of the window as would be better.
 
+DONE (20100722-brun) -- Add the website to the about box.
 
 * Manual
 
@@ -79,8 +81,7 @@ The answer is that Werner has done work without merging changes from HEAD.  So, 
 -- move webpage / manual to the repository
 
 
-
+DONE (20100727-brun) -- Remove the inimplemented functionality from the website.
 
 DONE (20100722-brun) -- Document the xml file in the manual.  
 
-DONE (20100722-brun) -- Add the website to the about box.
