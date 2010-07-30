@@ -225,6 +225,8 @@ public class ClientPreferences {
 			if (!tempDirectory.endsWith(File.separator))
 				tempDirectory += File.separator;
 			
+			tempDirectory = tempDirectory.replace('\\','/');
+			
 			boolean happyTempPath = false;
 			while (!happyTempPath) {
 				try {

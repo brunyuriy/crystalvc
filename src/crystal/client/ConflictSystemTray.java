@@ -43,7 +43,7 @@ import crystal.util.TimeUtility;
  */
 public class ConflictSystemTray implements ComputationListener {
 	
-	public static String VERSION_ID = "0.1.20100720";
+	public static String VERSION_ID = "0.1.20100729";
 
 	/**
 	 * Conflict client UI.
