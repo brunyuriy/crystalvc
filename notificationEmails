@@ -1,3 +1,0 @@
-[reposubs]
-# key is glob pattern, value is comma-separated list of subscriber emails
-* = brun@cs.washington.edu,rtholmes@cs.washington.edu
