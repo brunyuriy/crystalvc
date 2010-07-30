@@ -10,7 +10,7 @@
 
 <body bgcolor="#FFFF99">
 
-<h1 id="Crystal:_Distributed_Version_Control_Speculative_Conflict_Detector">Crystal: Proactive Conflict Detector for Distributed Version Control</h1> 
+<h1 id="Crystal:_Distributed_Version_Control_Speculative_Conflict_Detector">Crystal: Proactive Conflict Detector for Distributed Version Control</h1>
 
 
 <p>Contents:</p>
@@ -32,7 +32,7 @@
 
 <h2 id="motivation">Goal: Increased developer awareness of conflicts</h2>
 
-<p> 
+<p>
 The Crystal tool increases developer awareness of potential version control conflicts.  For example, it informs a developer of the answer to the question, &#8220;Might my changes conflict with others' changes?&#8221;
 </p>
 
@@ -44,12 +44,18 @@ Crystal keeps an eye on all the participating developers' repositories.  It info
 <li>If changes are made (locally or remotely) without conflicts, Crystal increases developers' confidence that the changes will not cause problems for the team.</li>
 </ul>
 
-
 <p>
-The Crystal client is now in beta and is available for <a href="#download">download</a>.  
+Crystal examines commits.  It does not examine your working copy &mdash;
+your uncommitted modifications.  The reason is that commits are more likely
+to be coherent and desired units of work, for which notification about
+(non-)conflicts is of value.
 </p>
 
-<h2 id="Requirements">Requirements</h2> 
+<p>
+The Crystal client is now in beta and is available for <a href="#download">download</a>.
+</p>
+
+<h2 id="Requirements">Requirements</h2>
 
 <ul>
 <li> <a href="http://java.sun.com/javase/downloads/index.jsp">JRE (Java Runtime Environment).</a></li>
@@ -116,7 +122,7 @@ other repositories.
     <td align="center"><img src="mergeconflict.png" height="48" alt="red merge"></img></td>
     <td align="left">Each of the two repositories has commits not present in the other one and merging them will result in a textual conflict. </td>
   </tr>
-  
+
   <!-- tr
     <td align="center"><img src="compileconflict.png" height="48" alt="red merge with a C"></img></td>
     <td align="left"><b>Not currently implemented.</b>  Both repositories have new commits and merging them does not result in a textual conflict but the result does not compile. </td>
@@ -127,13 +133,13 @@ other repositories.
     have new commits and merging them does not result in a textual or
     compilation conflict, but the result does not pass at least one test
     that either your or the other repository passes. </td>
-  </tr> 
+  </tr>
   -->
 </table>
 
 <h2 id="Configuration_File_Format">Configuration file format</h2>
 
-<p>The Crystal configuration file is an XML file that describes the locations of the scratch space and the <tt>hg</tt> executable, as well as contains information on the repositories crystal monitors.  
+<p>The Crystal configuration file is an XML file that describes the locations of the scratch space and the <tt>hg</tt> executable, as well as contains information on the repositories crystal monitors.
 </p>
 
 <p>
@@ -155,15 +161,15 @@ Here is an example valid configuration file:
 </pre>
 
 <p>
-At the root level, there is a single XML element: <tt>ccConfig</tt>.  This element has two attributes: <tt>tempDirectory</tt> and <tt>hgPath</tt>.  These attributes show the path to the scratch space and the hg executable, respectively.  
+At the root level, there is a single XML element: <tt>ccConfig</tt>.  This element has two attributes: <tt>tempDirectory</tt> and <tt>hgPath</tt>.  These attributes show the path to the scratch space and the hg executable, respectively.
 </p>
 
 <p>
-For each project you wish Crystal to track, <tt>ccConfig</tt> will have a <tt>project</tt> child with three attributes: <tt>myKind</tt>, <tt>myShortName</tt>, and <tt>myClone</tt>.  The <tt>myKind</tt> element describes the kind of the repository: HG for mercurial or GIT for git, although, for now, Crystal only supports HG.  The <tt>myShortName</tt> element is the name of the project you want Crystal to display (on the left side on the screen shot above).  The <tt>myClone</tt> element is the path to your local repository; you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.  
+For each project you wish Crystal to track, <tt>ccConfig</tt> will have a <tt>project</tt> child with three attributes: <tt>myKind</tt>, <tt>myShortName</tt>, and <tt>myClone</tt>.  The <tt>myKind</tt> element describes the kind of the repository: HG for mercurial or GIT for git, although, for now, Crystal only supports HG.  The <tt>myShortName</tt> element is the name of the project you want Crystal to display (on the left side on the screen shot above).  The <tt>myClone</tt> element is the path to your local repository; you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
 </p>
 
 <p>
-Finally, for each repository you wish Crystal to compare to your repository, the <tt>project</tt> element will have a <tt>source</tt> child with three attributes: <tt>myKind</tt>, <tt>myShortName</tt>, and <tt>myClone</tt>.  The <tt>myKind</tt> element is identical to the parent <tt>project</tt>'s <tt>myKind</tt> element.  The <tt>myShortName</tt> element is the name of the repository you want Crystal to display (above the icons on the screen shot above).  The <tt>myClone</tt> element is the path to this repository; again, you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.  
+Finally, for each repository you wish Crystal to compare to your repository, the <tt>project</tt> element will have a <tt>source</tt> child with three attributes: <tt>myKind</tt>, <tt>myShortName</tt>, and <tt>myClone</tt>.  The <tt>myKind</tt> element is identical to the parent <tt>project</tt>'s <tt>myKind</tt> element.  The <tt>myShortName</tt> element is the name of the repository you want Crystal to display (above the icons on the screen shot above).  The <tt>myClone</tt> element is the path to this repository; again, you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
 </p>
 
 <h2 id="access-to-remote-repos">Making your repository available to your co-workers</h2>
@@ -227,7 +233,7 @@ repository), or periodically make a local or remote copy as described above.
 <p>
 Crystal is designed and developed by <a href="http://www.cs.washington.edu/homes/brun">Yuriy Brun</a>, <a href="http://www.cs.washington.edu/homes/rtholmes">Reid Holmes</a>, <a href="http://www.cs.washington.edu/homes/mernst">Michael Ernst</a>, and <a href="http://www.cs.washington.edu/homes/notkin">David Notkin</a>.
 <br/>
-<a href="mailto:brun@cs.washington.edu">Email us</a> with any questions.  
+<a href="mailto:brun@cs.washington.edu">Email us</a> with any questions.
 </p>
 
 <script type="text/javascript">
