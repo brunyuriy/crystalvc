@@ -42,7 +42,7 @@ import crystal.util.TimeUtility;
  * @author rtholmes
  */
 public class ConflictSystemTray implements ComputationListener {
-	
+
 	public static String VERSION_ID = "0.1.20100729";
 
 	/**
@@ -99,9 +99,11 @@ public class ConflictSystemTray implements ComputationListener {
 				System.err.println(msg);
 				_log.error(msg);
 			}
-			
-			ClientPreferences.savePreferencesToDefaultXML(_prefs);
 
+			if (_prefs.hasChanged()) {
+				ClientPreferences.savePreferencesToDefaultXML(_prefs);
+				_prefs.setChanged(false);
+			}
 		} catch (Exception e) {
 			//			e.printStackTrace();
 			String msg = "Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )";
@@ -475,7 +477,7 @@ public class ConflictSystemTray implements ComputationListener {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+
 		if (args.length > 0) {
 			if (args[0].equals("--version")) {
 				System.out.println("Crystal version: " + VERSION_ID);

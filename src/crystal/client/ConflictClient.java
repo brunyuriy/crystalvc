@@ -223,7 +223,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 	 * @return HTML corresponding to the UI body.
 	 */
 	private String createText(ClientPreferences prefs) {
-		String pre = "<html>";
+		String pre = "<html> <p>Quiting Crystal saves your configuration.</p>";
 		String post = "</html>";
 
 		String body = "";
