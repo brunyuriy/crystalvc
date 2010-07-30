@@ -34,16 +34,16 @@ import javax.swing.JTextField;
 public class PreferencesGUIEditorFrame extends JFrame {
 
 	private static final long serialVersionUID = 4574346360968958312L;
-	
+
 	private static PreferencesGUIEditorFrame editorFrame;
-	
+
 	public static PreferencesGUIEditorFrame getPreferencesGUIEditorFrame(ClientPreferences prefs) {
 		if (editorFrame == null)
 			editorFrame = new PreferencesGUIEditorFrame(prefs);
 		editorFrame.setVisible(true);
 		return editorFrame;
 	}
-	
+
 	public static PreferencesGUIEditorFrame getPreferencesGUIEditorFrame() {
 		if (editorFrame != null)
 			editorFrame.setVisible(true);
@@ -57,14 +57,17 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		final JFrame frame = this;
 
 		if (prefs.getProjectPreference().isEmpty()) {
-//			ClientPreferences client = new ClientPreferences("/usr/bin/hg/", "/tmp/crystalClient/");
+			//			ClientPreferences client = new ClientPreferences("/usr/bin/hg/", "/tmp/crystalClient/");
 			ProjectPreferences newGuy = new ProjectPreferences(new DataSource("", "", DataSource.RepoKind.HG), prefs); 
 			prefs.addProjectPreferences(newGuy);
+			prefs.setChanged(true);
 		}
 
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); 
+		
+		getContentPane().add(new JLabel("Closing this window will save the configuraion settings."));
 
 		JPanel hgPanel = new JPanel();
 		hgPanel.setLayout(new BoxLayout(hgPanel, BoxLayout.X_AXIS));
@@ -80,15 +83,17 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 			public void keyReleased(KeyEvent arg0) {
 				prefs.setHgPath(hgPath.getText());
+				prefs.setChanged(true);
 				frame.pack();
 			}
 		});
-		
+
 		JButton hgButton = new JButton("find");
 		hgPanel.add(hgButton);
 		hgButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new MyPathChooser("Path to hg executable", hgPath, JFileChooser.FILES_ONLY);
+				prefs.setChanged(true);
 			}
 		});
 		getContentPane().add(hgPanel);
@@ -107,6 +112,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 			public void keyReleased(KeyEvent arg0) {
 				prefs.setTempDirectory(tempPath.getText());
+				prefs.setChanged(true);
 				frame.pack();
 			}
 		});
@@ -115,6 +121,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		tempButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new MyPathChooser("Path to scratch directory", tempPath, JFileChooser.DIRECTORIES_ONLY);
+				prefs.setChanged(true);
 			}
 		});
 		getContentPane().add(tempPanel);
@@ -122,7 +129,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 		final JTabbedPane projectsTabs = new JTabbedPane(JTabbedPane.TOP,  JTabbedPane.SCROLL_TAB_LAYOUT);
 		for (ProjectPreferences pref : prefs.getProjectPreference()) {
-			ProjectPanel current = new ProjectPanel(pref, frame);
+			ProjectPanel current = new ProjectPanel(pref, prefs, frame);
 			projectsTabs.addTab(current.getName(), current);
 			//			getContentPane().add(current);
 		}
@@ -139,11 +146,12 @@ public class PreferencesGUIEditorFrame extends JFrame {
 				}
 				int count = 1;
 				while (shortNameLookup.contains("New Project " + count++));
-				
+
 				ProjectPreferences newGuy = new ProjectPreferences(new DataSource("New Project " + --count, "", DataSource.RepoKind.HG), prefs); 
 				prefs.addProjectPreferences(newGuy);
-				ProjectPanel newGuyPanel = new ProjectPanel(newGuy, frame);
+				ProjectPanel newGuyPanel = new ProjectPanel(newGuy, prefs, frame);
 				projectsTabs.addTab("New Project " + count, newGuyPanel);
+				prefs.setChanged(true);
 				frame.pack();
 			}
 		});
@@ -155,6 +163,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 				projectsTabs.remove(current);
 				if (prefs.getProjectPreference().isEmpty())
 					deleteProjectButton.setEnabled(false);
+				prefs.setChanged(true);
 				frame.pack();
 			}
 		});
@@ -165,7 +174,10 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 		addWindowListener(new WindowListener() {
 			public void windowClosing(WindowEvent arg0) {
-				ClientPreferences.savePreferencesToDefaultXML(prefs);
+				if (prefs.hasChanged()) {
+					ClientPreferences.savePreferencesToDefaultXML(prefs);
+					prefs.setChanged(false);
+				}
 			}
 
 			public void windowActivated(WindowEvent arg0) {}
@@ -175,7 +187,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			public void windowIconified(WindowEvent arg0) {}
 			public void windowOpened(WindowEvent arg0) {}
 		});
-		
+
 		pack();
 		setVisible(true);
 	}

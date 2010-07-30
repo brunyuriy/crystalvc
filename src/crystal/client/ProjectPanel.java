@@ -28,7 +28,7 @@ public class ProjectPanel extends JPanel {
 	/**
 	 * 
 	 */
-	public ProjectPanel(final ProjectPreferences pref, final JFrame mainFrame) {
+	public ProjectPanel(final ProjectPreferences pref, final ClientPreferences prefs, final JFrame mainFrame) {
 		super();
 		
 		final JPanel panel = this;
@@ -49,6 +49,7 @@ public class ProjectPanel extends JPanel {
 
 			public void keyReleased(KeyEvent arg0) {
 				pref.getEnvironment().setShortName(shortName.getText());
+				prefs.setChanged(true);
 				_name = shortName.getText();
 				panel.validate();
 				mainFrame.pack();
@@ -68,6 +69,7 @@ public class ProjectPanel extends JPanel {
 		type.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pref.getEnvironment().setKind((DataSource.RepoKind) type.getSelectedItem());
+				prefs.setChanged(true);
 			}
 		});
 		add(typePanel);
@@ -86,6 +88,7 @@ public class ProjectPanel extends JPanel {
 
 			public void keyReleased(KeyEvent arg0) {
 				pref.getEnvironment().setCloneString(address.getText());
+				prefs.setChanged(true);
 				panel.validate();
 				mainFrame.pack();
 			}
@@ -106,7 +109,8 @@ public class ProjectPanel extends JPanel {
 				
 				DataSource newGuy = new DataSource("New Repo " + --count, "", DataSource.RepoKind.HG);
 				pref.addDataSource(newGuy);
-				add(repoPanel(newGuy, pref, panel, mainFrame));
+				add(repoPanel(newGuy, pref, prefs, panel, mainFrame));
+				prefs.setChanged(true);
 				panel.validate();
 				mainFrame.pack();				
 			}
@@ -114,7 +118,7 @@ public class ProjectPanel extends JPanel {
 		add(newRepoButton);
 
 		for (DataSource source : pref.getDataSources()) {
-			add(repoPanel(source, pref, panel, mainFrame));			
+			add(repoPanel(source, pref, prefs, panel, mainFrame));			
 		}
 	}
 
@@ -122,7 +126,7 @@ public class ProjectPanel extends JPanel {
 		return _name;
 	}
 
-	private JPanel repoPanel(final DataSource source, final ProjectPreferences pref, final JPanel panel, final JFrame mainFrame) {
+	private JPanel repoPanel(final DataSource source, final ProjectPreferences pref, final ClientPreferences prefs, final JPanel panel, final JFrame mainFrame) {
 		final JPanel repoPanel = new JPanel();		
 		repoPanel.setLayout(new BoxLayout(repoPanel, BoxLayout.X_AXIS));
 
@@ -135,6 +139,7 @@ public class ProjectPanel extends JPanel {
 		type.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				source.setKind((DataSource.RepoKind) type.getSelectedItem());
+				prefs.setChanged(true);
 				panel.validate();
 				mainFrame.pack();
 			}
@@ -152,6 +157,7 @@ public class ProjectPanel extends JPanel {
 
 			public void keyReleased(KeyEvent arg0) {
 				source.setShortName(shortName.getText());
+				prefs.setChanged(true);
 				panel.validate();
 				mainFrame.pack();
 			}
@@ -169,6 +175,7 @@ public class ProjectPanel extends JPanel {
 
 			public void keyReleased(KeyEvent arg0) {
 				source.setCloneString(cloneAddress.getText());
+				prefs.setChanged(true);
 				panel.validate();
 				mainFrame.pack();
 			}
@@ -178,6 +185,7 @@ public class ProjectPanel extends JPanel {
 		deleteRepoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pref.removeDataSource(source);
+				prefs.setChanged(true);
 				panel.remove(repoPanel);
 				mainFrame.pack();
 			}

@@ -29,7 +29,7 @@ import crystal.util.XMLTools;
  * 
  */
 public class ClientPreferences {
-	
+
 	private interface IPrefXML {
 
 		static final String ROOT = "ccConfig";
@@ -52,7 +52,7 @@ public class ClientPreferences {
 	public static String CONFIG_PATH;
 
 	public static Logger _log = Logger.getLogger(ClientPreferences.class);
-	
+
 	public static ClientPreferences DEFAULT_CLIENT_PREFERENCES;
 
 	static {
@@ -61,7 +61,7 @@ public class ClientPreferences {
 			path += File.separator;
 
 		CONFIG_PATH = path + ".conflictClient.xml";
-		
+
 		DEFAULT_CLIENT_PREFERENCES = new ClientPreferences("/tmp/conflictClient/", "/path/to/hg");
 		ProjectPreferences pp = new ProjectPreferences(new DataSource("myProject", "$HOME/dev/myProject/", DataSource.RepoKind.HG), DEFAULT_CLIENT_PREFERENCES);
 		pp.addDataSource(new DataSource("jim", "https://path/to/repo", DataSource.RepoKind.HG));
@@ -80,9 +80,15 @@ public class ClientPreferences {
 	private String _tempDirectory;
 
 	/**
-	 * Poits to the user's hg path.
+	 * Points to the user's hg path.
 	 */
 	private String _hgPath;
+
+	/**
+	 * Indicates whether these preferences have changed since the last load.
+	 */
+	private boolean _hasChanged;
+
 
 	/**
 	 * Private constructor to restrict usage.
@@ -100,6 +106,7 @@ public class ClientPreferences {
 	public ClientPreferences(String tempDirectory, String hgPath) {
 		_tempDirectory = tempDirectory;
 		_hgPath = hgPath;
+		_hasChanged = false;
 	}
 
 	/**
@@ -119,7 +126,7 @@ public class ClientPreferences {
 
 		_projectPreferences.add(pref);
 	}
-	
+
 	/**
 	 * Removes the preference from the project.
 	 * 
@@ -129,7 +136,7 @@ public class ClientPreferences {
 
 		_projectPreferences.remove(pref);
 	}
-	
+
 	/**
 	 * Removes the preference from the project.
 	 * 
@@ -176,6 +183,7 @@ public class ClientPreferences {
 	@SuppressWarnings("unchecked")
 	public static ClientPreferences loadPreferencesFromXML() {
 		ClientPreferences prefs = null;
+		boolean prefsChanged = false;
 
 		SAXBuilder builder = new SAXBuilder(false);
 		Document doc = null;
@@ -222,11 +230,17 @@ public class ClientPreferences {
 				_log.trace("$HOME in temporary path: " + (firstPart + lastPart));
 			}
 
-			if (!tempDirectory.endsWith(File.separator))
+			if (!tempDirectory.endsWith(File.separator)) {
 				tempDirectory += File.separator;
-			
-			tempDirectory = tempDirectory.replace('\\','/');
-			
+				prefsChanged = true;
+			}
+
+			String temptempDirectory = tempDirectory.replace('\\','/');
+			if (!temptempDirectory.equals(tempDirectory)) {
+				prefsChanged = true;
+				tempDirectory = temptempDirectory;
+			}
+
 			boolean happyTempPath = false;
 			while (!happyTempPath) {
 				try {
@@ -236,11 +250,13 @@ public class ClientPreferences {
 					if (e.getType() == ConfigurationReadingException.PATH_INVALID)
 						if ((new File(tempDirectory)).mkdirs())
 							happyTempPath = true;
-						else
+						else {
 							tempDirectory = JOptionPane.showInputDialog("The current temprorary path is invalid.\nPlease select another path.", tempDirectory);
+							prefsChanged = true;
+						}
 				}
 			}
-			
+
 			String hgPath = rootElement.getAttributeValue("hgPath");
 			boolean happyHgPath = false;
 			while (!happyHgPath) {
@@ -251,10 +267,12 @@ public class ClientPreferences {
 					// if the exception type is either ConfigurationReadingException.PATH_INVALID or ConfigurationReadingException.PATH_IS_DIRECTORY 
 					// (only two possibilities))
 					hgPath = JOptionPane.showInputDialog("The current path to hg is invalid.\nPlease select a proper path.", hgPath);
+					prefsChanged = true;
 				}
 			}
 
 			prefs = new ClientPreferences(tempDirectory, hgPath);
+			prefs.setChanged(prefsChanged);
 
 			List<Element> projectElements = rootElement.getChildren(IPrefXML.PROJECT);
 			for (Element projectElement : projectElements) {
@@ -354,7 +372,7 @@ public class ClientPreferences {
 
 		return prefs;
 	}
-	
+
 	/**
 	 * Save preferences to the default filename
 	 * 
@@ -454,7 +472,6 @@ public class ClientPreferences {
 	}
 
 	/**
-	 * 
 	 * @return path to the user's scratch space
 	 */
 	public String getTempDirectory() {
@@ -462,34 +479,49 @@ public class ClientPreferences {
 	}
 
 	/**
-	 * 
 	 * @effect set the path to the user's scratch space
 	 */
 	public void setTempDirectory(String tempDirectory) {
 		_tempDirectory = tempDirectory;
 	}
-	
+
+	/**
+	 * @return whether this has changed since loading or creating
+	 */
+	public boolean hasChanged() {
+		return _hasChanged;
+	}
+
+	/**
+	 * 
+	 * @effect set whether this has changed since loading or creating
+	 */
+	public void setChanged(boolean status) {
+		_hasChanged = status;
+	}
+
+
 	public static class ConfigurationReadingException extends Exception {
 		private static final long serialVersionUID = 3577953111265604385L;
-		
+
 		public static final int HG_PATH_INVALID = 0;
 		public static final int TEMP_PATH_INVALID = 1;
 		public static final int PATH_INVALID = 2;
 		public static final int PATH_NOT_DIRECTORY = 3;
 		public static final int PATH_IS_DIRECTORY = 4;
-		
+
 		private int _type;
-		
+
 		public ConfigurationReadingException(int type) {
 			super();
 			_type = type;
 		}
-		
+
 		public ConfigurationReadingException(String message, int type) {
 			super(message);
 			_type = type;
 		}
-		
+
 		public int getType() {
 			return _type;
 		}

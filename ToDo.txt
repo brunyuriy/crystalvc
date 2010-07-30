@@ -11,7 +11,7 @@
 -- handle myClone addresses that are not valid clonable addresses
    System falls down when it tries to create a local clone.  Hg does not allow for an easy way to check if something is a repository (why? see http://mercurial.selenic.com/bts/issue1025 ).  Should check output of clone and go forward from that.
 
--- Add an autoreplace for \ to /
+DONE (20100729-brun) -- Add an autoreplace for \ to /
 
 * Caching issues
 
@@ -21,7 +21,7 @@
 
 * XML and config file issues (also start up)
 
--- deal with Crystal trying to write to a file.
+DONE (20100729-brun) -- deal with Crystal trying to write to a file.
 
 -- add a load settings / save setting interface.
 
