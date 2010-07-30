@@ -1,13 +1,17 @@
-<HTML>
-<HEAD>
-    <TITLE>Crystal: Distributed Version Control Speculative Conflict Detector</TITLE>
-</HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <title>Crystal: Distributed Version Control Speculative Conflict Detector</title>
+  <link rel="Start" href="http://www.mit.edu/~6.170/" />
+  <link rel="StyleSheet" href="stylesheet.css" />
+</head>
+
+<body bgcolor="#FFFF99">
 
 
-<body bgcolor=#FFFF99>
-
-
-<h1>Crystal: Distributed Version Control Speculative Conflict Detector</h1> 
+<h1 id="Crystal:_Distributed_Version_Control_Speculative_Conflict_Detector">Crystal: Distributed Version Control Speculative Conflict Detector</h1> 
 
 
 <p> 
@@ -27,79 +31,78 @@ Crystal keeps an eye on all the participating developers' repositories.  It info
 The Crystal client is now in beta and is available for <a href="#download">download</a>.  
 </p>
 
-<h2>Requirements:</h2> 
+<h2 id="Requirements:">Requirements:</h2> 
 
-<UL>
-<LI> <a href="http://java.sun.com/javase/downloads/index.jsp">JRE (Java Runtime Environment).</a></LI>
-<LI> <a href="http://mercurial.selenic.com">Mercurial</a>, version <b>1.6 or later</b>.</LI>
-<LI> The fetch mercurial extension must be enabled.  To do this, add the following text to your hg configuration file: <tt>~/.hgrc</tt> on linux, or <tt>mercurial.ini</tt> on Windows.  (There is nothing after the "<tt>=</tt>" in "<tt>fetch=</tt>".)
+<ul>
+<li> <a href="http://java.sun.com/javase/downloads/index.jsp">JRE (Java Runtime Environment).</a></li>
+<li> <a href="http://mercurial.selenic.com">Mercurial</a>, version <b>1.6 or later</b>.</li>
+<li> The fetch mercurial extension must be enabled.  To do this, add the following text to your hg configuration file: <tt>~/.hgrc</tt> on linux, or <tt>mercurial.ini</tt> on Windows.  (There is nothing after the "<tt>=</tt>" in "<tt>fetch=</tt>".)
 <pre>
 [extensions]
 fetch=
-</pre>
+</pre></li>
 </ul>
 
 
 <h2 id="download">To run Crystal:</h2>
 
-<OL>
-<LI> Download <a href="crystal.jar">crystal.jar</a>. (Current version is 0.1.20100730.)</LI>
-<LI> Run &#8220;java -jar crystal.jar&#8221;.</LI>
-<LI> The tool will complain that your configuration file is invalid and give you instructions on how to fix it.  Your configuration file must contain:
-  <UL>
-  <LI> The path to a scratch directory,</LI>
-  <LI> The path to the hg executable,</LI>
-  <LI> For each project you wish to track, its name, type (Crystal only supports mercurial, for now), and a set of your collaborators' repositories.</LI>
-  </UL>
-<LI> Restart Crystal.  Crystal will run as an icon in your task bar.  Click on the icon to see the full client and more options.</LI>
-</OL>
+<ol>
+<li> Download <a href="crystal.jar">crystal.jar</a>. (Current version is 0.1.20100730.)</li>
+<li> Run &#8220;java -jar crystal.jar&#8221;.</li>
+<li> The tool will complain that your configuration file is invalid and
+  give you instructions on how to fix it.  You can do so either via a GUI
+  that creates the configuration file for you, or by editing the
+  configuration file directly.  See below for the
+  <a href="#Configuration_File_Format">configuration file format</a>.</li>
+<li> Restart Crystal.  Crystal will run as an icon in your task bar.  Click on the icon to see the full client and more options.</li>
+</ol>
 
-<h2>Crystal screen shot: </h2>
+<h2 id="Crystal_screen_shot:_">Crystal screen shot: </h2>
 
 <p>
 <img src="CrystalScreenShot.png" alt="A screen shot of the Crystal tool."></img>
 </p>
 
-<h3>Crystal summarizes the relationship between your and other repositories using the following icons:</h3>
+<h3 id="Crystal_summarizes_the_relationship_between_your_and_other_repositories_using_the_following_icons:">Crystal summarizes the relationship between your and other repositories using the following icons:</h3>
 
-<table border=2 width=640 cellpadding=10>
+<table border="2" width="640" cellpadding="10">
   <tr>
-    <th align=center>Crystal Icon</th>
-    <th align=center>Meaning of the icon</th>
+    <th align="center">Crystal Icon</th>
+    <th align="center">Meaning of the icon</th>
   </tr>
   <tr>
-    <td align=center><img src="same.png" height="48" alt="green checkmark"></img></td>
-    <td align=left>The repositories are in sync.</td>
+    <td align="center"><img src="same.png" height="48" alt="green checkmark"></img></td>
+    <td align="left">The repositories are in sync.</td>
   </tr>
   <tr>
-    <td align=center><img src="ahead.png" height="48" alt="green checkmark with P"></img></td>
-    <td align=left>Your repository has newer commits than this one.  You may consider pushing your changes or letting the owner know.</td>
+    <td align="center"><img src="ahead.png" height="48" alt="green checkmark with P"></img></td>
+    <td align="left">Your repository has newer commits than this one.  You may consider pushing your changes or letting the owner know.</td>
   </tr>
   <tr>
-    <td align=center><img src="behind.png" height="48" alt="yellow warning"></img></td>
-    <td align=left>This repository has newer commits than yours.  You may consider pulling changes to avoid later merges.</td>
+    <td align="center"><img src="behind.png" height="48" alt="yellow warning"></img></td>
+    <td align="left">This repository has newer commits than yours.  You may consider pulling changes to avoid later merges.</td>
   </tr>
   <tr>
-    <td align=center><img src="merge.png" height="48" alt="yellow merge"></img></td>
-    <td align=left>Each of the two repositories has commits not present in the other one, but they can be merged cleanly at this time. </td>
+    <td align="center"><img src="merge.png" height="48" alt="yellow merge"></img></td>
+    <td align="left">Each of the two repositories has commits not present in the other one, but they can be merged cleanly at this time. </td>
   </tr>
   <tr>
-    <td align=center><img src="mergeconflict.png" height="48" alt="red merge"></img></td>
-    <td align=left>Each of the two repositories has commits not present in the other one and merging them will result in a textual conflict. </td>
+    <td align="center"><img src="mergeconflict.png" height="48" alt="red merge"></img></td>
+    <td align="left">Each of the two repositories has commits not present in the other one and merging them will result in a textual conflict. </td>
   </tr>
   
   <!-- tr
-    <td align=center><img src="compileconflict.png" height="48" alt="red merge with a C"></img></td>
-    <td align=left><b>Not currently implemented.</b>  Both repositories have new commits and merging them does not result in a textual conflict but the result does not compile. </td>
+    <td align="center"><img src="compileconflict.png" height="48" alt="red merge with a C"></img></td>
+    <td align="left"><b>Not currently implemented.</b>  Both repositories have new commits and merging them does not result in a textual conflict but the result does not compile. </td>
   </tr>
   <tr>
-    <td align=center><img src="testconflict.png" height="48" alt="red merge with a T"></img></td>
-    <td align=left><b>Not currently implemented.</b>  Both repositories have new commits and merging them does not result in a textual or compilation conflict, but the result does not pass at least one test that either your or this repository passes. </td>
+    <td align="center"><img src="testconflict.png" height="48" alt="red merge with a T"></img></td>
+    <td align="left"><b>Not currently implemented.</b>  Both repositories have new commits and merging them does not result in a textual or compilation conflict, but the result does not pass at least one test that either your or this repository passes. </td>
   </tr> 
   -->
 </table>
 
-<h2>Configuration File Format</h2>
+<h2 id="Configuration_File_Format">Configuration File Format</h2>
 
 <p>The Crystal configuration file is an XML file that describes the locations of the scratch space and the hg executable, as well as contains information on the repositories crystal monitors.  
 </p>
@@ -130,13 +133,15 @@ At the root level, there is a single XML element: <tt>ccConfig</tt>.  This eleme
 For each project you wish Crystal to track, <tt>ccConfig</tt> will have a <tt>project</tt> child with three attributes: <tt>myKind</tt>, <tt>myShortName</tt>, and <tt>myClone</tt>.  The <tt>myKind</tt> element describes the kind of the repository: HG for mercurial or GIT for git, although, for now, Crystal only supports HG.  The <tt>myShortName</tt> element is the name of the project you want Crystal to display (on the left side on the screen shot above).  The <tt>myClone</tt> element is the path to your local repository; you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.  
 </p>
 
+<p>
 Finally, for each repository you wish Crystal to compare to your repository, the <tt>project</tt> element will have a <tt>source</tt> child with three attributes: <tt>myKind</tt>, <tt>myShortName</tt>, and <tt>myClone</tt>.  The <tt>myKind</tt> element is identical to the parent <tt>project</tt>'s <tt>myKind</tt> element.  The <tt>myShortName</tt> element is the name of the repository you want Crystal to display (above the icons on the screen shot above).  The <tt>myClone</tt> element is the path to this repository; again, you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.  
 </p>
 
-<h2>Contacts: </h2>
+<h2 id="Contacts:_">Contacts: </h2>
 
 <p>
-Crystal is designed and developed by <a href="http://www.cs.washington.edu/homes/brun">Yuriy Brun</a>, <a href="http://www.cs.washington.edu/homes/rtholmes">Reid Holmes</a>, <a href="http://www.cs.washington.edu/homes/mernst">Michael Ernst</a>, and <a href="http://www.cs.washington.edu/homes/notkin">David Notkin</a>.  <br>
+Crystal is designed and developed by <a href="http://www.cs.washington.edu/homes/brun">Yuriy Brun</a>, <a href="http://www.cs.washington.edu/homes/rtholmes">Reid Holmes</a>, <a href="http://www.cs.washington.edu/homes/mernst">Michael Ernst</a>, and <a href="http://www.cs.washington.edu/homes/notkin">David Notkin</a>.
+<br/>
 <a href="mailto:brun@cs.washington.edu">Email us</a> with any questions.  
 </p>
 
