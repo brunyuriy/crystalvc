@@ -62,6 +62,10 @@ DONE (20100722-brun) -- fix order of myKind / other atributes.
 
 -- The spacing in the GUI is poor.  Suppose that I have 2 projects with different numbers of repositories.  Then the input boxes (such as for "project name") are stretched to fill the window vertically, rather than permitting whitespace at the bottom of the window as would be better.
 
+-- A checkmark and a checkmark_P seem to produce a checkmark system-tray icon.
+
+DONE (20100731-brun) -- The temp path keeps accumulating / every time you restart the client.
+
 DONE (20100722-brun) -- Add the website to the about box.
 
 * Manual
