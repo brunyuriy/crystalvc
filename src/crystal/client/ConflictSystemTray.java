@@ -140,12 +140,15 @@ public class ConflictSystemTray implements ComputationListener {
 		}
 		// Check the SystemTray support
 		if (!SystemTray.isSupported()) {
+			//for testing change above line to the following one:
+			//		if (true) {
 			String msg = "SystemTray is not supported on this system";
 
 			System.err.println(msg);
 			_log.error(msg);
 
-			quit(-1);
+			JOptionPane.showMessageDialog(null, "Your operating system does not support a system tray, which is currently required for Crystal.");
+			quit(0);
 		}
 
 		final PopupMenu trayMenu = new PopupMenu();
