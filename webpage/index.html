@@ -200,8 +200,10 @@ your crontab file to automate the task:
 </p>
 <pre>
 # Update a public copy of a .hg directory every minute.
-* * * * *	\cp -fpru .../path-to-repo/.hg .../accessible-path/.hg
+* * * * *	\cp -fpru .../path-to-repo/.hg .../accessible-path
 </pre>
+(The <tt>.hg</tt> file will end up as <tt>.../accessible-path/.hg</tt>, and
+the path to the repository is just <tt>.../accessible-path</tt>.)
 </li>
 <li>
 If you do your work on a different file system, you will need to copy your
