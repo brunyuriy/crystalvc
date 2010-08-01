@@ -45,7 +45,7 @@ import crystal.util.TimeUtility;
  */
 public class ConflictSystemTray implements ComputationListener {
 
-	public static String VERSION_ID = "0.1.20100730";
+	public static String VERSION_ID = "0.1.20100731";
 	
 	private static ConflictSystemTray _instance;
 
@@ -67,6 +67,7 @@ public class ConflictSystemTray implements ComputationListener {
 	private Timer _timer;
 
 	public static boolean TRAY_SUPPORTED = SystemTray.isSupported();
+//	public static boolean TRAY_SUPPORTED = false;
 	
 	final private SystemTray _tray;
 
@@ -466,7 +467,8 @@ public class ConflictSystemTray implements ComputationListener {
 	}
 	
 	public void exitAction() {
-		_tray.remove(_trayIcon);
+		if (TRAY_SUPPORTED)
+			_tray.remove(_trayIcon);
 
 		String msg = "ConflictClient exited successfully.";
 		System.out.println(msg);
@@ -476,10 +478,10 @@ public class ConflictSystemTray implements ComputationListener {
 	}
 	
 	public void preferencesAction() {
-		if (_client != null) {
-			_client.close();
-			_client = null;
-		}
+//		if (_client != null) {
+//			_client  .close();
+//			_client = null;
+//		}
 
 		// either creates (if one did not exist) or displays an existing 
 		// PreferencesGUIEditorFrame configuration editor.
@@ -513,6 +515,7 @@ public class ConflictSystemTray implements ComputationListener {
 			// daemon enabled
 			_log.info("ConflictDaemon enabled");
 			daemonEnabledItem.setLabel("Disable Daemon");
+			_client.setDaemonEnabled(true);
 			if (_timer != null) {
 				// do it
 				_timer.start();
@@ -523,6 +526,7 @@ public class ConflictSystemTray implements ComputationListener {
 			// daemon disabled
 			_log.info("ConflictDaemon disabled");
 			daemonEnabledItem.setLabel("Enable Daemon");
+			_client.setDaemonEnabled(false);
 			if (_timer != null) {
 				_timer.stop();
 				_timer = null;
