@@ -1,9 +1,27 @@
 package crystal.model;
 
+import javax.swing.ImageIcon;
+
 public class ConflictResult {
 
 	public enum ResultStatus {
-		SAME, AHEAD, BEHIND, MERGECLEAN, MERGECONFLICT, PENDING, ERROR
+		SAME("same.png"),
+		AHEAD("ahead.png"), 
+		BEHIND("behind.png"), 
+		MERGECLEAN("merge.png"), 
+		MERGECONFLICT("mergeconflict.png"), 
+		COMPILECONLFICT("compileconflict.png"),
+		TESTCONFLICT("testconflict.png"),
+		PENDING("clock.png"), 
+		ERROR("error.png");
+		
+		private final ImageIcon _icon;
+	    ResultStatus(String iconAddress) {
+	    	_icon = new ImageIcon(iconAddress);
+	    }
+		public ImageIcon getIcon() {
+			return _icon; 
+		}
 	}
 
 	private final DataSource _source;
