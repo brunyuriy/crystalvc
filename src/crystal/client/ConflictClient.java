@@ -2,10 +2,14 @@ package crystal.client;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.util.HashMap;
 import java.util.Vector;
 
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
@@ -21,9 +25,8 @@ import crystal.model.ConflictResult.ResultStatus;
  * 
  */
 public class ConflictClient implements ConflictDaemon.ComputationListener {
-	private Logger _log = Logger.getLogger(this.getClass());
 
-	
+	private Logger _log = Logger.getLogger(this.getClass());
 
 	/**
 	 * UI frame.
@@ -31,21 +34,30 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 	private JFrame _frame = null;
 
 	/**
+	 * A map that tells us which ImageIcon contained in a JLabel) corresponds to each DataSource on the GUI.
+	 */
+	private HashMap<DataSource, JLabel> _iconMap = null;
+
+	/**
 	 * Preference store used by the client.
 	 */
 	private ClientPreferences _preferences;
 
-//	/**
-//	 * Runs the analysis on any any projects described by the preferences.
-//	 */
-//	public void calculateConflicts() {
-//		for (ProjectPreferences projPref : _preferences.getProjectPreference()) {
-//			for (final DataSource source : projPref.getDataSources()) {
-//				CalculateTask ct = new CalculateTask(source, projPref);
-//				ct.execute();
-//			}
-//		}
-//	}
+	public ConflictClient() {
+		super();
+	}
+
+	//	/**
+	//	 * Runs the analysis on any any projects described by the preferences.
+	//	 */
+	//	public void calculateConflicts() {
+	//		for (ProjectPreferences projPref : _preferences.getProjectPreference()) {
+	//			for (final DataSource source : projPref.getDataSources()) {
+	//				CalculateTask ct = new CalculateTask(source, projPref);
+	//				ct.execute();
+	//			}
+	//		}
+	//	}
 
 	/**
 	 * Close the ConflictClient UI.
@@ -65,7 +77,45 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		// Create and set up the window.
 		_frame = new JFrame("Conflict Client");
+		_frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(), BoxLayout.Y_AXIS));
 
+		// Create a notification that quitting saves.
+		_frame.getContentPane().add(new JLabel("Quitting Crystal saves your configuration."));
+
+		// Create the iconMap and populate it with icons.
+		// Also create the layout of the GUI.
+		_iconMap = new HashMap<DataSource, JLabel>();
+		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
+			// row will consist of the headerRow and the dataRow
+			JPanel row = new JPanel();
+			row.setLayout(new BoxLayout(row, BoxLayout.Y_AXIS));
+
+			// First create the row of headings.  
+			JPanel headerRow = new JPanel();
+			headerRow.setLayout(new BoxLayout(headerRow, BoxLayout.X_AXIS));
+			// one blank for the first column to keep the project name in
+			headerRow.add(new JLabel(""));
+			for (DataSource source : projPref.getDataSources())
+				headerRow.add(new JLabel(source.getShortName()));
+			row.add(headerRow);
+
+			// Second, put in an icon for every source in the dataRow
+			JPanel dataRow = new JPanel();
+			dataRow.setLayout(new BoxLayout(dataRow, BoxLayout.X_AXIS));
+			dataRow.add(new JLabel(projPref.getEnvironment().getShortName()));
+			for (DataSource source : projPref.getDataSources()) {
+				ImageIcon image = new ImageIcon();
+				JLabel imageLabel = new JLabel(image);
+				_iconMap.put(source, imageLabel);
+				ConflictDaemon.getInstance().getStatus(source);
+				dataRow.add(imageLabel);
+			}
+			row.add(dataRow);
+
+			_frame.getContentPane().add(row);
+		}
+
+		/* Reid's old code:
 		// set all cells to pending on initial load
 		// NOTE: caching might be a good idea here in the future.
 		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
@@ -73,10 +123,10 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 				// XXX: should set pending status for new requests
 				// ConflictDaemon.getInstance().calculateConflicts(source, projPref);
-				ConflictDaemon.getInstance().getStatus(source);
 				// resultMap.put(source, new ConflictResult(source, ResultStatus.PENDING));
 			}
 		}
+		 */
 
 		refresh();
 
@@ -84,6 +134,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_frame.toFront();
 	}
 
+	/*
 	/**
 	 * Creates the HTML for header row for a project.
 	 * 
@@ -92,7 +143,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 	 * @param numColumns
 	 *            The maximum number of columns that should be displayed; enables HTML padding.
 	 * @return the HTML for the project rows.
-	 */
+	 /
 	private String createHeader(ProjectPreferences projectPreferences, int numColumns) {
 		String pre = "<tr>";
 
@@ -138,7 +189,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 	 * @param numColumns
 	 *            The maximum number of columns that should be displayed; enables HTML padding.
 	 * @return the HTML for the project rows.
-	 */
+	 /
 	private String createProjectRow(ProjectPreferences prefs, int numColumns) {
 		String pre = "<tr>";
 
@@ -221,7 +272,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 	 * @param prefs
 	 *            preferences used to create the body representaiton.
 	 * @return HTML corresponding to the UI body.
-	 */
+	 /
 	private String createText(ClientPreferences prefs) {
 		String pre = "<html> <p>Quitting Crystal saves your configuration.</p>";
 		String post = "</html>";
@@ -248,23 +299,25 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		}
 		return retValue;
 	}
+	 */
 
 	/**
 	 * Refreshes the UI.
 	 */
 	private void refresh() {
 
-		_frame.getContentPane().removeAll();
+		for (ProjectPreferences projPref : _preferences.getProjectPreference()) {
+			for (DataSource source : projPref.getDataSources()) {
+				JLabel current = _iconMap.get(source);
+				current.removeAll();
 
-		Container contentPane = _frame.getContentPane();
-		JLabel content = new JLabel();
+				ConflictResult conflictStatus = ConflictDaemon.getInstance().getStatus(source);
+				ResultStatus status = conflictStatus.getStatus();
+				current.setIcon(status.getIcon());
+				current.repaint();
+			}
+		}
 
-		String labelText = createText(_preferences);
-		content.setText(labelText);
-
-		contentPane.add(content, BorderLayout.CENTER);
-
-		// Display the window.
 		_frame.pack();
 		// _frame.setVisible(true);
 	}

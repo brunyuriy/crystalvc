@@ -18,7 +18,9 @@ import crystal.util.TimeUtility;
  * Daemon that decouples the UI from the analysis. This class can be extended to perform the analysis on an external
  * machine, enable caching, or serve tea without having to update the UI.
  * 
- * @author rtholmes
+ * ConflictDaemon is a singleton.
+ * 
+ * @author rtholmes & brun
  */
 public class ConflictDaemon {
 
