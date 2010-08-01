@@ -2,28 +2,31 @@ package crystal.model;
 
 import javax.swing.ImageIcon;
 
+import crystal.Constants;
+
 public class ConflictResult {
 
-	public enum ResultStatus {
-		SAME("C:\\temp\\conflictClient\\same.png"),
-		AHEAD("C:\\temp\\conflictClient\\ahead.png"), 
-		BEHIND("C:\\temp\\conflictClient\\behind.png"), 
-		MERGECLEAN("C:\\temp\\conflictClient\\merge.png"), 
-		MERGECONFLICT("C:\\temp\\conflictClient\\mergeconflict.png"), 
-		COMPILECONLFICT("C:\\temp\\conflictClient\\compileconflict.png"),
-		TESTCONFLICT("C:\\temp\\conflictClient\\testconflict.png"),
-		PENDING("C:\\temp\\conflictClient\\clock.png"), 
-		ERROR("C:\\temp\\conflictClient\\error.png");
+	public enum ResultStatus {	
+		SAME("/crystal/client/images/32X32/same.png"),
+		AHEAD("/crystal/client/images/32X32/ahead.png"), 
+		BEHIND("/crystal/client/images/32X32/behind.png"), 
+		MERGECLEAN("/crystal/client/images/32X32/merge.png"), 
+		MERGECONFLICT("/crystal/client/images/32X32/mergeconflict.png"), 
+		COMPILECONLFICT("/crystal/client/images/32X32/compileconflict.png"),
+		TESTCONFLICT("/crystal/client/images/32X32/testconflict.png"),
+		PENDING("/crystal/client/images/clock.png"), 
+		ERROR("/crystal/client/images/32X32/error.png");
 		
 		private final ImageIcon _icon;
 	    ResultStatus(String iconAddress) {
-	    	_icon = new ImageIcon(iconAddress);
+	    	_icon = new ImageIcon(Constants.class.getResource(iconAddress));
 	    }
-		public ImageIcon getIcon() {
+
+	    public ImageIcon getIcon() {
 			return _icon; 
 		}
 	}
-
+	
 	private final DataSource _source;
 	private final ResultStatus _status;
 
