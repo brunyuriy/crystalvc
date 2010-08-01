@@ -78,6 +78,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 	}
 
 	private JMenuItem _update = null;
+	private JMenuItem _disableDaemon;
 	
 	/**
 	 * Creates the UI and brings it to the foreground.
@@ -101,13 +102,13 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
         
         _update = new JMenuItem("Update Now");
         JMenuItem editConfiguration = new JMenuItem("Edit Configuration");
-        final JMenuItem disableDaemon = new JMenuItem("Disable Daemon");
+        _disableDaemon = new JMenuItem("Disable Daemon");
         JMenuItem exit = new JMenuItem("Exit");
         JMenuItem about = new JMenuItem("About");
         
         fileMenu.add(_update);
         fileMenu.add(editConfiguration);
-        fileMenu.add(disableDaemon);
+        fileMenu.add(_disableDaemon);
         fileMenu.add(exit);
 //        aboutMenu.add(about);
         menuBar.add(about);
@@ -142,16 +143,9 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
             }
         });
         
-        disableDaemon.addActionListener(new ActionListener() {
+        _disableDaemon.addActionListener(new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent e) {
-        		
-        		if (disableDaemon.getText().equals("Enable Daemon")) {
-        			// daemon enabled
-        			disableDaemon.setText("Disable Daemon");
-        		} else {
-        			disableDaemon.setText("Enable Daemon");
-        		}
         		ConflictSystemTray.getInstance().daemonAbleAction();
             }
         });
@@ -163,7 +157,9 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(), BoxLayout.Y_AXIS));
 
 		// Create a notification that quitting saves.
-		_frame.getContentPane().add(new JLabel("Quitting Crystal saves your configuration.   ", SwingConstants.CENTER));
+//		_frame.getContentPane().add(new JLabel("Quitting Crystal saves your configuration.   ", SwingConstants.CENTER));
+		// or do it in the menu; looks nicer.
+		menuBar.add(new JMenuItem("Quitting Crystal saves your configuration."));
 
 		// Create a grid to hold the conflict results
 		int maxSources = 0;
@@ -226,6 +222,15 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			_update.setEnabled(false);
 		} 
 	}
+	
+	public void setDaemonEnabled(boolean enable) {
+		if (enable) {
+			_disableDaemon.setText("Disable Daemon");
+		} else {
+			_disableDaemon.setText("Enable Daemon");
+		} 
+	}
+
 
 	/*
 	/**
