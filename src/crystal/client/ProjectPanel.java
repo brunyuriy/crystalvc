@@ -63,7 +63,7 @@ public class ProjectPanel extends JPanel {
 		typePanel.add(new JLabel("Repo Type: "));
 		final JComboBox type = new JComboBox();
 		type.addItem(DataSource.RepoKind.HG);
-		type.addItem(DataSource.RepoKind.GIT);
+//		type.addItem(DataSource.RepoKind.GIT);
 		type.setSelectedItem(pref.getEnvironment().getKind());
 		typePanel.add(type);
 		type.addActionListener(new ActionListener() {
@@ -133,7 +133,7 @@ public class ProjectPanel extends JPanel {
 		repoPanel.add(new JLabel("Repo Type"));
 		final JComboBox type = new JComboBox();
 		type.addItem(DataSource.RepoKind.HG);
-		type.addItem(DataSource.RepoKind.GIT);
+//		type.addItem(DataSource.RepoKind.GIT);
 		type.setSelectedItem(source.getKind());
 		repoPanel.add(type);
 		type.addActionListener(new ActionListener() {
