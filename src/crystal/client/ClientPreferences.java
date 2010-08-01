@@ -230,7 +230,7 @@ public class ClientPreferences {
 				_log.trace("$HOME in temporary path: " + (firstPart + lastPart));
 			}
 
-			if (!(tempDirectory.endsWith(File.separator)) || (tempDirectory.endsWith("/"))) {
+			if ((!(tempDirectory.endsWith(File.separator))) && (!(tempDirectory.endsWith("/")))) {
 				tempDirectory += File.separator;
 				prefsChanged = true;
 			}
