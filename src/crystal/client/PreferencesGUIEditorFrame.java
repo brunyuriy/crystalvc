@@ -23,6 +23,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * @author brun
@@ -73,6 +75,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		hgPanel.setLayout(new BoxLayout(hgPanel, BoxLayout.X_AXIS));
 		hgPanel.add(new JLabel("Path to hg executable:"));
 		final JTextField hgPath = new JTextField(prefs.getHgPath());
+//		hgPath.setSize(hgPath.getWidth(), 16);
 		hgPanel.add(hgPath);
 		hgPath.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {				
@@ -128,6 +131,15 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 
 		final JTabbedPane projectsTabs = new JTabbedPane(JTabbedPane.TOP,  JTabbedPane.SCROLL_TAB_LAYOUT);
+/*		projectsTabs.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				frame.pack();
+				System.out.println("Tabs changed");
+			}
+		});  */
+
 		for (ProjectPreferences pref : prefs.getProjectPreference()) {
 			ProjectPanel current = new ProjectPanel(pref, prefs, frame);
 			projectsTabs.addTab(current.getName(), current);
