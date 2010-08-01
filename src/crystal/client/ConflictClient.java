@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -11,6 +13,9 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
@@ -66,9 +71,14 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 	 * Close the ConflictClient UI.
 	 */
 	public void close() {
-		_frame.setVisible(false);
+		if (ConflictSystemTray.TRAY_SUPPORTED)
+			_frame.setVisible(false);
+		else
+			ConflictSystemTray.getInstance().exitAction();
 	}
 
+	private JMenuItem _update = null;
+	
 	/**
 	 * Creates the UI and brings it to the foreground.
 	 * 
@@ -80,6 +90,76 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		// Create and set up the window.
 		_frame = new JFrame("Conflict Client");
+		
+		
+		//Set up the menu:
+		JMenuBar menuBar = new JMenuBar();
+		JMenu fileMenu = new JMenu("File");
+//        JMenu aboutMenu = new JMenu("About");
+        menuBar.add(fileMenu);
+ //       menuBar.add(aboutMenu);
+        
+        _update = new JMenuItem("Update Now");
+        JMenuItem editConfiguration = new JMenuItem("Edit Configuration");
+        final JMenuItem disableDaemon = new JMenuItem("Disable Daemon");
+        JMenuItem exit = new JMenuItem("Exit");
+        JMenuItem about = new JMenuItem("About");
+        
+        fileMenu.add(_update);
+        fileMenu.add(editConfiguration);
+        fileMenu.add(disableDaemon);
+        fileMenu.add(exit);
+//        aboutMenu.add(about);
+        menuBar.add(about);
+        
+        about.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+                ConflictSystemTray.getInstance().aboutAction();
+            }
+        });
+        
+        exit.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+                ConflictSystemTray.getInstance().exitAction();
+            }
+        });
+        
+        _update.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		_log.info("Update now manually selected.");
+        		setCanUpdate(false);
+        		ConflictSystemTray.getInstance().performCalculations();
+            }
+        });
+
+        editConfiguration.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		ConflictSystemTray.getInstance().preferencesAction();
+            }
+        });
+        
+        disableDaemon.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		
+        		if (disableDaemon.getText().equals("Enable Daemon")) {
+        			// daemon enabled
+        			disableDaemon.setText("Disable Daemon");
+        		} else {
+        			disableDaemon.setText("Enable Daemon");
+        		}
+        		ConflictSystemTray.getInstance().daemonAbleAction();
+            }
+        });
+        
+        
+        _frame.setJMenuBar(menuBar);
+        
+        // Now set up the rest of the frame
 		_frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(), BoxLayout.Y_AXIS));
 
 		// Create a notification that quitting saves.
@@ -135,6 +215,16 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		_frame.setVisible(true);
 		_frame.toFront();
+	}
+
+	public void setCanUpdate(boolean enable) {
+		if (enable) {
+			_update.setText("Update Now");
+			_update.setEnabled(true);
+		} else {
+			_update.setText("Updating...");
+			_update.setEnabled(false);
+		} 
 	}
 
 	/*

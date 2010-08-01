@@ -39,11 +39,15 @@ import crystal.util.TimeUtility;
  * This is the UI that lives in the system tray (windows), title bar (OS X) or somewhere else (linux). It contains the
  * menu options and provides a lightweight home for bringing up the ConflictClient UI.
  * 
- * @author rtholmes
+ * ConflictSystemTray is a singleton.
+ * 
+ * @author rtholmes & brun
  */
 public class ConflictSystemTray implements ComputationListener {
 
 	public static String VERSION_ID = "0.1.20100730";
+	
+	private static ConflictSystemTray _instance;
 
 	/**
 	 * Conflict client UI.
@@ -62,33 +66,45 @@ public class ConflictSystemTray implements ComputationListener {
 	 */
 	private Timer _timer;
 
-	final private TrayIcon _trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
+	public static boolean TRAY_SUPPORTED = SystemTray.isSupported();
+	
+	final private SystemTray _tray;
 
-	public ConflictSystemTray() {
+	final private TrayIcon _trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
+		
+	private ConflictSystemTray() {
 		_log.info("ConflictSystemTray - started at: " + TimeUtility.getCurrentLSMRDateString());
+		if (TRAY_SUPPORTED)
+			_tray = SystemTray.getSystemTray();
+		else
+			_tray = null;
+	}
+	
+	private MenuItem updateNowItem;
+	private MenuItem daemonEnabledItem;
+
+	public static ConflictSystemTray getInstance() {
+		if (_instance == null) {
+			_instance = new ConflictSystemTray();
+		}
+		return _instance;
 	}
 
-	private MenuItem updateNowItem;
-	private CheckboxMenuItem daemonEnabledItem;
 
 	/**
 	 * Create the tray icon and get it installed in the tray.
 	 */
 	private void createAndShowGUI() {
 
-		// Create a popup menu components (we need to reference these (just deamonEnabledItem) if something goes wrong reading the config file.)
+		// Create components for a popup menu components to be used if System Tray is supported.
 		MenuItem aboutItem = new MenuItem("About");
 		MenuItem preferencesItem = new MenuItem("Edit Configuration");
-		daemonEnabledItem = new CheckboxMenuItem("Daemon Enabled");
+		daemonEnabledItem = new MenuItem("Disable Daemon");
 		updateNowItem = new MenuItem("Update Now");
 		final MenuItem showClientItem = new MenuItem("Show Client");
 		MenuItem exitItem = new MenuItem("Exit");
 
-		// make sure the client is enabled by default
-		daemonEnabledItem.setState(true);
-
 		try {
-
 			_prefs = ClientPreferences.loadPreferencesFromXML();
 
 			if (_prefs != null) {
@@ -123,7 +139,7 @@ public class ConflictSystemTray implements ComputationListener {
 				PreferencesGUIEditorFrame editorFrame = PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
 				JOptionPane.showMessageDialog(editorFrame, "Please remember to restart the client after closing the configuraton editor.");
 				//and disable client
-				daemonEnabledItem.setState(false);
+				daemonEnabledItem.setLabel("Enable Daemon");
 				if (_timer != null) {
 					_timer.stop();
 					_timer = null;
@@ -138,8 +154,10 @@ public class ConflictSystemTray implements ComputationListener {
 				quit(0);
 			}
 		}
+
+		/*		Old code for quiting if there is no System Tray support.
 		// Check the SystemTray support
-		if (!SystemTray.isSupported()) {
+		if (!SystemTray.isSupported()) {dsfdsfdsfds
 			//for testing change above line to the following one:
 			//		if (true) {
 			String msg = "SystemTray is not supported on this system";
@@ -148,149 +166,89 @@ public class ConflictSystemTray implements ComputationListener {
 			_log.error(msg);
 
 			JOptionPane.showMessageDialog(null, "Your operating system does not support a system tray, which is currently required for Crystal.");
-			quit(0);
-		}
+			quit(0, _log);
+			}
+		 */
 
-		final PopupMenu trayMenu = new PopupMenu();
-		// _trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
-		_trayIcon.setImage(createImage("images/16X16/greenp.png", ""));
+		// Start out with the client showing.
+		showClient();
 
-		final SystemTray tray = SystemTray.getSystemTray();
+		if (TRAY_SUPPORTED) {
+			final PopupMenu trayMenu = new PopupMenu();
+			_trayIcon.setImage(createImage("images/clock.png", ""));
 
-		_trayIcon.setToolTip("ConflictClient");
+			_trayIcon.setToolTip("Crystal");
 
+			// Add components to the popup menu
+			trayMenu.add(aboutItem);
+			trayMenu.addSeparator();
+			trayMenu.add(preferencesItem);
+			trayMenu.add(daemonEnabledItem);
+			trayMenu.addSeparator();
+			trayMenu.add(updateNowItem);
+			trayMenu.addSeparator();
+			trayMenu.add(showClientItem);
+			trayMenu.addSeparator();
+			trayMenu.add(exitItem);
 
-		// Add components to popup menu
-		trayMenu.add(aboutItem);
-		trayMenu.addSeparator();
-		trayMenu.add(preferencesItem);
-		trayMenu.add(daemonEnabledItem);
-		trayMenu.addSeparator();
-		trayMenu.add(updateNowItem);
-		trayMenu.addSeparator();
-		trayMenu.add(showClientItem);
-		trayMenu.addSeparator();
-		trayMenu.add(exitItem);
+			_trayIcon.setPopupMenu(trayMenu);
 
-		_trayIcon.setPopupMenu(trayMenu);
-
-		try {
-			tray.add(_trayIcon);
-		} catch (AWTException e) {
-			_log.error("TrayIcon could not be added.");
-			return;
-		}
-
-		_trayIcon.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ae) {
-				_log.trace("Tray icon ActionEvent: " + ae.getActionCommand());
-				// doesn't work on OS X; it doesn't register double clicks on
-				// the tray
-				showClient();
+			try {
+				_tray.add(_trayIcon);
+			} catch (AWTException e) {
+				_log.error("TrayIcon could not be added.");
+				return;
 			}
 
-		});
-
-		aboutItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Crystal version: " + VERSION_ID + "\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.\nhttp://www.cs.washington.edu/homes/brun/research/crystal");
-			}
-		});
-
-		updateNowItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				_log.info("Update now manually selected.");
-				performCalculations();
-			}
-		});
-
-		preferencesItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (_client != null) {
-					_client.close();
-					_client = null;
+			_trayIcon.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent ae) {
+					_log.trace("Tray icon ActionEvent: " + ae.getActionCommand());
+					// doesn't work on OS X; it doesn't register double clicks on the tray
+					showClient();
 				}
+			});
 
-				showClientItem.setEnabled(false);
-
-				// either creates (if one did not exist) or displays an existing 
-				// PreferencesGUIEditorFrame configuration editor.
-				PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
-
-				/*				Yuriy: Old Preferences UI code by Reid.  @deprecated.  
-
- 				ClientPreferencesUI cp = new ClientPreferencesUI(new ClientPreferencesUI.IPreferencesListener() {
-
-					@Override
-					public void preferencesChanged(ProjectPreferences preferences) {
-						// when the preferences are updated, show the
-						// client
-						// _prefs = preferences;
-						// NOTE: prefs UI broken by multiple project
-						// refactor
-					}
-
-					@Override
-					public void preferencesDialogClosed() {
-						showClientItem.setEnabled(true);
-						// NOTE: prefs UI broken by multiple project
-						// refactor
-					}
-				}); 
-				cp.createAndShowGUI();
-				 */
-			}
-		});
-
-		showClientItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				showClient();
-			}
-		});
-
-		daemonEnabledItem.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				int cb1Id = e.getStateChange();
-				if (cb1Id == ItemEvent.SELECTED) {
-					// daemon enabled
-					_log.info("ConflictDaemon enabled");
-					if (_timer != null) {
-						// do it
-						_timer.start();
-					} else {
-						createTimer();
-					}
-				} else {
-					// daemon disabled
-					_log.info("ConflictDaemon disabled");
-					if (_timer != null) {
-						_timer.stop();
-						_timer = null;
-					}
-					for (CalculateTask ct : tasks) {
-						_log.info("disabling ct of state: " + ct.getState());
-						ct.cancel(true);
-					}
-					update();
+			aboutItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					aboutAction();
 				}
-			}
-		});
+			});
 
-		exitItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				tray.remove(_trayIcon);
+			updateNowItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					_log.info("Update now manually selected.");
+					performCalculations();
+				}
+			});
 
-				String msg = "ConflictClient exited successfully.";
-				System.out.println(msg);
-				_log.trace("Exit action selected");
+			preferencesItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					preferencesAction();
+				}
+			});
 
-				quit(0);
-			}
-		});
+			showClientItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					showClient();
+				}
+			});
 
-		ConflictDaemon.getInstance().addListener(this);
+			daemonEnabledItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					daemonAbleAction();
+				}
+			});
 
+			exitItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					exitAction();
+				}
+			});
+
+			ConflictDaemon.getInstance().addListener(this);
+		}
+		
 		performCalculations();
 	}
 
@@ -350,10 +308,10 @@ public class ConflictSystemTray implements ComputationListener {
 	/**
 	 * Perform the conflict calculations
 	 */
-	private void performCalculations() {
+	public void performCalculations() {
 
 		// if the daemon is disabled, don't perform calculations.
-		if (!daemonEnabledItem.getState())
+		if (daemonEnabledItem.getLabel().equals("Enable Daemon"))
 			return;
 
 		if (tasks.size() > 0) {
@@ -365,6 +323,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		updateNowItem.setLabel("Updating...");
 		updateNowItem.setEnabled(false);
+		_client.setCanUpdate(false);
 
 		startCalculations = System.currentTimeMillis();
 
@@ -422,7 +381,7 @@ public class ConflictSystemTray implements ComputationListener {
 		_log.trace("Task size in update: " + tasks.size());
 		if (tasks.size() == 0) {
 
-			if (daemonEnabledItem.getState()) {
+			if (daemonEnabledItem.getLabel().equals("Disable Daemon")) {
 				long end = System.currentTimeMillis();
 				long delta = end - startCalculations;
 				_log.info("Computation took: " + TimeUtility.msToHumanReadable(delta));
@@ -432,8 +391,18 @@ public class ConflictSystemTray implements ComputationListener {
 
 			updateNowItem.setEnabled(true);
 			updateNowItem.setLabel("Update now");
+			_client.setCanUpdate(true);
 		}
 
+		if (TRAY_SUPPORTED)
+			updateTrayIcon();
+
+		if (_client != null) {
+			_client.update();
+		}
+	}
+	
+	private void updateTrayIcon() {
 		boolean anyGreen = false;
 		boolean anyPull = false;
 		boolean anyYellow = false;
@@ -468,10 +437,6 @@ public class ConflictSystemTray implements ComputationListener {
 		} else if (anyGreen) {
 			_trayIcon.setImage(createImage("images/16X16/greenstatus.png", ""));
 		}
-
-		if (_client != null) {
-			_client.update();
-		}
 	}
 
 	/**
@@ -492,8 +457,82 @@ public class ConflictSystemTray implements ComputationListener {
 
 		// UIManager.put("swing.boldMetal", Boolean.FALSE);
 
-		ConflictSystemTray cst = new ConflictSystemTray();
+		ConflictSystemTray cst = ConflictSystemTray.getInstance();
 		cst.createAndShowGUI();
+	}
+
+	public void aboutAction() {
+		JOptionPane.showMessageDialog(null, "Crystal version: " + VERSION_ID + "\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.\nhttp://www.cs.washington.edu/homes/brun/research/crystal");
+	}
+	
+	public void exitAction() {
+		_tray.remove(_trayIcon);
+
+		String msg = "ConflictClient exited successfully.";
+		System.out.println(msg);
+		_log.trace("Exit action selected");
+
+		quit(0);
+	}
+	
+	public void preferencesAction() {
+		if (_client != null) {
+			_client.close();
+			_client = null;
+		}
+
+		// either creates (if one did not exist) or displays an existing 
+		// PreferencesGUIEditorFrame configuration editor.
+		PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
+
+		/*				Yuriy: Old Preferences UI code by Reid.  @deprecated.  
+
+		ClientPreferencesUI cp = new ClientPreferencesUI(new ClientPreferencesUI.IPreferencesListener() {
+			@Override
+			public void preferencesChanged(ProjectPreferences preferences) {
+				// when the preferences are updated, show the
+				// client
+				// _prefs = preferences;
+				// NOTE: prefs UI broken by multiple project
+				// refactor
+			}
+
+			@Override
+			public void preferencesDialogClosed() {
+				showClientItem.setEnabled(true);
+			// NOTE: prefs UI broken by multiple project
+			// refactor
+			}
+		}); 
+		cp.createAndShowGUI();
+		 */
+	}
+	
+	public void daemonAbleAction() {
+		if (daemonEnabledItem.getLabel().equals("Enable Daemon")) {
+			// daemon enabled
+			_log.info("ConflictDaemon enabled");
+			daemonEnabledItem.setLabel("Disable Daemon");
+			if (_timer != null) {
+				// do it
+				_timer.start();
+			} else {
+				createTimer();
+			}
+		} else {
+			// daemon disabled
+			_log.info("ConflictDaemon disabled");
+			daemonEnabledItem.setLabel("Enable Daemon");
+			if (_timer != null) {
+				_timer.stop();
+				_timer = null;
+			}
+			for (CalculateTask ct : tasks) {
+				_log.info("disabling ct of state: " + ct.getState());
+				ct.cancel(true);
+			}
+			update();
+		}
 	}
 
 }
