@@ -129,7 +129,6 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		});
 		getContentPane().add(tempPanel);
 
-
 		final JTabbedPane projectsTabs = new JTabbedPane(JTabbedPane.TOP,  JTabbedPane.SCROLL_TAB_LAYOUT);
 /*		projectsTabs.addChangeListener(new ChangeListener() {
 			
@@ -141,9 +140,9 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		});  */
 
 		for (ProjectPreferences pref : prefs.getProjectPreference()) {
-			ProjectPanel current = new ProjectPanel(pref, prefs, frame);
+			ProjectPanel current = new ProjectPanel(pref, prefs, frame, projectsTabs);
 			projectsTabs.addTab(current.getName(), current);
-			//			getContentPane().add(current);
+//			projectsTabs.setTitleAt(projectsTabs.getTabCount() - 1, current.getName());
 		}
 
 		final JButton newProjectButton = new JButton("Add New Project");
@@ -161,7 +160,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 				ProjectPreferences newGuy = new ProjectPreferences(new DataSource("New Project " + --count, "", DataSource.RepoKind.HG), prefs); 
 				prefs.addProjectPreferences(newGuy);
-				ProjectPanel newGuyPanel = new ProjectPanel(newGuy, prefs, frame);
+				ProjectPanel newGuyPanel = new ProjectPanel(newGuy, prefs, frame, projectsTabs);
 				projectsTabs.addTab("New Project " + count, newGuyPanel);
 				prefs.setChanged(true);
 				frame.pack();
