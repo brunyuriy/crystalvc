@@ -60,11 +60,14 @@ DONE (20100722-brun) -- fix order of myKind / other atributes.
 
 * GUI
 
-DONE (20100731-brun) -- Crystal crashes if there is no system tray support in the OS.  (More testing may be needed).
-
--- The spacing in the GUI is poor.  Suppose that I have 2 projects with different numbers of repositories.  Then the input boxes (such as for "project name") are stretched to fill the window vertically, rather than permitting whitespace at the bottom of the window as would be better.
+-- The spacing in the config editor GUI is poor.  Suppose that I have 2 projects with different numbers of repositories.  Then the input boxes (such as for "project name") are stretched to fill the window vertically, rather than permitting whitespace at the bottom of the window as would be better.
+  This is because of the way JTabbedPane works.  No good way to fix it.  All tabs are the size of the largest tab.
 
 -- A checkmark and a checkmark_P seem to produce a checkmark system-tray icon.  So do two checkmarks, it seems.  
+
+-- Updating / Update now aren't working right.  
+
+DONE (20100731-brun) -- Crystal crashes if there is no system tray support in the OS.  (More testing may be needed).
 
 DONE (20100731-brun) -- The GUI now uses swing and we can add tool tips, etc.  
 
