@@ -12,6 +12,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
 import crystal.model.DataSource;
@@ -28,15 +29,17 @@ public class ProjectPanel extends JPanel {
 	/**
 	 * 
 	 */
-	public ProjectPanel(final ProjectPreferences pref, final ClientPreferences prefs, final JFrame mainFrame) {
+	public ProjectPanel(final ProjectPreferences pref, final ClientPreferences prefs, final JFrame mainFrame, final JTabbedPane tabbedPane) {
 		super();
 		
 		final JPanel panel = this;
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		_name = pref.getEnvironment().getShortName();
 
 		JPanel namePanel = new JPanel();
-		namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));		
+		namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
 		namePanel.add(new JLabel("Project Name: "));
 		final JTextField shortName = new JTextField(pref.getEnvironment().getShortName());
 		namePanel.add(shortName);
@@ -51,13 +54,13 @@ public class ProjectPanel extends JPanel {
 				pref.getEnvironment().setShortName(shortName.getText());
 				prefs.setChanged(true);
 				_name = shortName.getText();
+				tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), _name);
 				panel.validate();
 				mainFrame.pack();
 			}
 		});
 		add(namePanel);
-		_name = shortName.getText();
-
+		
 		JPanel typePanel = new JPanel();
 		typePanel.setLayout(new BoxLayout(typePanel, BoxLayout.X_AXIS));		
 		typePanel.add(new JLabel("Repo Type: "));
