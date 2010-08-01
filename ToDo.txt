@@ -66,6 +66,8 @@ DONE (20100722-brun) -- fix order of myKind / other atributes.
 
 -- A checkmark and a checkmark_P seem to produce a checkmark system-tray icon.  So do two checkmarks, it seems.  
 
+DONE (20100731-brun) -- The GUI now uses swing and we can add tool tips, etc.  
+
 DONE (20100731-brun) -- The temp path keeps accumulating / every time you restart the client.
 
 DONE (20100722-brun) -- Add the website to the about box.
