@@ -5,15 +5,15 @@ import javax.swing.ImageIcon;
 public class ConflictResult {
 
 	public enum ResultStatus {
-		SAME("same.png"),
-		AHEAD("ahead.png"), 
-		BEHIND("behind.png"), 
-		MERGECLEAN("merge.png"), 
-		MERGECONFLICT("mergeconflict.png"), 
-		COMPILECONLFICT("compileconflict.png"),
-		TESTCONFLICT("testconflict.png"),
-		PENDING("clock.png"), 
-		ERROR("error.png");
+		SAME("C:\\temp\\conflictClient\\same.png"),
+		AHEAD("C:\\temp\\conflictClient\\ahead.png"), 
+		BEHIND("C:\\temp\\conflictClient\\behind.png"), 
+		MERGECLEAN("C:\\temp\\conflictClient\\merge.png"), 
+		MERGECONFLICT("C:\\temp\\conflictClient\\mergeconflict.png"), 
+		COMPILECONLFICT("C:\\temp\\conflictClient\\compileconflict.png"),
+		TESTCONFLICT("C:\\temp\\conflictClient\\testconflict.png"),
+		PENDING("C:\\temp\\conflictClient\\clock.png"), 
+		ERROR("C:\\temp\\conflictClient\\error.png");
 		
 		private final ImageIcon _icon;
 	    ResultStatus(String iconAddress) {

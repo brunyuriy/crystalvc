@@ -1,7 +1,9 @@
 package crystal.client;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Container;
+import java.awt.GridLayout;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -82,37 +84,41 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		// Create a notification that quitting saves.
 		_frame.getContentPane().add(new JLabel("Quitting Crystal saves your configuration."));
 
+		// Create a grid to hold the conflict results
+		int maxSources = 0;
+		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
+			if (projPref.getDataSources().size() > maxSources)
+				maxSources = projPref.getDataSources().size();
+		} 
+		// 1 extra in each dimension for heading labels
+		JPanel grid = new JPanel(new GridLayout(2 * prefs.getProjectPreference().size(), 0)); // no need to have maxSources + 1;
+		grid.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		
 		// Create the iconMap and populate it with icons.
 		// Also create the layout of the GUI.
 		_iconMap = new HashMap<DataSource, JLabel>();
 		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
-			// row will consist of the headerRow and the dataRow
-			JPanel row = new JPanel();
-			row.setLayout(new BoxLayout(row, BoxLayout.Y_AXIS));
-
 			// First create the row of headings.  
-			JPanel headerRow = new JPanel();
-			headerRow.setLayout(new BoxLayout(headerRow, BoxLayout.X_AXIS));
 			// one blank for the first column to keep the project name in
-			headerRow.add(new JLabel(""));
-			for (DataSource source : projPref.getDataSources())
-				headerRow.add(new JLabel(source.getShortName()));
-			row.add(headerRow);
+			grid.add(new JLabel());
+			for (DataSource source : projPref.getDataSources()) {
+				grid.add(new JLabel(source.getShortName()));
+			}
 
 			// Second, put in an icon for every source in the dataRow
-			JPanel dataRow = new JPanel();
-			dataRow.setLayout(new BoxLayout(dataRow, BoxLayout.X_AXIS));
-			dataRow.add(new JLabel(projPref.getEnvironment().getShortName()));
+			grid.add(new JLabel(projPref.getEnvironment().getShortName()));
 			for (DataSource source : projPref.getDataSources()) {
 				ImageIcon image = new ImageIcon();
 				JLabel imageLabel = new JLabel(image);
 				_iconMap.put(source, imageLabel);
 				ConflictDaemon.getInstance().getStatus(source);
-				dataRow.add(imageLabel);
+				grid.add(imageLabel);
 			}
-			row.add(dataRow);
+			//Fill in the rest of the grid row with blanks
+			for (int i = projPref.getDataSources().size(); i < maxSources; i++)
+				grid.add(new JLabel());
 
-			_frame.getContentPane().add(row);
+			_frame.getContentPane().add(grid);
 		}
 
 		/* Reid's old code:
