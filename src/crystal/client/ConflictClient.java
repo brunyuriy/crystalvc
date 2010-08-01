@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
@@ -82,7 +83,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(), BoxLayout.Y_AXIS));
 
 		// Create a notification that quitting saves.
-		_frame.getContentPane().add(new JLabel("Quitting Crystal saves your configuration."));
+		_frame.getContentPane().add(new JLabel("Quitting Crystal saves your configuration.   ", SwingConstants.CENTER));
 
 		// Create a grid to hold the conflict results
 		int maxSources = 0;
@@ -91,27 +92,23 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				maxSources = projPref.getDataSources().size();
 		} 
 		// 1 extra in each dimension for heading labels
-		JPanel grid = new JPanel(new GridLayout(2 * prefs.getProjectPreference().size(), 0)); // no need to have maxSources + 1;
+		JPanel grid = new JPanel(new GridLayout(prefs.getProjectPreference().size(), 0)); // no need to have maxSources + 1;
 		grid.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		
 		// Create the iconMap and populate it with icons.
 		// Also create the layout of the GUI.
 		_iconMap = new HashMap<DataSource, JLabel>();
 		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
-			// First create the row of headings.  
-			// one blank for the first column to keep the project name in
-			grid.add(new JLabel());
-			for (DataSource source : projPref.getDataSources()) {
-				grid.add(new JLabel(source.getShortName()));
-			}
-
-			// Second, put in an icon for every source in the dataRow
+			// name of project on the left
 			grid.add(new JLabel(projPref.getEnvironment().getShortName()));
+			
 			for (DataSource source : projPref.getDataSources()) {
 				ImageIcon image = new ImageIcon();
-				JLabel imageLabel = new JLabel(image);
+				JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER);
 				_iconMap.put(source, imageLabel);
 				ConflictDaemon.getInstance().getStatus(source);
+				imageLabel.setVerticalTextPosition(JLabel.TOP);
+				imageLabel.setHorizontalTextPosition(JLabel.CENTER);
 				grid.add(imageLabel);
 			}
 			//Fill in the rest of the grid row with blanks
