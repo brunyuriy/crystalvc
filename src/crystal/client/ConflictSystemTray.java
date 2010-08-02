@@ -8,8 +8,6 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,9 +38,12 @@ import crystal.util.TimeUtility;
  */
 public class ConflictSystemTray implements ComputationListener {
 
-	public static String VERSION_ID = "0.1.20100731";
-
 	private static ConflictSystemTray _instance;
+
+	public static boolean TRAY_SUPPORTED = SystemTray.isSupported();
+	// public static boolean TRAY_SUPPORTED = false;
+
+	public static String VERSION_ID = "0.1.20100731";
 
 	/**
 	 * Conflict client UI.
@@ -61,12 +62,18 @@ public class ConflictSystemTray implements ComputationListener {
 	 */
 	private Timer _timer;
 
-	public static boolean TRAY_SUPPORTED = SystemTray.isSupported();
-	// public static boolean TRAY_SUPPORTED = false;
-
 	final private SystemTray _tray;
 
 	final private TrayIcon _trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
+
+	private MenuItem daemonEnabledItem;
+
+	long startCalculations = 0L;
+
+	// It would be nice to get rid of this, but it is nice to be able to cancel tasks once they are in flight
+	HashSet<CalculateTask> tasks = new HashSet<CalculateTask>();
+
+	private MenuItem updateNowItem;
 
 	private ConflictSystemTray() {
 		_log.info("ConflictSystemTray - started at: " + TimeUtility.getCurrentLSMRDateString());
@@ -76,14 +83,13 @@ public class ConflictSystemTray implements ComputationListener {
 			_tray = null;
 	}
 
-	private MenuItem updateNowItem;
-	private MenuItem daemonEnabledItem;
-
-	public static ConflictSystemTray getInstance() {
-		if (_instance == null) {
-			_instance = new ConflictSystemTray();
-		}
-		return _instance;
+	public void aboutAction() {
+		JOptionPane
+				.showMessageDialog(
+						null,
+						"Crystal version: "
+								+ VERSION_ID
+								+ "\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.\nhttp://www.cs.washington.edu/homes/brun/research/crystal");
 	}
 
 	/**
@@ -292,8 +298,45 @@ public class ConflictSystemTray implements ComputationListener {
 				+ new SimpleDateFormat("HH:mm:ss").format(new Date(nextFire)) + ")");
 	}
 
-	HashSet<CalculateTask> tasks = new HashSet<CalculateTask>();
-	long startCalculations = 0L;
+	public void daemonAbleAction() {
+		if (daemonEnabledItem.getLabel().equals("Enable Daemon")) {
+			// daemon enabled
+			_log.info("ConflictDaemon enabled");
+			daemonEnabledItem.setLabel("Disable Daemon");
+			_client.setDaemonEnabled(true);
+			if (_timer != null) {
+				// do it
+				_timer.start();
+			} else {
+				createTimer();
+			}
+		} else {
+			// daemon disabled
+			_log.info("ConflictDaemon disabled");
+			daemonEnabledItem.setLabel("Enable Daemon");
+			_client.setDaemonEnabled(false);
+			if (_timer != null) {
+				_timer.stop();
+				_timer = null;
+			}
+			for (CalculateTask ct : tasks) {
+				_log.info("disabling ct of state: " + ct.getState());
+				ct.cancel(true);
+			}
+			update();
+		}
+	}
+
+	public void exitAction() {
+		if (TRAY_SUPPORTED)
+			_tray.remove(_trayIcon);
+
+		String msg = "ConflictClient exited successfully.";
+		System.out.println(msg);
+		_log.trace("Exit action selected");
+
+		quit(0);
+	}
 
 	/**
 	 * Perform the conflict calculations
@@ -307,8 +350,9 @@ public class ConflictSystemTray implements ComputationListener {
 		if (tasks.size() > 0) {
 			for (CalculateTask ct : tasks) {
 				_log.trace("CT state: " + ct.getState());
+				ct.cancel(true);
 			}
-			throw new RuntimeException("PerformCalculations being called in error; tasks > 0");
+			tasks.clear();
 		}
 
 		updateNowItem.setLabel("Updating...");
@@ -322,18 +366,14 @@ public class ConflictSystemTray implements ComputationListener {
 				final CalculateTask ct = new CalculateTask(source, projPref, this, _client);
 				tasks.add(ct);
 				ct.execute();
-				ct.addPropertyChangeListener(new PropertyChangeListener() {
-
-					@Override
-					public void propertyChange(PropertyChangeEvent evt) {
-						// NOTE: this is a poor hack; update() should be called by the handlers automatically, but it
-						// seems that when this call is made the CT's state isn't always DONE so it fails to clear the
-						// tasks vector correctly.
-						update();
-					}
-				});
 			}
 		}
+	}
+
+	public void preferencesAction() {
+		// either creates (if one did not exist) or displays an existing
+		// PreferencesGUIEditorFrame configuration editor.
+		PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
 	}
 
 	private void quit(int status) {
@@ -429,6 +469,13 @@ public class ConflictSystemTray implements ComputationListener {
 		}
 	}
 
+	public static ConflictSystemTray getInstance() {
+		if (_instance == null) {
+			_instance = new ConflictSystemTray();
+		}
+		return _instance;
+	}
+
 	/**
 	 * Main execution point.
 	 * 
@@ -449,61 +496,6 @@ public class ConflictSystemTray implements ComputationListener {
 
 		ConflictSystemTray cst = ConflictSystemTray.getInstance();
 		cst.createAndShowGUI();
-	}
-
-	public void aboutAction() {
-		JOptionPane
-				.showMessageDialog(
-						null,
-						"Crystal version: "
-								+ VERSION_ID
-								+ "\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.\nhttp://www.cs.washington.edu/homes/brun/research/crystal");
-	}
-
-	public void exitAction() {
-		if (TRAY_SUPPORTED)
-			_tray.remove(_trayIcon);
-
-		String msg = "ConflictClient exited successfully.";
-		System.out.println(msg);
-		_log.trace("Exit action selected");
-
-		quit(0);
-	}
-
-	public void preferencesAction() {
-		// either creates (if one did not exist) or displays an existing
-		// PreferencesGUIEditorFrame configuration editor.
-		PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
-	}
-
-	public void daemonAbleAction() {
-		if (daemonEnabledItem.getLabel().equals("Enable Daemon")) {
-			// daemon enabled
-			_log.info("ConflictDaemon enabled");
-			daemonEnabledItem.setLabel("Disable Daemon");
-			_client.setDaemonEnabled(true);
-			if (_timer != null) {
-				// do it
-				_timer.start();
-			} else {
-				createTimer();
-			}
-		} else {
-			// daemon disabled
-			_log.info("ConflictDaemon disabled");
-			daemonEnabledItem.setLabel("Enable Daemon");
-			_client.setDaemonEnabled(false);
-			if (_timer != null) {
-				_timer.stop();
-				_timer = null;
-			}
-			for (CalculateTask ct : tasks) {
-				_log.info("disabling ct of state: " + ct.getState());
-				ct.cancel(true);
-			}
-			update();
-		}
 	}
 
 }
