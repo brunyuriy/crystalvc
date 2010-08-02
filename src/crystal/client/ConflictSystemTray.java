@@ -275,6 +275,16 @@ public class ConflictSystemTray implements ComputationListener {
 
 	private void createTimer() {
 
+		boolean pTask = false;
+
+		for (ConflictResult result : ConflictDaemon.getInstance().getResults()) {
+			if (result.getStatus().equals(ResultStatus.PENDING)) {
+				pTask = true;
+			}
+		}
+
+		final boolean pendingTask = pTask;
+
 		if (_timer != null) {
 			_timer.stop();
 			_timer = null;
@@ -285,7 +295,10 @@ public class ConflictSystemTray implements ComputationListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				_log.info("Timer fired at: " + TimeUtility.getCurrentLSMRDateString());
-				performCalculations();
+				if (!pendingTask) {
+					// if tasks are pending don't start the calculations again
+					performCalculations();
+				}
 			}
 		});
 
@@ -350,34 +363,26 @@ public class ConflictSystemTray implements ComputationListener {
 			return;
 		}
 
-		boolean pendingTask = false;
+		// if (!pendingTask) {
+		// get all of the tasks in pending mode
+		ConflictDaemon.getInstance().prePerformCalculations(_prefs);
 
-		for (ConflictResult result : ConflictDaemon.getInstance().getResults()) {
-			if (result.getStatus().equals(ResultStatus.PENDING)) {
-				pendingTask = true;
+		updateNowItem.setLabel("Updating...");
+		_log.trace("update now text: " + updateNowItem.getLabel());
+		updateNowItem.setEnabled(false);
+		_client.setCanUpdate(false);
+
+		startCalculations = System.currentTimeMillis();
+
+		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
+			for (final DataSource source : projPref.getDataSources()) {
+				final CalculateTask ct = new CalculateTask(source, projPref, this, _client);
+				ct.execute();
 			}
 		}
-
-		if (!pendingTask) {
-			// get all of the tasks in pending mode
-			ConflictDaemon.getInstance().prePerformCalculations(_prefs);
-
-			updateNowItem.setLabel("Updating...");
-			_log.trace("update now text: " + updateNowItem.getLabel());
-			updateNowItem.setEnabled(false);
-			_client.setCanUpdate(false);
-
-			startCalculations = System.currentTimeMillis();
-
-			for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
-				for (final DataSource source : projPref.getDataSources()) {
-					final CalculateTask ct = new CalculateTask(source, projPref, this, _client);
-					ct.execute();
-				}
-			}
-		} else {
-			_log.info("Tasks still pending; new run not initiated");
-		}
+		// } else {
+		// _log.info("Tasks still pending; new run not initiated");
+		// }
 	}
 
 	public void preferencesAction() {
