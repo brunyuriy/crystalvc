@@ -437,6 +437,7 @@ public class ConflictSystemTray implements ComputationListener {
 		boolean anyPull = false;
 		boolean anyYellow = false;
 		boolean anyRed = false;
+		boolean anyError = false;
 
 		for (ConflictResult result : ConflictDaemon.getInstance().getResults()) {
 			if (result.getStatus().equals(ResultStatus.SAME)) {
@@ -454,17 +455,25 @@ public class ConflictSystemTray implements ComputationListener {
 			if (result.getStatus().equals(ResultStatus.BEHIND)) {
 				anyYellow = true;
 			}
+
+			if (result.getStatus().equals(ResultStatus.ERROR)) {
+				anyError = true;
+			}
 		}
 
-		if (anyRed) {
-			// TODO: should flush old images
-			// _trayIcon.getImage().flush();
+		_trayIcon.getImage().flush();
+
+		if (anyError) {
+			_trayIcon.setImage(createImage("images/16X16/error.png", ""));
+		} else if (anyRed) {
 			_trayIcon.setImage(createImage("images/16X16/redstatus.png", ""));
 		} else if (anyYellow) {
 			_trayIcon.setImage(createImage("images/16X16/yellowstatus.png", ""));
 		} else if (anyPull) {
 			_trayIcon.setImage(createImage("images/16X16/greenp.png", ""));
 		} else if (anyGreen) {
+			_trayIcon.setImage(createImage("images/16X16/greenstatus.png", ""));
+		} else {
 			_trayIcon.setImage(createImage("images/16X16/greenstatus.png", ""));
 		}
 	}
