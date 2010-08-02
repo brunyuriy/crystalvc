@@ -11,8 +11,6 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -71,7 +69,7 @@ public class ConflictSystemTray implements ComputationListener {
 	long startCalculations = 0L;
 
 	// It would be nice to get rid of this, but it is nice to be able to cancel tasks once they are in flight
-	HashSet<CalculateTask> tasks = new HashSet<CalculateTask>();
+	// HashSet<CalculateTask> tasks = new HashSet<CalculateTask>();
 
 	private MenuItem updateNowItem;
 
@@ -150,10 +148,12 @@ public class ConflictSystemTray implements ComputationListener {
 					_timer.stop();
 					_timer = null;
 				}
-				for (CalculateTask ct : tasks) {
-					_log.info("disabling ct of state: " + ct.getState());
-					ct.cancel(true);
-				}
+
+				// for (CalculateTask ct : tasks) {
+				// _log.info("disabling ct of state: " + ct.getState());
+				// ct.cancel(true);
+				// }
+
 			} else { // answer == JOptionPane.NO_OPTION
 				System.out.println("User decided to edit the configuration file by hand");
 				_log.trace("User decided to edit the configuration file by hand");
@@ -319,10 +319,12 @@ public class ConflictSystemTray implements ComputationListener {
 				_timer.stop();
 				_timer = null;
 			}
-			for (CalculateTask ct : tasks) {
-				_log.info("disabling ct of state: " + ct.getState());
-				ct.cancel(true);
-			}
+
+			// for (CalculateTask ct : tasks) {
+			// _log.info("disabling ct of state: " + ct.getState());
+			// ct.cancel(true);
+			// }
+
 			update();
 		}
 	}
@@ -344,18 +346,15 @@ public class ConflictSystemTray implements ComputationListener {
 	public void performCalculations() {
 
 		// if the daemon is disabled, don't perform calculations.
-		if (daemonEnabledItem.getLabel().equals("Enable Daemon"))
+		if (daemonEnabledItem.getLabel().equals("Enable Daemon")) {
 			return;
-
-		if (tasks.size() > 0) {
-			for (CalculateTask ct : tasks) {
-				_log.trace("CT state: " + ct.getState());
-				ct.cancel(true);
-			}
-			tasks.clear();
 		}
 
+		// get all of the tasks in pending mode
+		ConflictDaemon.getInstance().prePerformCalculations(_prefs);
+
 		updateNowItem.setLabel("Updating...");
+		_log.trace("update now text: " + updateNowItem.getLabel());
 		updateNowItem.setEnabled(false);
 		_client.setCanUpdate(false);
 
@@ -364,7 +363,7 @@ public class ConflictSystemTray implements ComputationListener {
 		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
 			for (final DataSource source : projPref.getDataSources()) {
 				final CalculateTask ct = new CalculateTask(source, projPref, this, _client);
-				tasks.add(ct);
+				// tasks.add(ct);
 				ct.execute();
 			}
 		}
@@ -399,28 +398,29 @@ public class ConflictSystemTray implements ComputationListener {
 	public void update() {
 		_log.trace("ConflictSystemTray::update()");
 
-		Iterator<CalculateTask> ctIterator = tasks.iterator();
-		if (ctIterator.hasNext()) {
-			CalculateTask ct = ctIterator.next();
-			_log.trace("Current state: " + ct.getState());
-			if (ct.isDone()) {
-				ctIterator.remove();
+		// _log.trace("Task size in update: " + tasks.size());
+
+		boolean pendingTask = false;
+
+		for (ConflictResult result : ConflictDaemon.getInstance().getResults()) {
+			if (result.getStatus().equals(ResultStatus.PENDING)) {
+				pendingTask = true;
 			}
 		}
 
-		_log.trace("Task size in update: " + tasks.size());
-		if (tasks.size() == 0) {
+		if (pendingTask) {
+			_log.trace("Update called with tasks still pending.");
 
-			if (daemonEnabledItem.getLabel().equals("Disable Daemon")) {
-				long end = System.currentTimeMillis();
-				long delta = end - startCalculations;
-				_log.info("Computation took: " + TimeUtility.msToHumanReadable(delta));
-				Constants.TIMER_CONSTANT = delta * Constants.TIMER_MULTIPLIER;
-				createTimer();
-			}
+			// keep the UI in updating mode
+			updateNowItem.setLabel("Updating...");
+			updateNowItem.setEnabled(false);
+			_client.setCanUpdate(false);
+		} else {
+			_log.trace("Update called with no tasks pending.");
 
+			createTimer();
+			updateNowItem.setLabel("Update Now");
 			updateNowItem.setEnabled(true);
-			updateNowItem.setLabel("Update now");
 			_client.setCanUpdate(true);
 		}
 
@@ -458,6 +458,29 @@ public class ConflictSystemTray implements ComputationListener {
 
 			if (result.getStatus().equals(ResultStatus.ERROR)) {
 				anyError = true;
+			}
+
+			// if they're pending consider the last status
+			if (result.getStatus().equals(ResultStatus.PENDING) && result.getLastStatus() != null) {
+				if (result.getLastStatus().equals(ResultStatus.SAME)) {
+					anyGreen = true;
+				}
+
+				if (result.getLastStatus().equals(ResultStatus.MERGECLEAN)) {
+					anyPull = true;
+				}
+
+				if (result.getLastStatus().equals(ResultStatus.MERGECONFLICT)) {
+					anyRed = true;
+				}
+
+				if (result.getLastStatus().equals(ResultStatus.BEHIND)) {
+					anyYellow = true;
+				}
+
+				if (result.getLastStatus().equals(ResultStatus.ERROR)) {
+					anyError = true;
+				}
 			}
 		}
 

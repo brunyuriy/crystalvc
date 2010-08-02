@@ -81,7 +81,14 @@ public class ConflictDaemon {
 				_log.error("ConflictDaemon::caluclateConflict(..) - Cannot handle RepoKind: " + source.getKind());
 			}
 			_log.info("Computed conflicts for: " + source + " in: " + TimeUtility.msToHumanReadableDelta(start));
-			ConflictResult result = new ConflictResult(source, status);
+
+			ConflictResult lastResult = getStatus(source);
+			ConflictResult result = null;
+			if (lastResult != null) {
+				result = new ConflictResult(source, status, lastResult.getStatus());
+			} else {
+				result = new ConflictResult(source, status, null);
+			}
 			return result;
 		} catch (IOException ioe) {
 			_log.error(ioe);
@@ -97,7 +104,7 @@ public class ConflictDaemon {
 		ConflictResult result = calculateConflict(source, prefs);
 
 		if (result == null) {
-			result = new ConflictResult(source, ResultStatus.ERROR);
+			result = new ConflictResult(source, ResultStatus.ERROR, null);
 		}
 
 		_resultMap.put(source, result);
@@ -120,7 +127,7 @@ public class ConflictDaemon {
 
 		if (result == null) {
 			// if we don't have a result, pretend it is pending.
-			_resultMap.put(source, new ConflictResult(source, ResultStatus.PENDING));
+			_resultMap.put(source, new ConflictResult(source, ResultStatus.PENDING, null));
 			// TODO: actually start the pending operation testing
 		}
 
@@ -136,6 +143,20 @@ public class ConflictDaemon {
 
 	public Collection<ConflictResult> getResults() {
 		return _resultMap.values();
+	}
+
+	public void prePerformCalculations(ClientPreferences prefs) {
+
+		for (ProjectPreferences pp : prefs.getProjectPreference()) {
+			for (DataSource ds : pp.getDataSources()) {
+				if (getStatus(ds) != null) {
+					_resultMap.put(ds, new ConflictResult(ds, ResultStatus.PENDING, _resultMap.get(ds).getStatus()));
+				} else {
+					_resultMap.put(ds, new ConflictResult(ds, ResultStatus.PENDING, null));
+				}
+			}
+		}
+
 	}
 
 }
