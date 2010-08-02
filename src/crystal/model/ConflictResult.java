@@ -7,11 +7,15 @@ import crystal.Constants;
 public class ConflictResult {
 
 	public enum ResultStatus {
-		SAME("/crystal/client/images/32X32/same.png"), AHEAD("/crystal/client/images/32X32/ahead.png"), BEHIND(
-				"/crystal/client/images/32X32/behind.png"), MERGECLEAN("/crystal/client/images/32X32/merge.png"), MERGECONFLICT(
-				"/crystal/client/images/32X32/mergeconflict.png"), COMPILECONLFICT("/crystal/client/images/32X32/compileconflict.png"), TESTCONFLICT(
-				"/crystal/client/images/32X32/testconflict.png"), PENDING("/crystal/client/images/clock.png"), ERROR(
-				"/crystal/client/images/32X32/error.png");
+		SAME("/crystal/client/images/32X32/same.png"), 
+		AHEAD("/crystal/client/images/32X32/ahead.png"), 
+		BEHIND("/crystal/client/images/32X32/behind.png"), 
+		MERGECLEAN("/crystal/client/images/32X32/merge.png"), 
+		MERGECONFLICT("/crystal/client/images/32X32/mergeconflict.png"), 
+		COMPILECONLFICT("/crystal/client/images/32X32/compileconflict.png"), 
+		TESTCONFLICT("/crystal/client/images/32X32/testconflict.png"), 
+		PENDING("/crystal/client/images/32X32/clock.png"), 
+		ERROR("/crystal/client/images/32X32/error.png");
 
 		private final ImageIcon _icon;
 
