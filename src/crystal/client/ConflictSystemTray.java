@@ -1,7 +1,6 @@
 package crystal.client;
 
 import java.awt.AWTException;
-import java.awt.CheckboxMenuItem;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -9,11 +8,8 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,7 +28,6 @@ import crystal.model.ConflictResult;
 import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
 import crystal.util.LSMRLogger;
-import crystal.util.RunIt;
 import crystal.util.TimeUtility;
 
 /**

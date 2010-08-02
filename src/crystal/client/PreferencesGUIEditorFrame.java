@@ -7,13 +7,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Vector;
-
-import org.junit.Assert;
-
-import crystal.model.DataSource;
-import crystal.util.XMLTools;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -23,15 +16,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+
+import org.junit.Assert;
+
+import crystal.model.DataSource;
 
 /**
  * @author brun
- *
- * This class is a singleton.  
- * A PreferencesGUIEditorFrame is a GUI to edit a ClientPreferences object by adding, 
- * removing, and augmenting projects, and changing other attributes.
+ * 
+ *         This class is a singleton. A PreferencesGUIEditorFrame is a GUI to edit a ClientPreferences object by adding,
+ *         removing, and augmenting projects, and changing other attributes.
  */
 public class PreferencesGUIEditorFrame extends JFrame {
 
@@ -59,26 +53,26 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		final JFrame frame = this;
 
 		if (prefs.getProjectPreference().isEmpty()) {
-			//			ClientPreferences client = new ClientPreferences("/usr/bin/hg/", "/tmp/crystalClient/");
-			ProjectPreferences newGuy = new ProjectPreferences(new DataSource("", "", DataSource.RepoKind.HG), prefs); 
+			// ClientPreferences client = new ClientPreferences("/usr/bin/hg/", "/tmp/crystalClient/");
+			ProjectPreferences newGuy = new ProjectPreferences(new DataSource("", "", DataSource.RepoKind.HG), prefs);
 			prefs.addProjectPreferences(newGuy);
 			prefs.setChanged(true);
 		}
 
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); 
-		
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+
 		getContentPane().add(new JLabel("Closing this window will save the configuraion settings."));
 
 		JPanel hgPanel = new JPanel();
 		hgPanel.setLayout(new BoxLayout(hgPanel, BoxLayout.X_AXIS));
 		hgPanel.add(new JLabel("Path to hg executable:"));
 		final JTextField hgPath = new JTextField(prefs.getHgPath());
-//		hgPath.setSize(hgPath.getWidth(), 16);
+		// hgPath.setSize(hgPath.getWidth(), 16);
 		hgPanel.add(hgPath);
 		hgPath.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {				
+			public void keyPressed(KeyEvent arg0) {
 			}
 
 			public void keyTyped(KeyEvent arg0) {
@@ -101,13 +95,13 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		});
 		getContentPane().add(hgPanel);
 
-		JPanel tempPanel = new JPanel();		
+		JPanel tempPanel = new JPanel();
 		tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
 		tempPanel.add(new JLabel("Path to scratch space:"));
 		final JTextField tempPath = new JTextField(prefs.getTempDirectory());
 		tempPanel.add(tempPath);
 		tempPath.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {				
+			public void keyPressed(KeyEvent arg0) {
 			}
 
 			public void keyTyped(KeyEvent arg0) {
@@ -129,20 +123,17 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		});
 		getContentPane().add(tempPanel);
 
-		final JTabbedPane projectsTabs = new JTabbedPane(JTabbedPane.TOP,  JTabbedPane.SCROLL_TAB_LAYOUT);
-/*		projectsTabs.addChangeListener(new ChangeListener() {
-			
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				frame.pack();
-				System.out.println("Tabs changed");
-			}
-		});  */
+		final JTabbedPane projectsTabs = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+		/*
+		 * projectsTabs.addChangeListener(new ChangeListener() {
+		 * 
+		 * @Override public void stateChanged(ChangeEvent e) { frame.pack(); System.out.println("Tabs changed"); } });
+		 */
 
 		for (ProjectPreferences pref : prefs.getProjectPreference()) {
 			ProjectPanel current = new ProjectPanel(pref, prefs, frame, projectsTabs);
 			projectsTabs.addTab(current.getName(), current);
-//			projectsTabs.setTitleAt(projectsTabs.getTabCount() - 1, current.getName());
+			// projectsTabs.setTitleAt(projectsTabs.getTabCount() - 1, current.getName());
 		}
 
 		final JButton newProjectButton = new JButton("Add New Project");
@@ -156,9 +147,10 @@ public class PreferencesGUIEditorFrame extends JFrame {
 					shortNameLookup.add(current.getEnvironment().getShortName());
 				}
 				int count = 1;
-				while (shortNameLookup.contains("New Project " + count++));
+				while (shortNameLookup.contains("New Project " + count++))
+					;
 
-				ProjectPreferences newGuy = new ProjectPreferences(new DataSource("New Project " + --count, "", DataSource.RepoKind.HG), prefs); 
+				ProjectPreferences newGuy = new ProjectPreferences(new DataSource("New Project " + --count, "", DataSource.RepoKind.HG), prefs);
 				prefs.addProjectPreferences(newGuy);
 				ProjectPanel newGuyPanel = new ProjectPanel(newGuy, prefs, frame, projectsTabs);
 				projectsTabs.addTab("New Project " + count, newGuyPanel);
@@ -191,12 +183,23 @@ public class PreferencesGUIEditorFrame extends JFrame {
 				}
 			}
 
-			public void windowActivated(WindowEvent arg0) {}
-			public void windowClosed(WindowEvent arg0) {}
-			public void windowDeactivated(WindowEvent arg0) {}
-			public void windowDeiconified(WindowEvent arg0) {}
-			public void windowIconified(WindowEvent arg0) {}
-			public void windowOpened(WindowEvent arg0) {}
+			public void windowActivated(WindowEvent arg0) {
+			}
+
+			public void windowClosed(WindowEvent arg0) {
+			}
+
+			public void windowDeactivated(WindowEvent arg0) {
+			}
+
+			public void windowDeiconified(WindowEvent arg0) {
+			}
+
+			public void windowIconified(WindowEvent arg0) {
+			}
+
+			public void windowOpened(WindowEvent arg0) {
+			}
 		});
 
 		pack();
@@ -226,25 +229,25 @@ public class PreferencesGUIEditorFrame extends JFrame {
 					// and pretend like you typed a key:
 					path.getKeyListeners()[0].keyTyped(new KeyEvent(path, 0, 0, 0, 0, ' '));
 					chooserFrame.setVisible(false);
-				}	
+				}
 			});
 		}
 	}
 
-
 	/**
-	 * @param args none
+	 * @param args
+	 *            none
 	 */
 	public static void main(String[] args) {
 		ClientPreferences client = new ClientPreferences("temp", "hgPath");
-		ProjectPreferences one = new ProjectPreferences(new DataSource("first project", "~brun\\firstrepo", DataSource.RepoKind.HG), client); 
+		ProjectPreferences one = new ProjectPreferences(new DataSource("first project", "~brun\\firstrepo", DataSource.RepoKind.HG), client);
 		DataSource oneOther = new DataSource("Mike's copy", "~mernst\\repo", DataSource.RepoKind.HG);
 		DataSource twoOther = new DataSource("Reid's copy", "~rtholmes\\repo", DataSource.RepoKind.HG);
 		DataSource threeOther = new DataSource("David's copy", "~notkin\\repo", DataSource.RepoKind.HG);
 		one.addDataSource(oneOther);
 		one.addDataSource(twoOther);
 
-		ProjectPreferences two = new ProjectPreferences(new DataSource("second project", "~brun\\secondrepo", DataSource.RepoKind.HG), client); 
+		ProjectPreferences two = new ProjectPreferences(new DataSource("second project", "~brun\\secondrepo", DataSource.RepoKind.HG), client);
 		two.addDataSource(threeOther);
 		two.addDataSource(oneOther);
 
@@ -253,12 +256,12 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 		getPreferencesGUIEditorFrame(client);
 
-		//		int i = 0;
-		//		while(true) {
-		//			i = (i + 1) % 1000000;
-		//			if (i == 0)
-		//				System.out.println(mine.getEnvironment().getShortName());
-		//		}
+		// int i = 0;
+		// while(true) {
+		// i = (i + 1) % 1000000;
+		// if (i == 0)
+		// System.out.println(mine.getEnvironment().getShortName());
+		// }
 	}
 
 }
