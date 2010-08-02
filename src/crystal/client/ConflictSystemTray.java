@@ -350,22 +350,33 @@ public class ConflictSystemTray implements ComputationListener {
 			return;
 		}
 
-		// get all of the tasks in pending mode
-		ConflictDaemon.getInstance().prePerformCalculations(_prefs);
+		boolean pendingTask = false;
 
-		updateNowItem.setLabel("Updating...");
-		_log.trace("update now text: " + updateNowItem.getLabel());
-		updateNowItem.setEnabled(false);
-		_client.setCanUpdate(false);
-
-		startCalculations = System.currentTimeMillis();
-
-		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
-			for (final DataSource source : projPref.getDataSources()) {
-				final CalculateTask ct = new CalculateTask(source, projPref, this, _client);
-				// tasks.add(ct);
-				ct.execute();
+		for (ConflictResult result : ConflictDaemon.getInstance().getResults()) {
+			if (result.getStatus().equals(ResultStatus.PENDING)) {
+				pendingTask = true;
 			}
+		}
+
+		if (!pendingTask) {
+			// get all of the tasks in pending mode
+			ConflictDaemon.getInstance().prePerformCalculations(_prefs);
+
+			updateNowItem.setLabel("Updating...");
+			_log.trace("update now text: " + updateNowItem.getLabel());
+			updateNowItem.setEnabled(false);
+			_client.setCanUpdate(false);
+
+			startCalculations = System.currentTimeMillis();
+
+			for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
+				for (final DataSource source : projPref.getDataSources()) {
+					final CalculateTask ct = new CalculateTask(source, projPref, this, _client);
+					ct.execute();
+				}
+			}
+		} else {
+			_log.info("Tasks still pending; new run not initiated");
 		}
 	}
 
