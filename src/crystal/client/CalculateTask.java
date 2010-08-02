@@ -43,14 +43,20 @@ class CalculateTask extends SwingWorker<Void, ConflictResult> {
 
 	@Override
 	protected Void doInBackground() throws Exception {
+		ConflictResult calculatingPlaceholder = null;
 
-		ConflictResult calculatingPlaceholder = new ConflictResult(_source, ResultStatus.PENDING);
+		if (ConflictDaemon.getInstance().getStatus(_source) != null) {
+			calculatingPlaceholder = new ConflictResult(_source, ResultStatus.PENDING, ConflictDaemon.getInstance().getStatus(_source).getStatus());
+		} else {
+			calculatingPlaceholder = new ConflictResult(_source, ResultStatus.PENDING, null);
+		}
+		
 		publish(calculatingPlaceholder);
 
 		ConflictResult result = ConflictDaemon.getInstance().calculateConflicts(_source, _prefs);
 
 		_log.trace("Result computed: " + result);
-		
+
 		publish(result);
 		return null;
 	}

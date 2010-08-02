@@ -164,7 +164,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		}
 		// 1 extra in each dimension for heading labels
 		JPanel grid = new JPanel(new GridLayout(prefs.getProjectPreference().size(), 0)); // no need to have maxSources
-																							// + 1;
+		// + 1;
 		grid.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 
 		// Create the iconMap and populate it with icons.
@@ -325,7 +325,15 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 				ConflictResult conflictStatus = ConflictDaemon.getInstance().getStatus(source);
 				ResultStatus status = conflictStatus.getStatus();
-				current.setIcon(status.getIcon());
+				ResultStatus lastStatus = conflictStatus.getLastStatus();
+
+				if (status.equals(ResultStatus.PENDING) && lastStatus != null) {
+					// if it's pending, show whatever value it had last time
+					current.setIcon(lastStatus.getIcon());
+				} else {
+					// usual case
+					current.setIcon(status.getIcon());
+				}
 				current.repaint();
 			}
 		}
