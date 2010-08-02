@@ -62,7 +62,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 	final private SystemTray _tray;
 
-	final private TrayIcon _trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
+	final private TrayIcon _trayIcon;
 
 	private MenuItem daemonEnabledItem;
 
@@ -75,10 +75,13 @@ public class ConflictSystemTray implements ComputationListener {
 
 	private ConflictSystemTray() {
 		_log.info("ConflictSystemTray - started at: " + TimeUtility.getCurrentLSMRDateString());
-		if (TRAY_SUPPORTED)
+		if (TRAY_SUPPORTED) {
 			_tray = SystemTray.getSystemTray();
-		else
+			_trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
+		} else {
 			_tray = null;
+			_trayIcon = null;
+		}
 	}
 
 	public void aboutAction() {
@@ -449,6 +452,9 @@ public class ConflictSystemTray implements ComputationListener {
 	}
 
 	private void updateTrayIcon() {
+		
+		if (!TRAY_SUPPORTED)
+			return;
 		boolean anyGreen = false;
 		boolean anyPull = false;
 		boolean anyYellow = false;
