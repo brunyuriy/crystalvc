@@ -41,7 +41,7 @@ import crystal.util.TimeUtility;
 public class ConflictSystemTray implements ComputationListener {
 
 	public static String VERSION_ID = "0.1.20100731";
-	
+
 	private static ConflictSystemTray _instance;
 
 	/**
@@ -62,12 +62,12 @@ public class ConflictSystemTray implements ComputationListener {
 	private Timer _timer;
 
 	public static boolean TRAY_SUPPORTED = SystemTray.isSupported();
-//	public static boolean TRAY_SUPPORTED = false;
-	
+	// public static boolean TRAY_SUPPORTED = false;
+
 	final private SystemTray _tray;
 
 	final private TrayIcon _trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
-		
+
 	private ConflictSystemTray() {
 		_log.info("ConflictSystemTray - started at: " + TimeUtility.getCurrentLSMRDateString());
 		if (TRAY_SUPPORTED)
@@ -75,7 +75,7 @@ public class ConflictSystemTray implements ComputationListener {
 		else
 			_tray = null;
 	}
-	
+
 	private MenuItem updateNowItem;
 	private MenuItem daemonEnabledItem;
 
@@ -85,7 +85,6 @@ public class ConflictSystemTray implements ComputationListener {
 		}
 		return _instance;
 	}
-
 
 	/**
 	 * Create the tray icon and get it installed in the tray.
@@ -117,7 +116,7 @@ public class ConflictSystemTray implements ComputationListener {
 				_prefs.setChanged(false);
 			}
 		} catch (Exception e) {
-			//			e.printStackTrace();
+			// e.printStackTrace();
 			String msg = "Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )";
 
 			System.err.println(msg);
@@ -126,15 +125,20 @@ public class ConflictSystemTray implements ComputationListener {
 			System.err.println(e.getMessage());
 			_log.error(e.getMessage());
 
-			String dialogMessage = "The preferences file ( " + ClientPreferences.CONFIG_PATH + " ) is invalid and could not be loaded:\n > > > " + e.getMessage() + "\n" +
-			"Do you want to edit it using the GUI?  This may overwrite your previous configuration file.  Your alternative is to edit the .xml file directly.";
-			int answer = JOptionPane.showConfirmDialog(null, dialogMessage, "Invalid configuration file", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+			String dialogMessage = "The preferences file ( "
+					+ ClientPreferences.CONFIG_PATH
+					+ " ) is invalid and could not be loaded:\n > > > "
+					+ e.getMessage()
+					+ "\n"
+					+ "Do you want to edit it using the GUI?  This may overwrite your previous configuration file.  Your alternative is to edit the .xml file directly.";
+			int answer = JOptionPane.showConfirmDialog(null, dialogMessage, "Invalid configuration file", JOptionPane.YES_NO_OPTION,
+					JOptionPane.WARNING_MESSAGE);
 
 			if (answer == JOptionPane.YES_OPTION) {
 				_prefs = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
 				PreferencesGUIEditorFrame editorFrame = PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
 				JOptionPane.showMessageDialog(editorFrame, "Please remember to restart the client after closing the configuraton editor.");
-				//and disable client
+				// and disable client
 				daemonEnabledItem.setLabel("Enable Daemon");
 				if (_timer != null) {
 					_timer.stop();
@@ -151,19 +155,16 @@ public class ConflictSystemTray implements ComputationListener {
 			}
 		}
 
-		/*		Old code for quiting if there is no System Tray support.
-		// Check the SystemTray support
-		if (!SystemTray.isSupported()) {dsfdsfdsfds
-			//for testing change above line to the following one:
-			//		if (true) {
-			String msg = "SystemTray is not supported on this system";
-
-			System.err.println(msg);
-			_log.error(msg);
-
-			JOptionPane.showMessageDialog(null, "Your operating system does not support a system tray, which is currently required for Crystal.");
-			quit(0, _log);
-			}
+		/*
+		 * Old code for quiting if there is no System Tray support. // Check the SystemTray support if
+		 * (!SystemTray.isSupported()) {dsfdsfdsfds //for testing change above line to the following one: // if (true) {
+		 * String msg = "SystemTray is not supported on this system";
+		 * 
+		 * System.err.println(msg); _log.error(msg);
+		 * 
+		 * JOptionPane.showMessageDialog(null,
+		 * "Your operating system does not support a system tray, which is currently required for Crystal."); quit(0,
+		 * _log); }
 		 */
 
 		// Start out with the client showing.
@@ -244,7 +245,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 			ConflictDaemon.getInstance().addListener(this);
 		}
-		
+
 		performCalculations();
 	}
 
@@ -278,14 +279,7 @@ public class ConflictSystemTray implements ComputationListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				_log.info("Timer fired at: " + TimeUtility.getCurrentLSMRDateString());
-				//
-				// if (_client != null) {
-				// // get the client to nicely refresh its elements
-				// // _client.calculateConflicts();
-				// performCalculations();
-				// } else {
 				performCalculations();
-				// }
 			}
 		});
 
@@ -397,7 +391,7 @@ public class ConflictSystemTray implements ComputationListener {
 			_client.update();
 		}
 	}
-	
+
 	private void updateTrayIcon() {
 		boolean anyGreen = false;
 		boolean anyPull = false;
@@ -458,9 +452,14 @@ public class ConflictSystemTray implements ComputationListener {
 	}
 
 	public void aboutAction() {
-		JOptionPane.showMessageDialog(null, "Crystal version: " + VERSION_ID + "\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.\nhttp://www.cs.washington.edu/homes/brun/research/crystal");
+		JOptionPane
+				.showMessageDialog(
+						null,
+						"Crystal version: "
+								+ VERSION_ID
+								+ "\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.\nhttp://www.cs.washington.edu/homes/brun/research/crystal");
 	}
-	
+
 	public void exitAction() {
 		if (TRAY_SUPPORTED)
 			_tray.remove(_trayIcon);
@@ -471,40 +470,13 @@ public class ConflictSystemTray implements ComputationListener {
 
 		quit(0);
 	}
-	
-	public void preferencesAction() {
-//		if (_client != null) {
-//			_client  .close();
-//			_client = null;
-//		}
 
-		// either creates (if one did not exist) or displays an existing 
+	public void preferencesAction() {
+		// either creates (if one did not exist) or displays an existing
 		// PreferencesGUIEditorFrame configuration editor.
 		PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
-
-		/*				Yuriy: Old Preferences UI code by Reid.  @deprecated.  
-
-		ClientPreferencesUI cp = new ClientPreferencesUI(new ClientPreferencesUI.IPreferencesListener() {
-			@Override
-			public void preferencesChanged(ProjectPreferences preferences) {
-				// when the preferences are updated, show the
-				// client
-				// _prefs = preferences;
-				// NOTE: prefs UI broken by multiple project
-				// refactor
-			}
-
-			@Override
-			public void preferencesDialogClosed() {
-				showClientItem.setEnabled(true);
-			// NOTE: prefs UI broken by multiple project
-			// refactor
-			}
-		}); 
-		cp.createAndShowGUI();
-		 */
 	}
-	
+
 	public void daemonAbleAction() {
 		if (daemonEnabledItem.getLabel().equals("Enable Daemon")) {
 			// daemon enabled
