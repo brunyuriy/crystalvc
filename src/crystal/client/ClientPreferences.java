@@ -281,13 +281,13 @@ public class ClientPreferences {
 				String projectClone = projectElement.getAttributeValue(IPrefXML.CLONE);
 
 				if (projectKind == null) {
-					throw new RuntimeException("Kind attribute must be set for project element.");
+					throw new RuntimeException("myKind attribute must be set for project element.");
 				}
 				if (projectLabel == null) {
-					throw new RuntimeException("Label attribute must be set for project element.");
+					throw new RuntimeException("myShortName attribute must be set for project element.");
 				}
 				if (projectClone == null) {
-					throw new RuntimeException("Clone attribute must be set for project element.");
+					throw new RuntimeException("myClone attribute must be set for project element.");
 				}
 
 				if (projectClone.startsWith(Constants.HOME)) {
