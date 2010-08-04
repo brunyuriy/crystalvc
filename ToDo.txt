@@ -27,27 +27,8 @@ DONE (20100729-brun) -- deal with Crystal trying to write to a file.
 
 -- When I had no .conflictClient.xml file, The crystal GUI asked me the path to hg, then wrote a .conflictClient.xml file with hgPath="/path/to/hg" rather than the path that I had typed in.
 
--- Any newly-generated .conflictClient.xml file should have a comment that
-points the user at the documentation at
-http://www.cs.washington.edu/homes/brun/research/crystal/ .
-
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!-- Conflict Client configuration file -->
-
-<!-- Example:
-<?xml version="1.0" encoding="UTF-8"?>
-<ccConfig tempDirectory="C:/temp/conflictClient/" hgPath="C:/Program Files/TortoiseHg/hg.exe">
- <project myKind="HG" myShortName="MyFirstProject" myClone="C:/projects/myLocalFirstProjectRepo/">
-   <source myShortName="MASTER" myClone="ssh://user@host/path/to/repo/" myKind="HG" />
-   <source myShortName="Friend" myClone="ssh://user@host/path/to/friend/repo/" myKind="HG" />
- </project>
- <project myKind="HG" myShortName="MySecondProject" myClone="C:/projects/myLocalSecondProjectRepo/">
-   <source myShortName="MASTER" myClone="ssh://user@host/path/to/socond/project/repo/" myKind="HG" />
-   <source myShortName="Friend" myClone="ttps://user@host/path/to/friend/second/repo" myKind="HG" />
- </project>
-</ccConfig>
--->
+DONE (20100803-brun) -- Any newly-generated .conflictClient.xml file should have a comment that
+points the user at the documentation and includes an example.
 
 -- When I started Crystal with the first attached .conflictClient.xml file, I got these warnings:
  Error parsing configuration file; Kind attribute must be set for project element.
@@ -56,6 +37,8 @@ but I don't think there is any "Kind" attribute.  Should this be "myKind"?
 Check what it prints out if the myKind is missing.
 
 DONE (20100722-brun) -- fix order of myKind / other atributes.
+
+DONE (20100803-brun) -- fix order of myKind atributes in the XML file writer.
 
 
 * GUI

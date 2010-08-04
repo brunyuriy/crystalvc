@@ -396,9 +396,24 @@ public class ClientPreferences {
 		
 		Comment webref1 = new Comment(" Configuration file for Crystal conflict client. See documentation at ");
 		Comment webref2 = new Comment(" http://www.cs.washington.edu/homes/brun/research/crystal/ . ");
-		
+
+		Comment sample = new Comment(
+				" Example:\n" + 
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<ccConfig tempDirectory=\"C:/temp/conflictClient/\" hgPath=\"C:/Program Files/TortoiseHg/hg.exe\">\n" +
+				"  <project myKind=\"HG\" myShortName=\"MyFirstProject\" myClone=\"C:/projects/myLocalFirstProjectRepo/\">\n" +
+				"    <source myKind=\"HG\" myShortName=\"MASTER\" myClone=\"ssh://user@host/path/to/repo/\" />\n" +
+				"    <source myKind=\"HG\" myShortName=\"Friend\" myClone=\"ssh://user@host/path/to/friend/repo/\" />\n" +
+				"  </project>\n" +
+				"  <project myKind=\"HG\" myShortName=\"MySecondProject\" myClone=\"C:/projects/myLocalSecondProjectRepo/\">\n" + 
+				"    <source myKind=\"HG\" myShortName=\"MASTER\" myClone=\"ssh://user@host/path/to/socond/project/repo/\" />\n" +
+				"    <source myKind=\"HG\" myShortName=\"Friend\" myClone=\"https://user@host/path/to/friend/second/repo/\" />\n" +
+				"  </project>\n" +
+				"</ccConfig>\n");
+
 		doc.addContent(webref1);
 		doc.addContent(webref2);
+		doc.addContent(sample);
 		
 		rootElem.setAttribute(IPrefXML.TMP_DIR, prefs.getTempDirectory());
 		rootElem.setAttribute(IPrefXML.HG_PATH, prefs.getHgPath());
