@@ -12,6 +12,7 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
+import org.jdom.Comment;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -392,6 +393,13 @@ public class ClientPreferences {
 		Document doc = XMLTools.newXMLDocument();
 
 		Element rootElem = new Element(IPrefXML.ROOT);
+		
+		Comment webref1 = new Comment(" Configuration file for Crystal conflict client. See documentation at ");
+		Comment webref2 = new Comment(" http://www.cs.washington.edu/homes/brun/research/crystal/ . ");
+		
+		doc.addContent(webref1);
+		doc.addContent(webref2);
+		
 		rootElem.setAttribute(IPrefXML.TMP_DIR, prefs.getTempDirectory());
 		rootElem.setAttribute(IPrefXML.HG_PATH, prefs.getHgPath());
 		doc.setRootElement(rootElem);
@@ -405,9 +413,9 @@ public class ClientPreferences {
 
 			for (DataSource src : pp.getDataSources()) {
 				Element sourceElem = new Element(IPrefXML.SOURCE);
+				sourceElem.setAttribute(IPrefXML.KIND, src.getKind().name());
 				sourceElem.setAttribute(IPrefXML.LABEL, src.getShortName());
 				sourceElem.setAttribute(IPrefXML.CLONE, src.getCloneString());
-				sourceElem.setAttribute(IPrefXML.KIND, src.getKind().name());
 				projectElem.addContent(sourceElem);
 			}
 		}
