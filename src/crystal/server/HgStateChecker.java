@@ -3,6 +3,9 @@ package crystal.server;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 
 import crystal.client.ProjectPreferences;
@@ -64,9 +67,16 @@ public class HgStateChecker {
 		String[] myArgs = { "clone", pathToRemoteRepo, pathToLocalRepo };
 		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath);
 
-		if (output.indexOf("updating to branch") < 0)
+		if (output.indexOf("updating to branch") < 0) {
+			String dialogMsg = "Crystal tried to execute command:\n" +
+			"\"" + pathToHg + " clone " + pathToRemoteRepo + pathToLocalRepo + "\"\n" +
+			"from \"" + tempWorkPath + "\"\n" +
+			"but got the unexpected output:\n" + 
+			output;
+			JOptionPane.showMessageDialog(null, dialogMsg, "hg clone failure", JOptionPane.ERROR_MESSAGE);
 			throw new InvalidHgRepositoryException(pathToRemoteRepo, output);
-//			throw new RuntimeException("Could not clone repository " + pathToRemoteRepo + " to " + pathToLocalRepo + "\n" + output);
+		//			throw new RuntimeException("Could not clone repository " + pathToRemoteRepo + " to " + pathToLocalRepo + "\n" + output);
+		}
 	}
 
 	/*
@@ -97,6 +107,12 @@ public class HgStateChecker {
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);
 
+		Logger log = Logger.getLogger(HgStateChecker.class);
+
+		// if project or source are disabled, return null.
+		if ((!prefs.getEnvironment().isEnabled()) || (!source.isEnabled()))
+			return null;
+
 		// String mine = prefs.getEnvironment().getLocalString();
 		// String yours = source.getLocalString();
 
@@ -114,15 +130,51 @@ public class HgStateChecker {
 
 		// Check if a local copy of my repository exists. If it does, update it. If it does not, create it.
 		//		System.out.println("*** " + tempWorkPath + " *** " + mine + " ***\n");
-		if ((new File(mine)).exists())
-			updateLocalRepository(hg, mine, tempWorkPath);
-		else
+		if ((new File(mine)).exists()) {
+			try {
+				updateLocalRepository(hg, mine, tempWorkPath);
+			}
+			catch (IOException e) {
+				log.error(e.getMessage());
+				String dialogMsg = "Crystal is having trouble executing \"" + hg + " pull\" in\n" + mine + " for your repository of project " + 
+				prefs.getEnvironment().getShortName() + ".\n" +
+				"Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
+				"Would you like Crystal to try that?\n" +
+				"The alternative is to skip this project.";
+				int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (answer == JOptionPane.YES_OPTION) {
+					RunIt.deleteDirectory(new File(mine));
+					createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath);
+				} else {
+					prefs.getEnvironment().setEnabled(false);
+					return null;
+				}
+			}
+		} else
 			createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath);
 
 		// Check if a local copy of your repository exists. If it does, update it. If it does not, create it.
-		if ((new File(yours)).exists())
-			updateLocalRepository(hg, yours, tempWorkPath);
-		else
+		if ((new File(yours)).exists()) {
+			try {
+				updateLocalRepository(hg, yours, tempWorkPath);
+			}
+			catch (IOException e) {
+				log.error(e.getMessage());
+				String dialogMsg = "Crystal is having trouble executing \"" + hg + " pull\" in\n" + yours + " for the repository " + 
+				source.getShortName() + " in project " + prefs.getEnvironment().getShortName() + ".\n" +
+				"Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
+				"Would you like Crystal to try that?\n" +
+				"The alternative is to skip this repository.";
+				int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (answer == JOptionPane.YES_OPTION) {
+					RunIt.deleteDirectory(new File(yours));
+					createLocalRepository(hg, prefs.getEnvironment().getCloneString(), yours, tempWorkPath);
+				} else {
+					source.setEnabled(false);
+					return null;
+				}
+			}
+		} else
 			createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath);
 
 		ResultStatus answer;
@@ -166,9 +218,26 @@ public class HgStateChecker {
 			 */
 			else if (output.indexOf("(run 'hg update' to get a working copy)") >= 0)
 				answer = ResultStatus.AHEAD;
-			else
-				throw new RuntimeException("Unknown reverse pull output: " + output + "\n Could not determine the relative state of " + yours
-						+ " and " + mine);
+			else {
+				log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output);
+				String dialogMsg = "Crystal is having trouble comparing\n" + 
+				mine + " and " + yours + "\n" + 
+				"for the repository " + source.getShortName() + " in project " + prefs.getEnvironment().getShortName() + ".\n" +
+				"Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
+				"Would you like Crystal to try that?\n" +
+				"The alternative is to skip this repository.";
+				int dialogAnswer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (dialogAnswer == JOptionPane.YES_OPTION) {
+					RunIt.deleteDirectory(new File(mine));
+					RunIt.deleteDirectory(new File(yours));
+					return getState(prefs, source);
+				} else {
+					source.setEnabled(false);
+					return null;
+				}
+			}
+			//				throw new RuntimeException("Unknown reverse pull output: " + output + "\n Could not determine the relative state of " + yours
+			//						+ " and " + mine);
 		}
 
 		/*
@@ -202,8 +271,25 @@ public class HgStateChecker {
 			// otherwise, the merge failed
 			else
 				answer = ResultStatus.MERGECONFLICT;
-		} else
-			throw new RuntimeException("Unknown pull output: " + output + "\n Could not determine the relative state of " + mine + " and " + yours);
+		} else {
+			log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output);
+			String dialogMsg = "Crystal is having trouble comparing\n" + 
+			mine + " and " + yours + "\n" + 
+			"for the repository " + source.getShortName() + " in project " + prefs.getEnvironment().getShortName() + ".\n" +
+			"Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
+			"Would you like Crystal to try that?\n" +
+			"The alternative is to skip this repository.";
+			int dialogAnswer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+			if (dialogAnswer == JOptionPane.YES_OPTION) {
+				RunIt.deleteDirectory(new File(mine));
+				RunIt.deleteDirectory(new File(yours));
+				return getState(prefs, source);
+			} else {
+				source.setEnabled(false);
+				return null;
+			}
+		}
+		// throw new RuntimeException("Unknown pull output: " + output + "\n Could not determine the relative state of " + mine + " and " + yours);
 
 		// Clean up temp directories:
 		RunIt.deleteDirectory(new File(tempWorkPath + tempMyName));

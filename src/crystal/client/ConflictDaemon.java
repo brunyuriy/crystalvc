@@ -68,6 +68,8 @@ public class ConflictDaemon {
 				_log.trace("ConflictDaemon::calculateConflict( " + source + ", ... )");
 
 				status = HgStateChecker.getState(prefs, source);
+				if (status == null)
+					status = ResultStatus.ERROR;
 
 				_log.info("Conflicts Calculated::" + source + "::" + status);
 				// System.out.println("ConflictDaemon::calculateConflict( " + source + ", ... ) - caluculated: " +
@@ -90,13 +92,13 @@ public class ConflictDaemon {
 				result = new ConflictResult(source, status, null);
 			}
 			return result;
-		} catch (IOException ioe) {
+		}  catch (IOException ioe) {
 			_log.error(ioe);
 		} catch (RuntimeException re) {
-			_log.error("Runtime Exception caught while getting state for: " + source);
+			_log.error("Runtime Exception caught while getting state for: " + source + "\n" + re.getMessage());
 		} catch (Exception e) {
 			_log.error(e);
-		}
+		} 
 		return null;
 	}
 
