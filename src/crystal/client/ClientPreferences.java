@@ -311,14 +311,6 @@ public class ClientPreferences {
 					_log.trace("$HOME in project path: " + (firstPart + lastPart));
 				}
 
-				// XXX: bring this back to validate the repositories
-				// if (kind.equals(RepoKind.HG)) {
-				// boolean isRepo = HgStateChecker.isHGRepository(hgPath, projectClone, tempDirectory);
-				// if (!isRepo) {
-				// throw new RuntimeException("Provided clone is not a valid Hg repository: " + projectClone);
-				// }
-				// }
-
 				RepoKind kind = RepoKind.valueOf(projectKind);
 
 				// The project need not be a local path!  
@@ -343,7 +335,12 @@ public class ClientPreferences {
 					List<Element> sourceElements = projectElement.getChildren(IPrefXML.SOURCE);
 					for (Element sourceElement : sourceElements) {
 						String sourceLabel = sourceElement.getAttributeValue(IPrefXML.LABEL);
+						if (sourceLabel  == null)
+							sourceLabel  = sourceElement.getAttributeValue(IPrefXML.RETRO_PREFIX  + IPrefXML.LABEL);
+
 						String sourceClone = sourceElement.getAttributeValue(IPrefXML.CLONE);
+						if (sourceClone  == null)
+							sourceClone  = sourceElement.getAttributeValue(IPrefXML.RETRO_PREFIX  + IPrefXML.CLONE);
 
 						if (sourceLabel == null || sourceLabel.equals("")) {
 							throw new RuntimeException("Label attribute must be set for source element.");
@@ -360,14 +357,6 @@ public class ClientPreferences {
 
 							_log.trace("$HOME in project path: " + (firstPart + lastPart));
 						}
-
-						// XXX: bring this back to validate the repositories
-						// if (kind.equals(RepoKind.HG)) {
-						// boolean isRepo = HgStateChecker.isHGRepository(hgPath, sourceClone, tempDirectory);
-						// if (!isRepo) {
-						// throw new RuntimeException("Provided clone is not a valid Hg repository: " + sourceClone);
-						// }
-						// }
 
 						DataSource source = new DataSource(sourceLabel, sourceClone, kind);
 						_log.trace("Loaded data source: " + source);
@@ -414,13 +403,13 @@ public class ClientPreferences {
 				" Example:\n" + 
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 				"<ccConfig tempDirectory=\"C:/temp/conflictClient/\" hgPath=\"C:/Program Files/TortoiseHg/hg.exe\">\n" +
-				"  <project myKind=\"HG\" myShortName=\"MyFirstProject\" myClone=\"C:/projects/myLocalFirstProjectRepo/\">\n" +
-				"    <source myKind=\"HG\" myShortName=\"MASTER\" myClone=\"ssh://user@host/path/to/repo/\" />\n" +
-				"    <source myKind=\"HG\" myShortName=\"Friend\" myClone=\"ssh://user@host/path/to/friend/repo/\" />\n" +
+				"  <project Kind=\"HG\" ShortName=\"MyFirstProject\" Clone=\"C:/projects/myLocalFirstProjectRepo/\">\n" +
+				"    <source ShortName=\"MASTER\" Clone=\"ssh://user@host/path/to/repo/\" />\n" +
+				"    <source ShortName=\"Friend\" Clone=\"ssh://user@host/path/to/friend/repo/\" />\n" +
 				"  </project>\n" +
-				"  <project myKind=\"HG\" myShortName=\"MySecondProject\" myClone=\"C:/projects/myLocalSecondProjectRepo/\">\n" + 
-				"    <source myKind=\"HG\" myShortName=\"MASTER\" myClone=\"ssh://user@host/path/to/socond/project/repo/\" />\n" +
-				"    <source myKind=\"HG\" myShortName=\"Friend\" myClone=\"https://user@host/path/to/friend/second/repo/\" />\n" +
+				"  <project Kind=\"HG\" ShortName=\"MySecondProject\" Clone=\"C:/projects/myLocalSecondProjectRepo/\">\n" + 
+				"    <source ShortName=\"MASTER\" Clone=\"ssh://user@host/path/to/socond/project/repo/\" />\n" +
+				"    <source ShortName=\"Friend\" Clone=\"https://user@host/path/to/friend/second/repo/\" />\n" +
 				"  </project>\n" +
 				"</ccConfig>\n");
 
@@ -441,7 +430,7 @@ public class ClientPreferences {
 
 			for (DataSource src : pp.getDataSources()) {
 				Element sourceElem = new Element(IPrefXML.SOURCE);
-				sourceElem.setAttribute(IPrefXML.KIND, src.getKind().name());
+//				sourceElem.setAttribute(IPrefXML.KIND, src.getKind().name());
 				sourceElem.setAttribute(IPrefXML.LABEL, src.getShortName());
 				sourceElem.setAttribute(IPrefXML.CLONE, src.getCloneString());
 				projectElem.addContent(sourceElem);
