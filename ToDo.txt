@@ -40,7 +40,7 @@ DONE (20100722-brun) -- fix order of myKind / other atributes.
 
 DONE (20100803-brun) -- fix order of myKind atributes in the XML file writer.
 
--- remove my from the XML tags.
+DONE (20100805-brun) -- remove my from the XML tags.
 
 
 * GUI
