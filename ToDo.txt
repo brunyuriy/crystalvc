@@ -46,7 +46,7 @@ DONE (20100803-brun) -- fix order of myKind atributes in the XML file writer.
 -- The spacing in the config editor GUI is poor.  Suppose that I have 2 projects with different numbers of repositories.  Then the input boxes (such as for "project name") are stretched to fill the window vertically, rather than permitting whitespace at the bottom of the window as would be better.
   This is because of the way JTabbedPane works.  No good way to fix it.  All tabs are the size of the largest tab.
 
--- A checkmark and a checkmark_P seem to produce a checkmark system-tray icon.  So do two checkmarks, it seems.  
+DONE (20100805-brun) -- A checkmark and a checkmark_P seem to produce a checkmark system-tray icon.  So do two checkmarks, it seems.  
   The problem is that we just have a poor algorithm for selection of icons.  And maybe poor icons.  
 
 DONE (20100801-holmes) -- Updating / Update now aren't working right.  

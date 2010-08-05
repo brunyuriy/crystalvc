@@ -77,7 +77,7 @@ public class ConflictSystemTray implements ComputationListener {
 		_log.info("ConflictSystemTray - started at: " + TimeUtility.getCurrentLSMRDateString());
 		if (TRAY_SUPPORTED) {
 			_tray = SystemTray.getSystemTray();
-			_trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
+			_trayIcon = new TrayIcon((new ImageIcon(Constants.class.getResource("/crystal/client/images/bulb.gif"))).getImage());
 		} else {
 			_tray = null;
 			_trayIcon = null;
@@ -181,7 +181,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		if (TRAY_SUPPORTED) {
 			final PopupMenu trayMenu = new PopupMenu();
-			_trayIcon.setImage(createImage("images/32X32/clock.png", ""));
+			_trayIcon.setImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/16X16/clock.png"))).getImage());
 
 			_trayIcon.setToolTip("Crystal");
 
@@ -264,7 +264,6 @@ public class ConflictSystemTray implements ComputationListener {
 	 * @param path
 	 * @param description
 	 * @return
-	 */
 	protected Image createImage(String path, String description) {
 		URL imageURL = ConflictSystemTray.class.getResource(path);
 
@@ -275,6 +274,8 @@ public class ConflictSystemTray implements ComputationListener {
 			return (new ImageIcon(imageURL, description)).getImage();
 		}
 	}
+	 */
+
 
 	private void createTimer() {
 
@@ -455,6 +456,14 @@ public class ConflictSystemTray implements ComputationListener {
 		
 		if (!TRAY_SUPPORTED)
 			return;
+
+		_trayIcon.getImage().flush();
+		
+		Image icon = (ConflictResult.ResultStatus.getDominant(ConflictDaemon.getInstance().getResults())).getImage();
+
+		_trayIcon.setImage(icon);
+		
+		/*
 		boolean anyGreen = false;
 		boolean anyPull = false;
 		boolean anyYellow = false;
@@ -506,8 +515,6 @@ public class ConflictSystemTray implements ComputationListener {
 			}
 		}
 
-		_trayIcon.getImage().flush();
-
 		if (anyError) {
 			_trayIcon.setImage(createImage("images/16X16/error.png", ""));
 		} else if (anyRed) {
@@ -521,6 +528,7 @@ public class ConflictSystemTray implements ComputationListener {
 		} else {
 			_trayIcon.setImage(createImage("images/16X16/greenstatus.png", ""));
 		}
+		 */
 	}
 
 	public static ConflictSystemTray getInstance() {
