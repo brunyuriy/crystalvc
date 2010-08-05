@@ -27,7 +27,8 @@ import crystal.util.TimeUtility;
 
 /**
  * This is the UI that lives in the system tray (windows), title bar (OS X) or somewhere else (linux). It contains the
- * menu options and provides a lightweight home for bringing up the ConflictClient UI.
+ * menu options and provides a lightweight home for bringing up the ConflictClient UI.  If the system tray is not supported, the UI 
+ * switches to a window-only view.  
  * 
  * ConflictSystemTray is a singleton.
  * 

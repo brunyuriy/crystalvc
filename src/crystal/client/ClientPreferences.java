@@ -42,9 +42,12 @@ public class ClientPreferences {
 
 		static final String SOURCE = "source";
 
-		static final String KIND = "myKind";
-		static final String CLONE = "myClone";
-		static final String LABEL = "myShortName";
+		static final String KIND = "Kind";
+		static final String CLONE = "Clone";
+		static final String LABEL = "ShortName";
+		
+		//for backwards compatibility with older XML format that used a prefix before KIND, CLONE, and LABEL.
+		static final String RETRO_PREFIX = "my";
 	}
 
 	/**
@@ -275,11 +278,20 @@ public class ClientPreferences {
 			prefs = new ClientPreferences(tempDirectory, hgPath);
 			prefs.setChanged(prefsChanged);
 
+			// read the attributes.
+			// make sure to check for old versions with the RETRO_PREFIX prefix.  
 			List<Element> projectElements = rootElement.getChildren(IPrefXML.PROJECT);
 			for (Element projectElement : projectElements) {
 				String projectKind = projectElement.getAttributeValue(IPrefXML.KIND);
+				if (projectKind == null)
+					projectKind = projectElement.getAttributeValue(IPrefXML.RETRO_PREFIX  + IPrefXML.KIND);
 				String projectLabel = projectElement.getAttributeValue(IPrefXML.LABEL);
+				if (projectLabel == null)
+					projectLabel = projectElement.getAttributeValue(IPrefXML.RETRO_PREFIX  + IPrefXML.LABEL);
 				String projectClone = projectElement.getAttributeValue(IPrefXML.CLONE);
+				if (projectClone == null)
+					projectClone = projectElement.getAttributeValue(IPrefXML.RETRO_PREFIX  + IPrefXML.CLONE);
+
 
 				if (projectKind == null) {
 					throw new RuntimeException("myKind attribute must be set for project element.");
@@ -309,7 +321,8 @@ public class ClientPreferences {
 
 				RepoKind kind = RepoKind.valueOf(projectKind);
 
-				verifyPath(projectClone);
+				// The project need not be a local path!  
+				//				verifyPath(projectClone);
 
 				if (kind == null || !kind.equals(RepoKind.HG)) {
 					throw new RuntimeException("ClientPreferences - myKind not valid. (currently only HG is supported).");
