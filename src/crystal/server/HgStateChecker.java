@@ -12,7 +12,7 @@ import crystal.util.RunIt;
 import crystal.util.TimeUtility;
 
 /**
- * Performs hg clone operations.  
+ * Performs hg operations.  
  * Acts as the back end for Crystal.
  * 
  * @author brun
