@@ -74,7 +74,7 @@ fetch=
 <h2 id="download">How to run Crystal</h2>
 
 <ol>
-<li> Download <a href="crystal.jar">crystal.jar</a>. (Current version is 0.1.20100801.)</li>
+<li> Download <a href="crystal.jar">crystal.jar</a>. (Current version is 0.1.20100801.  To learn the version of an executable, run <tt>java -jar crystal.jar --version</tt> or select the <tt>about</tt> menu in the GUI.)</li>
 <li> Run:  <tt>java -jar crystal.jar</tt></li>
 <li> The tool will complain that your configuration file is invalid and
   give you instructions on how to fix it.  You can do so either via a GUI
@@ -160,13 +160,13 @@ Here is an example valid configuration file:
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;ccConfig tempDirectory=&quot;C:/temp/conflictClient/&quot; hgPath=&quot;C:/Program Files/TortoiseHg/hg.exe&quot;&gt;
-  &lt;project myKind=&quot;HG&quot; myShortName=&quot;MyFirstProject&quot; myClone=&quot;C:/projects/myLocalFirstProjectRepo/&quot;&gt;
-    &lt;source myKind=&quot;HG&quot; myShortName=&quot;MASTER&quot; myClone=&quot;ssh://user@host/path/to/repo/&quot; /&gt;
-    &lt;source myKind=&quot;HG&quot; myShortName=&quot;Friend&quot; myClone=&quot;ssh://user@host/path/to/friend/repo/&quot; /&gt;
+  &lt;project Kind=&quot;HG&quot; ShortName=&quot;MyFirstProject&quot; Clone=&quot;C:/projects/MyLocalFirstProjectRepo/&quot;&gt;
+    &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/repo/&quot; /&gt;
+    &lt;source ShortName=&quot;Friend&quot; Clone=&quot;ssh://user@host/path/to/friend/repo/&quot; /&gt;
   &lt;/project&gt;
-  &lt;project myKind=&quot;HG&quot; myShortName=&quot;MySecondProject&quot; myClone=&quot;C:/projects/myLocalSecondProjectRepo/&quot;&gt;
-    &lt;source myKind=&quot;HG&quot; myShortName=&quot;MASTER&quot; myClone=&quot;ssh://user@host/path/to/socond/project/repo/&quot; /&gt;
-    &lt;source myKind=&quot;HG&quot; myShortName=&quot;Friend&quot; myClone=&quot;ttps://user@host/path/to/friend/second/repo&quot; /&gt;
+  &lt;project Kind=&quot;HG&quot; ShortName=&quot;MySecondProject&quot; Clone=&quot;C:/projects/MyLocalSecondProjectRepo/&quot;&gt;
+    &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/socond/project/repo/&quot; /&gt;
+    &lt;source ShortName=&quot;Friend&quot; Clone=&quot;ttps://user@host/path/to/friend/second/repo&quot; /&gt;
   &lt;/project&gt;
 &lt;/ccConfig&gt;
 </pre>
@@ -176,11 +176,11 @@ At the root level, there is a single XML element: <tt>ccConfig</tt>.  This eleme
 </p>
 
 <p>
-For each project you wish Crystal to track, <tt>ccConfig</tt> will have a <tt>project</tt> child with three attributes: <tt>myKind</tt>, <tt>myShortName</tt>, and <tt>myClone</tt>.  The <tt>myKind</tt> element describes the kind of the repository: HG for mercurial or GIT for git, although, for now, Crystal only supports HG.  The <tt>myShortName</tt> element is the name of the project you want Crystal to display (on the left side on the screen shot above).  The <tt>myClone</tt> element is the path to your local repository; you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
+For each project you wish Crystal to track, <tt>ccConfig</tt> will have a <tt>project</tt> child with three attributes: <tt>Kind</tt>, <tt>ShortName</tt>, and <tt>Clone</tt>.  The <tt>Kind</tt> element describes the kind of the repository: HG for mercurial or GIT for git, although, for now, Crystal only supports HG.  The <tt>ShortName</tt> element is the name of the project you want Crystal to display (on the left side on the screen shot above).  The <tt>Clone</tt> element is the path to your local repository; you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
 </p>
 
 <p>
-Finally, for each repository you wish Crystal to compare to your repository, the <tt>project</tt> element will have a <tt>source</tt> child with three attributes: <tt>myKind</tt>, <tt>myShortName</tt>, and <tt>myClone</tt>.  The <tt>myKind</tt> element is identical to the parent <tt>project</tt>'s <tt>myKind</tt> element.  The <tt>myShortName</tt> element is the name of the repository you want Crystal to display (above the icons on the screen shot above).  The <tt>myClone</tt> element is the path to this repository; again, you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
+Finally, for each repository you wish Crystal to compare to your repository, the <tt>project</tt> element will have a <tt>source</tt> child with three attributes: <tt>Kind</tt>, <tt>ShortName</tt>, and <tt>Clone</tt>.  The <tt>Kind</tt> element is identical to the parent <tt>project</tt>'s <tt>Kind</tt> element.  The <tt>ShortName</tt> element is the name of the repository you want Crystal to display (above the icons on the screen shot above).  The <tt>Clone</tt> element is the path to this repository; again, you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
 </p>
 
 <h2 id="access-to-remote-repos">Making your repository available to your co-workers</h2>
@@ -273,9 +273,9 @@ pageTracker._trackPageview();
 </body>
 </html>
 
-<!--  LocalWords:  JRE hgrc hg xml UTF ccConfig tempDirectory hgPath myKind ini
+<!--  LocalWords:  JRE hgrc hg xml UTF ccConfig tempDirectory hgPath Kind ini
  -->
-<!--  LocalWords:  myShortName MyFirstProject myClone MySecondProject cp fpru
+<!--  LocalWords:  ShortName FirstProject Clone SecondProject cp fpru
  -->
 <!--  LocalWords:  scp rsync
  -->
