@@ -7,7 +7,21 @@ import javax.swing.ImageIcon;
 
 import crystal.Constants;
 
+/**
+ * Represents a conflict detection question.
+ * 
+ * @author brun
+ * 
+ */
+
 public class ConflictResult {
+	
+	/**
+	 * Represents a conflict detection answer.
+	 * 
+	 * @author brun
+	 * 
+	 */
 	
 	public static class ResultStatus implements Comparable<ResultStatus>{
 		public static ResultStatus SAME = new ResultStatus("/crystal/client/images/32X32/same.png");
