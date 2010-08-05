@@ -25,7 +25,7 @@ import crystal.model.ConflictResult.ResultStatus;
 /**
  * Conflict Client UI; displays the view showing the state of the repositories contained in the preferences.
  * 
- * @author rtholmes
+ * @author rtholmes & brun
  * 
  */
 public class ConflictClient implements ConflictDaemon.ComputationListener {
