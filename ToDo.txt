@@ -75,8 +75,7 @@ Both repositories have new commits but they can be merged cleanly at this time. 
 
 The answer is that Werner has done work without merging changes from HEAD.  So, there is nothing I can do about this.  Maybe the text in the manual should be changed from "new"; I misinterpreted this non-technical term.
 
--- move webpage / manual to the repository
-
+DONE (20100727-brun) -- move webpage / manual to the repository
 
 DONE (20100727-brun) -- Remove the inimplemented functionality from the website.
 
