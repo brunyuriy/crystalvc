@@ -46,6 +46,8 @@ public class ClientPreferences {
 		static final String CLONE = "Clone";
 		static final String LABEL = "ShortName";
 		
+		static final String REMOTE_HG = "RemoteHG";
+		
 		//for backwards compatibility with older XML format that used a prefix before KIND, CLONE, and LABEL.
 		static final String RETRO_PREFIX = "my";
 	}
@@ -92,8 +94,7 @@ public class ClientPreferences {
 	 * Indicates whether these preferences have changed since the last load.
 	 */
 	private boolean _hasChanged;
-
-
+	
 	/**
 	 * Private constructor to restrict usage.
 	 */
@@ -291,6 +292,7 @@ public class ClientPreferences {
 				String projectClone = projectElement.getAttributeValue(IPrefXML.CLONE);
 				if (projectClone == null)
 					projectClone = projectElement.getAttributeValue(IPrefXML.RETRO_PREFIX  + IPrefXML.CLONE);
+				String projectRemoteHg = projectElement.getAttributeValue(IPrefXML.REMOTE_HG);
 
 
 				if (projectKind == null) {
@@ -325,6 +327,7 @@ public class ClientPreferences {
 				}
 
 				DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind);
+				myEnvironment.setRemoteHg(projectRemoteHg);
 
 				_log.trace("Loaded project: " + myEnvironment);
 
@@ -341,6 +344,8 @@ public class ClientPreferences {
 						String sourceClone = sourceElement.getAttributeValue(IPrefXML.CLONE);
 						if (sourceClone  == null)
 							sourceClone  = sourceElement.getAttributeValue(IPrefXML.RETRO_PREFIX  + IPrefXML.CLONE);
+						
+						String sourceRemoteHg = sourceElement.getAttributeValue(IPrefXML.REMOTE_HG);
 
 						if (sourceLabel == null || sourceLabel.equals("")) {
 							throw new RuntimeException("Label attribute must be set for source element.");
@@ -359,6 +364,7 @@ public class ClientPreferences {
 						}
 
 						DataSource source = new DataSource(sourceLabel, sourceClone, kind);
+						source.setRemoteHg(sourceRemoteHg);
 						_log.trace("Loaded data source: " + source);
 
 						projectPreferences.addDataSource(source);

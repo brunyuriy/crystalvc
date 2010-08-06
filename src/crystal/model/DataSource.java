@@ -26,6 +26,9 @@ public class DataSource {
 
 	// the kind of this repo
 	private RepoKind _repoKind;
+	
+	// optional argument to pass to hg for --remotecmd in case the remote hg path is not just "hg"
+	private String _remoteHg = null;
 
 	// Create a new, enabled source.  
 	public DataSource(String shortName, String cloneString, RepoKind repoKind) {
@@ -39,6 +42,14 @@ public class DataSource {
 		_cloneString = cloneString;
 		// _localString = localString;
 		_repoKind = repoKind;
+	}
+	
+	public void setRemoteHg(String remoteHg) {
+		_remoteHg = remoteHg;
+	}
+	
+	public String getRemoteHg() {
+		return _remoteHg;
 	}
 
 	public String getShortName() {
