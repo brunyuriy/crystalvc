@@ -78,7 +78,7 @@ public class HgStateChecker {
 
 		if (output.indexOf("updating to branch") < 0) {
 			String dialogMsg = "Crystal tried to execute command:\n" +
-			"\"" + pathToHg + " clone " + pathToRemoteRepo + pathToLocalRepo + "\"\n" +
+			"\"" + pathToHg + " clone " + pathToRemoteRepo + " " + pathToLocalRepo + "\"\n" +
 			"from \"" + tempWorkPath + "\"\n" +
 			"but got the unexpected output:\n" + 
 			output;
