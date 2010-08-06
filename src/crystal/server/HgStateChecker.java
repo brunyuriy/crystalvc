@@ -2,6 +2,8 @@ package crystal.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -22,7 +24,6 @@ import crystal.util.TimeUtility;
  * 
  */
 public class HgStateChecker {
-
 
 	/*
 	 * @arg String pathToHg: the path to the hg executable
@@ -50,7 +51,7 @@ public class HgStateChecker {
 	 * @arg String tempWorkPath: path to a temp directory
 	 * @effect: clones the pathToRemoteRepo repository to pathToLocalRepo
 	 */
-	private static void createLocalRepository(String pathToHg, String pathToRemoteRepo, String pathToLocalRepo, String tempWorkPath)
+	private static void createLocalRepository(String pathToHg, String pathToRemoteRepo, String pathToLocalRepo, String tempWorkPath, String remoteHg)
 	throws IOException, InvalidHgRepositoryException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToRemoteRepo);
@@ -64,8 +65,16 @@ public class HgStateChecker {
 		// String pathToLocalHGRepo = prefs.getClientPreferences().getTempDirectory() +
 		// prefs.getEnvironment().getLocalPath();
 
-		String[] myArgs = { "clone", pathToRemoteRepo, pathToLocalRepo };
-		String output = RunIt.execute(pathToHg, myArgs, tempWorkPath);
+		List<String> myArgsList = new ArrayList<String>();
+		myArgsList.add("clone");
+		if (remoteHg != null) { 
+			myArgsList.add("--remotecmd");
+			myArgsList.add(remoteHg);
+		}
+		myArgsList.add(pathToRemoteRepo);
+		myArgsList.add(pathToLocalRepo);
+		
+		String output = RunIt.execute(pathToHg, myArgsList.toArray(new String[0]), tempWorkPath);
 
 		if (output.indexOf("updating to branch") < 0) {
 			String dialogMsg = "Crystal tried to execute command:\n" +
@@ -144,14 +153,14 @@ public class HgStateChecker {
 				int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 				if (answer == JOptionPane.YES_OPTION) {
 					RunIt.deleteDirectory(new File(mine));
-					createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath);
+					createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
 				} else {
 					prefs.getEnvironment().setEnabled(false);
 					return null;
 				}
 			}
 		} else
-			createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath);
+			createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
 
 		// Check if a local copy of your repository exists. If it does, update it. If it does not, create it.
 		if ((new File(yours)).exists()) {
@@ -168,14 +177,14 @@ public class HgStateChecker {
 				int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 				if (answer == JOptionPane.YES_OPTION) {
 					RunIt.deleteDirectory(new File(yours));
-					createLocalRepository(hg, prefs.getEnvironment().getCloneString(), yours, tempWorkPath);
+					createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath, source.getRemoteHg());
 				} else {
 					source.setEnabled(false);
 					return null;
 				}
 			}
 		} else
-			createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath);
+			createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath, source.getRemoteHg());
 
 		ResultStatus answer;
 
