@@ -94,13 +94,21 @@ public class HgStateChecker {
 	 * @arg String tempWorkPath: path to a temp directory
 	 * @effect: performs a pull and update on the pathToLocalRepo repository
 	 */
-	private static void updateLocalRepository(String pathToHg, String pathToLocalRepo, String tempWorkPath) throws IOException {
+	private static void updateLocalRepository(String pathToHg, String pathToLocalRepo, String tempWorkPath, String remoteHg) throws IOException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToLocalRepo);
 		Assert.assertNotNull(tempWorkPath);
 
-		String[] myArgs = { "pull", "-u" };
-		String output = RunIt.execute(pathToHg, myArgs, pathToLocalRepo);
+		List<String> myArgsList = new ArrayList<String>();
+		myArgsList.add("pull");
+		myArgsList.add("-u");
+		if (remoteHg != null) { 
+			myArgsList.add("--remotecmd");
+			myArgsList.add(remoteHg);
+		}
+
+//		String[] myArgs = { "pull", "-u" };
+		String output = RunIt.execute(pathToHg, myArgsList.toArray(new String[0]), pathToLocalRepo);
 
 		if ((output.indexOf("files updated") < 0) && (output.indexOf("no changes found") < 0))
 			throw new RuntimeException("Could not update repository " + pathToLocalRepo + ": " + output);
@@ -141,7 +149,7 @@ public class HgStateChecker {
 		//		System.out.println("*** " + tempWorkPath + " *** " + mine + " ***\n");
 		if ((new File(mine)).exists()) {
 			try {
-				updateLocalRepository(hg, mine, tempWorkPath);
+				updateLocalRepository(hg, mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
 			}
 			catch (IOException e) {
 				log.error(e.getMessage());
@@ -165,7 +173,7 @@ public class HgStateChecker {
 		// Check if a local copy of your repository exists. If it does, update it. If it does not, create it.
 		if ((new File(yours)).exists()) {
 			try {
-				updateLocalRepository(hg, yours, tempWorkPath);
+				updateLocalRepository(hg, yours, tempWorkPath, source.getRemoteHg());
 			}
 			catch (IOException e) {
 				log.error(e.getMessage());
