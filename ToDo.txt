@@ -1,3 +1,5 @@
+-- What do we do if my repository is behind yours, but yours is in a conflicting (two headed) state?  Currently, we just say "behind".
+
 * Repository cloning issues
 
 DONE (20100805-brun) Changing the clone address of a repository to a totally different repository causes errors.
