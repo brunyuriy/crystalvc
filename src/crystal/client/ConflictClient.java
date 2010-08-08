@@ -18,6 +18,7 @@ import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
+import crystal.Constants;
 import crystal.model.ConflictResult;
 import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
@@ -87,6 +88,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		// Create and set up the window.
 		_frame = new JFrame("Crystal");
+		_frame.setIconImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.jpg"))).getImage());
 
 		// Set up the menu:
 		JMenuBar menuBar = new JMenuBar();
