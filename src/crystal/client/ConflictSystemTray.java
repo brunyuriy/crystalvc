@@ -41,7 +41,7 @@ public class ConflictSystemTray implements ComputationListener {
 	public static boolean TRAY_SUPPORTED = SystemTray.isSupported();
 	// public static boolean TRAY_SUPPORTED = false;
 
-	public static String VERSION_ID = "0.1.20100805";
+	public static String VERSION_ID = "0.1.20100807";
 
 	/**
 	 * Conflict client UI.
