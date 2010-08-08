@@ -96,6 +96,7 @@ public class ConflictDaemon {
 			_log.error(ioe);
 		} catch (RuntimeException re) {
 			_log.error("Runtime Exception caught while getting state for: " + source + "\n" + re.getMessage());
+			re.printStackTrace();
 		} catch (Exception e) {
 			_log.error(e);
 		} 
