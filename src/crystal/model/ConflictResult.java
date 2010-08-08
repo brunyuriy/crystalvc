@@ -33,6 +33,8 @@ public class ConflictResult {
 		public static ResultStatus TESTCONFLICT = new ResultStatus("/crystal/client/images/32X32/testconflict.png");
 		public static ResultStatus PENDING = new ResultStatus("/crystal/client/images/32X32/clock.png"); 
 		public static ResultStatus ERROR = new ResultStatus("/crystal/client/images/32X32/error.png");
+		public static ResultStatus TWOHEADED = new ResultStatus("/crystal/client/images/32X32/twohead.png");
+
 
 		private final ImageIcon _icon;
 		private final Image _image;
@@ -66,6 +68,7 @@ public class ConflictResult {
 			if (this == TESTCONFLICT) return 7;
 			if (this == COMPILECONLFICT) return 8;
 			if (this == MERGECONFLICT) return 9;
+			if (this == TWOHEADED) return 10;
 			else
 				return 0;
 		}

@@ -45,6 +45,8 @@ DONE (20100805-brun) -- remove my from the XML tags.
 
 * GUI
 
+-- Make ConfigClient repaint correctly when the GUI editor changes the ClientPreferences.
+
 -- The spacing in the config editor GUI is poor.  Suppose that I have 2 projects with different numbers of repositories.  Then the input boxes (such as for "project name") are stretched to fill the window vertically, rather than permitting whitespace at the bottom of the window as would be better.
   This is because of the way JTabbedPane works.  No good way to fix it.  All tabs are the size of the largest tab.
 

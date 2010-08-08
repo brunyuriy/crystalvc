@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
@@ -204,38 +206,101 @@ public class HgStateChecker {
 		 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0
 		 * files removed, 0 files unresolved
 		 */
-
-		String[] yourArgs = { "clone", yours, tempYourName };
-		output = RunIt.execute(hg, yourArgs, tempWorkPath);
+		
 		/*
-		 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0
-		 * files removed, 0 files unresolved
+		 * Check if mine is two headed.  If it is, return TWOHEADED
 		 */
-
-		String[] pullArgs = { "pull", tempWorkPath + tempYourName };
-		output = RunIt.execute(hg, pullArgs, tempWorkPath + tempMyName);
-		/*
-		 * SAME or AHEAD if output looks something like this: pulling from /homes/gws/brun/temp/orig searching for
-		 * changes no changes found
-		 */
-		if (output.indexOf("no changes found") >= 0) {
-			// Mine is either the same or ahead, so let's check if yours is ahead
-			String[] reversePullArgs = { "pull", tempWorkPath + tempMyName };
-			output = RunIt.execute(hg, reversePullArgs, tempWorkPath + tempYourName);
+		String[] headArgs = { "heads" };
+		output = RunIt.execute(hg, headArgs, tempWorkPath + tempMyName);
+		Pattern heads = Pattern.compile(".*changeset.*changeset.*", Pattern.DOTALL);
+		Matcher matcher = heads.matcher(output);		
+		if (matcher.matches()) {
+			answer = ResultStatus.TWOHEADED;
+		} else {
+			String[] yourArgs = { "clone", yours, tempYourName };
+			output = RunIt.execute(hg, yourArgs, tempWorkPath);
 			/*
-			 * SAME if output looks something like this: pulling from /homes/gws/brun/temp/orig searching for changes no
-			 * changes found
+			 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0
+			 * files removed, 0 files unresolved
 			 */
-			if (output.indexOf("no changes found") >= 0)
-				answer = ResultStatus.SAME;
+
+			String[] pullArgs = { "pull", tempWorkPath + tempYourName };
+			output = RunIt.execute(hg, pullArgs, tempWorkPath + tempMyName);
 			/*
-			 * mine is AHEAD (yours is BEHIND) if output looks something like this: searching for changes adding
-			 * changesets adding manifests adding file changes added 1 changesets with 1 changes to 1 files (run 'hg
-			 * update' to get a working copy)
+			 * SAME or AHEAD if output looks something like this: pulling from /homes/gws/brun/temp/orig searching for
+			 * changes no changes found
+			 */
+			if (output.indexOf("no changes found") >= 0) {
+				// Mine is either the same or ahead, so let's check if yours is ahead
+				String[] reversePullArgs = { "pull", tempWorkPath + tempMyName };
+				output = RunIt.execute(hg, reversePullArgs, tempWorkPath + tempYourName);
+				/*
+				 * SAME if output looks something like this: pulling from /homes/gws/brun/temp/orig searching for changes no
+				 * changes found
+				 */
+				if (output.indexOf("no changes found") >= 0)
+					answer = ResultStatus.SAME;
+				/*
+				 * mine is AHEAD (yours is BEHIND) if output looks something like this: searching for changes adding
+				 * changesets adding manifests adding file changes added 1 changesets with 1 changes to 1 files (run 'hg
+				 * update' to get a working copy)
+				 */
+				else if (output.indexOf("(run 'hg update' to get a working copy)") >= 0)
+					answer = ResultStatus.AHEAD;
+				else {
+					log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output);
+					String dialogMsg = "Crystal is having trouble comparing\n" + 
+					mine + " and " + yours + "\n" + 
+					"for the repository " + source.getShortName() + " in project " + prefs.getEnvironment().getShortName() + ".\n" +
+					"Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
+					"Would you like Crystal to try that?\n" +
+					"The alternative is to skip this repository.";
+					int dialogAnswer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+					if (dialogAnswer == JOptionPane.YES_OPTION) {
+						RunIt.deleteDirectory(new File(mine));
+						RunIt.deleteDirectory(new File(yours));
+						return getState(prefs, source);
+					} else {
+						source.setEnabled(false);
+						return null;
+					}
+				}
+				//				throw new RuntimeException("Unknown reverse pull output: " + output + "\n Could not determine the relative state of " + yours
+				//						+ " and " + mine);
+			}
+
+			/*
+			 * BEHIND if output looks something like this: searching for changes adding changesets adding manifests adding
+			 * file changes added 1 changesets with 1 changes to 1 files (run 'hg update' to get a working copy)
 			 */
 			else if (output.indexOf("(run 'hg update' to get a working copy)") >= 0)
-				answer = ResultStatus.AHEAD;
-			else {
+				answer = ResultStatus.BEHIND;
+
+			/*
+			 * CONFLICT if output looks something like this: pulling from ../firstcopy/ searching for changes adding
+			 * changesets adding manifests adding file changes added 1 changesets with 1 changes to 1 files (+1 heads) (run
+			 * 'hg heads' to see heads, 'hg merge' to merge)
+			 */
+			else if (output.indexOf("(run 'hg heads' to see heads, 'hg merge' to merge)") >= 0) {
+				// there are two heads, so let's see if they merge cleanly
+				String[] mergeArgs = { "merge", "--noninteractive" };
+				output = RunIt.execute(hg, mergeArgs, tempWorkPath + tempMyName);
+				// if the merge goes through cleanly, we can try to compile and test
+				if (output.indexOf("(branch merge, don't forget to commit)") >= 0) {
+					// try to compile {
+					// if successful, try to test {
+					// if successful:
+					answer = ResultStatus.MERGECLEAN;
+					// if unsuccessful:
+					// answer = ResultStatus.TESTCONFLICT;
+					// }
+					// if unsuccessful (compile):
+					// answer = ResultStatus.COMPILECONFLICT;
+				}
+				// otherwise, the merge failed
+				else
+					answer = ResultStatus.MERGECONFLICT;
+			} else {
 				log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output);
 				String dialogMsg = "Crystal is having trouble comparing\n" + 
 				mine + " and " + yours + "\n" + 
@@ -253,61 +318,8 @@ public class HgStateChecker {
 					return null;
 				}
 			}
-			//				throw new RuntimeException("Unknown reverse pull output: " + output + "\n Could not determine the relative state of " + yours
-			//						+ " and " + mine);
+			// throw new RuntimeException("Unknown pull output: " + output + "\n Could not determine the relative state of " + mine + " and " + yours);
 		}
-
-		/*
-		 * BEHIND if output looks something like this: searching for changes adding changesets adding manifests adding
-		 * file changes added 1 changesets with 1 changes to 1 files (run 'hg update' to get a working copy)
-		 */
-		else if (output.indexOf("(run 'hg update' to get a working copy)") >= 0)
-			answer = ResultStatus.BEHIND;
-
-		/*
-		 * CONFLICT if output looks something like this: pulling from ../firstcopy/ searching for changes adding
-		 * changesets adding manifests adding file changes added 1 changesets with 1 changes to 1 files (+1 heads) (run
-		 * 'hg heads' to see heads, 'hg merge' to merge)
-		 */
-		else if (output.indexOf("(run 'hg heads' to see heads, 'hg merge' to merge)") >= 0) {
-			// there are two heads, so let's see if they merge cleanly
-			String[] mergeArgs = { "merge", "--noninteractive" };
-			output = RunIt.execute(hg, mergeArgs, tempWorkPath + tempMyName);
-			// if the merge goes through cleanly, we can try to compile and test
-			if (output.indexOf("(branch merge, don't forget to commit)") >= 0) {
-				// try to compile {
-				// if successful, try to test {
-				// if successful:
-				answer = ResultStatus.MERGECLEAN;
-				// if unsuccessful:
-				// answer = ResultStatus.TESTCONFLICT;
-				// }
-				// if unsuccessful (compile):
-				// answer = ResultStatus.COMPILECONFLICT;
-			}
-			// otherwise, the merge failed
-			else
-				answer = ResultStatus.MERGECONFLICT;
-		} else {
-			log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output);
-			String dialogMsg = "Crystal is having trouble comparing\n" + 
-			mine + " and " + yours + "\n" + 
-			"for the repository " + source.getShortName() + " in project " + prefs.getEnvironment().getShortName() + ".\n" +
-			"Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
-			"Would you like Crystal to try that?\n" +
-			"The alternative is to skip this repository.";
-			int dialogAnswer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-			if (dialogAnswer == JOptionPane.YES_OPTION) {
-				RunIt.deleteDirectory(new File(mine));
-				RunIt.deleteDirectory(new File(yours));
-				return getState(prefs, source);
-			} else {
-				source.setEnabled(false);
-				return null;
-			}
-		}
-		// throw new RuntimeException("Unknown pull output: " + output + "\n Could not determine the relative state of " + mine + " and " + yours);
-
 		// Clean up temp directories:
 		RunIt.deleteDirectory(new File(tempWorkPath + tempMyName));
 		RunIt.deleteDirectory(new File(tempWorkPath + tempYourName));
