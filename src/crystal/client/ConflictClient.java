@@ -86,7 +86,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_preferences = prefs;
 
 		// Create and set up the window.
-		_frame = new JFrame("Conflict Client");
+		_frame = new JFrame("Crystal");
 
 		// Set up the menu:
 		JMenuBar menuBar = new JMenuBar();
