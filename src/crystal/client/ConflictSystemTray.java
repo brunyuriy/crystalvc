@@ -127,7 +127,6 @@ public class ConflictSystemTray implements ComputationListener {
 		} catch (Exception e) {
 			// e.printStackTrace();
 			String msg = "Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )";
-
 			System.err.println(msg);
 			_log.error(msg);
 

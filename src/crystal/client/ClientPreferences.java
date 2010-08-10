@@ -296,13 +296,13 @@ public class ClientPreferences {
 
 
 				if (projectKind == null) {
-					throw new RuntimeException("myKind attribute must be set for project element.");
+					throw new RuntimeException("Kind attribute must be set for project element.");
 				}
 				if (projectLabel == null) {
-					throw new RuntimeException("myShortName attribute must be set for project element.");
+					throw new RuntimeException("ShortName attribute must be set for project element.");
 				}
 				if (projectClone == null) {
-					throw new RuntimeException("myClone attribute must be set for project element.");
+					throw new RuntimeException("Clone attribute must be set for project element.");
 				}
 
 				if (projectClone.startsWith(Constants.HOME)) {
@@ -319,11 +319,11 @@ public class ClientPreferences {
 				//				verifyPath(projectClone);
 
 				if (kind == null || !kind.equals(RepoKind.HG)) {
-					throw new RuntimeException("ClientPreferences - myKind not valid. (currently only HG is supported).");
+					throw new RuntimeException("ClientPreferences - Kind not valid. (currently only HG is supported).");
 				}
 
 				if (projectLabel == null || projectLabel.equals("")) {
-					throw new RuntimeException("ClientPreferences - myShortName must be specified.");
+					throw new RuntimeException("ClientPreferences - ShortName must be specified.");
 				}
 
 				DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind);
@@ -376,6 +376,7 @@ public class ClientPreferences {
 		} catch (IOException ioe) {
 			throw new RuntimeException("Error reading configuration file; " + ioe.getMessage(), ioe);
 		} catch (Exception e) {
+//			e.printStackTrace();
 			throw new RuntimeException("Error parsing configuration file; " + e.getMessage(), e);
 		}
 
