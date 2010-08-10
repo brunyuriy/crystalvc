@@ -23,6 +23,8 @@ DONE (20100729-brun) -- Add an autoreplace for \ to /
 
 * XML and config file issues (also start up)
 
+-- make reader read various capitalizations.  Really, make the static var of names a list, and read for presence of any element of that list.  
+
 DONE (20100729-brun) -- deal with Crystal trying to write to a file.
 
 -- add a load settings / save setting interface.
