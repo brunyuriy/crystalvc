@@ -10,7 +10,7 @@
 
 <body bgcolor="#FFFF99">
 
-<h1 id="Crystal:_Distributed_Version_Control_Speculative_Conflict_Detector"> <img src="crystal-ball_blue_128.png" ALIGN=ABSMIDDLE /> Crystal: Proactive Conflict Detector for Distributed Version Control</h1>
+<h1 id="Crystal:_Distributed_Version_Control_Speculative_Conflict_Detector"><img src="crystal-ball_blue_128.png" align="middle" alt="Crystal ball"/> Crystal: Proactive Conflict Detector for Distributed Version Control</h1>
 
 
 <p>Contents:</p>
@@ -218,7 +218,12 @@ your crontab file to automate the task:
 * * * * *	\cp -fpru .../path-to-repo/.hg .../accessible-path
 </pre>
 (The <tt>.hg</tt> file will end up as <tt>.../accessible-path/.hg</tt>, and
-the path to the repository is just <tt>.../accessible-path</tt>.)
+the path to the repository is just <tt>.../accessible-path</tt>.)  Don't
+forget to make <tt>.../accessible-path/</tt> and all subdirectories
+readable by the web server (examlpe: <tt>chmod -R og+r
+  .../accessible-path</tt>), and also enable the web server to show a
+directory listing to the hg client (example: add <tt>+Indexes</tt> to file
+<tt>.../accessible-path/.htaccess</tt>).
 </li>
 <li>
 If you do your work on a different file system, you will need to copy your
