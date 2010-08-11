@@ -156,7 +156,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		// _frame.getContentPane().add(new JLabel("Quitting Crystal saves your configuration.   ",
 		// SwingConstants.CENTER));
 		// or do it in the menu; looks nicer.
-		menuBar.add(new JMenuItem("Quitting Crystal saves your configuration."));
+//		menuBar.add(new JMenuItem("Quitting Crystal saves your configuration."));
 
 		// Create a grid to hold the conflict results
 		int maxSources = 0;
@@ -165,7 +165,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				maxSources = projPref.getDataSources().size();
 		}
 		// 1 extra in each dimension for heading labels
-		JPanel grid = new JPanel(new GridLayout(prefs.getProjectPreference().size(), 0)); // no need to have maxSources
+		JPanel grid = new JPanel(new GridLayout(prefs.getProjectPreference().size(), 0, -60, 0)); // no need to have maxSources
 		// + 1;
 		grid.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 
@@ -174,7 +174,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_iconMap = new HashMap<DataSource, JLabel>();
 		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
 			// name of project on the left
-			grid.add(new JLabel(projPref.getEnvironment().getShortName()));
+			grid.add(new JLabel(projPref.getEnvironment().getShortName() + "       "));
 
 			for (DataSource source : projPref.getDataSources()) {
 				ImageIcon image = new ImageIcon();
@@ -205,6 +205,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		_frame.setVisible(true);
 		_frame.toFront();
+		_frame.pack();
 	}
 
 	public void setCanUpdate(boolean enable) {
