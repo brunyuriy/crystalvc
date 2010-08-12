@@ -54,7 +54,7 @@ public class HgStateChecker {
 	 * @effect: clones the pathToRemoteRepo repository to pathToLocalRepo
 	 */
 	private static void createLocalRepository(String pathToHg, String pathToRemoteRepo, String pathToLocalRepo, String tempWorkPath, String remoteHg)
-	throws IOException, InvalidHgRepositoryException {
+	throws IOException, HgOperationException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToRemoteRepo);
 		Assert.assertNotNull(pathToLocalRepo);
@@ -67,14 +67,18 @@ public class HgStateChecker {
 		// String pathToLocalHGRepo = prefs.getClientPreferences().getTempDirectory() +
 		// prefs.getEnvironment().getLocalPath();
 
+		String command = pathToHg + " clone"; 
+	
 		List<String> myArgsList = new ArrayList<String>();
 		myArgsList.add("clone");
 		if (remoteHg != null) { 
 			myArgsList.add("--remotecmd");
 			myArgsList.add(remoteHg);
+			command += " --remotecmd " + remoteHg; 
 		}
 		myArgsList.add(pathToRemoteRepo);
 		myArgsList.add(pathToLocalRepo);
+		command += " " + pathToRemoteRepo + " " + pathToLocalRepo; 
 		
 		String output = RunIt.execute(pathToHg, myArgsList.toArray(new String[0]), tempWorkPath);
 
@@ -85,7 +89,7 @@ public class HgStateChecker {
 			"but got the unexpected output:\n" + 
 			output;
 			JOptionPane.showMessageDialog(null, dialogMsg, "hg clone failure", JOptionPane.ERROR_MESSAGE);
-			throw new InvalidHgRepositoryException(pathToRemoteRepo, output);
+			throw new HgOperationException(command, tempWorkPath, output);
 		//			throw new RuntimeException("Could not clone repository " + pathToRemoteRepo + " to " + pathToLocalRepo + "\n" + output);
 		}
 	}
@@ -96,24 +100,26 @@ public class HgStateChecker {
 	 * @arg String tempWorkPath: path to a temp directory
 	 * @effect: performs a pull and update on the pathToLocalRepo repository
 	 */
-	private static void updateLocalRepository(String pathToHg, String pathToLocalRepo, String tempWorkPath, String remoteHg) throws IOException {
+	private static void updateLocalRepository(String pathToHg, String pathToLocalRepo, String tempWorkPath, String remoteHg) throws IOException, HgOperationException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToLocalRepo);
 		Assert.assertNotNull(tempWorkPath);
 
+		String command = pathToHg + " pull -u";
 		List<String> myArgsList = new ArrayList<String>();
 		myArgsList.add("pull");
 		myArgsList.add("-u");
 		if (remoteHg != null) { 
 			myArgsList.add("--remotecmd");
 			myArgsList.add(remoteHg);
+			pathToHg += "--remotecmd " + remoteHg; 
 		}
 
 //		String[] myArgs = { "pull", "-u" };
 		String output = RunIt.execute(pathToHg, myArgsList.toArray(new String[0]), pathToLocalRepo);
 
 		if ((output.indexOf("files updated") < 0) && (output.indexOf("no changes found") < 0))
-			throw new RuntimeException("Could not update repository " + pathToLocalRepo + ": " + output);
+			throw new HgOperationException(command, pathToLocalRepo, output);
 	}
 
 	/*
@@ -121,7 +127,7 @@ public class HgStateChecker {
 	 * 
 	 * @returns whether my repository is same, behind, ahead, or in conflict with your repository.
 	 */
-	public static ResultStatus getState(ProjectPreferences prefs, DataSource source) throws IOException, InvalidHgRepositoryException {
+	public static ResultStatus getState(ProjectPreferences prefs, DataSource source) throws IOException, HgOperationException {
 
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);
@@ -153,11 +159,14 @@ public class HgStateChecker {
 			try {
 				updateLocalRepository(hg, mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
 			}
-			catch (IOException e) {
-				log.error(e.getMessage());
-				String dialogMsg = "Crystal is having trouble executing \"" + hg + " pull\" in\n" + mine + " for your repository of project " + 
-				prefs.getEnvironment().getShortName() + ".\n" +
-				"Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
+			catch (HgOperationException e) {
+				String dialogMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
+				e.getPath() + "\n for your repository of project " + 
+				prefs.getEnvironment().getShortName() + ".\n" + 
+				"Crystal got the unexpected output:\n" + 
+				e.getOutput() + "\n";
+				log.error(dialogMsg);
+				dialogMsg += "Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
 				"Would you like Crystal to try that?\n" +
 				"The alternative is to skip this project.";
 				int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
@@ -177,11 +186,14 @@ public class HgStateChecker {
 			try {
 				updateLocalRepository(hg, yours, tempWorkPath, source.getRemoteHg());
 			}
-			catch (IOException e) {
-				log.error(e.getMessage());
-				String dialogMsg = "Crystal is having trouble executing \"" + hg + " pull\" in\n" + yours + " for the repository " + 
-				source.getShortName() + " in project " + prefs.getEnvironment().getShortName() + ".\n" +
-				"Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
+			catch (HgOperationException e) {
+				String dialogMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
+				e.getPath() + "\n for the repository " + source.getShortName() + 
+				" in project " + prefs.getEnvironment().getShortName() + ".\n" +
+				"Crystal got the unexpected output:\n" + 
+				e.getOutput() + "\n";
+				log.error(dialogMsg);
+				dialogMsg += "Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
 				"Would you like Crystal to try that?\n" +
 				"The alternative is to skip this repository.";
 				int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
@@ -332,13 +344,34 @@ public class HgStateChecker {
 	// System.out.println(answer);
 	// }
 
-	public static class InvalidHgRepositoryException extends Exception {
+	public static class HgOperationException extends Exception {
 
-		private static final long serialVersionUID = 136849480836706393L;
+		private static final long serialVersionUID = -6885233021486785003L;
+		
+		private String _output;
+		private String _command;
+		private String _path;
 
-		public InvalidHgRepositoryException(String invalidRepoAddress, String errorMessage) {
-			super("The address " + invalidRepoAddress + " does not contain an hg repository:\n" + errorMessage);
+		public HgOperationException(String command, String path, String output) {
+			super("Tried to execute \n\"" + command + "\"\n in \"" + path + "\"\n" +
+					"but got the output\n" + output);
+			_output = output;
+			_path = path;
+			_command = command;
 		}
+		
+		public String getOutput() {
+			return _output;
+		}
+		
+		public String getPath() {
+			return _path;
+		}
+
+		public String getCommand() {
+			return _command;
+		}
+
 	}
 }
 
