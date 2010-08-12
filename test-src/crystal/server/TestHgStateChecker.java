@@ -20,7 +20,7 @@ import crystal.client.ProjectPreferences;
 import crystal.model.ConflictResult.ResultStatus;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
-import crystal.server.HgStateChecker.InvalidHgRepositoryException;
+import crystal.server.HgStateChecker.HgOperationException;
 import crystal.util.RunIt;
 
 public class TestHgStateChecker {
@@ -167,7 +167,7 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-		} catch (InvalidHgRepositoryException ioe) {
+		} catch (HgOperationException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
 		}
@@ -183,7 +183,7 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-		} catch (InvalidHgRepositoryException ioe) {
+		} catch (HgOperationException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
 		}
@@ -199,7 +199,7 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-		} catch (InvalidHgRepositoryException ioe) {
+		} catch (HgOperationException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
 		}
@@ -216,7 +216,7 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-		} catch (InvalidHgRepositoryException ioe) {
+		} catch (HgOperationException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
 		}
@@ -233,7 +233,7 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-		} catch (InvalidHgRepositoryException ioe) {
+		} catch (HgOperationException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
 		}
