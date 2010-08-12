@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.Executor;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -368,6 +369,7 @@ public class ConflictSystemTray implements ComputationListener {
 			return;
 		}
 
+		Executor ex = new SerialExecutor();
 		// if (!pendingTask) {
 		// get all of the tasks in pending mode
 		ConflictDaemon.getInstance().prePerformCalculations(_prefs);
@@ -382,7 +384,7 @@ public class ConflictSystemTray implements ComputationListener {
 		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
 			for (final DataSource source : projPref.getDataSources()) {
 				final CalculateTask ct = new CalculateTask(source, projPref, this, _client);
-				ct.execute();
+				ex.execute(ct);
 			}
 		}
 		// } else {
