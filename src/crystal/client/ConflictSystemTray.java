@@ -78,7 +78,7 @@ public class ConflictSystemTray implements ComputationListener {
 		if (TRAY_SUPPORTED) {
 			_tray = SystemTray.getSystemTray();
 //			_trayIcon = new TrayIcon((new ImageIcon(Constants.class.getResource("/crystal/client/images/bulb.gif"))).getImage());
-			_trayIcon = new TrayIcon((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_32.jpg"))).getImage());
+			_trayIcon = new TrayIcon((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_32.png"))).getImage());
 		} else {
 			_tray = null;
 			_trayIcon = null;
@@ -92,7 +92,7 @@ public class ConflictSystemTray implements ComputationListener {
 								"\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.\nhttp://www.cs.washington.edu/homes/brun/research/crystal",
 								"Crystal: Proactive Conflict Detector for Distributed Version Control", 
 								JOptionPane.PLAIN_MESSAGE,
-								new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.jpg")));
+								new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.png")));
 	}
 
 	/**
