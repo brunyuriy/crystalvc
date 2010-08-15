@@ -72,6 +72,10 @@ public class DataSource {
 		return _enabled;
 	}
 	
+	public boolean isMaster() {
+		return _master;
+	}
+	
 	// public String getLocalString() {
 	// return _localString;
 	// }
