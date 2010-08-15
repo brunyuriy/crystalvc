@@ -20,6 +20,9 @@ public class DataSource {
 
 	// the path to the remote repository
 	private String _cloneString;
+	
+	// whether this repository is a Master
+	private boolean _master;
 
 	// the path to the local clone of the remote repository
 	// private String _localString;
@@ -42,6 +45,7 @@ public class DataSource {
 		_cloneString = cloneString;
 		// _localString = localString;
 		_repoKind = repoKind;
+		_master = shortName.toLowerCase().trim().equals("master");
 	}
 	
 	public void setRemoteHg(String remoteHg) {
@@ -82,6 +86,7 @@ public class DataSource {
 
 	public void setShortName(String name) {
 		_shortName = name;
+		_master = name.toLowerCase().trim().equals("master");
 	}
 
 	public void setCloneString(String name) {
