@@ -40,6 +40,23 @@ public class ProjectPreferences {
 		_clientPreferences = clientPrefs;
 		_dataSources = new Vector<DataSource>();
 	}
+	
+	public boolean hasMaster() {
+		for (DataSource ds : _dataSources) {
+			if (ds.isMaster())
+				return true;
+		}
+		return false;
+	}
+	
+	public DataSource getMaster() {
+		for (DataSource ds : _dataSources) {
+			if (ds.isMaster())
+				return ds;
+		}
+		return null;
+	}
+
 
 	/**
 	 * Adds a new data source.
