@@ -161,8 +161,8 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		// Create a grid to hold the conflict results
 		int maxSources = 0;
 		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
-			if (projPref.getDataSources().size() > maxSources)
-				maxSources = projPref.getDataSources().size();
+			if (projPref.getDataSources().size() - (projPref.hasMaster() ? 1 : 0) > maxSources)
+				maxSources = projPref.getDataSources().size() - (projPref.hasMaster() ? 1 : 0);
 		}
 		// 1 extra in each dimension for heading labels
 		JPanel grid = new JPanel(new GridLayout(prefs.getProjectPreference().size(), 0, 0, 0)); // no need to have maxSources
@@ -173,20 +173,33 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		// Also create the layout of the GUI.
 		_iconMap = new HashMap<DataSource, JLabel>();
 		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
-			// name of project on the left
-			grid.add(new JLabel(projPref.getEnvironment().getShortName()));
-
-			for (DataSource source : projPref.getDataSources()) {
-				ImageIcon image = new ImageIcon();
-				JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER);
-				_iconMap.put(source, imageLabel);
-				ConflictDaemon.getInstance().getStatus(source);
-				imageLabel.setVerticalTextPosition(JLabel.TOP);
-				imageLabel.setHorizontalTextPosition(JLabel.CENTER);
-				grid.add(imageLabel);
+			// name of project on the left, with an empty JLabel for the Action
+			JPanel name = new JPanel();
+			name.setLayout(new BoxLayout(name, BoxLayout.Y_AXIS));
+			name.add(new JLabel(projPref.getEnvironment().getShortName()));
+			DataSource master = projPref.getMaster();
+			if (master != null) {
+				name.add(new JLabel(" "));
+				JLabel action = new JLabel("Pending");
+				_iconMap.put(master, action);
+				name.add(action);
 			}
+			grid.add(name);
+			
+			for (DataSource source : projPref.getDataSources()) {
+				if (!(source.isMaster())) {
+					ImageIcon image = new ImageIcon();
+					JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER);
+					_iconMap.put(source, imageLabel);
+					ConflictDaemon.getInstance().getStatus(source);
+					imageLabel.setVerticalTextPosition(JLabel.TOP);
+					imageLabel.setHorizontalTextPosition(JLabel.CENTER);
+					grid.add(imageLabel);
+				}
+			}
+
 			// Fill in the rest of the grid row with blanks
-			for (int i = projPref.getDataSources().size(); i < maxSources; i++)
+			for (int i = projPref.getDataSources().size() - (projPref.hasMaster() ? 1 : 0); i < maxSources; i++)
 				grid.add(new JLabel());
 
 			_frame.getContentPane().add(grid);
@@ -332,10 +345,16 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 				if (status.equals(ResultStatus.PENDING) && lastStatus != null) {
 					// if it's pending, show whatever value it had last time
-					current.setIcon(lastStatus.getIcon());
+					if (source.isMaster())
+						current.setText(lastStatus.getAction());
+					else
+						current.setIcon(lastStatus.getIcon());
 				} else {
 					// usual case
-					current.setIcon(status.getIcon());
+					if (source.isMaster())
+						current.setText(status.getAction());
+					else
+						current.setIcon(status.getIcon());
 				}
 				current.repaint();
 			}
