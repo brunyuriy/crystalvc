@@ -286,8 +286,6 @@ public class ClientPreferences {
 				String projectLabel = getValue(projectElement, IPrefXML.LABEL);
 				String projectClone = getValue(projectElement, IPrefXML.CLONE);
 				String projectRemoteHg = getValue(projectElement, IPrefXML.REMOTE_HG);
-				String projectHidden = getValue(projectElement, IPrefXML.HIDE);
-				boolean projectHide = ((projectHidden != null) && (projectHidden.toLowerCase().trim().equals("true"))) ? true : false;		
 				String projectParent = getValue(projectElement, IPrefXML.PARENT);
 
 				if (projectKind == null) {
@@ -321,7 +319,7 @@ public class ClientPreferences {
 					throw new RuntimeException("ClientPreferences - project shortName must be specified.");
 				}
 
-				DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind, projectHide, projectParent);
+				DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind, false, projectParent);
 				myEnvironment.setRemoteHg(projectRemoteHg);
 
 				_log.trace("Loaded project: " + myEnvironment);
@@ -462,10 +460,6 @@ public class ClientPreferences {
 			projectElem.setAttribute(IPrefXML.KIND[0], pp.getEnvironment().getKind().name());
 			projectElem.setAttribute(IPrefXML.LABEL[0], pp.getEnvironment().getShortName());
 			projectElem.setAttribute(IPrefXML.CLONE[0], pp.getEnvironment().getCloneString());
-			if (pp.getEnvironment().isHidden())
-				projectElem.setAttribute(IPrefXML.HIDE[0], "true");
-			else
-				projectElem.setAttribute(IPrefXML.HIDE[0], "false");
 			projectElem.setAttribute(IPrefXML.PARENT[0], pp.getEnvironment().getParent());
 						
 			rootElem.addContent(projectElem);
