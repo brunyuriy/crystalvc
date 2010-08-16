@@ -161,12 +161,11 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		// Create a grid to hold the conflict results
 		int maxSources = 0;
 		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
-			if (projPref.getDataSources().size() - (projPref.hasMaster() ? 1 : 0) > maxSources)
-				maxSources = projPref.getDataSources().size() - (projPref.hasMaster() ? 1 : 0);
+			if (projPref.getNumOfVisibleSources() > maxSources)
+				maxSources = projPref.getNumOfVisibleSources();
 		}
-		// 1 extra in each dimension for heading labels
-		JPanel grid = new JPanel(new GridLayout(prefs.getProjectPreference().size(), 0, 0, 0)); // no need to have maxSources
-		// + 1;
+
+		JPanel grid = new JPanel(new GridLayout(prefs.getProjectPreference().size(), 0, 0, 0)); 
 		grid.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 
 		// Create the iconMap and populate it with icons.
@@ -177,17 +176,17 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			JPanel name = new JPanel();
 			name.setLayout(new BoxLayout(name, BoxLayout.Y_AXIS));
 			name.add(new JLabel(projPref.getEnvironment().getShortName()));
-			DataSource master = projPref.getMaster();
-			if (master != null) {
+			DataSource myParent = projPref.getDataSource(projPref.getEnvironment().getParent());
+			if (myParent != null) {
 				name.add(new JLabel(" "));
 				JLabel action = new JLabel("Pending");
-				_iconMap.put(master, action);
+				_iconMap.put(projPref.getEnvironment(), action);
 				name.add(action);
 			}
 			grid.add(name);
 			
 			for (DataSource source : projPref.getDataSources()) {
-				if (!(source.isMaster())) {
+				if (!(source.isHidden())) {
 					ImageIcon image = new ImageIcon();
 					JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER);
 					_iconMap.put(source, imageLabel);
@@ -199,7 +198,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			}
 
 			// Fill in the rest of the grid row with blanks
-			for (int i = projPref.getDataSources().size() - (projPref.hasMaster() ? 1 : 0); i < maxSources; i++)
+			for (int i = projPref.getNumOfVisibleSources(); i < maxSources; i++)
 				grid.add(new JLabel());
 
 			_frame.getContentPane().add(grid);
@@ -335,28 +334,41 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 	private void refresh() {
 
 		for (ProjectPreferences projPref : _preferences.getProjectPreference()) {
+			
+			// first, set the Action
+			if (!(projPref.getEnvironment().getParent().trim().equals(""))) {
+				JLabel action = _iconMap.get(projPref.getEnvironment());
+
+				DataSource parentSource = projPref.getDataSource(projPref.getEnvironment().getParent());
+				ConflictResult actionStatus = ConflictDaemon.getInstance().getStatus(parentSource);
+				ResultStatus parentStatus = actionStatus.getStatus();
+				ResultStatus lastParentStatus = actionStatus.getLastStatus();
+
+				// if it's pending, show whatever value it had last time
+				if (parentStatus.equals(ResultStatus.PENDING) && lastParentStatus != null)
+					action.setText(lastParentStatus.getAction());
+				else // otherwise, show fresh value
+					action.setText(parentStatus.getAction());
+
+			}	
+
+			// second, set the Relationships
 			for (DataSource source : projPref.getDataSources()) {
-				JLabel current = _iconMap.get(source);
-				current.removeAll();
+				if (!(source.isHidden())) {
+					JLabel current = _iconMap.get(source);
+					current.removeAll();
 
-				ConflictResult conflictStatus = ConflictDaemon.getInstance().getStatus(source);
-				ResultStatus status = conflictStatus.getStatus();
-				ResultStatus lastStatus = conflictStatus.getLastStatus();
+					ConflictResult conflictStatus = ConflictDaemon.getInstance().getStatus(source);
+					ResultStatus status = conflictStatus.getStatus();
+					ResultStatus lastStatus = conflictStatus.getLastStatus();
 
-				if (status.equals(ResultStatus.PENDING) && lastStatus != null) {
 					// if it's pending, show whatever value it had last time
-					if (source.isMaster())
-						current.setText(lastStatus.getAction());
-					else
+					if (status.equals(ResultStatus.PENDING) && lastStatus != null)
 						current.setIcon(lastStatus.getIcon());
-				} else {
-					// usual case
-					if (source.isMaster())
-						current.setText(status.getAction());
-					else
+					else // otherwise, show fresh value
 						current.setIcon(status.getIcon());
+					current.repaint();
 				}
-				current.repaint();
 			}
 		}
 

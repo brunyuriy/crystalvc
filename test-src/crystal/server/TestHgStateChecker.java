@@ -137,14 +137,14 @@ public class TestHgStateChecker {
 	public void generatePreferences() {
 		String path = TestConstants.PROJECT_PATH + TestConstants.TEST_REPOS;
 
-		DataSource myEnvironment = new DataSource("myRepository", path + "one", RepoKind.HG);
+		DataSource myEnvironment = new DataSource("myRepository", path + "one", RepoKind.HG, false, null);
 		String tempDirectory = TestConstants.PROJECT_PATH + TestConstants.TEST_TEMP;
 
-		DataSource twoSource = new DataSource("twoRepository", path + "two", RepoKind.HG);
-		DataSource threeSource = new DataSource("threeRepository", path + "three", RepoKind.HG);
-		DataSource fourSource = new DataSource("fourRepository", path + "four", RepoKind.HG);
-		DataSource fiveSource = new DataSource("fiveRepository", path + "five", RepoKind.HG);
-		DataSource sixSource = new DataSource("sixRepository", path + "six", RepoKind.HG);
+		DataSource twoSource = new DataSource("twoRepository", path + "two", RepoKind.HG, false, null);
+		DataSource threeSource = new DataSource("threeRepository", path + "three", RepoKind.HG, false, null);
+		DataSource fourSource = new DataSource("fourRepository", path + "four", RepoKind.HG, false, null);
+		DataSource fiveSource = new DataSource("fiveRepository", path + "five", RepoKind.HG, false, null);
+		DataSource sixSource = new DataSource("sixRepository", path + "six", RepoKind.HG, false, null);
 
 		ClientPreferences prefs = new ClientPreferences(tempDirectory, TestConstants.HG_COMMAND);
 

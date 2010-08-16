@@ -14,6 +14,9 @@ public class DataSource {
 	
 	// whether or not this source is enabled
 	private boolean _enabled;
+	
+	// whether or not this source should be hidden
+	private boolean _hide;
 
 	// _shortName
 	private String _shortName;
@@ -22,7 +25,10 @@ public class DataSource {
 	private String _cloneString;
 	
 	// whether this repository is a Master
-	private boolean _master;
+//	private boolean _master;
+	
+	// the shortName of the parent
+	private String _parent;
 
 	// the path to the local clone of the remote repository
 	// private String _localString;
@@ -34,7 +40,7 @@ public class DataSource {
 	private String _remoteHg = null;
 
 	// Create a new, enabled source.  
-	public DataSource(String shortName, String cloneString, RepoKind repoKind) {
+	public DataSource(String shortName, String cloneString, RepoKind repoKind, boolean hide, String parent) {
 		assert shortName != null;
 		assert cloneString != null;
 		// assert localString != null;
@@ -45,7 +51,9 @@ public class DataSource {
 		_cloneString = cloneString;
 		// _localString = localString;
 		_repoKind = repoKind;
-		_master = shortName.toLowerCase().trim().equals("master");
+//		_master = shortName.toLowerCase().trim().equals("master");
+		_hide = hide;
+		setParent(parent);
 	}
 	
 	public void setRemoteHg(String remoteHg) {
@@ -72,8 +80,30 @@ public class DataSource {
 		return _enabled;
 	}
 	
-	public boolean isMaster() {
-		return _master;
+//	public boolean isMaster() {
+//		return _master;
+//	}
+	
+	public boolean isHidden() {
+		return _hide;
+	}
+	
+	public void hide(boolean hide) {
+		_hide = hide;
+	}
+	
+	public String getParent() {
+		if (_parent == null)
+			return "";
+		else
+			return _parent;
+	}
+	
+	public void setParent(String parent) {
+		if ((parent == null) || (parent.trim().equals("")))
+			_parent = null;
+		else
+			_parent = parent;
 	}
 	
 	// public String getLocalString() {
@@ -90,7 +120,7 @@ public class DataSource {
 
 	public void setShortName(String name) {
 		_shortName = name;
-		_master = name.toLowerCase().trim().equals("master");
+//		_master = name.toLowerCase().trim().equals("master");
 	}
 
 	public void setCloneString(String name) {
