@@ -1,5 +1,9 @@
 package crystal.client;
 
+import java.awt.ComponentOrientation;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -146,10 +150,40 @@ public class ProjectPanel extends JPanel {
 			}
 		});
 		add(newRepoButton);
+		
+		JPanel sourcesPanel = new JPanel();
+		GridBagLayout grid = new GridBagLayout();
+		sourcesPanel.setLayout(grid); 
+//		sourcesPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		GridBagConstraints constraints = new GridBagConstraints();
+		
+		constraints.weightx = 1.0;
+		JLabel pShortName = new JLabel("Short Name");
+		JLabel pHide = new JLabel("Hide?");
+		JLabel pParent = new JLabel("Parent");
+		JLabel pClone = new JLabel("Clone Address");
+		JLabel pDelete = new JLabel("");
 
+		
+		grid.setConstraints(pShortName, constraints);
+		sourcesPanel.add(pShortName);
+		grid.setConstraints(pHide, constraints);
+		sourcesPanel.add(pHide);
+		grid.setConstraints(pParent, constraints);
+		sourcesPanel.add(pParent);
+		grid.setConstraints(pClone, constraints);
+		sourcesPanel.add(pClone);
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		grid.setConstraints(pDelete, constraints);
+		sourcesPanel.add(pDelete);
+
+		constraints.weightx = 0.0;
 		for (DataSource source : pref.getDataSources()) {
-			add(repoPanel(source, pref, prefs, panel, mainFrame));			
+			JPanel repoPanel = repoPanel(source, pref, prefs, panel, mainFrame);
+			grid.setConstraints(repoPanel, constraints);
+			sourcesPanel.add(repoPanel);
 		}
+		add(sourcesPanel);
 	}
 
 	public String getName() {
@@ -177,7 +211,7 @@ public class ProjectPanel extends JPanel {
 		});
 */
 
-		repoPanel.add(new JLabel("Short Name"));
+//		repoPanel.add(new JLabel("Short Name"));
 		final JTextField shortName = new JTextField(source.getShortName());
 		repoPanel.add(shortName);
 		shortName.addKeyListener(new KeyListener() {
@@ -195,7 +229,7 @@ public class ProjectPanel extends JPanel {
 			}
 		});
 		
-		repoPanel.add(new JLabel("Hide?"));
+//		repoPanel.add(new JLabel("Hide?"));
 		final JCheckBox hideBox = new JCheckBox();
 		if (source.isHidden())
 			hideBox.setSelected(true);
@@ -208,7 +242,7 @@ public class ProjectPanel extends JPanel {
 			}
 		});
 		
-		repoPanel.add(new JLabel("Parent"));
+//		repoPanel.add(new JLabel("Parent"));
 		final JTextField parent = new JTextField(source.getParent());
 		if (parent.getText().equals(""))
 			parent.setText(" ");
@@ -230,7 +264,7 @@ public class ProjectPanel extends JPanel {
 			}
 		});
 
-		repoPanel.add(new JLabel("Clone Address"));
+//		repoPanel.add(new JLabel("Clone Address"));
 		final JTextField cloneAddress = new JTextField(source.getCloneString());
 		repoPanel.add(cloneAddress);
 		cloneAddress.addKeyListener(new KeyListener() {
