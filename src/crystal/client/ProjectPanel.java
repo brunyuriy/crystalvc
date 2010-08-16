@@ -8,6 +8,7 @@ import java.util.HashSet;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -61,6 +62,32 @@ public class ProjectPanel extends JPanel {
 		});
 		add(namePanel);
 		
+		JPanel parentPanel = new JPanel();
+		parentPanel.setLayout(new BoxLayout(parentPanel, BoxLayout.X_AXIS));
+		parentPanel.add(new JLabel("Parent Name (optional): "));
+		final JTextField parentName = new JTextField(pref.getEnvironment().getParent());
+		if (parentName.getText().equals(""))
+			parentName.setText(" ");
+		parentPanel.add(parentName);
+		parentName.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent arg0) {				
+			}
+
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			public void keyReleased(KeyEvent arg0) {
+				pref.getEnvironment().setParent(parentName.getText());
+				prefs.setChanged(true);
+				if (parentName.getText().equals(""))
+					parentName.setText(" ");
+				panel.validate();
+				mainFrame.pack();
+			}
+		});
+		add(parentPanel);
+
+		
 		JPanel typePanel = new JPanel();
 		typePanel.setLayout(new BoxLayout(typePanel, BoxLayout.X_AXIS));		
 		typePanel.add(new JLabel("Repo Type: "));
@@ -110,12 +137,12 @@ public class ProjectPanel extends JPanel {
 				int count = 1;
 				while (shortNameLookup.contains("New Repo " + count++));
 				
-				DataSource newGuy = new DataSource("New Repo " + --count, "", DataSource.RepoKind.HG);
+				DataSource newGuy = new DataSource("New Repo " + --count, "", DataSource.RepoKind.HG, false, null);
 				pref.addDataSource(newGuy);
 				add(repoPanel(newGuy, pref, prefs, panel, mainFrame));
 				prefs.setChanged(true);
 				panel.validate();
-				mainFrame.pack();				
+				mainFrame.pack();
 			}
 		});
 		add(newRepoButton);
@@ -133,6 +160,7 @@ public class ProjectPanel extends JPanel {
 		final JPanel repoPanel = new JPanel();		
 		repoPanel.setLayout(new BoxLayout(repoPanel, BoxLayout.X_AXIS));
 
+/*
 		repoPanel.add(new JLabel("Repo Type"));
 		final JComboBox type = new JComboBox();
 		type.addItem(DataSource.RepoKind.HG);
@@ -147,6 +175,7 @@ public class ProjectPanel extends JPanel {
 				mainFrame.pack();
 			}
 		});
+*/
 
 		repoPanel.add(new JLabel("Short Name"));
 		final JTextField shortName = new JTextField(source.getShortName());
@@ -161,6 +190,41 @@ public class ProjectPanel extends JPanel {
 			public void keyReleased(KeyEvent arg0) {
 				source.setShortName(shortName.getText());
 				prefs.setChanged(true);
+				panel.validate();
+				mainFrame.pack();
+			}
+		});
+		
+		repoPanel.add(new JLabel("Hide?"));
+		final JCheckBox hideBox = new JCheckBox();
+		if (source.isHidden())
+			hideBox.setSelected(true);
+		repoPanel.add(hideBox);
+		hideBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+//				hideBox.setSelected(!(hideBox.isSelected()));
+				source.hide(hideBox.isSelected());
+				prefs.setChanged(true);
+			}
+		});
+		
+		repoPanel.add(new JLabel("Parent"));
+		final JTextField parent = new JTextField(source.getParent());
+		if (parent.getText().equals(""))
+			parent.setText(" ");
+		repoPanel.add(parent);
+		parent.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent arg0) {				
+			}
+
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			public void keyReleased(KeyEvent arg0) {
+				source.setParent(parent.getText());
+				prefs.setChanged(true);
+				if (parent.getText().equals(""))
+					parent.setText(" ");
 				panel.validate();
 				mainFrame.pack();
 			}

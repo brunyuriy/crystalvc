@@ -33,23 +33,22 @@ public class ClientPreferences {
 
 	private interface IPrefXML {
 
-		static final String ROOT = "ccConfig";
+		static final String[] ROOT = { "ccConfig", "ccconfig", "CcConfig", "CCConfig" };
 
-		static final String TMP_DIR = "tempDirectory";
-		static final String HG_PATH = "hgPath";
+		static final String[] TMP_DIR = { "tempDirectory", "TempDirectory" };
+		static final String[] HG_PATH = { "hgPath", "HgPath", "HGPath" };
 
-		static final String PROJECT = "project";
+		static final String[] PROJECT = { "project", "Project", "PROJECT" };
 
-		static final String SOURCE = "source";
+		static final String[] SOURCE = { "source", "Source", "SOURCE", "mysource", "mySource", "mySOURCE" };
 
-		static final String KIND = "Kind";
-		static final String CLONE = "Clone";
-		static final String LABEL = "ShortName";
-		
-		static final String REMOTE_HG = "RemoteHG";
-		
-		//for backwards compatibility with older XML format that used a prefix before KIND, CLONE, and LABEL.
-		static final String RETRO_PREFIX = "my";
+		static final String[] KIND = { "Kind", "kind", "KIND", "myKind", "mykind", "myKIND" };
+		static final String[] CLONE = { "Clone", "clone", "CLONE", "myClone", "myclone", "myCLONE" };
+		static final String[] LABEL = { "ShortName", "shortName", "SHORTNAME", "myShortName", "myshortName", "mySHORTNAME" };
+		static final String[] HIDE = { "Hidden", "hidden", "HIDDEN" };
+		static final String[] PARENT = { "commonParent", "parent", "CommonParent", "COMMONPARENT", "myParent", "Parent" };
+
+		static final String[] REMOTE_HG = { "RemoteHG", "remoteHG", "REMOTEHG", "Remotehg", "RemoteHg" };	
 	}
 
 	/**
@@ -69,9 +68,9 @@ public class ClientPreferences {
 		CONFIG_PATH = path + ".conflictClient.xml";
 
 		DEFAULT_CLIENT_PREFERENCES = new ClientPreferences("/tmp/conflictClient/", "/path/to/hg");
-		ProjectPreferences pp = new ProjectPreferences(new DataSource("myProject", "$HOME/dev/myProject/", DataSource.RepoKind.HG), DEFAULT_CLIENT_PREFERENCES);
-		pp.addDataSource(new DataSource("jim", "https://path/to/repo", DataSource.RepoKind.HG));
-		pp.addDataSource(new DataSource("HEAD", "http://path/to/repo", DataSource.RepoKind.HG));
+		ProjectPreferences pp = new ProjectPreferences(new DataSource("myProject", "$HOME/dev/myProject/", DataSource.RepoKind.HG, false, "MASTER"), DEFAULT_CLIENT_PREFERENCES);
+		pp.addDataSource(new DataSource("jim", "https://path/to/repo", DataSource.RepoKind.HG, false, "MASTER"));
+		pp.addDataSource(new DataSource("MASTER", "http://path/to/repo", DataSource.RepoKind.HG, false, null));
 		DEFAULT_CLIENT_PREFERENCES.addProjectPreferences(pp);
 	}
 	/**
@@ -226,7 +225,7 @@ public class ClientPreferences {
 			doc = builder.build(CONFIG_PATH);
 
 			Element rootElement = doc.getRootElement();
-			String tempDirectory = rootElement.getAttributeValue("tempDirectory");
+			String tempDirectory = getValue(rootElement, IPrefXML.TMP_DIR);
 			if (tempDirectory.startsWith(Constants.HOME)) {
 				String firstPart = System.getProperty("user.home");
 				String lastPart = tempDirectory.substring(Constants.HOME.length());
@@ -262,7 +261,7 @@ public class ClientPreferences {
 				}
 			}
 
-			String hgPath = rootElement.getAttributeValue("hgPath");
+			String hgPath = getValue(rootElement, IPrefXML.HG_PATH);
 			boolean happyHgPath = false;
 			while (!happyHgPath) {
 				try {
@@ -281,19 +280,15 @@ public class ClientPreferences {
 
 			// read the attributes.
 			// make sure to check for old versions with the RETRO_PREFIX prefix.  
-			List<Element> projectElements = rootElement.getChildren(IPrefXML.PROJECT);
+			List<Element> projectElements = getChildren(rootElement, IPrefXML.PROJECT);
 			for (Element projectElement : projectElements) {
-				String projectKind = projectElement.getAttributeValue(IPrefXML.KIND);
-				if (projectKind == null)
-					projectKind = projectElement.getAttributeValue(IPrefXML.RETRO_PREFIX  + IPrefXML.KIND);
-				String projectLabel = projectElement.getAttributeValue(IPrefXML.LABEL);
-				if (projectLabel == null)
-					projectLabel = projectElement.getAttributeValue(IPrefXML.RETRO_PREFIX  + IPrefXML.LABEL);
-				String projectClone = projectElement.getAttributeValue(IPrefXML.CLONE);
-				if (projectClone == null)
-					projectClone = projectElement.getAttributeValue(IPrefXML.RETRO_PREFIX  + IPrefXML.CLONE);
-				String projectRemoteHg = projectElement.getAttributeValue(IPrefXML.REMOTE_HG);
-
+				String projectKind = getValue(projectElement, IPrefXML.KIND);
+				String projectLabel = getValue(projectElement, IPrefXML.LABEL);
+				String projectClone = getValue(projectElement, IPrefXML.CLONE);
+				String projectRemoteHg = getValue(projectElement, IPrefXML.REMOTE_HG);
+				String projectHidden = getValue(projectElement, IPrefXML.HIDE);
+				boolean projectHide = ((projectHidden != null) && (projectHidden.toLowerCase().trim().equals("true"))) ? true : false;		
+				String projectParent = getValue(projectElement, IPrefXML.PARENT);
 
 				if (projectKind == null) {
 					throw new RuntimeException("Kind attribute must be set for project element.");
@@ -323,10 +318,10 @@ public class ClientPreferences {
 				}
 
 				if (projectLabel == null || projectLabel.equals("")) {
-					throw new RuntimeException("ClientPreferences - ShortName must be specified.");
+					throw new RuntimeException("ClientPreferences - project shortName must be specified.");
 				}
 
-				DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind);
+				DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind, projectHide, projectParent);
 				myEnvironment.setRemoteHg(projectRemoteHg);
 
 				_log.trace("Loaded project: " + myEnvironment);
@@ -334,18 +329,15 @@ public class ClientPreferences {
 				ProjectPreferences projectPreferences = new ProjectPreferences(myEnvironment, prefs);
 				prefs.addProjectPreferences(projectPreferences);
 
-				if (projectElement.getChild(IPrefXML.SOURCE) != null) {
-					List<Element> sourceElements = projectElement.getChildren(IPrefXML.SOURCE);
+				if (getChild(projectElement, IPrefXML.SOURCE) != null) {
+					List<Element> sourceElements = getChildren(projectElement, IPrefXML.SOURCE);
 					for (Element sourceElement : sourceElements) {
-						String sourceLabel = sourceElement.getAttributeValue(IPrefXML.LABEL);
-						if (sourceLabel  == null)
-							sourceLabel  = sourceElement.getAttributeValue(IPrefXML.RETRO_PREFIX  + IPrefXML.LABEL);
-
-						String sourceClone = sourceElement.getAttributeValue(IPrefXML.CLONE);
-						if (sourceClone  == null)
-							sourceClone  = sourceElement.getAttributeValue(IPrefXML.RETRO_PREFIX  + IPrefXML.CLONE);
-						
-						String sourceRemoteHg = sourceElement.getAttributeValue(IPrefXML.REMOTE_HG);
+						String sourceLabel = getValue(sourceElement, IPrefXML.LABEL);
+						String sourceClone = getValue(sourceElement, IPrefXML.CLONE);
+						String sourceRemoteHg = getValue(sourceElement, IPrefXML.REMOTE_HG);
+						String sourceHidden = getValue(sourceElement, IPrefXML.HIDE);
+						boolean sourceHide = ((sourceHidden != null) && (sourceHidden.toLowerCase().trim().equals("true"))) ? true : false;		
+						String sourceParent = getValue(sourceElement, IPrefXML.PARENT);
 
 						if (sourceLabel == null || sourceLabel.equals("")) {
 							throw new RuntimeException("Label attribute must be set for source element.");
@@ -363,7 +355,7 @@ public class ClientPreferences {
 							_log.trace("$HOME in project path: " + (firstPart + lastPart));
 						}
 
-						DataSource source = new DataSource(sourceLabel, sourceClone, kind);
+						DataSource source = new DataSource(sourceLabel, sourceClone, kind, sourceHide, sourceParent);
 						source.setRemoteHg(sourceRemoteHg);
 						_log.trace("Loaded data source: " + source);
 
@@ -382,6 +374,43 @@ public class ClientPreferences {
 
 		return prefs;
 	}
+	
+	/*
+	 * Returns the value of the first existing attribute in element 
+	 */
+	private static String getValue(Element element, String[] attributes) {
+		for (String attribute : attributes) {
+			String answer = element.getAttributeValue(attribute);
+			if (answer != null)
+				return answer;
+		}
+		return null;
+	}
+	
+	/*
+	 * Returns the list of children of the first existing attribute in element 
+	 */
+	private static List<Element> getChildren(Element element, String[] attributes) {
+		for (String attribute : attributes) {
+			List<Element> answer = element.getChildren(attribute);
+			if (answer != null)
+				return answer;
+		}
+		return null;
+	}
+	
+	/*
+	 * Returns the child of the first existing attribute in element 
+	 */
+	private static Element getChild(Element element, String[] attributes) {
+		for (String attribute : attributes) {
+			Element answer = element.getChild(attribute);
+			if (answer != null)
+				return answer;
+		}
+		return null;
+	}
+
 
 	/**
 	 * Save preferences to the default filename
@@ -401,7 +430,7 @@ public class ClientPreferences {
 
 		Document doc = XMLTools.newXMLDocument();
 
-		Element rootElem = new Element(IPrefXML.ROOT);
+		Element rootElem = new Element(IPrefXML.ROOT[0]);
 		
 		Comment webref1 = new Comment(" Configuration file for Crystal conflict client. See documentation at ");
 		Comment webref2 = new Comment(" http://www.cs.washington.edu/homes/brun/research/crystal/ . ");
@@ -424,28 +453,40 @@ public class ClientPreferences {
 		doc.addContent(webref2);
 		doc.addContent(sample);
 		
-		rootElem.setAttribute(IPrefXML.TMP_DIR, prefs.getTempDirectory());
-		rootElem.setAttribute(IPrefXML.HG_PATH, prefs.getHgPath());
+		rootElem.setAttribute(IPrefXML.TMP_DIR[0], prefs.getTempDirectory());
+		rootElem.setAttribute(IPrefXML.HG_PATH[0], prefs.getHgPath());
 		doc.setRootElement(rootElem);
 
 		for (ProjectPreferences pp : prefs.getProjectPreference()) {
-			Element projectElem = new Element(IPrefXML.PROJECT);
-			projectElem.setAttribute(IPrefXML.KIND, pp.getEnvironment().getKind().name());
-			projectElem.setAttribute(IPrefXML.LABEL, pp.getEnvironment().getShortName());
-			projectElem.setAttribute(IPrefXML.CLONE, pp.getEnvironment().getCloneString());
+			Element projectElem = new Element(IPrefXML.PROJECT[0]);
+			projectElem.setAttribute(IPrefXML.KIND[0], pp.getEnvironment().getKind().name());
+			projectElem.setAttribute(IPrefXML.LABEL[0], pp.getEnvironment().getShortName());
+			projectElem.setAttribute(IPrefXML.CLONE[0], pp.getEnvironment().getCloneString());
+			if (pp.getEnvironment().isHidden())
+				projectElem.setAttribute(IPrefXML.HIDE[0], "true");
+			else
+				projectElem.setAttribute(IPrefXML.HIDE[0], "false");
+			projectElem.setAttribute(IPrefXML.PARENT[0], pp.getEnvironment().getParent());
+						
 			rootElem.addContent(projectElem);
 
 			for (DataSource src : pp.getDataSources()) {
-				Element sourceElem = new Element(IPrefXML.SOURCE);
+				Element sourceElem = new Element(IPrefXML.SOURCE[0]);
 //				sourceElem.setAttribute(IPrefXML.KIND, src.getKind().name());
-				sourceElem.setAttribute(IPrefXML.LABEL, src.getShortName());
-				sourceElem.setAttribute(IPrefXML.CLONE, src.getCloneString());
+				sourceElem.setAttribute(IPrefXML.LABEL[0], src.getShortName());
+				sourceElem.setAttribute(IPrefXML.CLONE[0], src.getCloneString());
+				if (src.isHidden())
+					sourceElem.setAttribute(IPrefXML.HIDE[0], "true");
+				else
+					sourceElem.setAttribute(IPrefXML.HIDE[0], "false");
+				sourceElem.setAttribute(IPrefXML.PARENT[0], src.getParent());
+
 				projectElem.addContent(sourceElem);
 			}
 		}
 
 		XMLTools.writeXMLDocument(doc, fName);
-	} 
+	}
 
 	/**
 	 * Check to ensure the provided file exists.
