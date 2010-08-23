@@ -17,6 +17,14 @@ import crystal.Constants;
 public class ConflictResult {
 	
 	/**
+	 * Represents a local state
+	 */
+	
+	public static enum LocalStateStatus {
+		UNCHECKPOINTED, MUST_RESOLVE, ALL_CLEAR
+	}
+	
+	/**
 	 * Represents a conflict detection answer.
 	 * 
 	 * @author brun
@@ -25,22 +33,16 @@ public class ConflictResult {
 	 */
 	
 	public static class ResultStatus implements Comparable<ResultStatus>{
-//		public static ResultStatus SAME = new ResultStatus("/crystal/client/images/32X32/same.png", "In Sync");
-		public static ResultStatus SAME = new ResultStatus("/crystal/client/images/clearcheck.png", "hg commit");
-//		public static ResultStatus AHEAD = new ResultStatus("/crystal/client/images/32X32/ahead.png", "Publish");
-//		public static ResultStatus BEHIND = new ResultStatus("/crystal/client/images/32X32/behind.png", "Sync");
-		public static ResultStatus AHEAD = new ResultStatus("/crystal/client/images/cleardown.png", "Publish");
-//		public static ResultStatus BEHIND = new ResultStatus("/crystal/client/images/32X32/ahead.png", "Sync");		
-		public static ResultStatus BEHIND = new ResultStatus("/crystal/client/images/clearmerge.png", "Publish");
-//		public static ResultStatus MERGECLEAN = new ResultStatus("/crystal/client/images/32X32/merge.png", "Sync");
-		public static ResultStatus MERGECLEAN = new ResultStatus("/crystal/client/images/clearup.png", "Sync");
-//		public static ResultStatus MERGECONFLICT = new ResultStatus("/crystal/client/images/32X32/mergeconflict.png", "Sync + Resolve");
-		public static ResultStatus MERGECONFLICT = new ResultStatus("/crystal/client/images/solidconflict.png", "Sync + Resolve");
+		public static ResultStatus SAME = new ResultStatus("/crystal/client/images/32X32/same.png", "In Sync");
+		public static ResultStatus AHEAD = new ResultStatus("/crystal/client/images/32X32/ahead.png", "Publish");
+		public static ResultStatus BEHIND = new ResultStatus("/crystal/client/images/32X32/behind.png", "Sync");
+		public static ResultStatus MERGECLEAN = new ResultStatus("/crystal/client/images/32X32/merge.png", "Sync");
+		public static ResultStatus MERGECONFLICT = new ResultStatus("/crystal/client/images/32X32/mergeconflict.png", "Sync + Resolve");
 		public static ResultStatus COMPILECONFLICT = new ResultStatus("/crystal/client/images/32X32/compileconflict.png", "Sync + Resolve"); 
 		public static ResultStatus TESTCONFLICT = new ResultStatus("/crystal/client/images/32X32/testconflict.png", "Sync + Resolve");
 		public static ResultStatus PENDING = new ResultStatus("/crystal/client/images/32X32/clock.png", ""); 
 		public static ResultStatus ERROR = new ResultStatus("/crystal/client/images/32X32/error.png", "");
-		public static ResultStatus TWOHEADED = new ResultStatus("/crystal/client/images/32X32/twohead.png", "Resolve");
+//		public static ResultStatus TWOHEADED = new ResultStatus("/crystal/client/images/32X32/twohead.png", "Resolve");
 
 
 		private final ImageIcon _icon;
@@ -81,7 +83,7 @@ public class ConflictResult {
 			if (this == TESTCONFLICT) return 7;
 			if (this == COMPILECONFLICT) return 8;
 			if (this == MERGECONFLICT) return 9;
-			if (this == TWOHEADED) return 10;
+//			if (this == TWOHEADED) return 10;
 			else
 				return 0;
 		}
