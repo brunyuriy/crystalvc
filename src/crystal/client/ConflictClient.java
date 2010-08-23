@@ -1,6 +1,7 @@
 package crystal.client;
 
 import java.awt.ComponentOrientation;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +15,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JToolTip;
 import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
@@ -22,6 +24,7 @@ import crystal.Constants;
 import crystal.model.ConflictResult;
 import crystal.model.DataSource;
 import crystal.model.ConflictResult.ResultStatus;
+import crystal.util.JMultiLineToolTip;
 
 /**
  * Conflict Client UI; displays the view showing the state of the repositories contained in the preferences.
@@ -178,8 +181,9 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			name.add(new JLabel(projPref.getEnvironment().getShortName()));
 			DataSource myParent = projPref.getDataSource(projPref.getEnvironment().getParent());
 			if (myParent != null) {
-				name.add(new JLabel(" "));
+//				name.add(new JLabel(" "));
 				JLabel action = new JLabel("Pending");
+				action.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 15));
 				_iconMap.put(projPref.getEnvironment(), action);
 				name.add(action);
 			}
@@ -188,12 +192,17 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			for (DataSource source : projPref.getDataSources()) {
 				if (!(source.isHidden())) {
 					ImageIcon image = new ImageIcon();
-					JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER);
+					JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER) {
+						public JToolTip createToolTip() {
+							return new JMultiLineToolTip();
+						}
+					};
 					_iconMap.put(source, imageLabel);
 					ConflictDaemon.getInstance().getStatus(source);
 					imageLabel.setVerticalTextPosition(JLabel.TOP);
 					imageLabel.setHorizontalTextPosition(JLabel.CENTER);
 					grid.add(imageLabel);
+					imageLabel.setToolTipText("Action: hg fetch\nConsequences: new relationship will be AHEAD \nCommiters: David and Yuriy");					
 				}
 			}
 

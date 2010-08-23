@@ -21,15 +21,21 @@ public class ConflictResult {
 	 * 
 	 * @author brun
 	 * 
-	 * ResltStatus is interned
+	 * ResultStatus is interned
 	 */
 	
 	public static class ResultStatus implements Comparable<ResultStatus>{
-		public static ResultStatus SAME = new ResultStatus("/crystal/client/images/32X32/same.png", "In Sync");
-		public static ResultStatus AHEAD = new ResultStatus("/crystal/client/images/32X32/ahead.png", "Publish");
-		public static ResultStatus BEHIND = new ResultStatus("/crystal/client/images/32X32/behind.png", "Sync");
-		public static ResultStatus MERGECLEAN = new ResultStatus("/crystal/client/images/32X32/merge.png", "Sync");
-		public static ResultStatus MERGECONFLICT = new ResultStatus("/crystal/client/images/32X32/mergeconflict.png", "Sync + Resolve"); 
+//		public static ResultStatus SAME = new ResultStatus("/crystal/client/images/32X32/same.png", "In Sync");
+		public static ResultStatus SAME = new ResultStatus("/crystal/client/images/clearcheck.png", "hg commit");
+//		public static ResultStatus AHEAD = new ResultStatus("/crystal/client/images/32X32/ahead.png", "Publish");
+//		public static ResultStatus BEHIND = new ResultStatus("/crystal/client/images/32X32/behind.png", "Sync");
+		public static ResultStatus AHEAD = new ResultStatus("/crystal/client/images/cleardown.png", "Publish");
+//		public static ResultStatus BEHIND = new ResultStatus("/crystal/client/images/32X32/ahead.png", "Sync");		
+		public static ResultStatus BEHIND = new ResultStatus("/crystal/client/images/clearmerge.png", "Publish");
+//		public static ResultStatus MERGECLEAN = new ResultStatus("/crystal/client/images/32X32/merge.png", "Sync");
+		public static ResultStatus MERGECLEAN = new ResultStatus("/crystal/client/images/clearup.png", "Sync");
+//		public static ResultStatus MERGECONFLICT = new ResultStatus("/crystal/client/images/32X32/mergeconflict.png", "Sync + Resolve");
+		public static ResultStatus MERGECONFLICT = new ResultStatus("/crystal/client/images/solidconflict.png", "Sync + Resolve");
 		public static ResultStatus COMPILECONFLICT = new ResultStatus("/crystal/client/images/32X32/compileconflict.png", "Sync + Resolve"); 
 		public static ResultStatus TESTCONFLICT = new ResultStatus("/crystal/client/images/32X32/testconflict.png", "Sync + Resolve");
 		public static ResultStatus PENDING = new ResultStatus("/crystal/client/images/32X32/clock.png", ""); 
