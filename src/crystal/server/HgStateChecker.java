@@ -13,9 +13,8 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 
 import crystal.client.ProjectPreferences;
-import crystal.model.StateAndRelationship.LocalState;
-import crystal.model.StateAndRelationship.Relationship;
-import crystal.model.StateAndRelationship;
+import crystal.model.LocalStateResult.LocalState;
+import crystal.model.RelationshipResult.Relationship;
 import crystal.model.DataSource;
 import crystal.util.RunIt;
 import crystal.util.TimeUtility;
