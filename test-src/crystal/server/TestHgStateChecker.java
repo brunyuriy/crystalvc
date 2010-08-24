@@ -19,7 +19,7 @@ import crystal.client.ClientPreferences;
 import crystal.client.ProjectPreferences;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
-import crystal.model.StateAndRelationship.Relationship;
+import crystal.model.RelationshipResult.Relationship;
 import crystal.server.HgStateChecker.HgOperationException;
 import crystal.util.RunIt;
 

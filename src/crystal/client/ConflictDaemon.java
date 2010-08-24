@@ -7,10 +7,11 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import crystal.model.StateAndRelationship;
+import crystal.model.LocalStateResult;
+import crystal.model.RelationshipResult;
 import crystal.model.DataSource;
-import crystal.model.StateAndRelationship.Relationship;
-import crystal.model.StateAndRelationship.LocalState;
+import crystal.model.LocalStateResult.LocalState;
+import crystal.model.RelationshipResult.Relationship;
 import crystal.model.DataSource.RepoKind;
 import crystal.server.HgStateChecker;
 import crystal.util.TimeUtility;
@@ -39,8 +40,8 @@ public class ConflictDaemon {
 	 * Stores the results of the analysis. This provides a simple decoupling between the DataSource and the
 	 * ConflictResult.
 	 */
-	private Hashtable<DataSource, StateAndRelationship> _relationshipMap = new Hashtable<DataSource, StateAndRelationship>();
-	private Hashtable<DataSource, StateAndRelationship> _localStateMap = new Hashtable<DataSource, StateAndRelationship>();
+	private Hashtable<DataSource, RelationshipResult> _relationshipMap = new Hashtable<DataSource, RelationshipResult>();
+	private Hashtable<DataSource, LocalStateResult> _localStateMap = new Hashtable<DataSource, LocalStateResult>();
 
 	private ConflictDaemon() {
 	}
@@ -60,7 +61,7 @@ public class ConflictDaemon {
 	 *            Preferences to abide by.
 	 * @return the conflict status of the given data source to the developer's environment.
 	 */
-	private StateAndRelationship calculateRelationship(DataSource source, ProjectPreferences prefs) {
+	private RelationshipResult calculateRelationship(DataSource source, ProjectPreferences prefs) {
 		Relationship relationship = null;
 		long start = System.currentTimeMillis();
 
@@ -84,12 +85,12 @@ public class ConflictDaemon {
 			}
 			_log.info("Computed relationship for: " + source + " in: " + TimeUtility.msToHumanReadableDelta(start));
 
-			StateAndRelationship lastResult = getRelationship(source);
-			StateAndRelationship result = null;
+			RelationshipResult lastResult = getRelationship(source);
+			RelationshipResult result = null;
 			if (lastResult != null) {
-				result = new StateAndRelationship(source, relationship, lastResult.getRelationship(), null, null);
+				result = new RelationshipResult(source, relationship, lastResult.getRelationship());
 			} else {
-				result = new StateAndRelationship(source, relationship, null, null, null);
+				result = new RelationshipResult(source, relationship, null);
 			}
 			return result;
 		}  catch (IOException ioe) {
@@ -102,8 +103,8 @@ public class ConflictDaemon {
 		} 
 		return null;
 	}
-	
-	private StateAndRelationship calculateLocalState(ProjectPreferences prefs) {
+
+	private LocalStateResult calculateLocalState(ProjectPreferences prefs) {
 		LocalState localState = null;
 		long start = System.currentTimeMillis();
 
@@ -128,12 +129,12 @@ public class ConflictDaemon {
 			}
 			_log.info("Computed local state for: " + source + " in: " + TimeUtility.msToHumanReadableDelta(start));
 
-			StateAndRelationship lastResult = getLocalState(source);
-			StateAndRelationship result = null;
+			LocalStateResult lastResult = getLocalState(source);
+			LocalStateResult result = null;
 			if (lastResult != null) {
-				result = new StateAndRelationship(prefs.getEnvironment(), null, null, localState, lastResult.getLocalState());
+				result = new LocalStateResult(prefs.getEnvironment(), localState, lastResult.getLocalState());
 			} else {
-				result = new StateAndRelationship(prefs.getEnvironment(), null, null, localState, null);
+				result = new LocalStateResult(prefs.getEnvironment(), localState, null);
 			}
 			return result;
 		}  catch (IOException ioe) {
@@ -147,11 +148,11 @@ public class ConflictDaemon {
 		return null;
 	}
 
-	public StateAndRelationship calculateRelationships(DataSource source, ProjectPreferences prefs) {
-		StateAndRelationship relationship = calculateRelationship(source, prefs);
+	public RelationshipResult calculateRelationships(DataSource source, ProjectPreferences prefs) {
+		RelationshipResult relationship = calculateRelationship(source, prefs);
 
 		if (relationship == null) {
-			relationship = new StateAndRelationship(source, Relationship.ERROR, null, null, null);
+			relationship = new RelationshipResult(source, Relationship.ERROR, null);
 		}
 
 		_relationshipMap.put(source, relationship);
@@ -164,11 +165,11 @@ public class ConflictDaemon {
 	}
 	
 	
-	public StateAndRelationship calculateLocalStates(ProjectPreferences prefs) {
-		StateAndRelationship localState = calculateLocalState(prefs);
+	public LocalStateResult calculateLocalStates(ProjectPreferences prefs) {
+		LocalStateResult localState = calculateLocalState(prefs);
 		
 		if (localState == null) {
-			localState = new StateAndRelationship(prefs.getEnvironment(), null, null, LocalState.ERROR, null);
+			localState = new LocalStateResult(prefs.getEnvironment(), LocalState.ERROR, null);
 		}
 		
 		_localStateMap.put(prefs.getEnvironment(), localState);
@@ -186,12 +187,12 @@ public class ConflictDaemon {
 	 * @param prefs
 	 * @return
 	 */
-	public StateAndRelationship getRelationship(DataSource source) {
-		StateAndRelationship relationship = _relationshipMap.get(source);
+	public RelationshipResult getRelationship(DataSource source) {
+		RelationshipResult relationship = _relationshipMap.get(source);
 
 		if (relationship == null) {
 			// if we don't have a relationship, pretend it is pending.
-			relationship = new StateAndRelationship(source, Relationship.PENDING, null, null, null);
+			relationship = new RelationshipResult(source, Relationship.PENDING, null);
 			_relationshipMap.put(source, relationship);
 			// TODO: actually start the pending operation testing
 		}
@@ -199,12 +200,12 @@ public class ConflictDaemon {
 		return relationship;
 	}
 	
-	public StateAndRelationship getLocalState(DataSource source) {
-		StateAndRelationship localState = _localStateMap.get(source);
+	public LocalStateResult getLocalState(DataSource source) {
+		LocalStateResult localState = _localStateMap.get(source);
 		
 		if (localState == null) {
 			// we don't have a local state, pretend it is pending.
-			localState = new StateAndRelationship(source, null, null, LocalState.PENDING, null);
+			localState = new LocalStateResult(source, LocalState.PENDING, null);
 			_localStateMap.put(source, localState);
 			// TODO: actually start the pending operation testing
 		}
@@ -219,11 +220,11 @@ public class ConflictDaemon {
 		return _instance;
 	}
 
-	public Collection<StateAndRelationship> getRelationships() {
+	public Collection<RelationshipResult> getRelationships() {
 		return _relationshipMap.values();
 	}
 	
-	public Collection<StateAndRelationship> getLocalStates() {
+	public Collection<LocalStateResult> getLocalStates() {
 		return _localStateMap.values();
 	}
 	
@@ -237,17 +238,17 @@ public class ConflictDaemon {
 			// first compute the local state
 			DataSource ps = pp.getEnvironment();
 			if (getLocalState(ps) != null) {
-				_localStateMap.put(ps, new StateAndRelationship(ps, null, null, LocalState.PENDING, _localStateMap.get(ps).getLocalState()));
+				_localStateMap.put(ps, new LocalStateResult(ps, LocalState.PENDING, _localStateMap.get(ps).getLocalState()));
 			} else {
-				_localStateMap.put(ps, new StateAndRelationship(ps, null, null, LocalState.PENDING, null));
+				_localStateMap.put(ps, new LocalStateResult(ps, LocalState.PENDING, null));
 			}
 			
 			// and then the relationships
 			for (DataSource ds : pp.getDataSources()) {
 				if (getRelationship(ds) != null) {
-					_relationshipMap.put(ds, new StateAndRelationship(ds, Relationship.PENDING, _relationshipMap.get(ds).getRelationship(), null, null));
+					_relationshipMap.put(ds, new RelationshipResult(ds, Relationship.PENDING, _relationshipMap.get(ds).getRelationship()));
 				} else {
-					_relationshipMap.put(ds, new StateAndRelationship(ds, Relationship.PENDING, null, null, null));
+					_relationshipMap.put(ds, new RelationshipResult(ds, Relationship.PENDING, null));
 				}
 			}
 		}

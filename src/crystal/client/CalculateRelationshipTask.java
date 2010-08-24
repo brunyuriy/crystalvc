@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 
 import crystal.client.ConflictDaemon.ComputationListener;
 import crystal.model.DataSource;
-import crystal.model.StateAndRelationship.Relationship;
-import crystal.model.StateAndRelationship;
+import crystal.model.RelationshipResult.Relationship;
+import crystal.model.RelationshipResult;
 
 /**
  * This class enables the calcualtions to happen on a background thread but _STILL_ update the UI. When we were doing
@@ -18,7 +18,7 @@ import crystal.model.StateAndRelationship;
  * 
  * @author brun & rtholmes
  */
-class CalculateRelationshipTask extends SwingWorker<Void, StateAndRelationship> {
+class CalculateRelationshipTask extends SwingWorker<Void, RelationshipResult> {
 	private Logger _log = Logger.getLogger(this.getClass());
 	private ProjectPreferences _prefs;
 	private DataSource _source;
@@ -43,17 +43,17 @@ class CalculateRelationshipTask extends SwingWorker<Void, StateAndRelationship> 
 
 	@Override
 	protected Void doInBackground() throws Exception {
-		StateAndRelationship calculatingPlaceholder = null;
+		RelationshipResult calculatingPlaceholder = null;
 
 		if (ConflictDaemon.getInstance().getRelationship(_source) != null) {
-			calculatingPlaceholder = new StateAndRelationship(_source, Relationship.PENDING, ConflictDaemon.getInstance().getRelationship(_source).getRelationship(), null, null);
+			calculatingPlaceholder = new RelationshipResult(_source, Relationship.PENDING, ConflictDaemon.getInstance().getRelationship(_source).getRelationship());
 		} else {
-			calculatingPlaceholder = new StateAndRelationship(_source, Relationship.PENDING, null, null, null);
+			calculatingPlaceholder = new RelationshipResult(_source, Relationship.PENDING, null);
 		}
 		
 		publish(calculatingPlaceholder);
 
-		StateAndRelationship result = ConflictDaemon.getInstance().calculateRelationships(_source, _prefs);
+		RelationshipResult result = ConflictDaemon.getInstance().calculateRelationships(_source, _prefs);
 
 		_log.trace("Relationship computed: " + result);
 
@@ -62,8 +62,8 @@ class CalculateRelationshipTask extends SwingWorker<Void, StateAndRelationship> 
 	}
 
 	@Override
-	protected void process(List<StateAndRelationship> chunks) {
-		for (StateAndRelationship cr : chunks) {
+	protected void process(List<RelationshipResult> chunks) {
+		for (RelationshipResult cr : chunks) {
 			_log.trace("Processing computed result: " + cr);
 
 			if (_trayListener != null)
