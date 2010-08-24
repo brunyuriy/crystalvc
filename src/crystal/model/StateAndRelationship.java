@@ -23,7 +23,7 @@ public class StateAndRelationship {
 	public static class LocalState {
 		public static LocalState UNCHECKPOINTED = new LocalState("hg commit", "UNCHECKPOINTED");
 		public static LocalState MUST_RESOLVE = new LocalState("hg fetch", "MUST RESOLVE");
-		public static LocalState ALL_CLEAR = new LocalState("", "ALL CLEAR");
+		public static LocalState ALL_CLEAR = new LocalState("all clear", "ALL CLEAR");
 		public static LocalState PENDING = new LocalState("", "PENDING");
 		public static LocalState ERROR = new LocalState("", "ERROR");
 		
@@ -173,7 +173,7 @@ public class StateAndRelationship {
 	@Override
 	public String toString() {
 		return "StateAndRelationship - " + _source.getShortName() + " state: " + _state + " and last state: " + _lastState + ". " +
-			"Relationship: " + _relationship.toString() + " and last relationship: " + _lastRelationship.toString() + ".";
+			"Relationship: " + _relationship + " and last relationship: " + _lastRelationship + ".";
 	}
 
 	public DataSource getDataSource() {

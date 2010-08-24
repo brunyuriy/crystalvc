@@ -164,7 +164,7 @@ public class ConflictDaemon {
 	}
 	
 	
-	public StateAndRelationship calcualteLocalStates(ProjectPreferences prefs) {
+	public StateAndRelationship calculateLocalStates(ProjectPreferences prefs) {
 		StateAndRelationship localState = calculateLocalState(prefs);
 		
 		if (localState == null) {

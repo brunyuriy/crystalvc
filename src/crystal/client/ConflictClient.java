@@ -181,14 +181,12 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			name.setLayout(new BoxLayout(name, BoxLayout.Y_AXIS));
 			name.add(new JLabel(projPref.getEnvironment().getShortName()));
 			DataSource myParent = projPref.getDataSource(projPref.getEnvironment().getParent());
-			if (myParent != null) {
 //				name.add(new JLabel(" "));
-				JLabel action = new JLabel("");
-				action.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 15));
-				_iconMap.put(projPref.getEnvironment(), action);
-				ConflictDaemon.getInstance().getLocalState(projPref.getEnvironment());
-				name.add(action);
-			}
+			JLabel action = new JLabel("");
+			action.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 15));
+			_iconMap.put(projPref.getEnvironment(), action);
+			ConflictDaemon.getInstance().getLocalState(projPref.getEnvironment());
+			name.add(action);
 			grid.add(name);
 			
 			for (DataSource source : projPref.getDataSources()) {
