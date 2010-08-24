@@ -103,19 +103,20 @@ public class HgStateChecker {
 	 * @arg String tempWorkPath: path to a temp directory
 	 * @effect: performs a pull and update on the pathToLocalRepo repository
 	 */
-	private static void updateLocalRepository(String pathToHg, String pathToLocalRepo, String tempWorkPath, String remoteHg) throws IOException, HgOperationException {
+	private static void updateLocalRepository(String pathToHg, String pathToLocalRepo, String pathToRemoteRepo, String tempWorkPath, String remoteHg) throws IOException, HgOperationException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToLocalRepo);
 		Assert.assertNotNull(tempWorkPath);
 
-		String command = pathToHg + " pull -u";
+		String command = pathToHg + " pull -u " + pathToRemoteRepo;
 		List<String> myArgsList = new ArrayList<String>();
 		myArgsList.add("pull");
 		myArgsList.add("-u");
+		myArgsList.add("pathToRemoteRepo");
 		if (remoteHg != null) { 
 			myArgsList.add("--remotecmd");
 			myArgsList.add(remoteHg);
-			pathToHg += "--remotecmd " + remoteHg; 
+			command += "--remotecmd " + remoteHg; 
 		}
 
 //		String[] myArgs = { "pull", "-u" };
@@ -167,7 +168,7 @@ public class HgStateChecker {
 			String tempMyName = "tempMine_" + TimeUtility.getCurrentLSMRDateString();
 			if (new File(mine).exists()) {
 				try {
-					updateLocalRepository(hg, mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
+					updateLocalRepository(hg, mine, prefs.getEnvironment().getCloneString(), tempWorkPath, prefs.getEnvironment().getRemoteHg());
 				}
 				catch (HgOperationException e) {
 					String dialogMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
@@ -216,7 +217,7 @@ public class HgStateChecker {
 	/*
 	 * @arg prefs: a set of preferences
 	 * 
-	 * @returns whether my repository is same, behind, ahead, or in conflict with your repository.
+	 * @returns whether prefs.getEnvironment() repository is same, behind, ahead, cleanmerge, or conflictmerge with the source repository.
 	 */
 	public static ResultStatus getState(ProjectPreferences prefs, DataSource source) throws IOException, HgOperationException {
 
@@ -248,7 +249,7 @@ public class HgStateChecker {
 		//		System.out.println("*** " + tempWorkPath + " *** " + mine + " ***\n");
 		if ((new File(mine)).exists()) {
 			try {
-				updateLocalRepository(hg, mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
+				updateLocalRepository(hg, mine, prefs.getEnvironment().getCloneString(), tempWorkPath, prefs.getEnvironment().getRemoteHg());
 			}
 			catch (HgOperationException e) {
 				String dialogMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
@@ -275,7 +276,7 @@ public class HgStateChecker {
 		// Check if a local copy of your repository exists. If it does, update it. If it does not, create it.
 		if ((new File(yours)).exists()) {
 			try {
-				updateLocalRepository(hg, yours, tempWorkPath, source.getRemoteHg());
+				updateLocalRepository(hg, yours, source.getCloneString(), tempWorkPath, source.getRemoteHg());
 			}
 			catch (HgOperationException e) {
 				String dialogMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
