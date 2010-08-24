@@ -17,9 +17,9 @@ import org.junit.Test;
 
 import crystal.client.ClientPreferences;
 import crystal.client.ProjectPreferences;
-import crystal.model.ConflictResult.ResultStatus;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
+import crystal.model.StateAndRelationship.Relationship;
 import crystal.server.HgStateChecker.HgOperationException;
 import crystal.util.RunIt;
 
@@ -161,8 +161,8 @@ public class TestHgStateChecker {
 	public void testBasicMergeConflict() {
 		try {
 
-			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("twoRepository"));
-			Assert.assertEquals(ResultStatus.MERGECONFLICT, answer);
+			Relationship answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("twoRepository"));
+			Assert.assertEquals(Relationship.MERGECONFLICT, answer);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -177,8 +177,8 @@ public class TestHgStateChecker {
 	public void testBasicCleanMerge() {
 		try {
 
-			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("sixRepository"));
-			Assert.assertEquals(ResultStatus.MERGECLEAN, answer);
+			Relationship answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("sixRepository"));
+			Assert.assertEquals(Relationship.MERGECLEAN, answer);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -193,8 +193,8 @@ public class TestHgStateChecker {
 	public void testBasicAhead() {
 		try {
 
-			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("threeRepository"));
-			Assert.assertEquals(ResultStatus.AHEAD, answer);
+			Relationship answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("threeRepository"));
+			Assert.assertEquals(Relationship.AHEAD, answer);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -210,8 +210,8 @@ public class TestHgStateChecker {
 	public void testBasicBehind() {
 		try {
 
-			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("fourRepository"));
-			Assert.assertEquals(ResultStatus.BEHIND, answer);
+			Relationship answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("fourRepository"));
+			Assert.assertEquals(Relationship.BEHIND, answer);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -227,8 +227,8 @@ public class TestHgStateChecker {
 	public void testBasicSame() {
 		try {
 
-			ResultStatus answer = HgStateChecker.getState(_prefs, _prefs.getDataSource("fiveRepository"));
-			Assert.assertEquals(ResultStatus.SAME, answer);
+			Relationship answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("fiveRepository"));
+			Assert.assertEquals(Relationship.SAME, answer);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();

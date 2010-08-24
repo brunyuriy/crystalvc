@@ -20,9 +20,10 @@ import org.apache.log4j.Logger;
 
 import crystal.Constants;
 import crystal.client.ConflictDaemon.ComputationListener;
-import crystal.model.ConflictResult;
 import crystal.model.DataSource;
-import crystal.model.ConflictResult.ResultStatus;
+import crystal.model.StateAndRelationship;
+import crystal.model.StateAndRelationship.LocalState;
+import crystal.model.StateAndRelationship.Relationship;
 import crystal.util.LSMRLogger;
 import crystal.util.TimeUtility;
 
@@ -282,9 +283,15 @@ public class ConflictSystemTray implements ComputationListener {
 	private void createTimer() {
 
 		boolean pTask = false;
-
-		for (ConflictResult result : ConflictDaemon.getInstance().getResults()) {
-			if (result.getStatus().equals(ResultStatus.PENDING)) {
+		
+		// check if anything is PENDING (first local states then relationships
+		for (StateAndRelationship localState : ConflictDaemon.getInstance().getLocalStates()){
+			if (localState.getLocalState().equals(LocalState.PENDING)) {
+				pTask = true;
+			}
+		}
+		for (StateAndRelationship relationship : ConflictDaemon.getInstance().getRelationships()) {
+			if (relationship.getRelationship().equals(Relationship.PENDING)) {
 				pTask = true;
 			}
 		}
@@ -382,9 +389,12 @@ public class ConflictSystemTray implements ComputationListener {
 		startCalculations = System.currentTimeMillis();
 
 		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
+			final CalculateLocalStateTask clst = new CalculateLocalStateTask(projPref, this, _client);
+			ex.execute(clst);
+			
 			for (final DataSource source : projPref.getDataSources()) {
-				final CalculateTask ct = new CalculateTask(source, projPref, this, _client);
-				ex.execute(ct);
+				final CalculateRelationshipTask crt = new CalculateRelationshipTask(source, projPref, this, _client);
+				ex.execute(crt);
 			}
 		}
 		// } else {
@@ -423,14 +433,19 @@ public class ConflictSystemTray implements ComputationListener {
 
 		// _log.trace("Task size in update: " + tasks.size());
 
+		// check if anything is PENDING (first local states then relationships
 		boolean pendingTask = false;
-
-		for (ConflictResult result : ConflictDaemon.getInstance().getResults()) {
-			if (result.getStatus().equals(ResultStatus.PENDING)) {
+		for (StateAndRelationship localState : ConflictDaemon.getInstance().getLocalStates()){
+			if (localState.getLocalState().equals(LocalState.PENDING)) {
 				pendingTask = true;
 			}
 		}
-
+		for (StateAndRelationship relationship : ConflictDaemon.getInstance().getRelationships()) {
+			if (relationship.getRelationship().equals(Relationship.PENDING)) {
+				pendingTask = true;
+			}
+		}
+		
 		if (pendingTask) {
 			_log.trace("Update called with tasks still pending.");
 
@@ -462,7 +477,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		_trayIcon.getImage().flush();
 		
-		Image icon = (ConflictResult.ResultStatus.getDominant(ConflictDaemon.getInstance().getResults())).getImage();
+		Image icon = (Relationship.getDominant(ConflictDaemon.getInstance().getRelationships())).getImage();
 
 		_trayIcon.setImage(icon);
 		
