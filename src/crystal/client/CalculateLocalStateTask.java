@@ -7,13 +7,11 @@ import javax.swing.SwingWorker;
 import org.apache.log4j.Logger;
 
 import crystal.client.ConflictDaemon.ComputationListener;
-import crystal.model.DataSource;
 import crystal.model.StateAndRelationship.LocalState;
-import crystal.model.StateAndRelationship.Relationship;
 import crystal.model.StateAndRelationship;
 
 /**
- * This class enables the calcualtions to happen on a background thread but _STILL_ update the UI. When we were doing
+ * This class enables the calculations to happen on a background thread but _STILL_ update the UI. When we were doing
  * the analysis on a regular Thread the UI woudln't update until all of the tasks were done; the UI didn't block, but it
  * didn't update either. This fixes that problem.
  * 
@@ -51,7 +49,7 @@ class CalculateLocalStateTask extends SwingWorker<Void, StateAndRelationship> {
 		
 		publish(calculatingPlaceholder);
 
-		StateAndRelationship result = ConflictDaemon.getInstance().calculateRelationships(_prefs.getEnvironment(), _prefs);
+		StateAndRelationship result = ConflictDaemon.getInstance().calculateLocalStates(_prefs);
 
 		_log.trace("Local state computed: " + result);
 
