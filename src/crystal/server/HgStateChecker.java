@@ -13,9 +13,9 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 
 import crystal.client.ProjectPreferences;
-import crystal.model.ConflictResult.LocalStateStatus;
-import crystal.model.ConflictResult.ResultStatus;
-import crystal.model.ConflictResult;
+import crystal.model.StateAndRelationship.LocalState;
+import crystal.model.StateAndRelationship.Relationship;
+import crystal.model.StateAndRelationship;
 import crystal.model.DataSource;
 import crystal.util.RunIt;
 import crystal.util.TimeUtility;
@@ -112,7 +112,7 @@ public class HgStateChecker {
 		List<String> myArgsList = new ArrayList<String>();
 		myArgsList.add("pull");
 		myArgsList.add("-u");
-		myArgsList.add("pathToRemoteRepo");
+		myArgsList.add(pathToRemoteRepo);
 		if (remoteHg != null) { 
 			myArgsList.add("--remotecmd");
 			myArgsList.add(remoteHg);
@@ -126,7 +126,7 @@ public class HgStateChecker {
 			throw new HgOperationException(command, pathToLocalRepo, output.toString());
 	}
 	
-	public static LocalStateStatus getLocalState(ProjectPreferences prefs) throws IOException, HgOperationException {
+	public static LocalState getLocalState(ProjectPreferences prefs) throws IOException, HgOperationException {
 		
 		Assert.assertNotNull(prefs);
 		
@@ -149,7 +149,7 @@ public class HgStateChecker {
 			Pattern heads = Pattern.compile(".*changeset.*changeset.*", Pattern.DOTALL);
 			Matcher matcher = heads.matcher(output.getOutput());		
 			if (matcher.matches()) {
-				return LocalStateStatus.MUST_RESOLVE;
+				return LocalState.MUST_RESOLVE;
 			}
 			
 			/*
@@ -158,9 +158,9 @@ public class HgStateChecker {
 			String[] statusArgs = { "status" };
 			output = RunIt.execute(hg, statusArgs , prefs.getEnvironment().getCloneString());
 			if (!(output.getOutput().trim().equals("")))
-				return LocalStateStatus.UNCHECKPOINTED;
+				return LocalState.UNCHECKPOINTED;
 			
-			return LocalStateStatus.ALL_CLEAR;
+			return LocalState.ALL_CLEAR;
 		} else {
 			// We can't find out the status, but we can find out if you must resolve
 			// by cloning, updating, and seeing how many heads there are
@@ -208,10 +208,10 @@ public class HgStateChecker {
 			Matcher matcher = heads.matcher(output.getOutput());
 			RunIt.deleteDirectory(new File(tempWorkPath + tempMyName));
 			if (matcher.matches()) {
-				return LocalStateStatus.MUST_RESOLVE;
+				return LocalState.MUST_RESOLVE;
 			}
 		}
-		return LocalStateStatus.ALL_CLEAR;
+		return LocalState.ALL_CLEAR;
 	}
 
 	/*
@@ -219,7 +219,7 @@ public class HgStateChecker {
 	 * 
 	 * @returns whether prefs.getEnvironment() repository is same, behind, ahead, cleanmerge, or conflictmerge with the source repository.
 	 */
-	public static ResultStatus getState(ProjectPreferences prefs, DataSource source) throws IOException, HgOperationException {
+	public static Relationship getRelationship(ProjectPreferences prefs, DataSource source) throws IOException, HgOperationException {
 
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);
@@ -300,7 +300,7 @@ public class HgStateChecker {
 		} else
 			createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath, source.getRemoteHg());
 
-		ResultStatus answer;
+		Relationship answer;
 
 		Output output;
 
@@ -334,14 +334,14 @@ public class HgStateChecker {
 			 * changes found
 			 */
 			if (output.getOutput().indexOf("no changes found") >= 0)
-				answer = ResultStatus.SAME;
+				answer = Relationship.SAME;
 			/*
 			 * mine is AHEAD (yours is BEHIND) if output looks something like this: searching for changes adding
 			 * changesets adding manifests adding file changes added 1 changesets with 1 changes to 1 files (run 'hg
 			 * update' to get a working copy)
 			 */
 			else if (output.getOutput().indexOf("(run 'hg update' to get a working copy)") >= 0)
-				answer = ResultStatus.AHEAD;
+				answer = Relationship.AHEAD;
 			else {
 				log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output);
 				String dialogMsg = "Crystal is having trouble comparing\n" + 
@@ -354,7 +354,7 @@ public class HgStateChecker {
 				if (dialogAnswer == JOptionPane.YES_OPTION) {
 					RunIt.deleteDirectory(new File(mine));
 					RunIt.deleteDirectory(new File(yours));
-					return getState(prefs, source);
+					return getRelationship(prefs, source);
 				} else {
 					source.setEnabled(false);
 					return null;
@@ -369,7 +369,7 @@ public class HgStateChecker {
 		 * file changes added 1 changesets with 1 changes to 1 files (run 'hg update' to get a working copy)
 		 */
 		else if (output.getOutput().indexOf("(run 'hg update' to get a working copy)") >= 0)
-			answer = ResultStatus.BEHIND;
+			answer = Relationship.BEHIND;
 
 		/*
 		 * CONFLICT if output looks something like this: pulling from ../firstcopy/ searching for changes adding
@@ -385,7 +385,7 @@ public class HgStateChecker {
 				// try to compile {
 				// if successful, try to test {
 				// if successful:
-				answer = ResultStatus.MERGECLEAN;
+				answer = Relationship.MERGECLEAN;
 				// if unsuccessful:
 				// answer = ResultStatus.TESTCONFLICT;
 				// }
@@ -394,7 +394,7 @@ public class HgStateChecker {
 			}
 			// otherwise, the merge failed
 			else
-				answer = ResultStatus.MERGECONFLICT;
+				answer = Relationship.MERGECONFLICT;
 		} else {
 			log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output.toString());
 			String dialogMsg = "Crystal is having trouble comparing\n" + 
@@ -407,7 +407,7 @@ public class HgStateChecker {
 			if (dialogAnswer == JOptionPane.YES_OPTION) {
 				RunIt.deleteDirectory(new File(mine));
 				RunIt.deleteDirectory(new File(yours));
-				return getState(prefs, source);
+				return getRelationship(prefs, source);
 			} else {
 				source.setEnabled(false);
 				return null;

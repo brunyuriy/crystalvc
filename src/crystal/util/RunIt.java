@@ -36,7 +36,8 @@ public class RunIt {
 			return _error;
 		}
 		
-		public String toStrng() {
+		@Override
+		public String toString() {
 			String answer = "";
 			if (_error.length() > 0) {
 				answer += "*****-START-ERROR-*****\n";

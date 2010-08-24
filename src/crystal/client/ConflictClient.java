@@ -21,9 +21,10 @@ import javax.swing.SwingConstants;
 import org.apache.log4j.Logger;
 
 import crystal.Constants;
-import crystal.model.ConflictResult;
 import crystal.model.DataSource;
-import crystal.model.ConflictResult.ResultStatus;
+import crystal.model.StateAndRelationship;
+import crystal.model.StateAndRelationship.LocalState;
+import crystal.model.StateAndRelationship.Relationship;
 import crystal.util.JMultiLineToolTip;
 
 /**
@@ -182,9 +183,10 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			DataSource myParent = projPref.getDataSource(projPref.getEnvironment().getParent());
 			if (myParent != null) {
 //				name.add(new JLabel(" "));
-				JLabel action = new JLabel("Pending");
+				JLabel action = new JLabel("");
 				action.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 15));
 				_iconMap.put(projPref.getEnvironment(), action);
+				ConflictDaemon.getInstance().getLocalState(projPref.getEnvironment());
 				name.add(action);
 			}
 			grid.add(name);
@@ -193,16 +195,18 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				if (!(source.isHidden())) {
 					ImageIcon image = new ImageIcon();
 					JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER) {
+						private static final long serialVersionUID = 1L;
+
 						public JToolTip createToolTip() {
 							return new JMultiLineToolTip();
 						}
 					};
 					_iconMap.put(source, imageLabel);
-					ConflictDaemon.getInstance().getStatus(source);
+					ConflictDaemon.getInstance().getRelationship(source);
 					imageLabel.setVerticalTextPosition(JLabel.TOP);
 					imageLabel.setHorizontalTextPosition(JLabel.CENTER);
 					grid.add(imageLabel);
-					imageLabel.setToolTipText("Action: hg fetch\nConsequences: new relationship will be AHEAD \nCommiters: David and Yuriy");					
+					imageLabel.setToolTipText("Action: hg fetch\nConsequences: new relationship will be AHEAD \nCommiters: David and Yuriy");
 				}
 			}
 
@@ -345,21 +349,18 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		for (ProjectPreferences projPref : _preferences.getProjectPreference()) {
 			
 			// first, set the Action
-			if (!(projPref.getEnvironment().getParent().trim().equals(""))) {
-				JLabel action = _iconMap.get(projPref.getEnvironment());
-
-				DataSource parentSource = projPref.getDataSource(projPref.getEnvironment().getParent());
-				ConflictResult actionStatus = ConflictDaemon.getInstance().getStatus(parentSource);
-				ResultStatus parentStatus = actionStatus.getStatus();
-				ResultStatus lastParentStatus = actionStatus.getLastStatus();
-
-				// if it's pending, show whatever value it had last time
-				if (parentStatus.equals(ResultStatus.PENDING) && lastParentStatus != null)
-					action.setText(lastParentStatus.getAction());
-				else // otherwise, show fresh value
-					action.setText(parentStatus.getAction());
-
-			}	
+			JLabel action = _iconMap.get(projPref.getEnvironment());
+			
+			DataSource projectSource = projPref.getEnvironment();
+			StateAndRelationship actionResult = ConflictDaemon.getInstance().getLocalState(projectSource);
+			LocalState localState = actionResult.getLocalState();
+			LocalState lastLocalState = actionResult.getLastLocalState();
+			
+			// if it's pending, show whatever value it had last time
+			if (localState.equals(LocalState.PENDING) && lastLocalState != null)
+				action.setText(lastLocalState.getAction());
+			else // otherwise, show fresh value
+				action.setText(localState.getAction());
 
 			// second, set the Relationships
 			for (DataSource source : projPref.getDataSources()) {
@@ -367,15 +368,15 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 					JLabel current = _iconMap.get(source);
 					current.removeAll();
 
-					ConflictResult conflictStatus = ConflictDaemon.getInstance().getStatus(source);
-					ResultStatus status = conflictStatus.getStatus();
-					ResultStatus lastStatus = conflictStatus.getLastStatus();
+					StateAndRelationship result = ConflictDaemon.getInstance().getRelationship(source);
+					Relationship relationship = result.getRelationship();
+					Relationship lastRelationship = result.getLastRelationship();
 
 					// if it's pending, show whatever value it had last time
-					if (status.equals(ResultStatus.PENDING) && lastStatus != null)
-						current.setIcon(lastStatus.getIcon());
+					if (relationship.equals(Relationship.PENDING) && lastRelationship != null)
+						current.setIcon(lastRelationship.getIcon());
 					else // otherwise, show fresh value
-						current.setIcon(status.getIcon());
+						current.setIcon(relationship.getIcon());
 					current.repaint();
 				}
 			}
