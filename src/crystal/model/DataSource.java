@@ -60,7 +60,15 @@ public class DataSource {
 //		_master = shortName.toLowerCase().trim().equals("master");
 		_hide = hide;
 		setParent(parent);
-		_changesets = new HashMap<String, Checkpoint>();
+		_changesets = null;
+	}
+	
+	public void setChangeset(HashMap<String, Checkpoint> changesets) {
+		_changesets = changesets;
+	}
+	
+	public HashMap<String, Checkpoint> getChangesets() {
+		return _changesets;
 	}
 	
 	public void setRemoteHg(String remoteHg) {
