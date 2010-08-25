@@ -26,7 +26,8 @@ import crystal.util.XMLTools;
 /**
  * Maintains multiple sets of preferences, rather than just one.
  * 
- * @author rtholmes & brun
+ * @author brun
+ * @author rtholmes
  * 
  */
 public class ClientPreferences {
@@ -48,7 +49,7 @@ public class ClientPreferences {
 		static final String[] HIDE = { "Hidden", "hidden", "HIDDEN" };
 		static final String[] PARENT = { "commonParent", "parent", "CommonParent", "COMMONPARENT", "myParent", "Parent" };
 
-		static final String[] REMOTE_HG = { "RemoteHG", "remoteHG", "REMOTEHG", "Remotehg", "RemoteHg" };	
+		static final String[] REMOTE_HG = { "RemoteHG", "remoteHG", "REMOTEHG", "Remotehg", "RemoteHg" };
 	}
 
 	/**
@@ -68,7 +69,8 @@ public class ClientPreferences {
 		CONFIG_PATH = path + ".conflictClient.xml";
 
 		DEFAULT_CLIENT_PREFERENCES = new ClientPreferences("/tmp/conflictClient/", "/path/to/hg");
-		ProjectPreferences pp = new ProjectPreferences(new DataSource("myProject", "$HOME/dev/myProject/", DataSource.RepoKind.HG, false, "MASTER"), DEFAULT_CLIENT_PREFERENCES);
+		ProjectPreferences pp = new ProjectPreferences(new DataSource("myProject", "$HOME/dev/myProject/", DataSource.RepoKind.HG, false, "MASTER"),
+				DEFAULT_CLIENT_PREFERENCES);
 		pp.addDataSource(new DataSource("jim", "https://path/to/repo", DataSource.RepoKind.HG, false, "MASTER"));
 		pp.addDataSource(new DataSource("MASTER", "http://path/to/repo", DataSource.RepoKind.HG, false, null));
 		DEFAULT_CLIENT_PREFERENCES.addProjectPreferences(pp);
@@ -93,7 +95,7 @@ public class ClientPreferences {
 	 * Indicates whether these preferences have changed since the last load.
 	 */
 	private boolean _hasChanged;
-	
+
 	/**
 	 * Private constructor to restrict usage.
 	 */
@@ -120,7 +122,7 @@ public class ClientPreferences {
 	 *            Preference to add; the pref short name must be unique or an assertion will fail.
 	 */
 	public void addProjectPreferences(ProjectPreferences pref) {
-		//String shortName = pref.getEnvironment().getShortName();
+		// String shortName = pref.getEnvironment().getShortName();
 
 		for (ProjectPreferences pp : _projectPreferences) {
 			if (pp.getEnvironment().getShortName().equals(pref.getEnvironment().getShortName())) {
@@ -134,7 +136,8 @@ public class ClientPreferences {
 	/**
 	 * Removes the preference from the project.
 	 * 
-	 * @param pref: preference to remove; if pref is not present, do nothing.  
+	 * @param pref
+	 *            : preference to remove; if pref is not present, do nothing.
 	 */
 	public void removeProjectPreferences(ProjectPreferences pref) {
 
@@ -144,13 +147,13 @@ public class ClientPreferences {
 	/**
 	 * Removes the preference from the project.
 	 * 
-	 * @param index: index of the preference to remove.  
+	 * @param index
+	 *            : index of the preference to remove.
 	 */
 	public void removeProjectPreferencesAtIndex(int index) {
 
 		_projectPreferences.remove(index);
 	}
-
 
 	/**
 	 * Returns the preferences.
@@ -184,7 +187,6 @@ public class ClientPreferences {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static ClientPreferences loadPreferencesFromXML() {
 		ClientPreferences prefs = null;
 		boolean prefsChanged = false;
@@ -239,7 +241,7 @@ public class ClientPreferences {
 				prefsChanged = true;
 			}
 
-			String temptempDirectory = tempDirectory.replace('\\','/');
+			String temptempDirectory = tempDirectory.replace('\\', '/');
 			if (!temptempDirectory.equals(tempDirectory)) {
 				prefsChanged = true;
 				tempDirectory = temptempDirectory;
@@ -255,7 +257,8 @@ public class ClientPreferences {
 						if ((new File(tempDirectory)).mkdirs())
 							happyTempPath = true;
 						else {
-							tempDirectory = JOptionPane.showInputDialog("The current temprorary path is invalid.\nPlease select another path.", tempDirectory);
+							tempDirectory = JOptionPane.showInputDialog("The current temprorary path is invalid.\nPlease select another path.",
+									tempDirectory);
 							prefsChanged = true;
 						}
 				}
@@ -268,7 +271,8 @@ public class ClientPreferences {
 					verifyFile(hgPath);
 					happyHgPath = true;
 				} catch (ConfigurationReadingException e) {
-					// if the exception type is either ConfigurationReadingException.PATH_INVALID or ConfigurationReadingException.PATH_IS_DIRECTORY 
+					// if the exception type is either ConfigurationReadingException.PATH_INVALID or
+					// ConfigurationReadingException.PATH_IS_DIRECTORY
 					// (only two possibilities))
 					hgPath = JOptionPane.showInputDialog("The current path to hg is invalid.\nPlease select a proper path.", hgPath);
 					prefsChanged = true;
@@ -279,7 +283,7 @@ public class ClientPreferences {
 			prefs.setChanged(prefsChanged);
 
 			// read the attributes.
-			// make sure to check for old versions with the RETRO_PREFIX prefix.  
+			// make sure to check for old versions with the RETRO_PREFIX prefix.
 			List<Element> projectElements = getChildren(rootElement, IPrefXML.PROJECT);
 			for (Element projectElement : projectElements) {
 				String projectKind = getValue(projectElement, IPrefXML.KIND);
@@ -308,8 +312,8 @@ public class ClientPreferences {
 
 				RepoKind kind = RepoKind.valueOf(projectKind);
 
-				// The project need not be a local path!  
-				//				verifyPath(projectClone);
+				// The project need not be a local path!
+				// verifyPath(projectClone);
 
 				if (kind == null || !kind.equals(RepoKind.HG)) {
 					throw new RuntimeException("ClientPreferences - Kind not valid. (currently only HG is supported).");
@@ -334,7 +338,7 @@ public class ClientPreferences {
 						String sourceClone = getValue(sourceElement, IPrefXML.CLONE);
 						String sourceRemoteHg = getValue(sourceElement, IPrefXML.REMOTE_HG);
 						String sourceHidden = getValue(sourceElement, IPrefXML.HIDE);
-						boolean sourceHide = ((sourceHidden != null) && (sourceHidden.toLowerCase().trim().equals("true"))) ? true : false;		
+						boolean sourceHide = ((sourceHidden != null) && (sourceHidden.toLowerCase().trim().equals("true"))) ? true : false;
 						String sourceParent = getValue(sourceElement, IPrefXML.PARENT);
 
 						if (sourceLabel == null || sourceLabel.equals("")) {
@@ -366,15 +370,15 @@ public class ClientPreferences {
 		} catch (IOException ioe) {
 			throw new RuntimeException("Error reading configuration file; " + ioe.getMessage(), ioe);
 		} catch (Exception e) {
-//			e.printStackTrace();
+			// e.printStackTrace();
 			throw new RuntimeException("Error parsing configuration file; " + e.getMessage(), e);
 		}
 
 		return prefs;
 	}
-	
+
 	/*
-	 * Returns the value of the first existing attribute in element 
+	 * Returns the value of the first existing attribute in element
 	 */
 	private static String getValue(Element element, String[] attributes) {
 		for (String attribute : attributes) {
@@ -384,21 +388,22 @@ public class ClientPreferences {
 		}
 		return null;
 	}
-	
+
 	/*
-	 * Returns the list of children of the first existing attribute in element 
+	 * Returns the list of children of the first existing attribute in element
 	 */
 	private static List<Element> getChildren(Element element, String[] attributes) {
 		for (String attribute : attributes) {
+			@SuppressWarnings("unchecked")
 			List<Element> answer = element.getChildren(attribute);
 			if (answer != null)
 				return answer;
 		}
 		return null;
 	}
-	
+
 	/*
-	 * Returns the child of the first existing attribute in element 
+	 * Returns the child of the first existing attribute in element
 	 */
 	private static Element getChild(Element element, String[] attributes) {
 		for (String attribute : attributes) {
@@ -408,7 +413,6 @@ public class ClientPreferences {
 		}
 		return null;
 	}
-
 
 	/**
 	 * Save preferences to the default filename
@@ -429,28 +433,24 @@ public class ClientPreferences {
 		Document doc = XMLTools.newXMLDocument();
 
 		Element rootElem = new Element(IPrefXML.ROOT[0]);
-		
+
 		Comment webref1 = new Comment(" Configuration file for Crystal conflict client. See documentation at ");
 		Comment webref2 = new Comment(" http://www.cs.washington.edu/homes/brun/research/crystal/ . ");
 
-		Comment sample = new Comment(
-				" Example:\n" + 
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-				"<ccConfig tempDirectory=\"C:/temp/conflictClient/\" hgPath=\"C:/Program Files/TortoiseHg/hg.exe\">\n" +
-				"  <project Kind=\"HG\" ShortName=\"MyFirstProject\" Clone=\"C:/projects/myLocalFirstProjectRepo/\">\n" +
-				"    <source ShortName=\"MASTER\" Clone=\"ssh://user@host/path/to/repo/\" />\n" +
-				"    <source ShortName=\"Friend\" Clone=\"ssh://user@host/path/to/friend/repo/\" />\n" +
-				"  </project>\n" +
-				"  <project Kind=\"HG\" ShortName=\"MySecondProject\" Clone=\"C:/projects/myLocalSecondProjectRepo/\">\n" + 
-				"    <source ShortName=\"MASTER\" Clone=\"ssh://user@host/path/to/socond/project/repo/\" />\n" +
-				"    <source ShortName=\"Friend\" Clone=\"https://user@host/path/to/friend/second/repo/\" />\n" +
-				"  </project>\n" +
-				"</ccConfig>\n");
+		Comment sample = new Comment(" Example:\n" + "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+				+ "<ccConfig tempDirectory=\"C:/temp/conflictClient/\" hgPath=\"C:/Program Files/TortoiseHg/hg.exe\">\n"
+				+ "  <project Kind=\"HG\" ShortName=\"MyFirstProject\" Clone=\"C:/projects/myLocalFirstProjectRepo/\">\n"
+				+ "    <source ShortName=\"MASTER\" Clone=\"ssh://user@host/path/to/repo/\" />\n"
+				+ "    <source ShortName=\"Friend\" Clone=\"ssh://user@host/path/to/friend/repo/\" />\n" + "  </project>\n"
+				+ "  <project Kind=\"HG\" ShortName=\"MySecondProject\" Clone=\"C:/projects/myLocalSecondProjectRepo/\">\n"
+				+ "    <source ShortName=\"MASTER\" Clone=\"ssh://user@host/path/to/socond/project/repo/\" />\n"
+				+ "    <source ShortName=\"Friend\" Clone=\"https://user@host/path/to/friend/second/repo/\" />\n" + "  </project>\n"
+				+ "</ccConfig>\n");
 
 		doc.addContent(webref1);
 		doc.addContent(webref2);
 		doc.addContent(sample);
-		
+
 		rootElem.setAttribute(IPrefXML.TMP_DIR[0], prefs.getTempDirectory());
 		rootElem.setAttribute(IPrefXML.HG_PATH[0], prefs.getHgPath());
 		doc.setRootElement(rootElem);
@@ -461,12 +461,12 @@ public class ClientPreferences {
 			projectElem.setAttribute(IPrefXML.LABEL[0], pp.getEnvironment().getShortName());
 			projectElem.setAttribute(IPrefXML.CLONE[0], pp.getEnvironment().getCloneString());
 			projectElem.setAttribute(IPrefXML.PARENT[0], pp.getEnvironment().getParent());
-						
+
 			rootElem.addContent(projectElem);
 
 			for (DataSource src : pp.getDataSources()) {
 				Element sourceElem = new Element(IPrefXML.SOURCE[0]);
-//				sourceElem.setAttribute(IPrefXML.KIND, src.getKind().name());
+				// sourceElem.setAttribute(IPrefXML.KIND, src.getKind().name());
 				sourceElem.setAttribute(IPrefXML.LABEL[0], src.getShortName());
 				sourceElem.setAttribute(IPrefXML.CLONE[0], src.getCloneString());
 				if (src.isHidden())
@@ -485,8 +485,8 @@ public class ClientPreferences {
 	/**
 	 * Check to ensure the provided file exists.
 	 * 
-	 * @param fName 
-	 * @throws ConfigurationReadingException 
+	 * @param fName
+	 * @throws ConfigurationReadingException
 	 */
 	private static void verifyFile(String fName) throws ConfigurationReadingException {
 
@@ -498,7 +498,7 @@ public class ClientPreferences {
 			throw new NullPointerException("Null path checked");
 		if (!new File(fName).exists())
 			throw new ConfigurationReadingException("File does not exist: " + fName, ConfigurationReadingException.PATH_INVALID);
-		if (!new File(fName).isFile()) 
+		if (!new File(fName).isFile())
 			throw new ConfigurationReadingException("File is a directory: " + fName, ConfigurationReadingException.PATH_IS_DIRECTORY);
 	}
 
@@ -506,7 +506,7 @@ public class ClientPreferences {
 	 * Check to ensure the provided path is a valid directory.
 	 * 
 	 * @param path
-	 * @throws ConfigurationReadingException 
+	 * @throws ConfigurationReadingException
 	 */
 	private static void verifyPath(String path) throws ConfigurationReadingException {
 
@@ -514,12 +514,12 @@ public class ClientPreferences {
 		// assert new File(path).exists();
 		// assert new File(path).isDirectory();
 
-		if (path == null) 
+		if (path == null)
 			throw new NullPointerException("Null path checked");
 		if (!new File(path).exists())
 			throw new ConfigurationReadingException("Path does not exist: " + path, ConfigurationReadingException.PATH_INVALID);
-		if (!new File(path).isDirectory()) 
-			throw new ConfigurationReadingException("Path is not a directory: " + path, ConfigurationReadingException.PATH_NOT_DIRECTORY);		
+		if (!new File(path).isDirectory())
+			throw new ConfigurationReadingException("Path is not a directory: " + path, ConfigurationReadingException.PATH_NOT_DIRECTORY);
 	}
 
 	/**
@@ -566,7 +566,6 @@ public class ClientPreferences {
 	public void setChanged(boolean status) {
 		_hasChanged = status;
 	}
-
 
 	public static class ConfigurationReadingException extends Exception {
 		private static final long serialVersionUID = 3577953111265604385L;
