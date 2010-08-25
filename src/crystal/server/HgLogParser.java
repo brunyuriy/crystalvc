@@ -39,6 +39,26 @@ public class HgLogParser {
 		public String toString() {
 			return _changeset + "\n" + _user  + "\n" + _date  + "\n" + _summary  + "\n" + _parents;
 		}
+		
+		public String getChangeset() {
+			return _changeset;
+		}
+		
+		public String getCommitter() {
+			return _user;
+		}
+		
+		public String getDate() {
+			return _date;
+		}
+		
+		public String getSummary() {
+			return _summary;
+		}
+		
+		public List<String> getParents() {
+			return _parents;
+		}
 	}
 
 	public static HashMap<String, Checkpoint> parseLog(String log) {
