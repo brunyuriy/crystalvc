@@ -1,6 +1,5 @@
 package crystal.model;
 
-import crystal.model.RelationshipResult.Relationship;
 
 public class LocalStateResult {
 
