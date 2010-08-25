@@ -1,6 +1,7 @@
 package crystal.client;
 
 import java.awt.ComponentOrientation;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,18 +15,22 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JToolTip;
 import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
-import crystal.model.ConflictResult;
+import crystal.Constants;
 import crystal.model.DataSource;
-import crystal.model.ConflictResult.ResultStatus;
+import crystal.model.StateAndRelationship;
+import crystal.model.StateAndRelationship.LocalState;
+import crystal.model.StateAndRelationship.Relationship;
+import crystal.util.JMultiLineToolTip;
 
 /**
  * Conflict Client UI; displays the view showing the state of the repositories contained in the preferences.
  * 
- * @author rtholmes
+ * @author rtholmes & brun
  * 
  */
 public class ConflictClient implements ConflictDaemon.ComputationListener {
@@ -86,7 +91,8 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_preferences = prefs;
 
 		// Create and set up the window.
-		_frame = new JFrame("Conflict Client");
+		_frame = new JFrame("Crystal");
+		_frame.setIconImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.jpg"))).getImage());
 
 		// Set up the menu:
 		JMenuBar menuBar = new JMenuBar();
@@ -154,37 +160,56 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		// _frame.getContentPane().add(new JLabel("Quitting Crystal saves your configuration.   ",
 		// SwingConstants.CENTER));
 		// or do it in the menu; looks nicer.
-		menuBar.add(new JMenuItem("Quitting Crystal saves your configuration."));
+//		menuBar.add(new JMenuItem("Quitting Crystal saves your configuration."));
 
 		// Create a grid to hold the conflict results
 		int maxSources = 0;
 		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
-			if (projPref.getDataSources().size() > maxSources)
-				maxSources = projPref.getDataSources().size();
+			if (projPref.getNumOfVisibleSources() > maxSources)
+				maxSources = projPref.getNumOfVisibleSources();
 		}
-		// 1 extra in each dimension for heading labels
-		JPanel grid = new JPanel(new GridLayout(prefs.getProjectPreference().size(), 0)); // no need to have maxSources
-		// + 1;
+
+		JPanel grid = new JPanel(new GridLayout(prefs.getProjectPreference().size(), 0, 0, 0)); 
 		grid.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 
 		// Create the iconMap and populate it with icons.
 		// Also create the layout of the GUI.
 		_iconMap = new HashMap<DataSource, JLabel>();
 		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
-			// name of project on the left
-			grid.add(new JLabel(projPref.getEnvironment().getShortName()));
-
+			// name of project on the left, with an empty JLabel for the Action
+			JPanel name = new JPanel();
+			name.setLayout(new BoxLayout(name, BoxLayout.Y_AXIS));
+			name.add(new JLabel(projPref.getEnvironment().getShortName()));
+			DataSource myParent = projPref.getDataSource(projPref.getEnvironment().getParent());
+//				name.add(new JLabel(" "));
+			JLabel action = new JLabel("");
+			action.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 15));
+			_iconMap.put(projPref.getEnvironment(), action);
+			ConflictDaemon.getInstance().getLocalState(projPref.getEnvironment());
+			name.add(action);
+			grid.add(name);
+			
 			for (DataSource source : projPref.getDataSources()) {
-				ImageIcon image = new ImageIcon();
-				JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER);
-				_iconMap.put(source, imageLabel);
-				ConflictDaemon.getInstance().getStatus(source);
-				imageLabel.setVerticalTextPosition(JLabel.TOP);
-				imageLabel.setHorizontalTextPosition(JLabel.CENTER);
-				grid.add(imageLabel);
+				if (!(source.isHidden())) {
+					ImageIcon image = new ImageIcon();
+					JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER) {
+						private static final long serialVersionUID = 1L;
+
+						public JToolTip createToolTip() {
+							return new JMultiLineToolTip();
+						}
+					};
+					_iconMap.put(source, imageLabel);
+					ConflictDaemon.getInstance().getRelationship(source);
+					imageLabel.setVerticalTextPosition(JLabel.TOP);
+					imageLabel.setHorizontalTextPosition(JLabel.CENTER);
+					grid.add(imageLabel);
+					imageLabel.setToolTipText("Action: hg fetch\nConsequences: new relationship will be AHEAD \nCommiters: David and Yuriy");
+				}
 			}
+
 			// Fill in the rest of the grid row with blanks
-			for (int i = projPref.getDataSources().size(); i < maxSources; i++)
+			for (int i = projPref.getNumOfVisibleSources(); i < maxSources; i++)
 				grid.add(new JLabel());
 
 			_frame.getContentPane().add(grid);
@@ -203,6 +228,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		_frame.setVisible(true);
 		_frame.toFront();
+		_frame.pack();
 	}
 
 	public void setCanUpdate(boolean enable) {
@@ -319,22 +345,38 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 	private void refresh() {
 
 		for (ProjectPreferences projPref : _preferences.getProjectPreference()) {
+			
+			// first, set the Action
+			JLabel action = _iconMap.get(projPref.getEnvironment());
+			
+			DataSource projectSource = projPref.getEnvironment();
+			StateAndRelationship actionResult = ConflictDaemon.getInstance().getLocalState(projectSource);
+			LocalState localState = actionResult.getLocalState();
+			LocalState lastLocalState = actionResult.getLastLocalState();
+			
+			// if it's pending, show whatever value it had last time
+			if (localState.equals(LocalState.PENDING) && lastLocalState != null)
+				action.setText(lastLocalState.getAction());
+			else // otherwise, show fresh value
+				action.setText(localState.getAction());
+
+			// second, set the Relationships
 			for (DataSource source : projPref.getDataSources()) {
-				JLabel current = _iconMap.get(source);
-				current.removeAll();
+				if (!(source.isHidden())) {
+					JLabel current = _iconMap.get(source);
+					current.removeAll();
 
-				ConflictResult conflictStatus = ConflictDaemon.getInstance().getStatus(source);
-				ResultStatus status = conflictStatus.getStatus();
-				ResultStatus lastStatus = conflictStatus.getLastStatus();
+					StateAndRelationship result = ConflictDaemon.getInstance().getRelationship(source);
+					Relationship relationship = result.getRelationship();
+					Relationship lastRelationship = result.getLastRelationship();
 
-				if (status.equals(ResultStatus.PENDING) && lastStatus != null) {
 					// if it's pending, show whatever value it had last time
-					current.setIcon(lastStatus.getIcon());
-				} else {
-					// usual case
-					current.setIcon(status.getIcon());
+					if (relationship.equals(Relationship.PENDING) && lastRelationship != null)
+						current.setIcon(lastRelationship.getIcon());
+					else // otherwise, show fresh value
+						current.setIcon(relationship.getIcon());
+					current.repaint();
 				}
-				current.repaint();
 			}
 		}
 

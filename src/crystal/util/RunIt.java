@@ -15,6 +15,42 @@ import crystal.Constants;
  * 
  */
 public class RunIt {
+	
+	/*
+	 * Represents the output of a run command.  Consists of two strings, output and error.
+	 */
+	public static class Output {
+		String _output;
+		String _error;
+		
+		Output(String output, String error) {
+			_output = output;
+			_error = error;
+		}
+		
+		public String getOutput() {
+			return _output;
+		}
+		
+		public String getError() {
+			return _error;
+		}
+		
+		@Override
+		public String toString() {
+			String answer = "";
+			if (_error.length() > 0) {
+				answer += "*****-START-ERROR-*****\n";
+				answer += _error;
+				answer += "*****-END-ERROR-*****\n";
+			}
+
+			answer += "*****-START-OUTPUT-*****\n";
+			answer += _output;
+			answer += "*****-END-OUTPUT-*****\n";
+			return answer;
+		}
+	}
 
 	/**
 	 * Runs a command twice. A not-nice hack for those times when executions don't seem to be coming out consistently.
@@ -25,9 +61,9 @@ public class RunIt {
 	 * @return
 	 * @throws IOException
 	 */
-	public static String executeTwice(String command, String[] args, String path) throws IOException {
+	public static Output executeTwice(String command, String[] args, String path) throws IOException {
 		execute(command, args, path);
-		String result = execute(command, args, path);
+		Output result = execute(command, args, path);
 		return result;
 	}
 
@@ -40,7 +76,7 @@ public class RunIt {
 	 * @return
 	 * @throws IOException
 	 */
-	public static String execute(String command, String[] args, String path) throws IOException {
+	public static Output execute(String command, String[] args, String path) throws IOException {
 		// System.out.println("\t" + TimeUtility.getCurrentLSMRDateString() + ": RunIt::execute(..) - : " + command +
 		// " ...");
 
@@ -98,21 +134,21 @@ public class RunIt {
 
 		String goodOutput = outCatcher.getOutput();
 		String errOutput = errCatcher.getOutput();
-		String output = "";
-
-		if (errOutput.length() > 0) {
-			output += "*****-START-ERROR-*****\n";
-			output += errOutput;
-			output += "*****-END-ERROR-*****\n";
-		}
-
-		output += "*****-START-OUTPUT-*****\n";
-		output += goodOutput;
-		output += "*****-END-OUTPUT-*****\n";
+//		String output = "";
+//
+//		if (errOutput.length() > 0) {
+//			output += "*****-START-ERROR-*****\n";
+//			output += errOutput;
+//			output += "*****-END-ERROR-*****\n";
+//		}
+//
+//		output += "*****-START-OUTPUT-*****\n";
+//		output += goodOutput;
+//		output += "*****-END-OUTPUT-*****\n";
 
 		// System.out.println("\t\tRunIt::execute(..) - output: " + output);
 
-		return output;
+		return new Output(goodOutput, errOutput);
 	}
 
 	static public boolean deleteDirectory(File path) {

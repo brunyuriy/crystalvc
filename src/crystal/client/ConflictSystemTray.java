@@ -8,9 +8,9 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.Executor;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -20,15 +20,17 @@ import org.apache.log4j.Logger;
 
 import crystal.Constants;
 import crystal.client.ConflictDaemon.ComputationListener;
-import crystal.model.ConflictResult;
 import crystal.model.DataSource;
-import crystal.model.ConflictResult.ResultStatus;
+import crystal.model.StateAndRelationship;
+import crystal.model.StateAndRelationship.LocalState;
+import crystal.model.StateAndRelationship.Relationship;
 import crystal.util.LSMRLogger;
 import crystal.util.TimeUtility;
 
 /**
  * This is the UI that lives in the system tray (windows), title bar (OS X) or somewhere else (linux). It contains the
- * menu options and provides a lightweight home for bringing up the ConflictClient UI.
+ * menu options and provides a lightweight home for bringing up the ConflictClient UI.  If the system tray is not supported, the UI 
+ * switches to a window-only view.  
  * 
  * ConflictSystemTray is a singleton.
  * 
@@ -41,7 +43,7 @@ public class ConflictSystemTray implements ComputationListener {
 	public static boolean TRAY_SUPPORTED = SystemTray.isSupported();
 	// public static boolean TRAY_SUPPORTED = false;
 
-	public static String VERSION_ID = "0.1.20100731";
+	public static String VERSION_ID = "0.1.20100811";
 
 	/**
 	 * Conflict client UI.
@@ -62,7 +64,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 	final private SystemTray _tray;
 
-	final private TrayIcon _trayIcon = new TrayIcon(createImage("images/bulb.gif", "tray icon"));
+	final private TrayIcon _trayIcon;
 
 	private MenuItem daemonEnabledItem;
 
@@ -75,19 +77,24 @@ public class ConflictSystemTray implements ComputationListener {
 
 	private ConflictSystemTray() {
 		_log.info("ConflictSystemTray - started at: " + TimeUtility.getCurrentLSMRDateString());
-		if (TRAY_SUPPORTED)
+		if (TRAY_SUPPORTED) {
 			_tray = SystemTray.getSystemTray();
-		else
+//			_trayIcon = new TrayIcon((new ImageIcon(Constants.class.getResource("/crystal/client/images/bulb.gif"))).getImage());
+			_trayIcon = new TrayIcon((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_32.png"))).getImage());
+		} else {
 			_tray = null;
+			_trayIcon = null;
+		}
 	}
 
 	public void aboutAction() {
-		JOptionPane
-				.showMessageDialog(
+		JOptionPane.showMessageDialog(
 						null,
-						"Crystal version: "
-								+ VERSION_ID
-								+ "\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.\nhttp://www.cs.washington.edu/homes/brun/research/crystal");
+						"Crystal version: " + VERSION_ID + 
+								"\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.\nhttp://www.cs.washington.edu/homes/brun/research/crystal",
+								"Crystal: Proactive Conflict Detector for Distributed Version Control", 
+								JOptionPane.PLAIN_MESSAGE,
+								new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.png")));
 	}
 
 	/**
@@ -122,7 +129,6 @@ public class ConflictSystemTray implements ComputationListener {
 		} catch (Exception e) {
 			// e.printStackTrace();
 			String msg = "Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )";
-
 			System.err.println(msg);
 			_log.error(msg);
 
@@ -178,7 +184,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		if (TRAY_SUPPORTED) {
 			final PopupMenu trayMenu = new PopupMenu();
-			_trayIcon.setImage(createImage("images/clock.png", ""));
+			_trayIcon.setImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/16X16/clock.png"))).getImage());
 
 			_trayIcon.setToolTip("Crystal");
 
@@ -261,7 +267,6 @@ public class ConflictSystemTray implements ComputationListener {
 	 * @param path
 	 * @param description
 	 * @return
-	 */
 	protected Image createImage(String path, String description) {
 		URL imageURL = ConflictSystemTray.class.getResource(path);
 
@@ -272,13 +277,21 @@ public class ConflictSystemTray implements ComputationListener {
 			return (new ImageIcon(imageURL, description)).getImage();
 		}
 	}
+	 */
+
 
 	private void createTimer() {
 
 		boolean pTask = false;
-
-		for (ConflictResult result : ConflictDaemon.getInstance().getResults()) {
-			if (result.getStatus().equals(ResultStatus.PENDING)) {
+		
+		// check if anything is PENDING (first local states then relationships
+		for (StateAndRelationship localState : ConflictDaemon.getInstance().getLocalStates()){
+			if (localState.getLocalState().equals(LocalState.PENDING)) {
+				pTask = true;
+			}
+		}
+		for (StateAndRelationship relationship : ConflictDaemon.getInstance().getRelationships()) {
+			if (relationship.getRelationship().equals(Relationship.PENDING)) {
 				pTask = true;
 			}
 		}
@@ -363,6 +376,7 @@ public class ConflictSystemTray implements ComputationListener {
 			return;
 		}
 
+		Executor ex = new SerialExecutor();
 		// if (!pendingTask) {
 		// get all of the tasks in pending mode
 		ConflictDaemon.getInstance().prePerformCalculations(_prefs);
@@ -375,9 +389,12 @@ public class ConflictSystemTray implements ComputationListener {
 		startCalculations = System.currentTimeMillis();
 
 		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
+			final CalculateLocalStateTask clst = new CalculateLocalStateTask(projPref, this, _client);
+			ex.execute(clst);
+			
 			for (final DataSource source : projPref.getDataSources()) {
-				final CalculateTask ct = new CalculateTask(source, projPref, this, _client);
-				ct.execute();
+				final CalculateRelationshipTask crt = new CalculateRelationshipTask(source, projPref, this, _client);
+				ex.execute(crt);
 			}
 		}
 		// } else {
@@ -416,14 +433,19 @@ public class ConflictSystemTray implements ComputationListener {
 
 		// _log.trace("Task size in update: " + tasks.size());
 
+		// check if anything is PENDING (first local states then relationships
 		boolean pendingTask = false;
-
-		for (ConflictResult result : ConflictDaemon.getInstance().getResults()) {
-			if (result.getStatus().equals(ResultStatus.PENDING)) {
+		for (StateAndRelationship localState : ConflictDaemon.getInstance().getLocalStates()){
+			if (localState.getLocalState().equals(LocalState.PENDING)) {
 				pendingTask = true;
 			}
 		}
-
+		for (StateAndRelationship relationship : ConflictDaemon.getInstance().getRelationships()) {
+			if (relationship.getRelationship().equals(Relationship.PENDING)) {
+				pendingTask = true;
+			}
+		}
+		
 		if (pendingTask) {
 			_log.trace("Update called with tasks still pending.");
 
@@ -449,6 +471,17 @@ public class ConflictSystemTray implements ComputationListener {
 	}
 
 	private void updateTrayIcon() {
+		
+		if (!TRAY_SUPPORTED)
+			return;
+
+		_trayIcon.getImage().flush();
+		
+		Image icon = (Relationship.getDominant(ConflictDaemon.getInstance().getRelationships())).getImage();
+
+		_trayIcon.setImage(icon);
+		
+		/*
 		boolean anyGreen = false;
 		boolean anyPull = false;
 		boolean anyYellow = false;
@@ -500,8 +533,6 @@ public class ConflictSystemTray implements ComputationListener {
 			}
 		}
 
-		_trayIcon.getImage().flush();
-
 		if (anyError) {
 			_trayIcon.setImage(createImage("images/16X16/error.png", ""));
 		} else if (anyRed) {
@@ -515,6 +546,7 @@ public class ConflictSystemTray implements ComputationListener {
 		} else {
 			_trayIcon.setImage(createImage("images/16X16/greenstatus.png", ""));
 		}
+		 */
 	}
 
 	public static ConflictSystemTray getInstance() {

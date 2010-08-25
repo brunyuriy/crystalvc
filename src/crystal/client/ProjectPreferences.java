@@ -41,6 +41,24 @@ public class ProjectPreferences {
 		_dataSources = new Vector<DataSource>();
 	}
 
+	/*
+	public boolean hasMaster() {
+		for (DataSource ds : _dataSources) {
+			if (ds.isMaster())
+				return true;
+		}
+		return false;
+	}
+	
+	public DataSource getMaster() {
+		for (DataSource ds : _dataSources) {
+			if (ds.isMaster())
+				return ds;
+		}
+		return null;
+	}
+*/
+
 	/**
 	 * Adds a new data source.
 	 * 
@@ -67,6 +85,18 @@ public class ProjectPreferences {
 	public Collection<DataSource> getDataSources() {
 		return _dataSources;
 	}
+	
+	/**
+	 * Returns the number of nonhidden data sources
+	 */
+	public int getNumOfVisibleSources() {
+		int answer = 0;
+		for (DataSource ds : _dataSources) {
+			if (!ds.isHidden())
+				answer++;
+		}
+		return answer;
+	}
 
 	/**
 	 * Returns the data source corresponding to the developer's environment.
@@ -87,11 +117,11 @@ public class ProjectPreferences {
 	public DataSource getDataSource(String shortName) {
 		// return _dataSources.get(shortName);
 		for (DataSource ds : _dataSources) {
-			if (ds.getShortName().equals(shortName)) {
+			if (ds.getShortName().toLowerCase().trim().equals(shortName.toLowerCase().trim())) {
 				return ds;
 			}
 		}
-		throw new RuntimeException("Data source: " + shortName + " does not exist.");
+		return null;
 	}
 
 	/**
