@@ -1,0 +1,276 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <title>Crystal: Proactive Conflict Detector for Distributed Version Control</title>
+  <link rel="Start" href="http://www.mit.edu/~6.170/" />
+  <link rel="StyleSheet" href="stylesheet.css" />
+</head>
+
+<body bgcolor="#FFFF99">
+
+<h1 id="Crystal:_Distributed_Version_Control_Speculative_Conflict_Detector">Crystal: Proactive Conflict Detector for Distributed Version Control</h1>
+
+
+<p>Contents:</p>
+<!-- start toc.  do not edit; run html-update-toc instead -->
+    <ul>
+      <li><a href="#motivation">Goal: Increased developer awareness of conflicts</a></li>
+      <li><a href="#Requirements">Requirements</a></li>
+      <li><a href="#download">How to run Crystal</a></li>
+      <li><a href="#screen-shot">Crystal screen shot</a>
+        <ul>
+          <li><a href="#Meaning_of_the_icons">Meaning of the icons</a></li>
+        </ul></li>
+      <li><a href="#Configuration_File_Format">Configuration file format</a></li>
+      <li><a href="#access-to-remote-repos">Making your repository available to your co-workers</a></li>
+      <li><a href="#Contacts">Contacts</a></li>
+    </ul>
+<!-- end toc -->
+
+
+<h2 id="motivation">Goal: Increased developer awareness of conflicts</h2>
+
+<p>
+The Crystal tool increases developer awareness of potential version control conflicts.  For example, it informs a developer of the answer to the question, &#8220;Might my changes conflict with others' changes?&#8221;
+</p>
+
+<p>
+Crystal keeps an eye on all the participating developers' repositories.  It informs each developer when it is safe to push her changes, when she has fallen behind and could pull changes from others or a central repository, and when changes other developers have made will cause a syntactic (or, soon to be implemented, behavioral) conflict.
+</p>
+<ul>
+<li>If conflicts occur, Crystal informs developers early, so they may discuss and resolve these conflicts while the causes are fresh in their minds.  Long-established conflicts can be much harder to resolve.</li>
+<li>If changes are made (locally or remotely) without conflicts, Crystal increases developers' confidence that the changes will not cause problems for the team.</li>
+</ul>
+
+<p>
+Crystal examines commits.  It does not examine your working copy &mdash;
+your uncommitted modifications.  The reason is that commits are more likely
+to be coherent and desired units of work, for which notification about
+(non-)conflicts is of value.
+</p>
+
+<p>
+The Crystal client is now in beta and is available for <a href="#download">download</a>.
+</p>
+
+<h2 id="Requirements">Requirements</h2>
+
+<ul>
+<li> <a href="http://java.sun.com/javase/downloads/index.jsp">JRE (Java Runtime Environment).</a></li>
+<li> <a href="http://mercurial.selenic.com">Mercurial</a>, version <b>1.6 or later</b>. (Crystal only supports Mercurial, for now.)</li>
+<li> The fetch mercurial extension must be enabled.  To do this, add the following text to your hg configuration file: <tt>~/.hgrc</tt> on Linux, or <tt>mercurial.ini</tt> on Windows.  (There is nothing after the "<tt>=</tt>" in "<tt>fetch=</tt>".)
+<pre>
+[extensions]
+fetch=
+</pre></li>
+<li> The more of your co-workers' repositories you have read access to, the
+  more useful Crystal will be.  However, Crystal can be useful even if you
+  only have access to your repository's parent.</li>
+</ul>
+
+
+<h2 id="download">How to run Crystal</h2>
+
+<ol>
+<li> Download <a href="crystal.jar">crystal.jar</a>. (Current version is 0.1.20100731.)</li>
+<li> Run:  <tt>java -jar crystal.jar</tt></li>
+<li> The tool will complain that your configuration file is invalid and
+  give you instructions on how to fix it.  You can do so either via a GUI
+  that creates the configuration file for you, or by editing the
+  configuration file directly.  See below for the
+  <a href="#Configuration_File_Format">configuration file format</a>.</li>
+<li> Restart Crystal.  Crystal will run as an icon in your task bar.  Click on the icon to see the full client and more options.</li>
+</ol>
+
+<h2 id="screen-shot">Crystal screen shot</h2>
+
+<p>
+<img src="CrystalScreenShot.png" alt="A screen shot of the Crystal tool."></img>
+</p>
+
+<h3 id="Meaning_of_the_icons">Meaning of the icons</h3>
+
+<p>
+Each icon summarizes the relationship between your repository and some
+other repositories.
+</p>
+
+<table border="2" width="640" cellpadding="10">
+  <tr>
+    <th align="center">Crystal Icon</th>
+    <th align="center">Meaning of the icon</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="same.png" height="48" alt="green checkmark"></img></td>
+    <td align="left">The repositories are in sync.</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="ahead.png" height="48" alt="green checkmark with P"></img></td>
+    <td align="left">Your repository has newer commits than the other one.  You may consider pushing your changes or letting the owner know.</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="behind.png" height="48" alt="yellow warning"></img></td>
+    <td align="left">The other repository has newer commits than yours.  You may consider pulling changes to avoid later merges.</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="merge.png" height="48" alt="yellow merge"></img></td>
+    <td align="left">Each of the two repositories has commits not present in the other one, but they can be merged cleanly. </td>
+  </tr>
+  <tr>
+    <td align="center"><img src="mergeconflict.png" height="48" alt="red merge"></img></td>
+    <td align="left">Each of the two repositories has commits not present in the other one and merging them will result in a textual conflict. </td>
+  </tr>
+
+  <!-- tr
+    <td align="center"><img src="compileconflict.png" height="48" alt="red merge with a C"></img></td>
+    <td align="left"><b>Not currently implemented.</b>  Both repositories have new commits and merging them does not result in a textual conflict but the result does not compile. </td>
+  </tr>
+  <tr>
+    <td align="center"><img src="testconflict.png" height="48" alt="red merge with a T"></img></td>
+    <td align="left"><b>Not currently implemented.</b>  Both repositories
+    have new commits and merging them does not result in a textual or
+    compilation conflict, but the result does not pass at least one test
+    that either your or the other repository passes. </td>
+  </tr>
+  -->
+</table>
+
+<p>
+In the task bar, Crystal displays the most severe icon that appears
+anywhere in the full window.
+</p>
+
+
+<h2 id="Configuration_File_Format">Configuration file format</h2>
+
+<p>The Crystal configuration file is an XML file that describes the locations of the scratch space and the <tt>hg</tt> executable, as well as contains information on the repositories crystal monitors.
+</p>
+
+<p>
+Here is an example valid configuration file:
+</p>
+
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;ccConfig tempDirectory=&quot;C:/temp/conflictClient/&quot; hgPath=&quot;C:/Program Files/TortoiseHg/hg.exe&quot;&gt;
+  &lt;project myKind=&quot;HG&quot; myShortName=&quot;MyFirstProject&quot; myClone=&quot;C:/projects/myLocalFirstProjectRepo/&quot;&gt;
+    &lt;source myKind=&quot;HG&quot; myShortName=&quot;MASTER&quot; myClone=&quot;ssh://user@host/path/to/repo/&quot; /&gt;
+    &lt;source myKind=&quot;HG&quot; myShortName=&quot;Friend&quot; myClone=&quot;ssh://user@host/path/to/friend/repo/&quot; /&gt;
+  &lt;/project&gt;
+  &lt;project myKind=&quot;HG&quot; myShortName=&quot;MySecondProject&quot; myClone=&quot;C:/projects/myLocalSecondProjectRepo/&quot;&gt;
+    &lt;source myKind=&quot;HG&quot; myShortName=&quot;MASTER&quot; myClone=&quot;ssh://user@host/path/to/socond/project/repo/&quot; /&gt;
+    &lt;source myKind=&quot;HG&quot; myShortName=&quot;Friend&quot; myClone=&quot;ttps://user@host/path/to/friend/second/repo&quot; /&gt;
+  &lt;/project&gt;
+&lt;/ccConfig&gt;
+</pre>
+
+<p>
+At the root level, there is a single XML element: <tt>ccConfig</tt>.  This element has two attributes: <tt>tempDirectory</tt> and <tt>hgPath</tt>.  These attributes show the path to the scratch space and the hg executable, respectively.
+</p>
+
+<p>
+For each project you wish Crystal to track, <tt>ccConfig</tt> will have a <tt>project</tt> child with three attributes: <tt>myKind</tt>, <tt>myShortName</tt>, and <tt>myClone</tt>.  The <tt>myKind</tt> element describes the kind of the repository: HG for mercurial or GIT for git, although, for now, Crystal only supports HG.  The <tt>myShortName</tt> element is the name of the project you want Crystal to display (on the left side on the screen shot above).  The <tt>myClone</tt> element is the path to your local repository; you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
+</p>
+
+<p>
+Finally, for each repository you wish Crystal to compare to your repository, the <tt>project</tt> element will have a <tt>source</tt> child with three attributes: <tt>myKind</tt>, <tt>myShortName</tt>, and <tt>myClone</tt>.  The <tt>myKind</tt> element is identical to the parent <tt>project</tt>'s <tt>myKind</tt> element.  The <tt>myShortName</tt> element is the name of the repository you want Crystal to display (above the icons on the screen shot above).  The <tt>myClone</tt> element is the path to this repository; again, you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
+</p>
+
+<h2 id="access-to-remote-repos">Making your repository available to your co-workers</h2>
+
+<p>
+The more of your co-workers' repositories you have read access to, the
+more useful Crystal will be.  This section explains how to make your
+repositories (your clones) available to a co-worker.
+The two basic ways are via a file system or via http.
+</p>
+
+<dl>
+<dt>File system sharing</dt>
+<dd>
+If you and your co-worker have access to the same file system, then you can
+store your repository in a place where your co-worker can read it.
+
+<ul>
+<li>
+If you already do your work on that shared file system, then you can just
+grant your co-worker read permission to your repository.
+
+<p>
+If changing permissions is difficult, then you can periodically copy your
+repository to a location that your co-worker can read.  The more frequently
+you do this, the more useful Crystal is.  Here is a line you can place in
+your crontab file to automate the task:
+</p>
+<pre>
+# Update a public copy of a .hg directory every minute.
+* * * * *	\cp -fpru .../path-to-repo/.hg .../accessible-path
+</pre>
+(The <tt>.hg</tt> file will end up as <tt>.../accessible-path/.hg</tt>, and
+the path to the repository is just <tt>.../accessible-path</tt>.)
+</li>
+<li>
+If you do your work on a different file system, you will need to copy your
+work periodically to the shared file system.  Tools that you might find
+useful include <tt>scp</tt>, <tt>rsync</tt>, or <tt>unison</tt>.  Again,
+automating this task is easiest for you and most useful to your co-workers.
+</li>
+</ul>
+</dd>
+<dt>Http sharing</dt>
+<dd>
+The http sharing approach is often easier, but it only works if you have
+access to a machine that runs a web server.
+
+<p>
+Store your repository in a location that is accessible from the web &mdash;
+that is, a directory that has a <tt>http:</tt> URL.  You can
+make a symbolic link from your <tt>~/public_html</tt> directory (this may
+requires changing access permissions so the web server can read your
+repository), or periodically make a local or remote copy as described above.
+</p>
+</dd>
+</dl>
+
+
+
+<h2 id="Contacts">Contacts</h2>
+
+<p>
+Crystal is designed and developed by <a href="http://www.cs.washington.edu/homes/brun">Yuriy Brun</a>, <a href="http://www.cs.washington.edu/homes/rtholmes">Reid Holmes</a>, <a href="http://www.cs.washington.edu/homes/mernst">Michael Ernst</a>, and <a href="http://www.cs.washington.edu/homes/notkin">David Notkin</a>.
+<br/>
+<a href="mailto:brun@cs.washington.edu">Email us</a> with any questions.
+</p>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-7528475-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-7528475-4");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+
+</body>
+</html>
+
+<!--  LocalWords:  JRE hgrc hg xml UTF ccConfig tempDirectory hgPath myKind ini
+ -->
+<!--  LocalWords:  myShortName MyFirstProject myClone MySecondProject cp fpru
+ -->
+<!--  LocalWords:  scp rsync
+ -->

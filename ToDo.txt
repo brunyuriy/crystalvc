@@ -1,0 +1,98 @@
+* Repository cloning issues
+
+-- Changing the clone address of a repository to a totally different repository causes errors.
+   Problem is because we cache a local copy of the repository, and if the clone address changes but the shortName does not, then the cache tries to just update and then make the comparison, but the comparison cannot happen because the repositories are different.
+
+-- If getting the status fails, must display ther error icon and not crash.  Also, may consider bringing some sort of info forward (possibly tool tip).
+
+-- If a repository is invalid, Crystal crashes.  
+   This is because getStatus throws an exception.  Should catch it, put up error icon, etc.
+
+-- handle myClone addresses that are not valid clonable addresses
+   System falls down when it tries to create a local clone.  Hg does not allow for an easy way to check if something is a repository (why? see http://mercurial.selenic.com/bts/issue1025 ).  Should check output of clone and go forward from that.
+
+DONE (20100729-brun) -- Add an autoreplace for \ to /
+
+* Caching issues
+
+-- Crystal should cache the latest result from each comparison that it does, and also the latest revision in each of the repositories that it compares. Then, if the two repositories are still at the same revision as the last time they were checked (which I expect to be the common case), Crystal doesn't have to do any work at all.
+   Reid: if we did do it I would do it by storing triples: remote tip hex, my tip hex, status.  Then we could just query using hg log or status or whatever and compare the remote hex and local hex and work from there.
+
+
+* XML and config file issues (also start up)
+
+DONE (20100729-brun) -- deal with Crystal trying to write to a file.
+
+-- add a load settings / save setting interface.
+
+-- When I had no .conflictClient.xml file, The crystal GUI asked me the path to hg, then wrote a .conflictClient.xml file with hgPath="/path/to/hg" rather than the path that I had typed in.
+
+-- Any newly-generated .conflictClient.xml file should have a comment that
+points the user at the documentation at
+http://www.cs.washington.edu/homes/brun/research/crystal/ .
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Conflict Client configuration file -->
+
+<!-- Example:
+<?xml version="1.0" encoding="UTF-8"?>
+<ccConfig tempDirectory="C:/temp/conflictClient/" hgPath="C:/Program Files/TortoiseHg/hg.exe">
+ <project myKind="HG" myShortName="MyFirstProject" myClone="C:/projects/myLocalFirstProjectRepo/">
+   <source myShortName="MASTER" myClone="ssh://user@host/path/to/repo/" myKind="HG" />
+   <source myShortName="Friend" myClone="ssh://user@host/path/to/friend/repo/" myKind="HG" />
+ </project>
+ <project myKind="HG" myShortName="MySecondProject" myClone="C:/projects/myLocalSecondProjectRepo/">
+   <source myShortName="MASTER" myClone="ssh://user@host/path/to/socond/project/repo/" myKind="HG" />
+   <source myShortName="Friend" myClone="ttps://user@host/path/to/friend/second/repo" myKind="HG" />
+ </project>
+</ccConfig>
+-->
+
+-- When I started Crystal with the first attached .conflictClient.xml file, I got these warnings:
+ Error parsing configuration file; Kind attribute must be set for project element.
+ ERROR 2010-07-26 12:17:15,571 (ConflictSystemTray.java:113) - Error parsing configuration file; Kind attribute must be set for project element.
+but I don't think there is any "Kind" attribute.  Should this be "myKind"?
+Check what it prints out if the myKind is missing.
+
+DONE (20100722-brun) -- fix order of myKind / other atributes.
+
+
+* GUI
+
+-- The spacing in the config editor GUI is poor.  Suppose that I have 2 projects with different numbers of repositories.  Then the input boxes (such as for "project name") are stretched to fill the window vertically, rather than permitting whitespace at the bottom of the window as would be better.
+  This is because of the way JTabbedPane works.  No good way to fix it.  All tabs are the size of the largest tab.
+
+-- A checkmark and a checkmark_P seem to produce a checkmark system-tray icon.  So do two checkmarks, it seems.  
+
+-- Updating / Update now aren't working right.  
+
+DONE (20100731-brun) -- Crystal crashes if there is no system tray support in the OS.  (More testing may be needed).
+
+DONE (20100731-brun) -- The GUI now uses swing and we can add tool tips, etc.  
+
+DONE (20100731-brun) -- The temp path keeps accumulating / every time you restart the client.
+
+DONE (20100722-brun) -- Add the website to the about box.
+
+* Manual
+
+-- In the manual fix:
+I am monitoring two repositories for checker-framework.  Currently, I see:
+
+                      HEAD           wmd
+checker-framework   [checkmark]  [yellow merge]
+
+This surprised me.  How could this description from the manual:
+
+Both repositories have new commits but they can be merged cleanly at this time. How can this be true if I am in sync with HEAD?
+
+The answer is that Werner has done work without merging changes from HEAD.  So, there is nothing I can do about this.  Maybe the text in the manual should be changed from "new"; I misinterpreted this non-technical term.
+
+-- move webpage / manual to the repository
+
+
+DONE (20100727-brun) -- Remove the inimplemented functionality from the website.
+
+DONE (20100722-brun) -- Document the xml file in the manual.  
+
