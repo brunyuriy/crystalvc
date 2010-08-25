@@ -1,5 +1,9 @@
 package crystal.model;
 
+import java.util.HashMap;
+
+import crystal.server.HgLogParser.Checkpoint;
+
 /**
  * Describes a repository.
  * 
@@ -38,6 +42,8 @@ public class DataSource {
 	
 	// optional argument to pass to hg for --remotecmd in case the remote hg path is not just "hg"
 	private String _remoteHg = null;
+	
+	private HashMap<String, Checkpoint> _changesets;
 
 	// Create a new, enabled source.  
 	public DataSource(String shortName, String cloneString, RepoKind repoKind, boolean hide, String parent) {
@@ -54,6 +60,7 @@ public class DataSource {
 //		_master = shortName.toLowerCase().trim().equals("master");
 		_hide = hide;
 		setParent(parent);
+		_changesets = new HashMap<String, Checkpoint>();
 	}
 	
 	public void setRemoteHg(String remoteHg) {
