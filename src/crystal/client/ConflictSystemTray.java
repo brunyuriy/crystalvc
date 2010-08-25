@@ -21,9 +21,10 @@ import org.apache.log4j.Logger;
 import crystal.Constants;
 import crystal.client.ConflictDaemon.ComputationListener;
 import crystal.model.DataSource;
-import crystal.model.StateAndRelationship;
-import crystal.model.StateAndRelationship.LocalState;
-import crystal.model.StateAndRelationship.Relationship;
+import crystal.model.LocalStateResult;
+import crystal.model.RelationshipResult;
+import crystal.model.LocalStateResult.LocalState;
+import crystal.model.RelationshipResult.Relationship;
 import crystal.util.LSMRLogger;
 import crystal.util.TimeUtility;
 
@@ -285,12 +286,12 @@ public class ConflictSystemTray implements ComputationListener {
 		boolean pTask = false;
 		
 		// check if anything is PENDING (first local states then relationships
-		for (StateAndRelationship localState : ConflictDaemon.getInstance().getLocalStates()){
+		for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()){
 			if (localState.getLocalState().equals(LocalState.PENDING)) {
 				pTask = true;
 			}
 		}
-		for (StateAndRelationship relationship : ConflictDaemon.getInstance().getRelationships()) {
+		for (RelationshipResult relationship : ConflictDaemon.getInstance().getRelationships()) {
 			if (relationship.getRelationship().equals(Relationship.PENDING)) {
 				pTask = true;
 			}
@@ -435,12 +436,12 @@ public class ConflictSystemTray implements ComputationListener {
 
 		// check if anything is PENDING (first local states then relationships
 		boolean pendingTask = false;
-		for (StateAndRelationship localState : ConflictDaemon.getInstance().getLocalStates()){
+		for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()){
 			if (localState.getLocalState().equals(LocalState.PENDING)) {
 				pendingTask = true;
 			}
 		}
-		for (StateAndRelationship relationship : ConflictDaemon.getInstance().getRelationships()) {
+		for (RelationshipResult relationship : ConflictDaemon.getInstance().getRelationships()) {
 			if (relationship.getRelationship().equals(Relationship.PENDING)) {
 				pendingTask = true;
 			}
