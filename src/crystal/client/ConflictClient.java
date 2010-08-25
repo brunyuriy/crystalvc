@@ -22,9 +22,10 @@ import org.apache.log4j.Logger;
 
 import crystal.Constants;
 import crystal.model.DataSource;
-import crystal.model.StateAndRelationship;
-import crystal.model.StateAndRelationship.LocalState;
-import crystal.model.StateAndRelationship.Relationship;
+import crystal.model.LocalStateResult;
+import crystal.model.LocalStateResult.LocalState;
+import crystal.model.RelationshipResult;
+import crystal.model.RelationshipResult.Relationship;
 import crystal.util.JMultiLineToolTip;
 
 /**
@@ -350,7 +351,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			JLabel action = _iconMap.get(projPref.getEnvironment());
 			
 			DataSource projectSource = projPref.getEnvironment();
-			StateAndRelationship actionResult = ConflictDaemon.getInstance().getLocalState(projectSource);
+			LocalStateResult actionResult = ConflictDaemon.getInstance().getLocalState(projectSource);
 			LocalState localState = actionResult.getLocalState();
 			LocalState lastLocalState = actionResult.getLastLocalState();
 			
@@ -366,7 +367,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 					JLabel current = _iconMap.get(source);
 					current.removeAll();
 
-					StateAndRelationship result = ConflictDaemon.getInstance().getRelationship(source);
+					RelationshipResult result = ConflictDaemon.getInstance().getRelationship(source);
 					Relationship relationship = result.getRelationship();
 					Relationship lastRelationship = result.getLastRelationship();
 

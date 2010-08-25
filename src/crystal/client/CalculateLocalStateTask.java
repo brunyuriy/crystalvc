@@ -7,8 +7,8 @@ import javax.swing.SwingWorker;
 import org.apache.log4j.Logger;
 
 import crystal.client.ConflictDaemon.ComputationListener;
-import crystal.model.StateAndRelationship.LocalState;
-import crystal.model.StateAndRelationship;
+import crystal.model.LocalStateResult;
+import crystal.model.LocalStateResult.LocalState;
 
 /**
  * This class enables the calculations to happen on a background thread but _STILL_ update the UI. When we were doing
@@ -17,7 +17,7 @@ import crystal.model.StateAndRelationship;
  * 
  * @author brun
  */
-class CalculateLocalStateTask extends SwingWorker<Void, StateAndRelationship> {
+class CalculateLocalStateTask extends SwingWorker<Void, LocalStateResult> {
 	private Logger _log = Logger.getLogger(this.getClass());
 	private ProjectPreferences _prefs;
 	private ComputationListener _trayListener;
@@ -39,17 +39,17 @@ class CalculateLocalStateTask extends SwingWorker<Void, StateAndRelationship> {
 
 	@Override
 	protected Void doInBackground() throws Exception {
-		StateAndRelationship calculatingPlaceholder = null;
+		LocalStateResult calculatingPlaceholder = null;
 
 		if (ConflictDaemon.getInstance().getLocalState(_prefs.getEnvironment()) != null) {
-			calculatingPlaceholder = new StateAndRelationship(_prefs.getEnvironment(), null, null, LocalState.PENDING, ConflictDaemon.getInstance().getLocalState(_prefs.getEnvironment()).getLocalState());
+			calculatingPlaceholder = new LocalStateResult(_prefs.getEnvironment(), LocalState.PENDING, ConflictDaemon.getInstance().getLocalState(_prefs.getEnvironment()).getLocalState());
 		} else {
-			calculatingPlaceholder = new StateAndRelationship(_prefs.getEnvironment(), null, null, LocalState.PENDING, null);
+			calculatingPlaceholder = new LocalStateResult(_prefs.getEnvironment(), LocalState.PENDING, null);
 		}
 		
 		publish(calculatingPlaceholder);
 
-		StateAndRelationship result = ConflictDaemon.getInstance().calculateLocalStates(_prefs);
+		LocalStateResult result = ConflictDaemon.getInstance().calculateLocalStates(_prefs);
 
 		_log.trace("Local state computed: " + result);
 
@@ -58,8 +58,8 @@ class CalculateLocalStateTask extends SwingWorker<Void, StateAndRelationship> {
 	}
 
 	@Override
-	protected void process(List<StateAndRelationship> chunks) {
-		for (StateAndRelationship cr : chunks) {
+	protected void process(List<LocalStateResult> chunks) {
+		for (LocalStateResult cr : chunks) {
 			_log.trace("Processing computed result: " + cr);
 
 			if (_trayListener != null)

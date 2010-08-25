@@ -14,41 +14,8 @@ import crystal.Constants;
  * 
  */
 
-public class StateAndRelationship {
+public class RelationshipResult {
 	
-	/**
-	 * Represents a local state
-	 */
-	
-	public static class LocalState {
-		public static LocalState UNCHECKPOINTED = new LocalState("hg commit", "UNCHECKPOINTED");
-		public static LocalState MUST_RESOLVE = new LocalState("hg fetch", "MUST RESOLVE");
-		public static LocalState ALL_CLEAR = new LocalState("all clear", "ALL CLEAR");
-		public static LocalState PENDING = new LocalState("", "PENDING");
-		public static LocalState ERROR = new LocalState("", "ERROR");
-		
-		private final String _name;
-		private final String _action;
-		
-		private LocalState(String action, String name) {
-			_action = action;
-			_name = name;
-		}
-		
-		public String getAction() {
-			return _action;
-		}
-		
-		public String getName() {
-			return _name;
-		}
-		
-		@Override
-		public String toString() {
-			return _name;
-		}
-		
-	}
 	
 	/**
 	 * Represents a conflict detection answer.
@@ -114,9 +81,9 @@ public class StateAndRelationship {
 				return 0;
 		}
 		
-		public static Relationship getDominant(Collection<StateAndRelationship> statesAndRelationships) {
+		public static Relationship getDominant(Collection<RelationshipResult> statesAndRelationships) {
 			Relationship dominant = null;
-			for (StateAndRelationship currentStateAndRelationship : statesAndRelationships) {
+			for (RelationshipResult currentStateAndRelationship : statesAndRelationships) {
 				Relationship currentRelationship = null;
 				if ((currentStateAndRelationship.getRelationship() == PENDING) && (currentStateAndRelationship.getLastRelationship() != null)) { 
 					// if it's pending, use whatever value it had last time
@@ -159,21 +126,15 @@ public class StateAndRelationship {
 	private final Relationship _relationship;
 	private final Relationship _lastRelationship;
 	
-	private final LocalState _state;
-	private final LocalState _lastState;
-
-	public StateAndRelationship(DataSource source, Relationship relationship, Relationship lastRelationship, LocalState state, LocalState lastState) {
+	public RelationshipResult(DataSource source, Relationship relationship, Relationship lastRelationship) {
 		_source = source;
 		_relationship = relationship;
 		_lastRelationship = lastRelationship;
-		_state = state;
-		_lastState = lastState;
 	}
 
 	@Override
 	public String toString() {
-		return "StateAndRelationship - " + _source.getShortName() + " state: " + _state + " and last state: " + _lastState + ". " +
-			"Relationship: " + _relationship + " and last relationship: " + _lastRelationship + ".";
+		return "StateAndRelationship - " + _source.getShortName() + " Relationship: " + _relationship + " and last relationship: " + _lastRelationship + ".";
 	}
 
 	public DataSource getDataSource() {
@@ -186,13 +147,5 @@ public class StateAndRelationship {
 
 	public Relationship getLastRelationship() {
 		return _lastRelationship;
-	}
-	
-	public LocalState getLocalState() {
-		return _state;
-	}
-	
-	public LocalState getLastLocalState() {
-		return _lastState;
 	}
 }
