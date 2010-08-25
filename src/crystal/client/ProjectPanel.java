@@ -1,5 +1,9 @@
 package crystal.client;
 
+import java.awt.ComponentOrientation;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -8,6 +12,7 @@ import java.util.HashSet;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -61,6 +66,32 @@ public class ProjectPanel extends JPanel {
 		});
 		add(namePanel);
 		
+		JPanel parentPanel = new JPanel();
+		parentPanel.setLayout(new BoxLayout(parentPanel, BoxLayout.X_AXIS));
+		parentPanel.add(new JLabel("Parent Name (optional): "));
+		final JTextField parentName = new JTextField(pref.getEnvironment().getParent());
+		if (parentName.getText().equals(""))
+			parentName.setText(" ");
+		parentPanel.add(parentName);
+		parentName.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent arg0) {				
+			}
+
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			public void keyReleased(KeyEvent arg0) {
+				pref.getEnvironment().setParent(parentName.getText());
+				prefs.setChanged(true);
+				if (parentName.getText().equals(""))
+					parentName.setText(" ");
+				panel.validate();
+				mainFrame.pack();
+			}
+		});
+		add(parentPanel);
+
+		
 		JPanel typePanel = new JPanel();
 		typePanel.setLayout(new BoxLayout(typePanel, BoxLayout.X_AXIS));		
 		typePanel.add(new JLabel("Repo Type: "));
@@ -110,19 +141,49 @@ public class ProjectPanel extends JPanel {
 				int count = 1;
 				while (shortNameLookup.contains("New Repo " + count++));
 				
-				DataSource newGuy = new DataSource("New Repo " + --count, "", DataSource.RepoKind.HG);
+				DataSource newGuy = new DataSource("New Repo " + --count, "", DataSource.RepoKind.HG, false, null);
 				pref.addDataSource(newGuy);
 				add(repoPanel(newGuy, pref, prefs, panel, mainFrame));
 				prefs.setChanged(true);
 				panel.validate();
-				mainFrame.pack();				
+				mainFrame.pack();
 			}
 		});
 		add(newRepoButton);
+		
+		JPanel sourcesPanel = new JPanel();
+		GridBagLayout grid = new GridBagLayout();
+		sourcesPanel.setLayout(grid); 
+//		sourcesPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		GridBagConstraints constraints = new GridBagConstraints();
+		
+		constraints.weightx = 1.0;
+		JLabel pShortName = new JLabel("Short Name");
+		JLabel pHide = new JLabel("Hide?");
+		JLabel pParent = new JLabel("Parent");
+		JLabel pClone = new JLabel("Clone Address");
+		JLabel pDelete = new JLabel("");
 
+		
+		grid.setConstraints(pShortName, constraints);
+		sourcesPanel.add(pShortName);
+		grid.setConstraints(pHide, constraints);
+		sourcesPanel.add(pHide);
+		grid.setConstraints(pParent, constraints);
+		sourcesPanel.add(pParent);
+		grid.setConstraints(pClone, constraints);
+		sourcesPanel.add(pClone);
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		grid.setConstraints(pDelete, constraints);
+		sourcesPanel.add(pDelete);
+
+		constraints.weightx = 0.0;
 		for (DataSource source : pref.getDataSources()) {
-			add(repoPanel(source, pref, prefs, panel, mainFrame));			
+			JPanel repoPanel = repoPanel(source, pref, prefs, panel, mainFrame);
+			grid.setConstraints(repoPanel, constraints);
+			sourcesPanel.add(repoPanel);
 		}
+		add(sourcesPanel);
 	}
 
 	public String getName() {
@@ -133,6 +194,7 @@ public class ProjectPanel extends JPanel {
 		final JPanel repoPanel = new JPanel();		
 		repoPanel.setLayout(new BoxLayout(repoPanel, BoxLayout.X_AXIS));
 
+/*
 		repoPanel.add(new JLabel("Repo Type"));
 		final JComboBox type = new JComboBox();
 		type.addItem(DataSource.RepoKind.HG);
@@ -147,8 +209,9 @@ public class ProjectPanel extends JPanel {
 				mainFrame.pack();
 			}
 		});
+*/
 
-		repoPanel.add(new JLabel("Short Name"));
+//		repoPanel.add(new JLabel("Short Name"));
 		final JTextField shortName = new JTextField(source.getShortName());
 		repoPanel.add(shortName);
 		shortName.addKeyListener(new KeyListener() {
@@ -165,8 +228,43 @@ public class ProjectPanel extends JPanel {
 				mainFrame.pack();
 			}
 		});
+		
+//		repoPanel.add(new JLabel("Hide?"));
+		final JCheckBox hideBox = new JCheckBox();
+		if (source.isHidden())
+			hideBox.setSelected(true);
+		repoPanel.add(hideBox);
+		hideBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+//				hideBox.setSelected(!(hideBox.isSelected()));
+				source.hide(hideBox.isSelected());
+				prefs.setChanged(true);
+			}
+		});
+		
+//		repoPanel.add(new JLabel("Parent"));
+		final JTextField parent = new JTextField(source.getParent());
+		if (parent.getText().equals(""))
+			parent.setText(" ");
+		repoPanel.add(parent);
+		parent.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent arg0) {				
+			}
 
-		repoPanel.add(new JLabel("Clone Address"));
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			public void keyReleased(KeyEvent arg0) {
+				source.setParent(parent.getText());
+				prefs.setChanged(true);
+				if (parent.getText().equals(""))
+					parent.setText(" ");
+				panel.validate();
+				mainFrame.pack();
+			}
+		});
+
+//		repoPanel.add(new JLabel("Clone Address"));
 		final JTextField cloneAddress = new JTextField(source.getCloneString());
 		repoPanel.add(cloneAddress);
 		cloneAddress.addKeyListener(new KeyListener() {

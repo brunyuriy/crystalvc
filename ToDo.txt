@@ -1,14 +1,16 @@
+-- What do we do if my repository is behind yours, but yours is in a conflicting (two headed) state?  Currently, we just say "behind".
+
 * Repository cloning issues
 
--- Changing the clone address of a repository to a totally different repository causes errors.
+DONE (20100805-brun) Changing the clone address of a repository to a totally different repository causes errors.
    Problem is because we cache a local copy of the repository, and if the clone address changes but the shortName does not, then the cache tries to just update and then make the comparison, but the comparison cannot happen because the repositories are different.
 
--- If getting the status fails, must display ther error icon and not crash.  Also, may consider bringing some sort of info forward (possibly tool tip).
+DONE (20100805-brun) -- If getting the status fails, must display ther error icon and not crash.  Also, may consider bringing some sort of info forward (possibly tool tip).
 
--- If a repository is invalid, Crystal crashes.  
+DONE (20100805-brun) -- If a repository is invalid, Crystal crashes.  
    This is because getStatus throws an exception.  Should catch it, put up error icon, etc.
 
--- handle myClone addresses that are not valid clonable addresses
+DONE (20100805-brun) -- handle myClone addresses that are not valid clonable addresses
    System falls down when it tries to create a local clone.  Hg does not allow for an easy way to check if something is a repository (why? see http://mercurial.selenic.com/bts/issue1025 ).  Should check output of clone and go forward from that.
 
 DONE (20100729-brun) -- Add an autoreplace for \ to /
@@ -21,35 +23,18 @@ DONE (20100729-brun) -- Add an autoreplace for \ to /
 
 * XML and config file issues (also start up)
 
+-- make reader read various capitalizations.  Really, make the static var of names a list, and read for presence of any element of that list.  
+
 DONE (20100729-brun) -- deal with Crystal trying to write to a file.
 
 -- add a load settings / save setting interface.
 
 -- When I had no .conflictClient.xml file, The crystal GUI asked me the path to hg, then wrote a .conflictClient.xml file with hgPath="/path/to/hg" rather than the path that I had typed in.
 
--- Any newly-generated .conflictClient.xml file should have a comment that
-points the user at the documentation at
-http://www.cs.washington.edu/homes/brun/research/crystal/ .
+DONE (20100803-brun) -- Any newly-generated .conflictClient.xml file should have a comment that
+points the user at the documentation and includes an example.
 
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!-- Conflict Client configuration file -->
-
-<!-- Example:
-<?xml version="1.0" encoding="UTF-8"?>
-<ccConfig tempDirectory="C:/temp/conflictClient/" hgPath="C:/Program Files/TortoiseHg/hg.exe">
- <project myKind="HG" myShortName="MyFirstProject" myClone="C:/projects/myLocalFirstProjectRepo/">
-   <source myShortName="MASTER" myClone="ssh://user@host/path/to/repo/" myKind="HG" />
-   <source myShortName="Friend" myClone="ssh://user@host/path/to/friend/repo/" myKind="HG" />
- </project>
- <project myKind="HG" myShortName="MySecondProject" myClone="C:/projects/myLocalSecondProjectRepo/">
-   <source myShortName="MASTER" myClone="ssh://user@host/path/to/socond/project/repo/" myKind="HG" />
-   <source myShortName="Friend" myClone="ttps://user@host/path/to/friend/second/repo" myKind="HG" />
- </project>
-</ccConfig>
--->
-
--- When I started Crystal with the first attached .conflictClient.xml file, I got these warnings:
+DONE (20100805-brun) -- When I started Crystal with the first attached .conflictClient.xml file, I got these warnings:
  Error parsing configuration file; Kind attribute must be set for project element.
  ERROR 2010-07-26 12:17:15,571 (ConflictSystemTray.java:113) - Error parsing configuration file; Kind attribute must be set for project element.
 but I don't think there is any "Kind" attribute.  Should this be "myKind"?
@@ -57,15 +42,22 @@ Check what it prints out if the myKind is missing.
 
 DONE (20100722-brun) -- fix order of myKind / other atributes.
 
+DONE (20100803-brun) -- fix order of myKind atributes in the XML file writer.
+
+DONE (20100805-brun) -- remove my from the XML tags.
+
 
 * GUI
+
+-- Make ConfigClient repaint correctly when the GUI editor changes the ClientPreferences.
 
 -- The spacing in the config editor GUI is poor.  Suppose that I have 2 projects with different numbers of repositories.  Then the input boxes (such as for "project name") are stretched to fill the window vertically, rather than permitting whitespace at the bottom of the window as would be better.
   This is because of the way JTabbedPane works.  No good way to fix it.  All tabs are the size of the largest tab.
 
--- A checkmark and a checkmark_P seem to produce a checkmark system-tray icon.  So do two checkmarks, it seems.  
+DONE (20100805-brun) -- A checkmark and a checkmark_P seem to produce a checkmark system-tray icon.  So do two checkmarks, it seems.  
+  The problem is that we just have a poor algorithm for selection of icons.  And maybe poor icons.  
 
--- Updating / Update now aren't working right.  
+DONE (20100801-holmes) -- Updating / Update now aren't working right.  
 
 DONE (20100731-brun) -- Crystal crashes if there is no system tray support in the OS.  (More testing may be needed).
 
@@ -89,8 +81,7 @@ Both repositories have new commits but they can be merged cleanly at this time. 
 
 The answer is that Werner has done work without merging changes from HEAD.  So, there is nothing I can do about this.  Maybe the text in the manual should be changed from "new"; I misinterpreted this non-technical term.
 
--- move webpage / manual to the repository
-
+DONE (20100727-brun) -- move webpage / manual to the repository
 
 DONE (20100727-brun) -- Remove the inimplemented functionality from the website.
 

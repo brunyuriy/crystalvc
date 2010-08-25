@@ -9,6 +9,7 @@ import java.awt.event.WindowListener;
 import java.util.HashSet;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -19,6 +20,7 @@ import javax.swing.JTextField;
 
 import org.junit.Assert;
 
+import crystal.Constants;
 import crystal.model.DataSource;
 
 /**
@@ -51,10 +53,11 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		Assert.assertNotNull(prefs);
 
 		final JFrame frame = this;
+		frame.setIconImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.jpg"))).getImage());
 
 		if (prefs.getProjectPreference().isEmpty()) {
 			// ClientPreferences client = new ClientPreferences("/usr/bin/hg/", "/tmp/crystalClient/");
-			ProjectPreferences newGuy = new ProjectPreferences(new DataSource("", "", DataSource.RepoKind.HG), prefs);
+			ProjectPreferences newGuy = new ProjectPreferences(new DataSource("", "", DataSource.RepoKind.HG, false, null), prefs);
 			prefs.addProjectPreferences(newGuy);
 			prefs.setChanged(true);
 		}
@@ -150,7 +153,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 				while (shortNameLookup.contains("New Project " + count++))
 					;
 
-				ProjectPreferences newGuy = new ProjectPreferences(new DataSource("New Project " + --count, "", DataSource.RepoKind.HG), prefs);
+				ProjectPreferences newGuy = new ProjectPreferences(new DataSource("New Project " + --count, "", DataSource.RepoKind.HG, false, null), prefs);
 				prefs.addProjectPreferences(newGuy);
 				ProjectPanel newGuyPanel = new ProjectPanel(newGuy, prefs, frame, projectsTabs);
 				projectsTabs.addTab("New Project " + count, newGuyPanel);
@@ -240,14 +243,14 @@ public class PreferencesGUIEditorFrame extends JFrame {
 	 */
 	public static void main(String[] args) {
 		ClientPreferences client = new ClientPreferences("temp", "hgPath");
-		ProjectPreferences one = new ProjectPreferences(new DataSource("first project", "~brun\\firstrepo", DataSource.RepoKind.HG), client);
-		DataSource oneOther = new DataSource("Mike's copy", "~mernst\\repo", DataSource.RepoKind.HG);
-		DataSource twoOther = new DataSource("Reid's copy", "~rtholmes\\repo", DataSource.RepoKind.HG);
-		DataSource threeOther = new DataSource("David's copy", "~notkin\\repo", DataSource.RepoKind.HG);
+		ProjectPreferences one = new ProjectPreferences(new DataSource("first project", "~brun\\firstrepo", DataSource.RepoKind.HG, false, null), client);
+		DataSource oneOther = new DataSource("Mike's copy", "~mernst\\repo", DataSource.RepoKind.HG, false, null);
+		DataSource twoOther = new DataSource("Reid's copy", "~rtholmes\\repo", DataSource.RepoKind.HG, false, null);
+		DataSource threeOther = new DataSource("David's copy", "~notkin\\repo", DataSource.RepoKind.HG, false, null);
 		one.addDataSource(oneOther);
 		one.addDataSource(twoOther);
 
-		ProjectPreferences two = new ProjectPreferences(new DataSource("second project", "~brun\\secondrepo", DataSource.RepoKind.HG), client);
+		ProjectPreferences two = new ProjectPreferences(new DataSource("second project", "~brun\\secondrepo", DataSource.RepoKind.HG, false, null), client);
 		two.addDataSource(threeOther);
 		two.addDataSource(oneOther);
 

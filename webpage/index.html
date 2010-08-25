@@ -10,7 +10,7 @@
 
 <body bgcolor="#FFFF99">
 
-<h1 id="Crystal:_Distributed_Version_Control_Speculative_Conflict_Detector">Crystal: Proactive Conflict Detector for Distributed Version Control</h1>
+<h1 id="Crystal:_Distributed_Version_Control_Speculative_Conflict_Detector"><img src="crystal-ball_blue_128.png" align="middle" alt="Crystal ball"/> Crystal: Proactive Conflict Detector for Distributed Version Control</h1>
 
 
 <p>Contents:</p>
@@ -24,7 +24,10 @@
           <li><a href="#Meaning_of_the_icons">Meaning of the icons</a></li>
         </ul></li>
       <li><a href="#Configuration_File_Format">Configuration file format</a></li>
-      <li><a href="#access-to-remote-repos">Making your repository available to your co-workers</a></li>
+      <li><a href="#access-to-remote-repos">Making your repository available to your co-workers</a>
+        <ul>
+          <li><a href="#copying-repository">Making a copy of your repository</a></li>
+        </ul></li>
       <li><a href="#Contacts">Contacts</a></li>
     </ul>
 <!-- end toc -->
@@ -74,7 +77,7 @@ fetch=
 <h2 id="download">How to run Crystal</h2>
 
 <ol>
-<li> Download <a href="crystal.jar">crystal.jar</a>. (Current version is 0.1.20100731.)</li>
+<li> Download <a href="crystal.jar">crystal.jar</a>. (Current version is 0.1.20100807.  To learn the version of an executable, run <tt>java -jar crystal.jar --version</tt> or select the <tt>about</tt> menu in the GUI.)</li>
 <li> Run:  <tt>java -jar crystal.jar</tt></li>
 <li> The tool will complain that your configuration file is invalid and
   give you instructions on how to fix it.  You can do so either via a GUI
@@ -107,11 +110,11 @@ other repositories.
     <td align="left">The repositories are in sync.</td>
   </tr>
   <tr>
-    <td align="center"><img src="ahead.png" height="48" alt="green checkmark with P"></img></td>
+    <td align="center"><img src="ahead.png" height="48" alt="push arrow"></img></td>
     <td align="left">Your repository has newer commits than the other one.  You may consider pushing your changes or letting the owner know.</td>
   </tr>
   <tr>
-    <td align="center"><img src="behind.png" height="48" alt="yellow warning"></img></td>
+    <td align="center"><img src="behind.png" height="48" alt="pull arrow"></img></td>
     <td align="left">The other repository has newer commits than yours.  You may consider pulling changes to avoid later merges.</td>
   </tr>
   <tr>
@@ -122,6 +125,15 @@ other repositories.
     <td align="center"><img src="mergeconflict.png" height="48" alt="red merge"></img></td>
     <td align="left">Each of the two repositories has commits not present in the other one and merging them will result in a textual conflict. </td>
   </tr>
+  <tr>
+    <td align="center"><img src="twohead.png" height="48" alt="two headed red arrow"></img></td>
+    <td align="left">Your repository is in a conflicted state.  You must resolve this conflict before you can interact with other repositories.  </td>
+  </tr>
+  <tr>
+    <td align="center"><img src="clock.png" height="48" alt="clock"></img></td>
+    <td align="left">Crystal is in the process of refreshing this data. </td>
+  </tr>
+
 
   <!-- tr
     <td align="center"><img src="compileconflict.png" height="48" alt="red merge with a C"></img></td>
@@ -155,13 +167,13 @@ Here is an example valid configuration file:
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;ccConfig tempDirectory=&quot;C:/temp/conflictClient/&quot; hgPath=&quot;C:/Program Files/TortoiseHg/hg.exe&quot;&gt;
-  &lt;project myKind=&quot;HG&quot; myShortName=&quot;MyFirstProject&quot; myClone=&quot;C:/projects/myLocalFirstProjectRepo/&quot;&gt;
-    &lt;source myKind=&quot;HG&quot; myShortName=&quot;MASTER&quot; myClone=&quot;ssh://user@host/path/to/repo/&quot; /&gt;
-    &lt;source myKind=&quot;HG&quot; myShortName=&quot;Friend&quot; myClone=&quot;ssh://user@host/path/to/friend/repo/&quot; /&gt;
+  &lt;project Kind=&quot;HG&quot; ShortName=&quot;MyFirstProject&quot; Clone=&quot;C:/projects/MyLocalFirstProjectRepo/&quot;&gt;
+    &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/repo/&quot; /&gt;
+    &lt;source ShortName=&quot;Friend&quot; Clone=&quot;ssh://user@host/path/to/friend/repo/&quot; /&gt;
   &lt;/project&gt;
-  &lt;project myKind=&quot;HG&quot; myShortName=&quot;MySecondProject&quot; myClone=&quot;C:/projects/myLocalSecondProjectRepo/&quot;&gt;
-    &lt;source myKind=&quot;HG&quot; myShortName=&quot;MASTER&quot; myClone=&quot;ssh://user@host/path/to/socond/project/repo/&quot; /&gt;
-    &lt;source myKind=&quot;HG&quot; myShortName=&quot;Friend&quot; myClone=&quot;ttps://user@host/path/to/friend/second/repo&quot; /&gt;
+  &lt;project Kind=&quot;HG&quot; ShortName=&quot;MySecondProject&quot; Clone=&quot;C:/projects/MyLocalSecondProjectRepo/&quot;&gt;
+    &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/socond/project/repo/&quot; /&gt;
+    &lt;source ShortName=&quot;Friend&quot; Clone=&quot;https://user@host/path/to/friend/second/repo&quot; /&gt;
   &lt;/project&gt;
 &lt;/ccConfig&gt;
 </pre>
@@ -171,11 +183,11 @@ At the root level, there is a single XML element: <tt>ccConfig</tt>.  This eleme
 </p>
 
 <p>
-For each project you wish Crystal to track, <tt>ccConfig</tt> will have a <tt>project</tt> child with three attributes: <tt>myKind</tt>, <tt>myShortName</tt>, and <tt>myClone</tt>.  The <tt>myKind</tt> element describes the kind of the repository: HG for mercurial or GIT for git, although, for now, Crystal only supports HG.  The <tt>myShortName</tt> element is the name of the project you want Crystal to display (on the left side on the screen shot above).  The <tt>myClone</tt> element is the path to your local repository; you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
+For each project you wish Crystal to track, <tt>ccConfig</tt> will have a <tt>project</tt> child with three attributes: <tt>Kind</tt>, <tt>ShortName</tt>, and <tt>Clone</tt>.  The <tt>Kind</tt> element describes the kind of the repository: HG for mercurial or GIT for git, although, for now, Crystal only supports HG.  The <tt>ShortName</tt> element is the name of the project you want Crystal to display (on the left side on the screen shot above).  The <tt>Clone</tt> element is the path to your local repository; you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
 </p>
 
 <p>
-Finally, for each repository you wish Crystal to compare to your repository, the <tt>project</tt> element will have a <tt>source</tt> child with three attributes: <tt>myKind</tt>, <tt>myShortName</tt>, and <tt>myClone</tt>.  The <tt>myKind</tt> element is identical to the parent <tt>project</tt>'s <tt>myKind</tt> element.  The <tt>myShortName</tt> element is the name of the repository you want Crystal to display (above the icons on the screen shot above).  The <tt>myClone</tt> element is the path to this repository; again, you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
+Finally, for each repository you wish Crystal to compare to your repository, the <tt>project</tt> element will have a <tt>source</tt> child with three attributes: <tt>Kind</tt>, <tt>ShortName</tt>, and <tt>Clone</tt>.  The <tt>Kind</tt> element is identical to the parent <tt>project</tt>'s <tt>Kind</tt> element.  The <tt>ShortName</tt> element is the name of the repository you want Crystal to display (above the icons on the screen shot above).  The <tt>Clone</tt> element is the path to this repository; again, you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
 </p>
 
 <h2 id="access-to-remote-repos">Making your repository available to your co-workers</h2>
@@ -184,7 +196,9 @@ Finally, for each repository you wish Crystal to compare to your repository, the
 The more of your co-workers' repositories you have read access to, the
 more useful Crystal will be.  This section explains how to make your
 repositories (your clones) available to a co-worker.
-The two basic ways are via a file system or via http.
+Your coworker can access your clones either via a file system or via http.
+(This corresponds to the different types of URLs that can be passed to the
+<tt>hg clone</tt> command.)
 </p>
 
 <dl>
@@ -192,48 +206,59 @@ The two basic ways are via a file system or via http.
 <dd>
 If you and your co-worker have access to the same file system, then you can
 store your repository in a place where your co-worker can read it.
+<br />
+You can either grant your co-worker read permission to your repository, or
+you can <a href="#copying-repository">copy</a> your repository to a location that your co-worker can read.
 
-<ul>
-<li>
-If you already do your work on that shared file system, then you can just
-grant your co-worker read permission to your repository.
-
-<p>
-If changing permissions is difficult, then you can periodically copy your
-repository to a location that your co-worker can read.  The more frequently
-you do this, the more useful Crystal is.  Here is a line you can place in
-your crontab file to automate the task:
-</p>
-<pre>
-# Update a public copy of a .hg directory every minute.
-* * * * *	\cp -fpru .../path-to-repo/.hg .../accessible-path
-</pre>
-(The <tt>.hg</tt> file will end up as <tt>.../accessible-path/.hg</tt>, and
-the path to the repository is just <tt>.../accessible-path</tt>.)
-</li>
-<li>
-If you do your work on a different file system, you will need to copy your
-work periodically to the shared file system.  Tools that you might find
-useful include <tt>scp</tt>, <tt>rsync</tt>, or <tt>unison</tt>.  Again,
-automating this task is easiest for you and most useful to your co-workers.
-</li>
-</ul>
 </dd>
 <dt>Http sharing</dt>
 <dd>
 The http sharing approach is often easier, but it only works if you have
-access to a machine that runs a web server.
-
-<p>
-Store your repository in a location that is accessible from the web &mdash;
-that is, a directory that has a <tt>http:</tt> URL.  You can
-make a symbolic link from your <tt>~/public_html</tt> directory (this may
+access to a machine that runs a web server.  Either 
+make your repository accessible via http, or periodically <a href="#copying-repository">copy</a> your
+repository to a location that is accessible via http.
+In other words, the location will be a directory that has a <tt>http:</tt> URL.
+<ul>
+<li>
+To make your repository accessible via http, one way is to make 
+a symbolic link from your <tt>~/public_html</tt> directory (this may
 requires changing access permissions so the web server can read your
-repository), or periodically make a local or remote copy as described above.
-</p>
+repository).
+</li>
+<li>
+If you make a copy of your repository, then don't
+forget to make <tt>.../accessible-path/</tt> and all subdirectories
+readable by the web server (example: <tt>chmod -R og+r
+  .../accessible-path</tt>), and also enable the web server to show a
+directory listing to the hg client (example: add <tt>+Indexes</tt> to file
+<tt>.../accessible-path/.htaccess</tt>).
+</li>
+</ul>
 </dd>
 </dl>
 
+<h3 id="copying-repository">Making a copy of your repository</h3>
+
+<p>
+If you choose to make a copy of your repository in an accessible location,
+then the more frequently you update the copy, the more useful Crystal is.
+Here is a line you can place in your crontab file to automate the task:
+</p>
+<pre>
+# Update a public copy of a .hg directory every minute.
+* * * * *	rsync -a .../path-to-repo/.hg .../accessible-path
+</pre>
+<p>
+The <tt>.hg</tt> file will end up as <tt>.../accessible-path/.hg</tt>, and
+the path to the repository is just <tt>.../accessible-path</tt>.
+</p>
+
+<p>
+The destination path can even be on a different computer, in which case it
+looks like 
+<tt><em>machinename</em>:<em>filename</em></tt>, for example
+<tt>barb.cs.washington.edu:/homes/gws/mernst/www/crystal-repositories/...</tt>
+</p>
 
 
 <h2 id="Contacts">Contacts</h2>
@@ -268,9 +293,9 @@ pageTracker._trackPageview();
 </body>
 </html>
 
-<!--  LocalWords:  JRE hgrc hg xml UTF ccConfig tempDirectory hgPath myKind ini
+<!--  LocalWords:  JRE hgrc hg xml UTF ccConfig tempDirectory hgPath Kind ini
  -->
-<!--  LocalWords:  myShortName MyFirstProject myClone MySecondProject cp fpru
+<!--  LocalWords:  ShortName FirstProject Clone SecondProject cp fpru
  -->
 <!--  LocalWords:  scp rsync
  -->
