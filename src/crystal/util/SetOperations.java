@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 public class SetOperations {
-	
+
 	public static Set<String> intersection(Set<String> a, Set<String> b) {
 		Set<String> all = new HashSet<String>();
 		all.addAll(a);
@@ -18,26 +18,40 @@ public class SetOperations {
 		}
 		return answer;
 	}
-	
+
 	public static Set<String> union(Set<String> a, Set<String> b) {
 		Set<String> answer = new HashSet<String>();
 		answer.addAll(a);
 		answer.addAll(b);
 		return answer;
 	}
-	
+
 	public static Set<String> aminusb(Set<String> a, Set<String> b) {
 		Set<String> answer = new HashSet<String>();
 		answer.addAll(a);
 		answer.removeAll(b);
 		return answer;
 	}
-	
+
 	public static Set<String> xor(Set<String> a, Set<String> b) {
 		Set<String> answer = new HashSet<String>();
 		answer.addAll(aminusb(a,b));
 		answer.addAll(aminusb(b,a));
 		return answer;
+	}
+
+	/*	
+	 * @return true iff a is a subset of b
+	 */
+	public static boolean isSubset(Set<String> a, Set<String> b) {
+		return (aminusb(a, b).isEmpty());
+	}
+	
+	/*	
+	 * @return true iff a is a superset of b
+	 */
+	public static boolean isSuperset(Set<String> a, Set<String> b) {
+		return isSubset(b, a);
 	}
 
 }
