@@ -104,24 +104,6 @@ public class RelationshipResult {
 		}		
 	}
 	
-	public enum When {
-		NOW, LATER
-	}
-
-		
-//	public static When getWhen(ResultStatus relation, ResultStatus parent) {
-//		if (relation == BEHIND) {
-//			if (parent == BEHIND)
-//				return When.NOW;
-//			else if (parent == SAME)
-//				return When.LATER;
-//			else 
-//				return null;
-//		}
-//		//			if ()
-//		return null;	
-//	}
-
 	private final DataSource _source;
 	private final Relationship _relationship;
 	private final Relationship _lastRelationship;
