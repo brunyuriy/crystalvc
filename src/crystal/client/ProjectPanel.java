@@ -1,9 +1,7 @@
 package crystal.client;
 
-import java.awt.ComponentOrientation;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -24,10 +22,10 @@ import crystal.model.DataSource;
 
 /**
  * @author brun
- *
+ * 
  */
 public class ProjectPanel extends JPanel {
-	
+
 	private static final long serialVersionUID = 5244512987255240473L;
 	private String _name;
 
@@ -36,11 +34,11 @@ public class ProjectPanel extends JPanel {
 	 */
 	public ProjectPanel(final ProjectPreferences pref, final ClientPreferences prefs, final JFrame mainFrame, final JTabbedPane tabbedPane) {
 		super();
-		
+
 		final JPanel panel = this;
-		
+
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
+
 		_name = pref.getEnvironment().getShortName();
 
 		JPanel namePanel = new JPanel();
@@ -49,7 +47,7 @@ public class ProjectPanel extends JPanel {
 		final JTextField shortName = new JTextField(pref.getEnvironment().getShortName());
 		namePanel.add(shortName);
 		shortName.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {				
+			public void keyPressed(KeyEvent arg0) {
 			}
 
 			public void keyTyped(KeyEvent arg0) {
@@ -65,7 +63,7 @@ public class ProjectPanel extends JPanel {
 			}
 		});
 		add(namePanel);
-		
+
 		JPanel parentPanel = new JPanel();
 		parentPanel.setLayout(new BoxLayout(parentPanel, BoxLayout.X_AXIS));
 		parentPanel.add(new JLabel("Parent Name (optional): "));
@@ -74,7 +72,7 @@ public class ProjectPanel extends JPanel {
 			parentName.setText(" ");
 		parentPanel.add(parentName);
 		parentName.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {				
+			public void keyPressed(KeyEvent arg0) {
 			}
 
 			public void keyTyped(KeyEvent arg0) {
@@ -91,13 +89,12 @@ public class ProjectPanel extends JPanel {
 		});
 		add(parentPanel);
 
-		
 		JPanel typePanel = new JPanel();
-		typePanel.setLayout(new BoxLayout(typePanel, BoxLayout.X_AXIS));		
+		typePanel.setLayout(new BoxLayout(typePanel, BoxLayout.X_AXIS));
 		typePanel.add(new JLabel("Repo Type: "));
 		final JComboBox type = new JComboBox();
 		type.addItem(DataSource.RepoKind.HG);
-//		type.addItem(DataSource.RepoKind.GIT);
+		// type.addItem(DataSource.RepoKind.GIT);
 		type.setSelectedItem(pref.getEnvironment().getKind());
 		typePanel.add(type);
 		type.addActionListener(new ActionListener() {
@@ -109,12 +106,12 @@ public class ProjectPanel extends JPanel {
 		add(typePanel);
 
 		JPanel addressPanel = new JPanel();
-		addressPanel.setLayout(new BoxLayout(addressPanel, BoxLayout.X_AXIS));		
+		addressPanel.setLayout(new BoxLayout(addressPanel, BoxLayout.X_AXIS));
 		addressPanel.add(new JLabel("Clone Address: "));
 		final JTextField address = new JTextField(pref.getEnvironment().getCloneString());
 		addressPanel.add(address);
 		address.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {				
+			public void keyPressed(KeyEvent arg0) {
 			}
 
 			public void keyTyped(KeyEvent arg0) {
@@ -128,19 +125,20 @@ public class ProjectPanel extends JPanel {
 			}
 		});
 		add(addressPanel);
-		
+
 		final JButton newRepoButton = new JButton("Add New Repository");
-		
+
 		newRepoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				HashSet<String> shortNameLookup = new HashSet<String>();
 				for (DataSource current : pref.getDataSources()) {
 					shortNameLookup.add(current.getShortName());
 				}
 				int count = 1;
-				while (shortNameLookup.contains("New Repo " + count++));
-				
+				while (shortNameLookup.contains("New Repo " + count++))
+					;
+
 				DataSource newGuy = new DataSource("New Repo " + --count, "", DataSource.RepoKind.HG, false, null);
 				pref.addDataSource(newGuy);
 				add(repoPanel(newGuy, pref, prefs, panel, mainFrame));
@@ -150,13 +148,13 @@ public class ProjectPanel extends JPanel {
 			}
 		});
 		add(newRepoButton);
-		
+
 		JPanel sourcesPanel = new JPanel();
 		GridBagLayout grid = new GridBagLayout();
-		sourcesPanel.setLayout(grid); 
-//		sourcesPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		sourcesPanel.setLayout(grid);
+		// sourcesPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		GridBagConstraints constraints = new GridBagConstraints();
-		
+
 		constraints.weightx = 1.0;
 		JLabel pShortName = new JLabel("Short Name");
 		JLabel pHide = new JLabel("Hide?");
@@ -164,7 +162,6 @@ public class ProjectPanel extends JPanel {
 		JLabel pClone = new JLabel("Clone Address");
 		JLabel pDelete = new JLabel("");
 
-		
 		grid.setConstraints(pShortName, constraints);
 		sourcesPanel.add(pShortName);
 		grid.setConstraints(pHide, constraints);
@@ -190,32 +187,24 @@ public class ProjectPanel extends JPanel {
 		return _name;
 	}
 
-	private JPanel repoPanel(final DataSource source, final ProjectPreferences pref, final ClientPreferences prefs, final JPanel panel, final JFrame mainFrame) {
-		final JPanel repoPanel = new JPanel();		
+	private JPanel repoPanel(final DataSource source, final ProjectPreferences pref, final ClientPreferences prefs, final JPanel panel,
+			final JFrame mainFrame) {
+		final JPanel repoPanel = new JPanel();
 		repoPanel.setLayout(new BoxLayout(repoPanel, BoxLayout.X_AXIS));
 
-/*
-		repoPanel.add(new JLabel("Repo Type"));
-		final JComboBox type = new JComboBox();
-		type.addItem(DataSource.RepoKind.HG);
-//		type.addItem(DataSource.RepoKind.GIT);
-		type.setSelectedItem(source.getKind());
-		repoPanel.add(type);
-		type.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				source.setKind((DataSource.RepoKind) type.getSelectedItem());
-				prefs.setChanged(true);
-				panel.validate();
-				mainFrame.pack();
-			}
-		});
-*/
+		/*
+		 * repoPanel.add(new JLabel("Repo Type")); final JComboBox type = new JComboBox();
+		 * type.addItem(DataSource.RepoKind.HG); // type.addItem(DataSource.RepoKind.GIT);
+		 * type.setSelectedItem(source.getKind()); repoPanel.add(type); type.addActionListener(new ActionListener() {
+		 * public void actionPerformed(ActionEvent e) { source.setKind((DataSource.RepoKind) type.getSelectedItem());
+		 * prefs.setChanged(true); panel.validate(); mainFrame.pack(); } });
+		 */
 
-//		repoPanel.add(new JLabel("Short Name"));
+		// repoPanel.add(new JLabel("Short Name"));
 		final JTextField shortName = new JTextField(source.getShortName());
 		repoPanel.add(shortName);
 		shortName.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {				
+			public void keyPressed(KeyEvent arg0) {
 			}
 
 			public void keyTyped(KeyEvent arg0) {
@@ -228,27 +217,27 @@ public class ProjectPanel extends JPanel {
 				mainFrame.pack();
 			}
 		});
-		
-//		repoPanel.add(new JLabel("Hide?"));
+
+		// repoPanel.add(new JLabel("Hide?"));
 		final JCheckBox hideBox = new JCheckBox();
 		if (source.isHidden())
 			hideBox.setSelected(true);
 		repoPanel.add(hideBox);
 		hideBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				hideBox.setSelected(!(hideBox.isSelected()));
+				// hideBox.setSelected(!(hideBox.isSelected()));
 				source.hide(hideBox.isSelected());
 				prefs.setChanged(true);
 			}
 		});
-		
-//		repoPanel.add(new JLabel("Parent"));
+
+		// repoPanel.add(new JLabel("Parent"));
 		final JTextField parent = new JTextField(source.getParent());
 		if (parent.getText().equals(""))
 			parent.setText(" ");
 		repoPanel.add(parent);
 		parent.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {				
+			public void keyPressed(KeyEvent arg0) {
 			}
 
 			public void keyTyped(KeyEvent arg0) {
@@ -264,11 +253,11 @@ public class ProjectPanel extends JPanel {
 			}
 		});
 
-//		repoPanel.add(new JLabel("Clone Address"));
+		// repoPanel.add(new JLabel("Clone Address"));
 		final JTextField cloneAddress = new JTextField(source.getCloneString());
 		repoPanel.add(cloneAddress);
 		cloneAddress.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {				
+			public void keyPressed(KeyEvent arg0) {
 			}
 
 			public void keyTyped(KeyEvent arg0) {
@@ -281,7 +270,7 @@ public class ProjectPanel extends JPanel {
 				mainFrame.pack();
 			}
 		});
-		
+
 		final JButton deleteRepoButton = new JButton("Delete");
 		deleteRepoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
