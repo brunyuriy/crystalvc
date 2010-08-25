@@ -12,6 +12,7 @@ public class TestConstants {
 		 */
 		Vector<String> possiblePaths = new Vector<String>();
 		possiblePaths.add("/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/");
+		possiblePaths.add("/Users/rtholmes/Documents/workspaces/_updated/speculation-inconsistency/edu.washington.cse.se.crystal/");
 		possiblePaths.add("/Users/rtholmes/Documents/Crystal/"); // MBP
 		possiblePaths.add("/homes/gws/brun/tempCrystal/sourceRepo/");
 		possiblePaths.add("C:\\Users\\Yuriy\\Desktop\\work\\crystalSource");

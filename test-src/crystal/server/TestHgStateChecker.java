@@ -100,7 +100,7 @@ public class TestHgStateChecker {
 
 			ZipFile zipFile = new ZipFile(repoZipFile);
 
-			Enumeration entries = zipFile.entries();
+			Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zipFile.entries();
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry) entries.nextElement();
 
