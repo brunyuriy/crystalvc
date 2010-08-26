@@ -93,7 +93,13 @@
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="xml"/>
-            <test name="crystal.server.TestHgStateChecker" todir="${junit.output.dir}"/>
+        	<batchtest fork="yes" todir="${junit.output.dir}">
+				<fileset dir="test-src">
+					<include name="**/*Test*.java"/>
+					<exclude name="**/AllTests.java"/>
+				</fileset>
+			</batchtest>
+        	
             <classpath refid="edu.washington.cse.se.crystal.classpath"/>
         </junit>
     </target>
