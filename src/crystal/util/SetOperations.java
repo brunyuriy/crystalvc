@@ -26,7 +26,7 @@ public class SetOperations {
 		return answer;
 	}
 
-	public static Set<String> aminusb(Set<String> a, Set<String> b) {
+	public static Set<String> setDifference(Set<String> a, Set<String> b) {
 		Set<String> answer = new HashSet<String>();
 		answer.addAll(a);
 		answer.removeAll(b);
@@ -35,8 +35,8 @@ public class SetOperations {
 
 	public static Set<String> xor(Set<String> a, Set<String> b) {
 		Set<String> answer = new HashSet<String>();
-		answer.addAll(aminusb(a,b));
-		answer.addAll(aminusb(b,a));
+		answer.addAll(setDifference(a,b));
+		answer.addAll(setDifference(b,a));
 		return answer;
 	}
 
@@ -44,7 +44,7 @@ public class SetOperations {
 	 * @return true iff a is a subset of b
 	 */
 	public static boolean isSubset(Set<String> a, Set<String> b) {
-		return (aminusb(a, b).isEmpty());
+		return (setDifference(a, b).isEmpty());
 	}
 	
 	/*	

@@ -140,11 +140,19 @@ public class HgStateChecker {
 		
 		// if the environment repository is local, we can find out if we need to checkpoint or resolve
 		if ((new File(prefs.getEnvironment().getCloneString())).exists()) {
+
+			/*
+			 * Get the log and set the changeset
+			 */
+			String[] logArgs = { "log" };
+			Output output = RunIt.execute(hg, logArgs, prefs.getEnvironment().getCloneString());
+			prefs.getEnvironment().setChangeset(HgLogParser.parseLog(output.getOutput()));
+			
 			/*
 			 * Check if repo has two heads.  If it is, return MUST_RESOLVE
 			 */
 			String[] headArgs = { "heads" };
-			Output output = RunIt.execute(hg, headArgs, prefs.getEnvironment().getCloneString());
+			output = RunIt.execute(hg, headArgs, prefs.getEnvironment().getCloneString());
 			Pattern heads = Pattern.compile(".*changeset.*changeset.*", Pattern.DOTALL);
 			Matcher matcher = heads.matcher(output.getOutput());		
 			if (matcher.matches()) {
@@ -190,13 +198,21 @@ public class HgStateChecker {
 				}
 			} else
 				createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
-			
+
 			String[] myArgs = { "clone", mine, tempMyName };
 			Output output = RunIt.execute(hg, myArgs, tempWorkPath);
 			/*
 			 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0
 			 * files removed, 0 files unresolved
 			 */
+
+			/*
+			 * Get the log and set the changeset
+			 */
+			String[] logArgs = { "log" };
+			output = RunIt.execute(hg, logArgs, tempWorkPath + tempMyName);
+			prefs.getEnvironment().setChangeset(HgLogParser.parseLog(output.getOutput()));
+
 			
 			/*
 			 * Check if mine is two headed.  If it is, return MUST_RESOLVE
@@ -317,6 +333,14 @@ public class HgStateChecker {
 		 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0
 		 * files removed, 0 files unresolved
 		 */
+		
+		/*
+		 * Get the log and set the changeset
+		 */
+		String[] logArgs = { "log" };
+		output = RunIt.execute(hg, logArgs, tempWorkPath + tempYourName);
+		source.setChangeset(HgLogParser.parseLog(output.getOutput()));
+		
 
 		String[] pullArgs = { "pull", tempWorkPath + tempYourName };
 		output = RunIt.execute(hg, pullArgs, tempWorkPath + tempMyName);
