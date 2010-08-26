@@ -20,6 +20,7 @@
 	
     <target name="init">
         <mkdir dir="bin"/>
+    	<tstamp/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
                 <exclude name="**/*.launch"/>
@@ -36,6 +37,7 @@
     
 	<target name="clean">
         <delete dir="bin"/>
+		<delete file="${jar.dir}/crystal_${DSTAMP}.jar"/>
 		<delete file="${jar.dir}/crystal_latest.jar"/>
     </target>
     
@@ -67,7 +69,7 @@
 
     <target name="jar" depends="init,build">
     	<mkdir dir="${jar.dir}"/>
-        <one-jar destfile="${jar.dir}/crystal_latest.jar">
+        <one-jar destfile="${jar.dir}/crystal_${DSTAMP}.jar">
         	<manifest>
         		<attribute name="One-Jar-Main-Class" value="crystal.client.ConflictSystemTray"/>
         	</manifest>
@@ -78,9 +80,11 @@
                 <fileset file="lib/*.jar" />
             </lib>
         </one-jar>
-        <echo>
+    	<copy file="${jar.dir}/crystal_${DSTAMP}.jar" tofile="${jar.dir}/crystal_latest.jar"/>
+    	<echo>
           crystal_latest.jar built.
         </echo>   
+    	
     </target>
 	
     <target name="crystal">
