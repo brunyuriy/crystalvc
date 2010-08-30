@@ -43,7 +43,7 @@ public class DataSource {
 	// optional argument to pass to hg for --remotecmd in case the remote hg path is not just "hg"
 	private String _remoteHg = null;
 	
-	private HashMap<String, Checkpoint> _changesets;
+	private RevisionHistory _history;
 
 	// Create a new, enabled source.  
 	public DataSource(String shortName, String cloneString, RepoKind repoKind, boolean hide, String parent) {
@@ -60,15 +60,15 @@ public class DataSource {
 //		_master = shortName.toLowerCase().trim().equals("master");
 		_hide = hide;
 		setParent(parent);
-		_changesets = null;
+		_history = null;
 	}
 	
-	public void setChangeset(HashMap<String, Checkpoint> changesets) {
-		_changesets = changesets;
+	public void setChangeset(RevisionHistory history) {
+		_history = history;
 	}
 	
-	public HashMap<String, Checkpoint> getChangesets() {
-		return _changesets;
+	public RevisionHistory getChangesets() {
+		return _history;
 	}
 	
 	public void setRemoteHg(String remoteHg) {
