@@ -3,16 +3,16 @@ package crystal.server;
 import java.util.Iterator;
 import java.util.Set;
 
-import crystal.model.Guidance.Capable;
-import crystal.model.Guidance.Ease;
-import crystal.model.Guidance.When;
+import crystal.model.RevisionHistory.Capable;
+import crystal.model.RevisionHistory.Ease;
+import crystal.model.RevisionHistory.When;
 import crystal.model.RelationshipResult.Relationship;
 import crystal.server.HgLogParser.Checkpoint;
 import crystal.util.SetOperations;
 
 public class GuidanceChecker {
 
-	public String getCommitters (Set<Checkpoint> committers) {
+	public static String getCommitters (Set<Checkpoint> committers) {
 		String answer = "";
 		for (Iterator<Checkpoint> i = committers.iterator(); i.hasNext();) {
 			Checkpoint current = i.next();
@@ -25,7 +25,7 @@ public class GuidanceChecker {
 		return answer;
 	}
 
-	public When getWhen(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
+	public static When getWhen(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
 		if ((r.equals(Relationship.BEHIND)) || (r.equals(Relationship.MERGECLEAN)) || (r.equals(Relationship.MERGECONFLICT))) {
 			// if the parent has some things of yours i don't, then NOW
 			// if the parent has some things of mine you don't, then NOW
@@ -49,7 +49,7 @@ public class GuidanceChecker {
 
 	// This is not actually speculated.  Therefore, it may be imprecise. 
 	// In particular, if you and parent are the same, these are wrong.
-	public Relationship getConsequences(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
+	public static Relationship getConsequences(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
 		if (r.equals(Relationship.BEHIND)) {
 			// if parent has everything you have, SAME, otherwise BEHIND
 			if (SetOperations.setDifference(you, parent).isEmpty())
@@ -76,7 +76,7 @@ public class GuidanceChecker {
 		return null;
 	}
 
-	public Capable getCapable(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
+	public static Capable getCapable(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
 		if (r.equals(Relationship.SAME))
 			return Capable.NOTHING;
 
@@ -91,7 +91,7 @@ public class GuidanceChecker {
 	}
 
 	// yeah, i dunno yet.
-	public Ease getEase() {
+	public static Ease getEase() {
 		return null;
 	}
 }
