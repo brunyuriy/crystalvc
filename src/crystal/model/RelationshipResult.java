@@ -36,8 +36,8 @@ public class RelationshipResult implements Result {
 		public static String SAME = "SAME";
 		public static String AHEAD = "AHEAD";
 		public static String BEHIND = "BEHIND";
-		public static String MERGECLEAN = "MERGECLEAN";
-		public static String MERGECONFLICT = "MERGECONFLICT";
+		public static String MERGECLEAN = "MERGE";
+		public static String MERGECONFLICT = "CONFLICT";
 		public static String COMPILECONFLICT = "COMPILECONFLICT";
 		public static String TESTCONFLICT = "TESTCONFLICT";
 		public static String PENDING = "PENDING";
@@ -57,15 +57,15 @@ public class RelationshipResult implements Result {
 		
 		private static Map<String, String> ICON_ADDRESSES = new HashMap<String, String>();
 		static {
-			ICON_ADDRESSES.put("SAME", "same.png");
-			ICON_ADDRESSES.put("AHEAD","ahead.png");
-			ICON_ADDRESSES.put("BEHIND", "behind.png");
-			ICON_ADDRESSES.put("MERGECLEAN", "merge.png");
-			ICON_ADDRESSES.put("MERGECONFLICT", "mergeconflict.png");
-			ICON_ADDRESSES.put("COMPILECONFLICT", "compileconflict.png"); 
-			ICON_ADDRESSES.put("TESTCONFLICT", "testconflict.png");
-			ICON_ADDRESSES.put("PENDING", "clock.png"); 
-			ICON_ADDRESSES.put("ERROR", "error.png");
+			ICON_ADDRESSES.put(SAME, "same.png");
+			ICON_ADDRESSES.put(AHEAD,"ahead.png");
+			ICON_ADDRESSES.put(BEHIND, "behind.png");
+			ICON_ADDRESSES.put(MERGECLEAN, "merge.png");
+			ICON_ADDRESSES.put(MERGECONFLICT, "mergeconflict.png");
+			ICON_ADDRESSES.put(COMPILECONFLICT, "compileconflict.png"); 
+			ICON_ADDRESSES.put(TESTCONFLICT, "testconflict.png");
+			ICON_ADDRESSES.put(PENDING, "clock.png"); 
+			ICON_ADDRESSES.put(ERROR, "error.png");
 		}
 
 //		private final ImageIcon _icon;
@@ -172,7 +172,7 @@ public class RelationshipResult implements Result {
 			if (_committers != null)
 				answer += _committers + "\n";
 			if (_consequences != null)
-				answer += "consequences: new relationship will be: " + _consequences.getName() + "\n";
+				answer += "consequences: new relationship will be " + _consequences.getName() + "\n";
 			return answer.trim();
 		}
 
