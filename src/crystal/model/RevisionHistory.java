@@ -57,5 +57,9 @@ public class RevisionHistory {
 	public Capable getCapable(RevisionHistory you, RevisionHistory parent, Relationship r) {
 		return GuidanceChecker.getCapable(_changesets.keySet(), you._changesets.keySet(), parent._changesets.keySet(), r);
 	}
+	
+	public Ease getEase() {
+		return GuidanceChecker.getEase();
+	}
 
 }

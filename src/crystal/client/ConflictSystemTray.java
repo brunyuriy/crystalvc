@@ -389,15 +389,23 @@ public class ConflictSystemTray implements ComputationListener {
 
 		startCalculations = System.currentTimeMillis();
 
+//		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
+//			final CalculateLocalStateTask clst = new CalculateLocalStateTask(projPref, this, _client);
+//			ex.execute(clst);
+//			
+//			for (final DataSource source : projPref.getDataSources()) {
+//				final CalculateRelationshipTask crt = new CalculateRelationshipTask(source, projPref, this, _client);
+//				ex.execute(crt);
+//			}
+//		}
+		
 		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
-			final CalculateLocalStateTask clst = new CalculateLocalStateTask(projPref, this, _client);
-			ex.execute(clst);
-			
-			for (final DataSource source : projPref.getDataSources()) {
-				final CalculateRelationshipTask crt = new CalculateRelationshipTask(source, projPref, this, _client);
-				ex.execute(crt);
-			}
+			final CalculateProjectTask cpt = new CalculateProjectTask(projPref, this, _client);
+			ex.execute(cpt);
 		}
+
+		
+		
 		// } else {
 		// _log.info("Tasks still pending; new run not initiated");
 		// }

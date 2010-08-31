@@ -147,7 +147,7 @@ public class HgStateChecker {
 			 */
 			String[] logArgs = { "log" };
 			Output output = RunIt.execute(hg, logArgs, prefs.getEnvironment().getCloneString());
-			prefs.getEnvironment().setChangeset(new RevisionHistory(output.getOutput()));
+			prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput()));
 			
 			/*
 			 * Check if repo has two heads.  If it is, return MUST_RESOLVE
@@ -212,7 +212,7 @@ public class HgStateChecker {
 			 */
 			String[] logArgs = { "log" };
 			output = RunIt.execute(hg, logArgs, tempWorkPath + tempMyName);
-			prefs.getEnvironment().setChangeset(new RevisionHistory(output.getOutput()));
+			prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput()));
 
 			
 			/*
@@ -340,7 +340,7 @@ public class HgStateChecker {
 		 */
 		String[] logArgs = { "log" };
 		output = RunIt.execute(hg, logArgs, tempWorkPath + tempYourName);
-		source.setChangeset(new RevisionHistory(output.getOutput()));
+		source.setHistory(new RevisionHistory(output.getOutput()));
 		
 
 		String[] pullArgs = { "pull", tempWorkPath + tempYourName };

@@ -1,7 +1,7 @@
 package crystal.model;
 
 
-public class LocalStateResult {
+public class LocalStateResult implements Result {
 
 	/**
 	 * Represents a local state
