@@ -16,6 +16,7 @@ import crystal.client.ProjectPreferences;
 import crystal.model.LocalStateResult.LocalState;
 import crystal.model.RelationshipResult.Relationship;
 import crystal.model.DataSource;
+import crystal.model.RevisionHistory;
 import crystal.util.RunIt;
 import crystal.util.TimeUtility;
 import crystal.util.RunIt.Output;
@@ -146,7 +147,7 @@ public class HgStateChecker {
 			 */
 			String[] logArgs = { "log" };
 			Output output = RunIt.execute(hg, logArgs, prefs.getEnvironment().getCloneString());
-			prefs.getEnvironment().setChangeset(HgLogParser.parseLog(output.getOutput()));
+			prefs.getEnvironment().setChangeset(new RevisionHistory(output.getOutput()));
 			
 			/*
 			 * Check if repo has two heads.  If it is, return MUST_RESOLVE
@@ -211,7 +212,7 @@ public class HgStateChecker {
 			 */
 			String[] logArgs = { "log" };
 			output = RunIt.execute(hg, logArgs, tempWorkPath + tempMyName);
-			prefs.getEnvironment().setChangeset(HgLogParser.parseLog(output.getOutput()));
+			prefs.getEnvironment().setChangeset(new RevisionHistory(output.getOutput()));
 
 			
 			/*
@@ -339,7 +340,7 @@ public class HgStateChecker {
 		 */
 		String[] logArgs = { "log" };
 		output = RunIt.execute(hg, logArgs, tempWorkPath + tempYourName);
-		source.setChangeset(HgLogParser.parseLog(output.getOutput()));
+		source.setChangeset(new RevisionHistory(output.getOutput()));
 		
 
 		String[] pullArgs = { "pull", tempWorkPath + tempYourName };
