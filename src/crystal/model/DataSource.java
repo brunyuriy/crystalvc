@@ -1,9 +1,5 @@
 package crystal.model;
 
-import java.util.HashMap;
-
-import crystal.server.HgLogParser.Checkpoint;
-
 /**
  * Describes a repository.
  * 
@@ -66,7 +62,7 @@ public class DataSource {
 	public void setChangeset(RevisionHistory history) {
 		_history = history;
 	}
-	
+		
 	public RevisionHistory getChangesets() {
 		return _history;
 	}
