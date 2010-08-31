@@ -46,9 +46,9 @@ class CalculateRelationshipTask extends SwingWorker<Void, RelationshipResult> {
 		RelationshipResult calculatingPlaceholder = null;
 
 		if (ConflictDaemon.getInstance().getRelationship(_source) != null) {
-			calculatingPlaceholder = new RelationshipResult(_source, Relationship.PENDING, ConflictDaemon.getInstance().getRelationship(_source).getRelationship());
+			calculatingPlaceholder = new RelationshipResult(_source, new Relationship(Relationship.PENDING), ConflictDaemon.getInstance().getRelationship(_source).getRelationship());
 		} else {
-			calculatingPlaceholder = new RelationshipResult(_source, Relationship.PENDING, null);
+			calculatingPlaceholder = new RelationshipResult(_source, new Relationship(Relationship.PENDING), null);
 		}
 		
 		publish(calculatingPlaceholder);

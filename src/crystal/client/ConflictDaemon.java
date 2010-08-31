@@ -72,7 +72,7 @@ public class ConflictDaemon {
 
 				relationship = HgStateChecker.getRelationship(prefs, source);
 				if (relationship == null)
-					relationship = Relationship.ERROR;
+					relationship = new Relationship(Relationship.ERROR);
 
 				_log.info("Relationship calculated::" + source + "::" + relationship);
 
@@ -152,7 +152,7 @@ public class ConflictDaemon {
 		RelationshipResult relationship = calculateRelationship(source, prefs);
 
 		if (relationship == null) {
-			relationship = new RelationshipResult(source, Relationship.ERROR, null);
+			relationship = new RelationshipResult(source, new Relationship(Relationship.ERROR), null);
 		}
 
 		_relationshipMap.put(source, relationship);
@@ -192,7 +192,7 @@ public class ConflictDaemon {
 
 		if (relationship == null) {
 			// if we don't have a relationship, pretend it is pending.
-			relationship = new RelationshipResult(source, Relationship.PENDING, null);
+			relationship = new RelationshipResult(source, new Relationship(Relationship.PENDING), null);
 			_relationshipMap.put(source, relationship);
 			// TODO: actually start the pending operation testing
 		}
@@ -246,9 +246,9 @@ public class ConflictDaemon {
 			// and then the relationships
 			for (DataSource ds : pp.getDataSources()) {
 				if (getRelationship(ds) != null) {
-					_relationshipMap.put(ds, new RelationshipResult(ds, Relationship.PENDING, _relationshipMap.get(ds).getRelationship()));
+					_relationshipMap.put(ds, new RelationshipResult(ds, new Relationship(Relationship.PENDING), _relationshipMap.get(ds).getRelationship()));
 				} else {
-					_relationshipMap.put(ds, new RelationshipResult(ds, Relationship.PENDING, null));
+					_relationshipMap.put(ds, new RelationshipResult(ds, new Relationship(Relationship.PENDING), null));
 				}
 			}
 		}
