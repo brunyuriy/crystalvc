@@ -46,8 +46,15 @@ public class RelationshipResult implements Result {
 		private static String PATH = "/crystal/client/images/";
 		private static String SIZE32 = "32X32/";
 		private static String SIZE16 = "16X16/";
-		private static Map<String, String> ICON_ADDRESSES = new HashMap<String, String>();
+
+		private static String CAPABLE_MUST = "must/";
+		private static String CAPABLE_MIGHT = "might/";
+		private static String CAPABLE_CANNOT = "cannot/";
 		
+		private static String WHEN_NOW = "must/";
+		private static String WHEN_LATER = "cannot/";
+		
+		private static Map<String, String> ICON_ADDRESSES = new HashMap<String, String>();
 		static {
 			ICON_ADDRESSES.put("SAME", "same.png");
 			ICON_ADDRESSES.put("AHEAD","ahead.png");
@@ -68,7 +75,7 @@ public class RelationshipResult implements Result {
 		private When _when;
 		private Capable _capable;
 		private Ease _ease;
-		private Relationship _consequeses;
+		private Relationship _consequences;
 
 		public Relationship(String name) {
 			
@@ -84,7 +91,16 @@ public class RelationshipResult implements Result {
 		}
 
 		public ImageIcon getIcon() {
-			String iconAddress = PATH + SIZE32 + ICON_ADDRESSES.get(_name);
+			String iconAddress = PATH + SIZE32;
+			if (_capable == Capable.MUST)
+				iconAddress += CAPABLE_MUST;
+			else if (_capable == Capable.MIGHT)
+				iconAddress += CAPABLE_MIGHT;
+			else if (_capable == Capable.CANNOT)
+				iconAddress += CAPABLE_CANNOT;
+			else 
+				iconAddress += CAPABLE_MUST;
+			iconAddress += ICON_ADDRESSES.get(_name);
 			return (new ImageIcon(Constants.class.getResource(iconAddress)));
 		}
 		
@@ -125,12 +141,22 @@ public class RelationshipResult implements Result {
 			return _ease;
 		}
 
-		public void setConsequeses(Relationship consequeses) {
-			_consequeses = consequeses;
+		public void setConsequences(Relationship consequences) {
+			_consequences = consequences;
 		}
 
-		public Relationship getConsequeses() {
-			return _consequeses;
+		public Relationship getConsequences() {
+			return _consequences;
+		}
+		
+		public String getToolTipText() {
+			//TODO compute the action
+			String answer = "Action:\n";
+			if (_committers != null)
+				answer += _committers + "\n";
+			if (_consequences != null)
+				answer += "consequences: new relationship will be: " + _consequences.getName() + "\n";
+			return answer.trim();
 		}
 
 		@Override

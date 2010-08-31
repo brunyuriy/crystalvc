@@ -13,16 +13,29 @@ import crystal.util.SetOperations;
 public class GuidanceChecker {
 
 	public static String getCommitters (Set<Checkpoint> committers) {
-		String answer = "";
-		for (Iterator<Checkpoint> i = committers.iterator(); i.hasNext();) {
-			Checkpoint current = i.next();
-			if (i.hasNext()){
-				answer += current.getCommitter() + ", ";
-			} else {
-				answer += "and " + current.getCommitter();
+		if (committers.size() == 0)
+			return "";
+		else if (committers.size() == 1) {
+			Iterator<Checkpoint> i = committers.iterator(); 
+			Checkpoint only = i.next();
+			return only.getCommitter();
+		} else if (committers.size() == 2) {
+			Iterator<Checkpoint> i = committers.iterator(); 
+			Checkpoint first = i.next();
+			Checkpoint second = i.next();
+			return first.getCommitter() + " and " + second.getCommitter();
+		} else {
+			String answer = "";
+			for (Iterator<Checkpoint> i = committers.iterator(); i.hasNext();) {
+				Checkpoint current = i.next();
+				if (i.hasNext()){
+					answer += current.getCommitter() + ", ";
+				} else {
+					answer += "and " + current.getCommitter();
+				}
 			}
+			return answer;
 		}
-		return answer;
 	}
 
 	public static When getWhen(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {

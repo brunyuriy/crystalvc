@@ -115,7 +115,7 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 				// calculate the When
 				ourRelationship.setWhen(mine.getWhen(yours, parent, ourRelationship));
 				// calculate the Consequences
-				ourRelationship.setConsequeses(mine.getConsequences(yours, parent, ourRelationship));
+				ourRelationship.setConsequences(mine.getConsequences(yours, parent, ourRelationship));
 				// calculate the Capable
 				ourRelationship.setCapable(mine.getCapable(yours, parent, ourRelationship));
 				// calculate the Ease
