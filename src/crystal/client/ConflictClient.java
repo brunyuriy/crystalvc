@@ -205,7 +205,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 					imageLabel.setVerticalTextPosition(JLabel.TOP);
 					imageLabel.setHorizontalTextPosition(JLabel.CENTER);
 					grid.add(imageLabel);
-					imageLabel.setToolTipText("Action: hg fetch\nConsequences: new relationship will be AHEAD \nCommiters: David and Yuriy");
+//					imageLabel.setToolTipText("Action: hg fetch\nConsequences: new relationship will be AHEAD \nCommiters: David and Yuriy");
 				}
 			}
 
@@ -372,10 +372,14 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 					Relationship lastRelationship = result.getLastRelationship();
 
 					// if it's pending, show whatever value it had last time
-					if (relationship.equals(Relationship.PENDING) && lastRelationship != null)
+					if (relationship.equals(Relationship.PENDING) && lastRelationship != null) {
 						current.setIcon(lastRelationship.getIcon());
-					else // otherwise, show fresh value
+						current.setToolTipText(lastRelationship.getToolTipText());
+					} else {
+						// otherwise, show fresh value
 						current.setIcon(relationship.getIcon());
+						current.setToolTipText(relationship.getToolTipText());
+					}
 					current.repaint();
 				}
 			}

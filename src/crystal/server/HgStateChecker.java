@@ -358,14 +358,14 @@ public class HgStateChecker {
 			 * changes found
 			 */
 			if (output.getOutput().indexOf("no changes found") >= 0)
-				answer = Relationship.SAME;
+				answer = new Relationship(Relationship.SAME);
 			/*
 			 * mine is AHEAD (yours is BEHIND) if output looks something like this: searching for changes adding
 			 * changesets adding manifests adding file changes added 1 changesets with 1 changes to 1 files (run 'hg
 			 * update' to get a working copy)
 			 */
 			else if (output.getOutput().indexOf("(run 'hg update' to get a working copy)") >= 0)
-				answer = Relationship.AHEAD;
+				answer = new Relationship(Relationship.AHEAD);
 			else {
 				log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output);
 				String dialogMsg = "Crystal is having trouble comparing\n" + 
@@ -393,7 +393,7 @@ public class HgStateChecker {
 		 * file changes added 1 changesets with 1 changes to 1 files (run 'hg update' to get a working copy)
 		 */
 		else if (output.getOutput().indexOf("(run 'hg update' to get a working copy)") >= 0)
-			answer = Relationship.BEHIND;
+			answer = new Relationship(Relationship.BEHIND);
 
 		/*
 		 * CONFLICT if output looks something like this: pulling from ../firstcopy/ searching for changes adding
@@ -409,7 +409,7 @@ public class HgStateChecker {
 				// try to compile {
 				// if successful, try to test {
 				// if successful:
-				answer = Relationship.MERGECLEAN;
+				answer = new Relationship(Relationship.MERGECLEAN);
 				// if unsuccessful:
 				// answer = ResultStatus.TESTCONFLICT;
 				// }
@@ -418,7 +418,7 @@ public class HgStateChecker {
 			}
 			// otherwise, the merge failed
 			else
-				answer = Relationship.MERGECONFLICT;
+				answer = new Relationship(Relationship.MERGECONFLICT);
 		} else {
 			log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output.toString());
 			String dialogMsg = "Crystal is having trouble comparing\n" + 
