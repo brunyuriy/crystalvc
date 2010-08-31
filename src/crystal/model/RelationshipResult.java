@@ -2,6 +2,8 @@ package crystal.model;
 
 import java.awt.Image;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 
@@ -29,20 +31,37 @@ public class RelationshipResult implements Result {
 	 */
 	
 	public static class Relationship implements Comparable<Relationship>{
-		public static Relationship SAME = new Relationship("/crystal/client/images/32X32/same.png", "SAME");
-		public static Relationship AHEAD = new Relationship("/crystal/client/images/32X32/ahead.png", "AHEAD");
-		public static Relationship BEHIND = new Relationship("/crystal/client/images/32X32/behind.png", "BEHIND");
-		public static Relationship MERGECLEAN = new Relationship("/crystal/client/images/32X32/merge.png", "MERGE");
-		public static Relationship MERGECONFLICT = new Relationship("/crystal/client/images/32X32/mergeconflict.png", "CONFLICT");
-		public static Relationship COMPILECONFLICT = new Relationship("/crystal/client/images/32X32/compileconflict.png", "COMPILE CONFLICT"); 
-		public static Relationship TESTCONFLICT = new Relationship("/crystal/client/images/32X32/testconflict.png", "TEST CONFLICT");
-		public static Relationship PENDING = new Relationship("/crystal/client/images/32X32/clock.png", "pending"); 
-		public static Relationship ERROR = new Relationship("/crystal/client/images/32X32/error.png", "error");
-//		public static ResultStatus TWOHEADED = new ResultStatus("/crystal/client/images/32X32/twohead.png", "Resolve");
+		
+		public static String SAME = "SAME";
+		public static String AHEAD = "AHEAD";
+		public static String BEHIND = "BEHIND";
+		public static String MERGECLEAN = "MERGECLEAN";
+		public static String MERGECONFLICT = "MERGECONFLICT";
+		public static String COMPILECONFLICT = "COMPILECONFLICT";
+		public static String TESTCONFLICT = "TESTCONFLICT";
+		public static String PENDING = "PENDING";
+		public static String ERROR = "ERROR";
+		
+		
+		private static String PATH = "/crystal/client/images/";
+		private static String SIZE32 = "32X32/";
+		private static String SIZE16 = "16X16/";
+		private static Map<String, String> ICON_ADDRESSES = new HashMap<String, String>();
+		
+		static {
+			ICON_ADDRESSES.put("SAME", "same.png");
+			ICON_ADDRESSES.put("AHEAD","ahead.png");
+			ICON_ADDRESSES.put("BEHIND", "behind.png");
+			ICON_ADDRESSES.put("MERGECLEAN", "merge.png");
+			ICON_ADDRESSES.put("MERGECONFLICT", "mergeconflict.png");
+			ICON_ADDRESSES.put("COMPILECONFLICT", "compileconflict.png"); 
+			ICON_ADDRESSES.put("TESTCONFLICT", "testconflict.png");
+			ICON_ADDRESSES.put("PENDING", "clock.png"); 
+			ICON_ADDRESSES.put("ERROR", "error.png");
+		}
 
-
-		private final ImageIcon _icon;
-		private final Image _image;
+//		private final ImageIcon _icon;
+//		private final Image _image;
 		private final String _name;
 		
 		private String _committers;
@@ -51,10 +70,13 @@ public class RelationshipResult implements Result {
 		private Ease _ease;
 		private Relationship _consequeses;
 
-		private Relationship(String iconAddress, String name) {
-			_icon = new ImageIcon(Constants.class.getResource(iconAddress));
-			_image = (new ImageIcon(Constants.class.getResource(iconAddress.replaceAll("32", "16")))).getImage();
-			_name = name;
+		public Relationship(String name) {
+			
+//			_icon = new ImageIcon(Constants.class.getResource(iconAddress));
+//			_image = (new ImageIcon(Constants.class.getResource(iconAddress.replaceAll("32", "16")))).getImage();
+			_name = name.toUpperCase();
+			if (ICON_ADDRESSES.get(_name) == null)
+				throw new RuntimeException("Trying to create an invalid Relationship");
 		}
 				
 		public String getName() {
@@ -62,11 +84,13 @@ public class RelationshipResult implements Result {
 		}
 
 		public ImageIcon getIcon() {
-			return _icon;
+			String iconAddress = PATH + SIZE32 + ICON_ADDRESSES.get(_name);
+			return (new ImageIcon(Constants.class.getResource(iconAddress)));
 		}
 		
 		public Image getImage() {
-			return _image;
+			String imageAddress = PATH + SIZE16 + ICON_ADDRESSES.get(_name);			
+			return (new ImageIcon(Constants.class.getResource(imageAddress)).getImage());
 		}
 		
 		public void setCommitters(String committers) {
@@ -116,16 +140,15 @@ public class RelationshipResult implements Result {
 		}
 		
 		private int getIntRepresentation() {
-			if (this == ERROR) return 1;
-			if (this == PENDING) return 2;
-			if (this == SAME) return 3;
-			if (this == BEHIND) return 4;
-			if (this == AHEAD) return 5;
-			if (this == MERGECLEAN) return 6;
-			if (this == TESTCONFLICT) return 7;
-			if (this == COMPILECONFLICT) return 8;
-			if (this == MERGECONFLICT) return 9;
-//			if (this == TWOHEADED) return 10;
+			if (_name.equals(ERROR)) return 1;
+			if (_name.equals(PENDING)) return 2;
+			if (_name.equals(SAME)) return 3;
+			if (_name.equals(BEHIND)) return 4;
+			if (_name.equals(AHEAD)) return 5;
+			if (_name.equals(MERGECLEAN)) return 6;
+			if (_name.equals(TESTCONFLICT)) return 7;
+			if (_name.equals(COMPILECONFLICT)) return 8;
+			if (_name.equals(MERGECONFLICT)) return 9;
 			else
 				return 0;
 		}
@@ -134,7 +157,7 @@ public class RelationshipResult implements Result {
 			Relationship dominant = null;
 			for (RelationshipResult currentStateAndRelationship : statesAndRelationships) {
 				Relationship currentRelationship = null;
-				if ((currentStateAndRelationship.getRelationship() == PENDING) && (currentStateAndRelationship.getLastRelationship() != null)) { 
+				if ((currentStateAndRelationship.getRelationship().getName().equals(PENDING)) && (currentStateAndRelationship.getLastRelationship() != null)) { 
 					// if it's pending, use whatever value it had last time
 					currentRelationship = currentStateAndRelationship.getLastRelationship();
 				} else {
