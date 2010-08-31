@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.swing.ImageIcon;
 
 import crystal.Constants;
+import crystal.model.LocalStateResult.LocalState;
 import crystal.model.RevisionHistory.Capable;
 import crystal.model.RevisionHistory.Ease;
 import crystal.model.RevisionHistory.When;
@@ -76,6 +77,8 @@ public class RelationshipResult implements Result {
 		private Capable _capable;
 		private Ease _ease;
 		private Relationship _consequences;
+		
+		private String _action;
 
 		public Relationship(String name) {
 			
@@ -149,9 +152,23 @@ public class RelationshipResult implements Result {
 			return _consequences;
 		}
 		
+		public void calculateAction(LocalState localState, Relationship parent) {
+			_action = "";
+			if (localState.equals(LocalState.MUST_RESOLVE)) {
+				_action += "Action: hg merge";
+			} else if (localState.equals(LocalState.UNCHECKPOINTED)) {
+				_action += "Action: hg commit";
+			} else if (parent.getName().equals(Relationship.AHEAD)) {
+				_action += "Action: hg push";
+			} else if ((parent.getName().equals(Relationship.BEHIND)) || (parent.getName().equals(Relationship.MERGECLEAN)) || (parent.getName().equals(Relationship.MERGECONFLICT))) {
+				_action += "Action: hg fetch";
+			}
+		}
+		
 		public String getToolTipText() {
-			//TODO compute the action
-			String answer = "Action:\n";
+			String answer = "";
+			if (_action != null) 
+				answer += _action + "\n";
 			if (_committers != null)
 				answer += _committers + "\n";
 			if (_consequences != null)

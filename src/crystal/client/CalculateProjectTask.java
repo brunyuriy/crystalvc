@@ -108,10 +108,17 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 			// calculate the relevant Committers
 			ourRelationship.setCommitters(mine.getCommitters(yours));
 			
-			DataSource parentSource = _prefs.getDataSource(source.getParent());
-			// If commonParent is not set, we can't do guidance
+			DataSource parentSource = _prefs.getDataSource((_prefs.getEnvironment().getParent()));
+			// If parent is not set, can't compute action
 			if (parentSource != null) {
-				RevisionHistory parent = parentSource.getHistory();
+				Relationship parentRelationship = relationships.get(parentSource).getRelationship();
+				ourRelationship.calculateAction(localStateResult.getLocalState(), parentRelationship);
+			}
+			
+			DataSource commonParentSource = _prefs.getDataSource(source.getParent());
+			// If commonParent is not set, we can't do guidance
+			if (commonParentSource != null) {
+				RevisionHistory parent = commonParentSource.getHistory();
 				// calculate the When
 				ourRelationship.setWhen(mine.getWhen(yours, parent, ourRelationship));
 				// calculate the Consequences
