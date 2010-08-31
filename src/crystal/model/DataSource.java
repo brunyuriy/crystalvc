@@ -59,11 +59,11 @@ public class DataSource {
 		_history = null;
 	}
 	
-	public void setChangeset(RevisionHistory history) {
+	public void setHistory(RevisionHistory history) {
 		_history = history;
 	}
 		
-	public RevisionHistory getChangesets() {
+	public RevisionHistory getHistory() {
 		return _history;
 	}
 	

@@ -6,6 +6,9 @@ import java.util.Collection;
 import javax.swing.ImageIcon;
 
 import crystal.Constants;
+import crystal.model.RevisionHistory.Capable;
+import crystal.model.RevisionHistory.Ease;
+import crystal.model.RevisionHistory.When;
 
 /**
  * Represents a conflict detection question.
@@ -14,7 +17,7 @@ import crystal.Constants;
  * 
  */
 
-public class RelationshipResult {
+public class RelationshipResult implements Result {
 	
 	
 	/**
@@ -41,6 +44,12 @@ public class RelationshipResult {
 		private final ImageIcon _icon;
 		private final Image _image;
 		private final String _name;
+		
+		private String _committers;
+		private When _when;
+		private Capable _capable;
+		private Ease _ease;
+		private Relationship _consequeses;
 
 		private Relationship(String iconAddress, String name) {
 			_icon = new ImageIcon(Constants.class.getResource(iconAddress));
@@ -60,6 +69,46 @@ public class RelationshipResult {
 			return _image;
 		}
 		
+		public void setCommitters(String committers) {
+			_committers = committers;
+		}
+
+		public String getCommitters() {
+			return _committers;
+		}
+
+		public void setWhen(When when) {
+			_when = when;
+		}
+
+		public When getWhen() {
+			return _when;
+		}
+
+		public void setCapable(Capable capable) {
+			_capable = capable;
+		}
+
+		public Capable getCapable() {
+			return _capable;
+		}
+
+		public void setEase(Ease ease) {
+			_ease = ease;
+		}
+
+		public Ease getEase() {
+			return _ease;
+		}
+
+		public void setConsequeses(Relationship consequeses) {
+			_consequeses = consequeses;
+		}
+
+		public Relationship getConsequeses() {
+			return _consequeses;
+		}
+
 		@Override
 		public int compareTo(Relationship other) {
 			if (other == null) return 1;

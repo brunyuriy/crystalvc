@@ -12,7 +12,7 @@ import crystal.model.RelationshipResult.Relationship;
 import crystal.model.RelationshipResult;
 
 /**
- * This class enables the calcualtions to happen on a background thread but _STILL_ update the UI. When we were doing
+ * This class enables the calculations to happen on a background thread but _STILL_ update the UI. When we were doing
  * the analysis on a regular Thread the UI woudln't update until all of the tasks were done; the UI didn't block, but it
  * didn't update either. This fixes that problem.
  * 
