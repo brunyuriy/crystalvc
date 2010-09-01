@@ -56,7 +56,7 @@ public class HgStateChecker {
 	 * @arg String tempWorkPath: path to a temp directory
 	 * @effect: clones the pathToRemoteRepo repository to pathToLocalRepo
 	 */
-	private static void createLocalRepository(String pathToHg, String pathToRemoteRepo, String pathToLocalRepo, String tempWorkPath, String remoteHg)
+	private static synchronized void createLocalRepository(String pathToHg, String pathToRemoteRepo, String pathToLocalRepo, String tempWorkPath, String remoteHg)
 	throws IOException, HgOperationException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToRemoteRepo);
@@ -103,7 +103,7 @@ public class HgStateChecker {
 	 * @arg String tempWorkPath: path to a temp directory
 	 * @effect: performs a pull and update on the pathToLocalRepo repository
 	 */
-	private static void updateLocalRepository(String pathToHg, String pathToLocalRepo, String pathToRemoteRepo, String tempWorkPath, String remoteHg) throws IOException, HgOperationException {
+	private static synchronized void updateLocalRepository(String pathToHg, String pathToLocalRepo, String pathToRemoteRepo, String tempWorkPath, String remoteHg) throws IOException, HgOperationException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToLocalRepo);
 		Assert.assertNotNull(tempWorkPath);
