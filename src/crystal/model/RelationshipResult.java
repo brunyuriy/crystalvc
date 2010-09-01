@@ -165,23 +165,25 @@ public class RelationshipResult implements Result {
 		public void calculateAction(LocalState localState, Relationship parent) {
 			_action = "";
 			if (localState.equals(LocalState.MUST_RESOLVE)) {
-				_action += "Action: hg merge";
+				_action += "hg merge";
 			} else if (localState.equals(LocalState.UNCHECKPOINTED)) {
-				_action += "Action: hg commit";
+				_action += "hg commit";
 			} else if (parent.getName().equals(Relationship.AHEAD)) {
-				_action += "Action: hg push";
+				_action += "hg push";
 			} else if ((parent.getName().equals(Relationship.BEHIND)) || (parent.getName().equals(Relationship.MERGECLEAN)) || (parent.getName().equals(Relationship.MERGECONFLICT))) {
-				_action += "Action: hg fetch";
+				_action += "hg fetch";
 			}
 		}
 		
 		public String getToolTipText() {
 			String answer = "";
+			if (_name.equals(SAME))
+				return answer;
 			if (_action != null) 
-				answer += _action + "\n";
+				answer += "Action: " + _action + "\n";
 			if (_consequences != null)
-				answer += "consequences: new relationship will be " + _consequences.getName() + "\n";
-			if (_committers != null)
+				answer += "Consequences: new relationship will be " + _consequences.getName() + "\n";
+			if ((_committers != null) && (!(_committers.isEmpty()))) 
 				answer += "Committers: " + _committers + "\n";
 			return answer.trim();
 		}
