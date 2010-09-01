@@ -182,7 +182,7 @@ public class RelationshipResult implements Result {
 			if (_consequences != null)
 				answer += "consequences: new relationship will be " + _consequences.getName() + "\n";
 			if (_committers != null)
-				answer += _committers + "\n";
+				answer += "Committers: " + _committers + "\n";
 			return answer.trim();
 		}
 
