@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -165,9 +166,12 @@ public class HgStateChecker {
 			 */
 			String[] statusArgs = { "status" };
 			output = RunIt.execute(hg, statusArgs , prefs.getEnvironment().getCloneString());
-			if (!(output.getOutput().trim().equals("")))
-				return LocalState.UNCHECKPOINTED;
-			
+			// check if any of the lines in the output don't start with "?"
+			StringTokenizer tokens = new StringTokenizer(output.getOutput().trim(), "\n");
+			while (tokens.hasMoreTokens()) {
+				if (!(tokens.nextToken().startsWith("?")))
+					return LocalState.UNCHECKPOINTED;
+			}
 			return LocalState.ALL_CLEAR;
 		} else {
 			// We can't find out the status, but we can find out if you must resolve
