@@ -107,7 +107,6 @@ public class HgLogParser {
 	}
 	
 	private static String clipFront(String line) {
-		System.out.println("Clipping " + line);
 		StringTokenizer tokens = new StringTokenizer(line);
 		tokens.nextToken();
 		return tokens.nextToken();
