@@ -1,5 +1,6 @@
 package crystal.server;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -13,25 +14,27 @@ import crystal.util.SetOperations;
 public class GuidanceChecker {
 
 	public static String getCommitters (Set<Checkpoint> committers) {
-		if (committers.size() == 0)
+		Set<String> committerNames = new HashSet<String>();
+		
+		for (Checkpoint current : committers)
+			committerNames.add(current.getCommitter());
+		
+		if (committerNames.size() == 0)
 			return "";
-		else if (committers.size() == 1) {
-			Iterator<Checkpoint> i = committers.iterator(); 
-			Checkpoint only = i.next();
-			return only.getCommitter();
-		} else if (committers.size() == 2) {
-			Iterator<Checkpoint> i = committers.iterator(); 
-			Checkpoint first = i.next();
-			Checkpoint second = i.next();
-			return first.getCommitter() + " and " + second.getCommitter();
+		else if (committerNames.size() == 1) {
+			Iterator<String> i = committerNames.iterator(); 
+			return  i.next();
+		} else if (committerNames.size() == 2) {
+			Iterator<String> i = committerNames.iterator(); 
+			return i.next() + " and " + i.next();
 		} else {
 			String answer = "";
-			for (Iterator<Checkpoint> i = committers.iterator(); i.hasNext();) {
-				Checkpoint current = i.next();
+			for (Iterator<String> i = committerNames.iterator(); i.hasNext();) {
+				String current = i.next();
 				if (i.hasNext()){
-					answer += current.getCommitter() + ", ";
+					answer += current + ", ";
 				} else {
-					answer += "and " + current.getCommitter();
+					answer += "and " + current;
 				}
 			}
 			return answer;
