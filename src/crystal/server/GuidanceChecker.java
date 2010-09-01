@@ -94,10 +94,12 @@ public class GuidanceChecker {
 			return Capable.NOTHING;
 
 		// if parent has something of yours i don't, then MUST
-		// if parent has something of mine i don't, then CANNOT
-		if (!(SetOperations.setDifference(parent, SetOperations.setDifference(you, me)).isEmpty()))
+		// if parent has something of mine you don't, then CANNOT
+		System.out.println("----\n" + me + "\n" + you + "\n" + parent + "\n" + r +"\n----");
+		System.out.println(SetOperations.setDifference(you, me) + "\n" + SetOperations.setDifference(parent, SetOperations.setDifference(you, me)));
+		if (!(SetOperations.intersection(you, SetOperations.setDifference(parent, me)).isEmpty()))
 			return Capable.MUST;
-		else if (!(SetOperations.setDifference(parent, SetOperations.setDifference(me, you)).isEmpty()))
+		else if (!(SetOperations.intersection(me, SetOperations.setDifference(parent, you)).isEmpty()))
 			return Capable.CANNOT;
 		else 
 			return Capable.MIGHT;
