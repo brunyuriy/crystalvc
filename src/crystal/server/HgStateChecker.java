@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +17,7 @@ import crystal.client.ProjectPreferences;
 import crystal.model.LocalStateResult.LocalState;
 import crystal.model.RelationshipResult.Relationship;
 import crystal.model.DataSource;
+import crystal.model.RevisionHistory;
 import crystal.util.RunIt;
 import crystal.util.TimeUtility;
 import crystal.util.RunIt.Output;
@@ -55,7 +57,7 @@ public class HgStateChecker {
 	 * @arg String tempWorkPath: path to a temp directory
 	 * @effect: clones the pathToRemoteRepo repository to pathToLocalRepo
 	 */
-	private static void createLocalRepository(String pathToHg, String pathToRemoteRepo, String pathToLocalRepo, String tempWorkPath, String remoteHg)
+	private static synchronized void createLocalRepository(String pathToHg, String pathToRemoteRepo, String pathToLocalRepo, String tempWorkPath, String remoteHg)
 	throws IOException, HgOperationException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToRemoteRepo);
@@ -102,7 +104,7 @@ public class HgStateChecker {
 	 * @arg String tempWorkPath: path to a temp directory
 	 * @effect: performs a pull and update on the pathToLocalRepo repository
 	 */
-	private static void updateLocalRepository(String pathToHg, String pathToLocalRepo, String pathToRemoteRepo, String tempWorkPath, String remoteHg) throws IOException, HgOperationException {
+	private static synchronized void updateLocalRepository(String pathToHg, String pathToLocalRepo, String pathToRemoteRepo, String tempWorkPath, String remoteHg) throws IOException, HgOperationException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToLocalRepo);
 		Assert.assertNotNull(tempWorkPath);
@@ -146,7 +148,7 @@ public class HgStateChecker {
 			 */
 			String[] logArgs = { "log" };
 			Output output = RunIt.execute(hg, logArgs, prefs.getEnvironment().getCloneString());
-			prefs.getEnvironment().setChangeset(HgLogParser.parseLog(output.getOutput()));
+			prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput()));
 			
 			/*
 			 * Check if repo has two heads.  If it is, return MUST_RESOLVE
@@ -164,9 +166,12 @@ public class HgStateChecker {
 			 */
 			String[] statusArgs = { "status" };
 			output = RunIt.execute(hg, statusArgs , prefs.getEnvironment().getCloneString());
-			if (!(output.getOutput().trim().equals("")))
-				return LocalState.UNCHECKPOINTED;
-			
+			// check if any of the lines in the output don't start with "?"
+			StringTokenizer tokens = new StringTokenizer(output.getOutput().trim(), "\n");
+			while (tokens.hasMoreTokens()) {
+				if (!(tokens.nextToken().startsWith("?")))
+					return LocalState.UNCHECKPOINTED;
+			}
 			return LocalState.ALL_CLEAR;
 		} else {
 			// We can't find out the status, but we can find out if you must resolve
@@ -211,7 +216,7 @@ public class HgStateChecker {
 			 */
 			String[] logArgs = { "log" };
 			output = RunIt.execute(hg, logArgs, tempWorkPath + tempMyName);
-			prefs.getEnvironment().setChangeset(HgLogParser.parseLog(output.getOutput()));
+			prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput()));
 
 			
 			/*
@@ -339,7 +344,7 @@ public class HgStateChecker {
 		 */
 		String[] logArgs = { "log" };
 		output = RunIt.execute(hg, logArgs, tempWorkPath + tempYourName);
-		source.setChangeset(HgLogParser.parseLog(output.getOutput()));
+		source.setHistory(new RevisionHistory(output.getOutput()));
 		
 
 		String[] pullArgs = { "pull", tempWorkPath + tempYourName };
@@ -357,14 +362,14 @@ public class HgStateChecker {
 			 * changes found
 			 */
 			if (output.getOutput().indexOf("no changes found") >= 0)
-				answer = Relationship.SAME;
+				answer = new Relationship(Relationship.SAME);
 			/*
 			 * mine is AHEAD (yours is BEHIND) if output looks something like this: searching for changes adding
 			 * changesets adding manifests adding file changes added 1 changesets with 1 changes to 1 files (run 'hg
 			 * update' to get a working copy)
 			 */
 			else if (output.getOutput().indexOf("(run 'hg update' to get a working copy)") >= 0)
-				answer = Relationship.AHEAD;
+				answer = new Relationship(Relationship.AHEAD);
 			else {
 				log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output);
 				String dialogMsg = "Crystal is having trouble comparing\n" + 
@@ -392,7 +397,7 @@ public class HgStateChecker {
 		 * file changes added 1 changesets with 1 changes to 1 files (run 'hg update' to get a working copy)
 		 */
 		else if (output.getOutput().indexOf("(run 'hg update' to get a working copy)") >= 0)
-			answer = Relationship.BEHIND;
+			answer = new Relationship(Relationship.BEHIND);
 
 		/*
 		 * CONFLICT if output looks something like this: pulling from ../firstcopy/ searching for changes adding
@@ -408,7 +413,7 @@ public class HgStateChecker {
 				// try to compile {
 				// if successful, try to test {
 				// if successful:
-				answer = Relationship.MERGECLEAN;
+				answer = new Relationship(Relationship.MERGECLEAN);
 				// if unsuccessful:
 				// answer = ResultStatus.TESTCONFLICT;
 				// }
@@ -417,7 +422,7 @@ public class HgStateChecker {
 			}
 			// otherwise, the merge failed
 			else
-				answer = Relationship.MERGECONFLICT;
+				answer = new Relationship(Relationship.MERGECONFLICT);
 		} else {
 			log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output.toString());
 			String dialogMsg = "Crystal is having trouble comparing\n" + 

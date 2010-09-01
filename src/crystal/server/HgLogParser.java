@@ -62,42 +62,47 @@ public class HgLogParser {
 	}
 
 	public static HashMap<String, Checkpoint> parseLog(String log) {
+		
 		HashMap<String, Checkpoint> answer = new HashMap<String, Checkpoint>();
 		
-		StringTokenizer tokens = new StringTokenizer(log, "\n");
-		while (tokens.hasMoreTokens()) {
-			String nextLine = tokens.nextToken();
-			if (!nextLine.startsWith("changeset:"))
-				throw new RuntimeException(nextLine + " does not start with \"changeset:\"");
-			String changeset = clipFront(nextLine);
+		for (String current : log.split("changeset:")) {
 			
-			List<String> parents = new ArrayList<String>();
-			nextLine = tokens.nextToken();
-			if (nextLine.startsWith("tag:"))
-				nextLine = tokens.nextToken();
-			
-			while (nextLine.startsWith("parent:")) {
-				parents.add(clipFront(nextLine));
-				nextLine = tokens.nextToken();
-			}
-			
-			if (!nextLine.startsWith("user:"))
-				throw new RuntimeException(nextLine + " does not start with \"user:\"");
-			String user = clipFront(nextLine);
-			
-			nextLine = tokens.nextToken();
-			if (!nextLine.startsWith("date:"))
-				throw new RuntimeException(nextLine + " does not start with \"date:\"");
-			String date = clipFront(nextLine);
-			
-			nextLine = tokens.nextToken();
-			if (!nextLine.startsWith("summary:"))
-				throw new RuntimeException(nextLine + " does not start with \"summary:\"");
-			String summary = clipFront(nextLine);
+			if (!(current.trim().isEmpty())) {
+				current = "changeset:" + current;
 
-			answer.put(changeset, new Checkpoint(changeset, user, date, summary, parents));
+				StringTokenizer tokens = new StringTokenizer(current, "\n");
+
+				String changeset = null, user = null, date = null, summary = null;
+				List<String> parents = new ArrayList<String>();
+				while (tokens.hasMoreTokens()) {
+					String currentLine = tokens.nextToken().trim();
+
+					if (currentLine.startsWith("changeset:"))
+						changeset = clipFront(currentLine).substring(clipFront(currentLine).indexOf(":")+1);
+
+					else if (currentLine.startsWith("tag:")); // ignore
+
+					else if (currentLine.startsWith("parent:"))
+						parents.add(clipFront(currentLine));
+
+					else if (currentLine.startsWith("user:"))
+						user = clipFront(currentLine);
+
+					else if (currentLine.startsWith("date:"))
+						date = clipFront(currentLine);
+
+					else if (currentLine.startsWith("summary:"))
+						summary = clipFront(currentLine);
+
+					else 
+						throw new RuntimeException("Unexpected line in the log file: " + currentLine);
+				}
+				if (changeset != null) {
+					answer.put(changeset, new Checkpoint(changeset, user, date, summary, parents));
+				} else
+					throw new RuntimeException("Log contained a changeset description that did not start with \"changeset:\"");
+			}
 		}
-		
 		return answer;
 	}
 	

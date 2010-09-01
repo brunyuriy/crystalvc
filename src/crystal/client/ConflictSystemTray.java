@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 
 import crystal.Constants;
 import crystal.client.ConflictDaemon.ComputationListener;
-import crystal.model.DataSource;
 import crystal.model.LocalStateResult;
 import crystal.model.RelationshipResult;
 import crystal.model.LocalStateResult.LocalState;
@@ -44,7 +43,7 @@ public class ConflictSystemTray implements ComputationListener {
 	public static boolean TRAY_SUPPORTED = SystemTray.isSupported();
 	// public static boolean TRAY_SUPPORTED = false;
 
-	public static String VERSION_ID = "0.1.20100811";
+	public static String VERSION_ID = "0.1.20100820";
 
 	/**
 	 * Conflict client UI.
@@ -389,15 +388,23 @@ public class ConflictSystemTray implements ComputationListener {
 
 		startCalculations = System.currentTimeMillis();
 
+//		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
+//			final CalculateLocalStateTask clst = new CalculateLocalStateTask(projPref, this, _client);
+//			ex.execute(clst);
+//			
+//			for (final DataSource source : projPref.getDataSources()) {
+//				final CalculateRelationshipTask crt = new CalculateRelationshipTask(source, projPref, this, _client);
+//				ex.execute(crt);
+//			}
+//		}
+		
 		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
-			final CalculateLocalStateTask clst = new CalculateLocalStateTask(projPref, this, _client);
-			ex.execute(clst);
-			
-			for (final DataSource source : projPref.getDataSources()) {
-				final CalculateRelationshipTask crt = new CalculateRelationshipTask(source, projPref, this, _client);
-				ex.execute(crt);
-			}
+			final CalculateProjectTask cpt = new CalculateProjectTask(projPref, this, _client);
+			ex.execute(cpt);
 		}
+
+		
+		
 		// } else {
 		// _log.info("Tasks still pending; new run not initiated");
 		// }
