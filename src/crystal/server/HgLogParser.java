@@ -108,8 +108,13 @@ public class HgLogParser {
 	
 	private static String clipFront(String line) {
 		StringTokenizer tokens = new StringTokenizer(line);
+
 		tokens.nextToken();
-		return tokens.nextToken();
+		String answer = "";
+		while (tokens.hasMoreTokens()) {
+			answer += tokens.nextToken();
+		}
+		return answer;
 	}
 	
 //	public static void main(String[] args) throws IOException {
