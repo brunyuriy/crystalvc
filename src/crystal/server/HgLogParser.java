@@ -69,7 +69,8 @@ public class HgLogParser {
 			String nextLine = tokens.nextToken();
 			if (!nextLine.startsWith("changeset:"))
 				throw new RuntimeException(nextLine + " does not start with \"changeset:\"");
-			String changeset = clipFront(nextLine);
+			String changesetWithNum = clipFront(nextLine);
+			String changeset = changesetWithNum.substring(changesetWithNum.indexOf(":")+1);
 			
 			List<String> parents = new ArrayList<String>();
 			nextLine = tokens.nextToken();

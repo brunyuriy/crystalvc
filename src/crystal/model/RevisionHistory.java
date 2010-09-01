@@ -30,7 +30,10 @@ public class RevisionHistory {
 	public RevisionHistory(String log) {
 		_changesets = HgLogParser.parseLog(log);
 	}
-		
+	
+	public int size() {
+		return _changesets.keySet().size();
+	}
 	public String getCommitters (RevisionHistory you) {
 		Set<String> changes = new HashSet<String>();
 		changes = SetOperations.xor(_changesets.keySet(), you._changesets.keySet());
@@ -60,6 +63,15 @@ public class RevisionHistory {
 	
 	public Ease getEase() {
 		return GuidanceChecker.getEase();
+	}
+	
+	@Override
+	public String toString() {
+		String answer = "";
+		for (String s : _changesets.keySet()) {
+			answer += s + ", ";
+		}
+		return answer.substring(0, answer.length() - 1);
 	}
 
 }

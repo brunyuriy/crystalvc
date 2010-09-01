@@ -94,6 +94,7 @@ public class RelationshipResult implements Result {
 		}
 
 		public ImageIcon getIcon() {
+			System.out.println("Executing geticon()");
 			String iconAddress = PATH + SIZE32;
 			if (_capable == Capable.MUST)
 				iconAddress += CAPABLE_MUST;

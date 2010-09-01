@@ -61,6 +61,7 @@ public class DataSource {
 	
 	public void setHistory(RevisionHistory history) {
 		_history = history;
+		System.out.println(_shortName + " " + _history.size());
 	}
 		
 	public RevisionHistory getHistory() {

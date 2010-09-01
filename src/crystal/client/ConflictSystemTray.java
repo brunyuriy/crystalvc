@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 
 import crystal.Constants;
 import crystal.client.ConflictDaemon.ComputationListener;
-import crystal.model.DataSource;
 import crystal.model.LocalStateResult;
 import crystal.model.RelationshipResult;
 import crystal.model.LocalStateResult.LocalState;

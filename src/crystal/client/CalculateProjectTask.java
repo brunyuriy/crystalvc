@@ -130,7 +130,7 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 			}
 			_log.trace("Relationship computed: " + relationships.get(source));
 			// And finally update the GUI:
-			//publish(relationships.get(source));
+			publish(relationships.get(source));
 		}
 		return null;
 	}
