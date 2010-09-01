@@ -94,15 +94,24 @@ public class RelationshipResult implements Result {
 		}
 
 		public ImageIcon getIcon() {
-			System.out.println("Executing geticon()");
 			String iconAddress = PATH + SIZE32;
+			
 			if (_capable == Capable.MUST)
 				iconAddress += CAPABLE_MUST;
 			else if (_capable == Capable.MIGHT)
 				iconAddress += CAPABLE_MIGHT;
 			else if (_capable == Capable.CANNOT)
 				iconAddress += CAPABLE_CANNOT;
+			else if (_capable == Capable.NOTHING)
+				if (_when == When.NOW)
+					iconAddress += WHEN_NOW;
+				else if (_when == When.LATER)
+					iconAddress += WHEN_LATER;
+				else 
+					// default icon
+					iconAddress += WHEN_NOW;
 			else 
+				// default icon
 				iconAddress += CAPABLE_MUST;
 			iconAddress += ICON_ADDRESSES.get(_name);
 			return (new ImageIcon(Constants.class.getResource(iconAddress)));
@@ -170,10 +179,10 @@ public class RelationshipResult implements Result {
 			String answer = "";
 			if (_action != null) 
 				answer += _action + "\n";
-			if (_committers != null)
-				answer += _committers + "\n";
 			if (_consequences != null)
 				answer += "consequences: new relationship will be " + _consequences.getName() + "\n";
+			if (_committers != null)
+				answer += _committers + "\n";
 			return answer.trim();
 		}
 

@@ -38,26 +38,13 @@ public class GuidanceChecker {
 		}
 	}
 
+	// NOW if parent has your things I do not
+	// LATER otherwise
 	public static When getWhen(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
-		if ((r.getName().equals(Relationship.BEHIND)) || (r.getName().equals(Relationship.MERGECLEAN)) || (r.getName().equals(Relationship.MERGECONFLICT))) {
-			// if the parent has some things of yours i don't, then NOW
-			// if the parent has some things of mine you don't, then NOW
-			if (!(SetOperations.setDifference(parent, SetOperations.setDifference(you, me)).isEmpty()))
-				return When.NOW;
-			else if (!(SetOperations.setDifference(parent, SetOperations.setDifference(me, you)).isEmpty()))
-				return When.NOW;
-			else
-				return When.LATER;
-		} else if (r.getName().equals(Relationship.AHEAD)) {
-			// if the parent has some things of mine that you don't, then NOW
-			if (!(SetOperations.setDifference(parent, SetOperations.setDifference(me, you)).isEmpty()))
-				return When.NOW;
-			else
-				return When.LATER;
-		} else if (r.getName().equals(Relationship.SAME)) {
-			return When.NOTHING;
-		}
-		return null;
+		if (!(SetOperations.intersection(parent, SetOperations.setDifference(you, me)).isEmpty()))
+			return When.NOW;
+		else
+			return When.LATER;
 	}
 
 	// This is not actually speculated.  Therefore, it may be imprecise. 
@@ -89,20 +76,24 @@ public class GuidanceChecker {
 		return null;
 	}
 
+	// I CANNOT if we're SAME
+	// I MUST if parent has your things I do not
+	// I CANNOT if parent has my things you do not
+	// I MIGHT if parent does not have some of my things and does not have some of your things
 	public static Capable getCapable(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
 		if (r.getName().equals(Relationship.SAME))
-			return Capable.NOTHING;
+			return Capable.CANNOT;
 
 		// if parent has something of yours i don't, then MUST
 		// if parent has something of mine you don't, then CANNOT
-		System.out.println("----\n" + me + "\n" + you + "\n" + parent + "\n" + r +"\n----");
-		System.out.println(SetOperations.setDifference(you, me) + "\n" + SetOperations.setDifference(parent, SetOperations.setDifference(you, me)));
 		if (!(SetOperations.intersection(you, SetOperations.setDifference(parent, me)).isEmpty()))
 			return Capable.MUST;
 		else if (!(SetOperations.intersection(me, SetOperations.setDifference(parent, you)).isEmpty()))
 			return Capable.CANNOT;
-		else 
+		else if ((!(SetOperations.setDifference(me, parent).isEmpty())) && (!(SetOperations.setDifference(you, parent).isEmpty())))
 			return Capable.MIGHT;
+		else
+			return Capable.NOTHING;
 	}
 
 	// yeah, i dunno yet.
