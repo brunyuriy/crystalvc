@@ -11,7 +11,6 @@ import crystal.model.LocalStateResult;
 import crystal.model.RelationshipResult;
 import crystal.model.Result;
 import crystal.model.RevisionHistory;
-import crystal.model.LocalStateResult.LocalState;
 import crystal.model.RelationshipResult.Relationship;
 
 /**
