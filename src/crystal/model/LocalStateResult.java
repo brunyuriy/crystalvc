@@ -1,7 +1,7 @@
 package crystal.model;
 
 
-public class LocalStateResult {
+public class LocalStateResult implements Result {
 
 	/**
 	 * Represents a local state
@@ -10,7 +10,7 @@ public class LocalStateResult {
 	public static class LocalState {
 		public static LocalState UNCHECKPOINTED = new LocalState("hg commit", "UNCHECKPOINTED");
 		public static LocalState MUST_RESOLVE = new LocalState("hg fetch", "MUST RESOLVE");
-		public static LocalState ALL_CLEAR = new LocalState("all clear", "ALL CLEAR");
+		public static LocalState ALL_CLEAR = new LocalState("", "ALL CLEAR");
 		public static LocalState PENDING = new LocalState("", "PENDING");
 		public static LocalState ERROR = new LocalState("", "ERROR");
 
