@@ -112,9 +112,9 @@ public class HgLogParser {
 		tokens.nextToken();
 		String answer = "";
 		while (tokens.hasMoreTokens()) {
-			answer += tokens.nextToken();
+			answer += tokens.nextToken() + " ";
 		}
-		return answer;
+		return answer.trim();
 	}
 	
 //	public static void main(String[] args) throws IOException {
