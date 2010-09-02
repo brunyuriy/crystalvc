@@ -169,17 +169,17 @@ public class RelationshipResult implements Result {
 		public void calculateAction(LocalState localState, Relationship parent) {
 			if ((parent == null) || (localState == LocalState.PENDING))
 				_action = Action.UNKNOWN;
-			else if (localState == LocalState.ALL_CLEAR)
+			else if (parent.getName().equals(Relationship.SAME))
 				_action = Action.NOTHING;
-			else if (localState.equals(LocalState.MUST_RESOLVE)) {
+			else if (localState.equals(LocalState.MUST_RESOLVE))
 				_action = Action.RESOLVE;
-			} else if (localState.equals(LocalState.UNCHECKPOINTED)) {
+			else if (localState.equals(LocalState.UNCHECKPOINTED))
 				_action = Action.CHECKPOINT;
-			} else if (parent.getName().equals(Relationship.AHEAD)) {
+			else if (parent.getName().equals(Relationship.AHEAD))
 				_action = Action.PUBLISH;
-			} else if ((parent.getName().equals(Relationship.BEHIND)) || (parent.getName().equals(Relationship.MERGECLEAN)) || (parent.getName().equals(Relationship.MERGECONFLICT))) {
+			else if ((parent.getName().equals(Relationship.BEHIND)) || (parent.getName().equals(Relationship.MERGECLEAN)) || (parent.getName().equals(Relationship.MERGECONFLICT)))
 				_action = Action.SYNC;
-			} else
+			else
 				_action = null;
 		}
 		
@@ -209,13 +209,11 @@ public class RelationshipResult implements Result {
 		
 		public String getToolTipText() {
 			String answer = "";
-			if (_name.equals(SAME))
-				return answer;
 			if ((_action != null) && (_action != Action.NOTHING)) 
 				answer += "Action: " + getAction(RepoKind.HG) + "\n";
-			if (_consequences != null)
+			if(_consequences != null)
 				answer += "Consequences: new relationship will be " + _consequences.getName() + "\n";
-			if ((_committers != null) && (!(_committers.isEmpty()))) 
+			else if ((_committers != null) && (!(_committers.isEmpty()))) 
 				answer += "Committers: " + _committers + "\n";
 			return answer.trim();
 		}
