@@ -21,7 +21,10 @@
       <li><a href="#download">How to run Crystal</a></li>
       <li><a href="#screen-shot">Crystal screen shot</a>
         <ul>
-          <li><a href="#Meaning_of_the_icons">Meaning of the icons</a></li>
+          <li><a href="#local-state">Local state</a></li>
+          <li><a href="#relationship">Relationships</a></li>
+          <li><a href="#action">Action</a></li>
+          <li><a href="#guidance">Guidance</a></li>
         </ul></li>
       <li><a href="#Configuration_File_Format">Configuration file format</a></li>
       <li><a href="#access-to-remote-repos">Making your repository available to your co-workers</a>
@@ -77,7 +80,7 @@ fetch=
 <h2 id="download">How to run Crystal</h2>
 
 <ol>
-<li> Download <a href="crystal.jar">crystal.jar</a>. (Current version is 0.1.20100807.  To learn the version of an executable, run <tt>java -jar crystal.jar --version</tt> or select the <tt>about</tt> menu in the GUI.)</li>
+<li> Download <a href="crystal.jar">crystal.jar</a>. (Current version is 0.1.20100820.  To learn the version of an executable, run <tt>java -jar crystal.jar --version</tt> or select the <tt>about</tt> menu in the GUI.)</li>
 <li> Run:  <tt>java -jar crystal.jar</tt></li>
 <li> The tool will complain that your configuration file is invalid and
   give you instructions on how to fix it.  You can do so either via a GUI
@@ -90,49 +93,63 @@ fetch=
 <h2 id="screen-shot">Crystal screen shot</h2>
 
 <p>
+Crystal displays four types of information: local state, relationship, possible action, and guidance.  
+
+<p>
 <img src="CrystalScreenShot.png" alt="A screen shot of the Crystal tool."></img>
 </p>
 
-<h3 id="Meaning_of_the_icons">Meaning of the icons</h3>
+<h3 id="local-state">Local state</h3>
 
 <p>
-Each icon summarizes the relationship between your repository and some
-other repositories.
+The working copy can be in one of three states, shown below the project name: 
+<OL>
+<LI> UNCHECKPOINTED (denoted as <tt>hg commit</tt>)</LI>
+<LI> MUST RESOLVE (denoted as <tt>hg fetch</tt>)</LI>
+<LI> ALL CLEAR (denoted as a blank)</LI>
+</OL>
+</p>
+
+<h3 id="relationship">Relationship</h3>
+
+<p>
+There are five possible relationships (plus two descriptors) between the developer's repository and that of a collaborate.  This relationship determines the shape of the icon Crystal displays.  
 </p>
 
 <table border="2" width="640" cellpadding="10">
   <tr>
-    <th align="center">Crystal Icon</th>
-    <th align="center">Meaning of the icon</th>
+    <th align="center">Crystal shape</th>
+    <th align="center">Meaning of the shape</th>
   </tr>
   <tr>
     <td align="center"><img src="same.png" height="48" alt="green checkmark"></img></td>
-    <td align="left">The repositories are in sync.</td>
+    <td align="left">SAME: The repositories are in sync.</td>
   </tr>
   <tr>
     <td align="center"><img src="ahead.png" height="48" alt="push arrow"></img></td>
-    <td align="left">Your repository has newer commits than the other one.  You may consider pushing your changes or letting the owner know.</td>
+    <td align="left">AHEAD: Your repository has newer commits than the other one.  You may consider pushing your changes or letting the owner know.</td>
   </tr>
   <tr>
     <td align="center"><img src="behind.png" height="48" alt="pull arrow"></img></td>
-    <td align="left">The other repository has newer commits than yours.  You may consider pulling changes to avoid later merges.</td>
+    <td align="left">BEHIND: The other repository has newer commits than yours.  You may consider pulling changes to avoid later merges.</td>
   </tr>
   <tr>
     <td align="center"><img src="merge.png" height="48" alt="yellow merge"></img></td>
-    <td align="left">Each of the two repositories has commits not present in the other one, but they can be merged cleanly. </td>
+    <td align="left">MERGE: Each of the two repositories has commits not present in the other one, but they can be merged cleanly. </td>
   </tr>
   <tr>
     <td align="center"><img src="mergeconflict.png" height="48" alt="red merge"></img></td>
-    <td align="left">Each of the two repositories has commits not present in the other one and merging them will result in a textual conflict. </td>
-  </tr>
-  <tr>
-    <td align="center"><img src="twohead.png" height="48" alt="two headed red arrow"></img></td>
-    <td align="left">Your repository is in a conflicted state.  You must resolve this conflict before you can interact with other repositories.  </td>
+    <td align="left">CONFICT: Each of the two repositories has commits not present in the other one and merging them will result in a textual conflict. </td>
   </tr>
   <tr>
     <td align="center"><img src="clock.png" height="48" alt="clock"></img></td>
     <td align="left">Crystal is in the process of refreshing this data. </td>
   </tr>
+  <tr>
+    <td align="center"><img src="error.png" height="48" alt="error"></img></td>
+    <td align="left">Crystal experienced an error in computing this relationship. </td>
+  </tr>
+
 
 
   <!-- tr
@@ -148,6 +165,26 @@ other repositories.
   </tr>
   -->
 </table>
+
+<h3 id="action">Action</h3>
+
+<p>
+Holding the mouse over an icon displays a tool tip.  At the top of the tool, Crystal shows the action the developer may perform, if one is available (e.g., <tt>hg commit</tt>, <tt>hg merge</tt>, <tt>hg fetch</tt>, and <tt>hg push</tt>).
+</p>
+
+<h3 id="guidance">Guidance</h3>
+
+<p>
+There are five types of guidance Crystal displays:
+<OL>
+<LI> Committer: the list of committers relevant to the relationship.  Crystal displays this information in the tool tip.</LI>
+<LI> When: whether or not the developer can act right now to affect this relationship.  The relationship icon is solid if the developer can act now, and hollow if the developer cannot act until later.</LI>
+<LI> Capable: whether or not the developer must, might, or cannot act to affect the relationship.  The relationship icon is solid if the developer must be the one to take action, solid but unsaturated if the developer might be the one to take action, and hollow if the developer cannot be the one to take action.</LI>
+<LI> Consequences: the new relationship after the developer executes the available action.  Crystal displays this information in the tool tip.</LI>
+<LI> Ease: Whether another developer may have an easier time affecting this relationship.Crystal displays this information in the tool tip.</LI>
+</OL>
+
+</p>
 
 <p>
 In the task bar, Crystal displays the most severe icon that appears
@@ -167,13 +204,13 @@ Here is an example valid configuration file:
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;ccConfig tempDirectory=&quot;C:/temp/conflictClient/&quot; hgPath=&quot;C:/Program Files/TortoiseHg/hg.exe&quot;&gt;
-  &lt;project Kind=&quot;HG&quot; ShortName=&quot;MyFirstProject&quot; Clone=&quot;C:/projects/MyLocalFirstProjectRepo/&quot;&gt;
-    &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/repo/&quot; /&gt;
-    &lt;source ShortName=&quot;Friend&quot; Clone=&quot;ssh://user@host/path/to/friend/repo/&quot; /&gt;
+  &lt;project Kind=&quot;HG&quot; ShortName=&quot;MyFirstProject&quot; Clone=&quot;C:/projects/MyLocalFirstProjectRepo/&quot; parent=&quot;MASTER&quot;&gt;
+    &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
+    &lt;source ShortName=&quot;Friend&quot; Clone=&quot;ssh://user@host/path/to/friend/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
   &lt;/project&gt;
-  &lt;project Kind=&quot;HG&quot; ShortName=&quot;MySecondProject&quot; Clone=&quot;C:/projects/MyLocalSecondProjectRepo/&quot;&gt;
-    &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/socond/project/repo/&quot; /&gt;
-    &lt;source ShortName=&quot;Friend&quot; Clone=&quot;https://user@host/path/to/friend/second/repo&quot; /&gt;
+  &lt;project Kind=&quot;HG&quot; ShortName=&quot;MySecondProject&quot; Clone=&quot;C:/projects/MyLocalSecondProjectRepo/&quot; parent=&quot;MASTER&quot;&gt;
+    &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/socond/project/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
+    &lt;source ShortName=&quot;Friend&quot; Clone=&quot;https://user@host/path/to/friend/second/repo&quot; commonParent=&quot;MASTER&quot; /&gt;
   &lt;/project&gt;
 &lt;/ccConfig&gt;
 </pre>
@@ -183,11 +220,11 @@ At the root level, there is a single XML element: <tt>ccConfig</tt>.  This eleme
 </p>
 
 <p>
-For each project you wish Crystal to track, <tt>ccConfig</tt> will have a <tt>project</tt> child with three attributes: <tt>Kind</tt>, <tt>ShortName</tt>, and <tt>Clone</tt>.  The <tt>Kind</tt> element describes the kind of the repository: HG for mercurial or GIT for git, although, for now, Crystal only supports HG.  The <tt>ShortName</tt> element is the name of the project you want Crystal to display (on the left side on the screen shot above).  The <tt>Clone</tt> element is the path to your local repository; you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
+For each project you wish Crystal to track, <tt>ccConfig</tt> will have a <tt>project</tt> child with four attributes: <tt>Kind</tt>, <tt>ShortName</tt>, <tt>Clone</tt>, and (optionally) <tt>parent</tt>.  The <tt>Kind</tt> element describes the kind of the repository: HG for mercurial or GIT for git, although, for now, Crystal only supports HG.  The <tt>ShortName</tt> element is the name of the project you want Crystal to display (on the left side on the screen shot above).  The <tt>Clone</tt> element is the path to your local repository; you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.  The optional <tt>parent</tt> element is the shortName of the repository that is your repository's parent; that is, the default place you push to and pull from.  Crystal needs to know the parent to determine your possible actions; if you do not supply the <tt>parent</tt> attribute, Crystal will not report the action information.  
 </p>
 
 <p>
-Finally, for each repository you wish Crystal to compare to your repository, the <tt>project</tt> element will have a <tt>source</tt> child with three attributes: <tt>Kind</tt>, <tt>ShortName</tt>, and <tt>Clone</tt>.  The <tt>Kind</tt> element is identical to the parent <tt>project</tt>'s <tt>Kind</tt> element.  The <tt>ShortName</tt> element is the name of the repository you want Crystal to display (above the icons on the screen shot above).  The <tt>Clone</tt> element is the path to this repository; again, you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.
+Finally, for each repository you wish Crystal to compare to your repository, the <tt>project</tt> element will have a <tt>source</tt> child with three attributes: <tt>ShortName</tt>, <tt>Clone</tt>, and (optionally) <tt>commonParent</tt>.  The <tt>ShortName</tt> element is the name of the repository you want Crystal to display (above the icons on the screen shot above).  The <tt>Clone</tt> element is the path to this repository; again, you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.  The optional <tt>commonParent</tt> element is the shortName of the repository that is the common parent between your repository and the repository this <tt>source</tt> element represents.  Most often, the common parent is the master repository.  Crystal needs to know the common parent to determine the guidance information; if you do not supply the <tt>commonParent</tt> attribute, Crystal will not report any guidance and all relationship icons will appear solid.  
 </p>
 
 <h2 id="access-to-remote-repos">Making your repository available to your co-workers</h2>
