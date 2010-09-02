@@ -41,13 +41,26 @@ public class GuidanceChecker {
 		}
 	}
 
+	// NOTHING if SAME, MERGE, or CONFLICT
+	// if BEHIND or AHEAD:
 	// NOW if parent has your things I do not
 	// LATER otherwise
 	public static When getWhen(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
-		if (!(SetOperations.intersection(parent, SetOperations.setDifference(you, me)).isEmpty()))
-			return When.NOW;
-		else
-			return When.LATER;
+		if ((r.getName().equals(Relationship.SAME)) || (r.getName().equals(Relationship.MERGECLEAN)) || (r.getName().equals(Relationship.MERGECONFLICT)))
+			return When.NOTHING;
+		if (r.getName().equals(Relationship.BEHIND))
+			// NOW if parent has something of yours that I do not
+			if (!(SetOperations.intersection(you, SetOperations.setDifference(parent, me)).isEmpty()))
+				return When.NOW;
+			else
+				return When.LATER;
+		if (r.getName().equals(Relationship.AHEAD))
+			// NOW if I have something the parent does not
+			if (!(SetOperations.setDifference(me, parent)).isEmpty())
+				return When.NOW;
+			else
+				return When.LATER;
+		return When.NOTHING;
 	}
 
 	// This is not actually speculated.  Therefore, it may be imprecise. 
@@ -79,24 +92,25 @@ public class GuidanceChecker {
 		return null;
 	}
 
-	// I CANNOT if we're SAME
+	// I CANNOT if we're SAME, AHEAD, or BEHIND
 	// I MUST if parent has your things I do not
 	// I CANNOT if parent has my things you do not
 	// I MIGHT if parent does not have some of my things and does not have some of your things
 	public static Capable getCapable(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
-		if (r.getName().equals(Relationship.SAME))
+		if ((r.getName().equals(Relationship.SAME)) || (r.getName().equals(Relationship.AHEAD)) || (r.getName().equals(Relationship.BEHIND))) 
 			return Capable.CANNOT;
 
-		// if parent has something of yours i don't, then MUST
-		// if parent has something of mine you don't, then CANNOT
-		if (!(SetOperations.intersection(you, SetOperations.setDifference(parent, me)).isEmpty()))
-			return Capable.MUST;
-		else if (!(SetOperations.intersection(me, SetOperations.setDifference(parent, you)).isEmpty()))
-			return Capable.CANNOT;
-		else if ((!(SetOperations.setDifference(me, parent).isEmpty())) && (!(SetOperations.setDifference(you, parent).isEmpty())))
-			return Capable.MIGHT;
-		else
-			return Capable.NOTHING;
+		if ((r.getName().equals(Relationship.MERGECLEAN)) || (r.getName().equals(Relationship.MERGECONFLICT)))
+			// if parent has something of yours i don't, then MUST
+			// if parent has something of mine you don't, then CANNOT
+			if (!(SetOperations.intersection(you, SetOperations.setDifference(parent, me)).isEmpty()))
+				return Capable.MUST;
+			else if (!(SetOperations.intersection(me, SetOperations.setDifference(parent, you)).isEmpty()))
+				return Capable.CANNOT;
+			else if ((!(SetOperations.setDifference(me, parent).isEmpty())) && (!(SetOperations.setDifference(you, parent).isEmpty())))
+				return Capable.MIGHT;
+
+		return Capable.NOTHING;
 	}
 
 	// yeah, i dunno yet.
