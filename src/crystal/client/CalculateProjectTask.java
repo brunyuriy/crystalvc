@@ -123,7 +123,8 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 				// calculate the Consequences
 				ourRelationship.setConsequences(mine.getConsequences(yours, parent, ourRelationship));
 				// calculate the Capable
-				ourRelationship.setCapable(mine.getCapable(yours, parent, ourRelationship));
+				boolean isParent = source.getShortName().equals(_prefs.getEnvironment().getParent());
+				ourRelationship.setCapable(mine.getCapable(yours, parent, ourRelationship, isParent));
 				// calculate the Ease
 				ourRelationship.setEase(mine.getEase());
 			}

@@ -114,7 +114,14 @@ public class GuidanceChecker {
 	// I MUST if parent has your things I do not
 	// I CANNOT if parent has my things you do not
 	// I MIGHT if parent does not have some of my things and does not have some of your things
-	public static Capable getCapable(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
+	public static Capable getCapable(Set<String> me, Set<String> you, Set<String> parent, Relationship r, boolean isParent) {
+		if (isParent)
+			if (r.getName().equals(Relationship.SAME))
+				return Capable.CANNOT;
+			else
+				return Capable.MUST;
+
+		
 		if ((r.getName().equals(Relationship.SAME)) || (r.getName().equals(Relationship.AHEAD)) || (r.getName().equals(Relationship.BEHIND))) 
 			return Capable.NOTHING;
 
