@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import crystal.model.RevisionHistory.Action;
 import crystal.model.RevisionHistory.Capable;
 import crystal.model.RevisionHistory.Ease;
 import crystal.model.RevisionHistory.When;
@@ -66,29 +67,46 @@ public class GuidanceChecker {
 	// This is not actually speculated.  Therefore, it may be imprecise. 
 	// In particular, if you and parent are the same, these are wrong.
 	public static Relationship getConsequences(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
-		if (r.getName().equals(Relationship.BEHIND)) {
-			// if parent has everything you have, SAME, otherwise BEHIND
-			if (SetOperations.setDifference(you, parent).isEmpty())
-				return new Relationship(Relationship.SAME);
-			else
-				return new Relationship(Relationship.BEHIND);
-		}
-		if ((r.getName().equals(Relationship.MERGECLEAN)) || (r.getName().equals(Relationship.MERGECONFLICT))) {
-			// if parent has everything you have, AHEAD
-			if (SetOperations.setDifference(you, parent).isEmpty())
-				return new Relationship(Relationship.AHEAD);
-			// if i have everything that the parent has, r
-			if (SetOperations.setDifference(me, parent).isEmpty())
-				return r;
-			// if parent has some of what you have, then we have no idea
+		Action a = r.getAction();
+		if (a == null) 
 			return null;
-		}
-		else if (r.getName().equals(Relationship.SAME)) {
+		else if (a == Action.NOTHING)
 			return r;
-		}
-		else if (r.getName().equals(Relationship.AHEAD)){
+		else if (a == Action.UNKNOWN)
+			return null;
+		else if (a == Action.CHECKPOINT)
+			if (r.getName().equals(Relationship.SAME))
+				return new Relationship(Relationship.AHEAD);
+			else if (r.getName().equals(Relationship.BEHIND))
+				// might be clean or conflict, we don't know
+				return new Relationship(Relationship.MERGECLEAN);
+			else
+				return r;
+		else if (a == Action.RESOLVE)
+			if ((r.getName().equals(Relationship.SAME)) || (r.getName().equals(Relationship.AHEAD)))
+				return new Relationship(Relationship.AHEAD);
+			else if (r.getName().equals(Relationship.BEHIND))
+				// might be clean or conflict, we don't know
+				return new Relationship(Relationship.MERGECLEAN);
+			else 
+				return r; 
+		else if (a == Action.PUBLISH)
 			return r;
-		}
+		else if (a == Action.SYNC) {
+			Set<String> mynew = SetOperations.union(me, parent);
+			if (SetOperations.setDifference(you, mynew).isEmpty()) // you won't have anything I don't
+				if (SetOperations.setDifference(mynew, you).isEmpty()) // I won't have anything you don't
+					return new Relationship(Relationship.SAME);
+				else // I will have something you don't
+					return new Relationship(Relationship.AHEAD);
+			else // you will have something I don't
+				if (SetOperations.setDifference(mynew, you).isEmpty()) // I won't have anything you don't
+					return new Relationship(Relationship.BEHIND);
+				else // I will have something you don't
+					// might be clean or conflict, we don't know
+					return new Relationship(Relationship.MERGECLEAN);
+		}		
+		
 		return null;
 	}
 
