@@ -98,7 +98,7 @@ public class GuidanceChecker {
 	// I MIGHT if parent does not have some of my things and does not have some of your things
 	public static Capable getCapable(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
 		if ((r.getName().equals(Relationship.SAME)) || (r.getName().equals(Relationship.AHEAD)) || (r.getName().equals(Relationship.BEHIND))) 
-			return Capable.CANNOT;
+			return Capable.NOTHING;
 
 		if ((r.getName().equals(Relationship.MERGECLEAN)) || (r.getName().equals(Relationship.MERGECONFLICT)))
 			// if parent has something of yours i don't, then MUST
