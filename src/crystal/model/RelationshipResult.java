@@ -187,8 +187,6 @@ public class RelationshipResult implements Result {
 				answer += "Consequences: new relationship will be " + _consequences.getName() + "\n";
 			if ((_committers != null) && (!(_committers.isEmpty()))) 
 				answer += "Committers: " + _committers + "\n";
-			
-			answer += _capable + " " + _when;
 			return answer.trim();
 		}
 
