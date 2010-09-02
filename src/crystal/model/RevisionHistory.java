@@ -25,6 +25,10 @@ public class RevisionHistory {
 		ME, YOU
 	}
 	
+	public enum Action {
+		CHECKPOINT, RESOLVE, SYNC, PUBLISH, UNKNOWN, NOTHING
+	}
+	
 	private HashMap<String, Checkpoint> _changesets;
 	
 	public RevisionHistory(String log) {
