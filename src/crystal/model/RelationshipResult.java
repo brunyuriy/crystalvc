@@ -45,6 +45,8 @@ public class RelationshipResult implements Result {
 		public static String PENDING = "PENDING";
 		public static String ERROR = "ERROR";
 		
+		public static int numTypes = 9;
+		
 		
 		private static String PATH = "/crystal/client/images/";
 		private static String SIZE32 = "32X32/";
@@ -151,8 +153,26 @@ public class RelationshipResult implements Result {
 		}
 		
 		public Image getImage() {
-			String imageAddress = PATH + SIZE16 + ICON_ADDRESSES.get(_name);			
-			return (new ImageIcon(Constants.class.getResource(imageAddress)).getImage());
+//			String imageAddress = PATH + SIZE16 + ICON_ADDRESSES.get(_name);
+//			System.out.println(imageAddress);
+//			return (new ImageIcon(Constants.class.getResource(imageAddress)).getImage());
+			
+			String iconAddress = PATH + SIZE16;
+			
+			if (getIconFill() == 2)
+				iconAddress += CAPABLE_MUST;
+			else if (getIconFill() == 1)
+				iconAddress += CAPABLE_MIGHT;
+			else if (getIconFill() == 0)
+				iconAddress += CAPABLE_CANNOT;
+			else
+				// default icon
+				iconAddress += CAPABLE_MUST;
+			iconAddress += ICON_ADDRESSES.get(_name);
+			
+//			System.out.println(iconAddress);
+
+			return (new ImageIcon(Constants.class.getResource(iconAddress)).getImage());
 		}
 		
 		public void setCommitters(String committers) {
@@ -250,12 +270,14 @@ public class RelationshipResult implements Result {
 		@Override
 		public int compareTo(Relationship other) {
 			if (other == null) return 1;
-			return (this.getIntRepresentation() - other.getIntRepresentation());
+			if (getIconFill() > other.getIconFill()) 
+				return 1;
+			else if (getIconFill() < other.getIconFill())
+				return -1;
+			else
+				return (getIconShape() - other.getIconShape());
 		}
 		
-		private int getIntRepresentation() {
-			return 3 * getIconShape() + getIconFill();
-		}
 		
 		public static Relationship getDominant(Collection<RelationshipResult> statesAndRelationships) {
 			Relationship dominant = null;
