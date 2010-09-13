@@ -184,7 +184,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		if (TRAY_SUPPORTED) {
 			final PopupMenu trayMenu = new PopupMenu();
-			_trayIcon.setImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/16X16/clock.png"))).getImage());
+			_trayIcon.setImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/16X16/must/clock.png"))).getImage());
 
 			_trayIcon.setToolTip("Crystal");
 
