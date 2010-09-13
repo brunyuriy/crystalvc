@@ -129,8 +129,9 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 				ourRelationship.setEase(mine.getEase());
 			}
 			_log.trace("Relationship computed: " + relationships.get(source));
-			// And finally update the GUI:
-			publish(relationships.get(source));
+			// And finally, set the relationship to ready and update the GUI:
+			RelationshipResult current = relationships.get(source);
+			publish(current);
 		}
 		return null;
 	}
