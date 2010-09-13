@@ -94,27 +94,56 @@ public class RelationshipResult implements Result {
 		public String getName() {
 			return _name;
 		}
-
+		
+		private int getIconShape() {
+			if (_name.equals(ERROR)) return 1;
+			if (_name.equals(PENDING)) return 2;
+			if (_name.equals(SAME)) return 3;
+			if (_name.equals(BEHIND)) return 4;
+			if (_name.equals(AHEAD)) return 5;
+			if (_name.equals(MERGECLEAN)) return 6;
+			if (_name.equals(TESTCONFLICT)) return 7;
+			if (_name.equals(COMPILECONFLICT)) return 8;
+			if (_name.equals(MERGECONFLICT)) return 9;
+			else
+				return 0;
+		}
+	
+		//return 2 if solid
+		// 1 if unsaturated
+		// 0 if hollow
+		private int getIconFill() {
+			if (_capable == Capable.MUST)
+				return 2;
+			else if (_capable == Capable.MIGHT)
+				return 1;
+			else if (_capable == Capable.CANNOT)
+				return 0;
+			else if (_capable == Capable.NOTHING)
+				if (_when == When.NOW)
+					return 2;
+				else if (_when == When.LATER)
+					return 0;
+				else if (_when == When.NOTHING)
+					return 0;
+				else 
+					// default icon
+					return 2;
+			else 
+				// default icon
+				return 2;
+		}
+		
 		public ImageIcon getIcon() {
 			String iconAddress = PATH + SIZE32;
 			
-			if (_capable == Capable.MUST)
+			if (getIconFill() == 2)
 				iconAddress += CAPABLE_MUST;
-			else if (_capable == Capable.MIGHT)
+			else if (getIconFill() == 1)
 				iconAddress += CAPABLE_MIGHT;
-			else if (_capable == Capable.CANNOT)
+			else if (getIconFill() == 0)
 				iconAddress += CAPABLE_CANNOT;
-			else if (_capable == Capable.NOTHING)
-				if (_when == When.NOW)
-					iconAddress += WHEN_NOW;
-				else if (_when == When.LATER)
-					iconAddress += WHEN_LATER;
-				else if (_when == When.NOTHING)
-					iconAddress += WHEN_LATER;
-				else 
-					// default icon
-					iconAddress += WHEN_NOW;
-			else 
+			else
 				// default icon
 				iconAddress += CAPABLE_MUST;
 			iconAddress += ICON_ADDRESSES.get(_name);
@@ -225,17 +254,7 @@ public class RelationshipResult implements Result {
 		}
 		
 		private int getIntRepresentation() {
-			if (_name.equals(ERROR)) return 1;
-			if (_name.equals(PENDING)) return 2;
-			if (_name.equals(SAME)) return 3;
-			if (_name.equals(BEHIND)) return 4;
-			if (_name.equals(AHEAD)) return 5;
-			if (_name.equals(MERGECLEAN)) return 6;
-			if (_name.equals(TESTCONFLICT)) return 7;
-			if (_name.equals(COMPILECONFLICT)) return 8;
-			if (_name.equals(MERGECONFLICT)) return 9;
-			else
-				return 0;
+			return 3 * getIconShape() + getIconFill();
 		}
 		
 		public static Relationship getDominant(Collection<RelationshipResult> statesAndRelationships) {
