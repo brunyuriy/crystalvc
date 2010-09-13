@@ -67,7 +67,7 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 
 		// UPDATE: turns out we don't have to do this.
 		// And update the GUI
-//		publish(localStateResult);
+		publish(localStateResult);
 		
 
 		// Second, do the relationships.
