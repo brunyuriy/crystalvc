@@ -180,7 +180,10 @@ public class RelationshipResult implements Result {
 			else
 				// default icon
 				iconAddress += CAPABLE_MUST;
-			iconAddress += ICON_ADDRESSES.get(_name);
+			if (_ready)
+				iconAddress += ICON_ADDRESSES.get(_name);
+			else 
+				iconAddress += ICON_ADDRESSES.get(PENDING);
 			
 //			System.out.println(iconAddress);
 
@@ -282,6 +285,12 @@ public class RelationshipResult implements Result {
 		@Override
 		public int compareTo(Relationship other) {
 			if (other == null) return 1;
+			if (_ready && !other._ready)
+				return 1;
+			else if (!_ready && other._ready)
+				return -1;
+			if (!_ready && !other._ready)
+				return 0;
 			if (getIconFill() > other.getIconFill()) 
 				return 1;
 			else if (getIconFill() < other.getIconFill())
