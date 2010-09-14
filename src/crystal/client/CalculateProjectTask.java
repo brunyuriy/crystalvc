@@ -131,6 +131,7 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 			_log.trace("Relationship computed: " + relationships.get(source));
 			// And finally, set the relationship to ready and update the GUI:
 			RelationshipResult current = relationships.get(source);
+			current.setReady();
 			publish(current);
 		}
 		return null;

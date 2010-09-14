@@ -44,9 +44,7 @@ public class RelationshipResult implements Result {
 		public static String TESTCONFLICT = "TESTCONFLICT";
 		public static String PENDING = "PENDING";
 		public static String ERROR = "ERROR";
-		
-		public static int numTypes = 9;
-		
+				
 		
 		private static String PATH = "/crystal/client/images/";
 		private static String SIZE32 = "32X32/";
@@ -83,6 +81,8 @@ public class RelationshipResult implements Result {
 		private Relationship _consequences;
 		
 		private Action _action;
+		
+		private boolean _ready;
 
 		public Relationship(String name) {
 			
@@ -91,10 +91,19 @@ public class RelationshipResult implements Result {
 			_name = name.toUpperCase();
 			if (ICON_ADDRESSES.get(_name) == null)
 				throw new RuntimeException("Trying to create an invalid Relationship");
+				_ready = false;
 		}
 				
 		public String getName() {
 			return _name;
+		}
+		
+		public void setReady() {
+			_ready = true;
+		}
+		
+		public boolean isReady() {
+			return _ready;
 		}
 		
 		private int getIconShape() {
@@ -148,7 +157,10 @@ public class RelationshipResult implements Result {
 			else
 				// default icon
 				iconAddress += CAPABLE_MUST;
-			iconAddress += ICON_ADDRESSES.get(_name);
+			if (_ready)
+				iconAddress += ICON_ADDRESSES.get(_name);
+			else 
+				iconAddress += ICON_ADDRESSES.get(PENDING);
 			return (new ImageIcon(Constants.class.getResource(iconAddress)));
 		}
 		
@@ -327,5 +339,9 @@ public class RelationshipResult implements Result {
 
 	public Relationship getLastRelationship() {
 		return _lastRelationship;
+	}
+	
+	public void setReady() {
+		_relationship.setReady();
 	}
 }
