@@ -110,8 +110,8 @@ public class RelationshipResult implements Result {
 			if (_name.equals(PENDING)) return 1;
 			if (_name.equals(SAME)) return 2;
 			if (_name.equals(ERROR)) return 3;
-			if (_name.equals(BEHIND)) return 4;
-			if (_name.equals(AHEAD)) return 5;
+			if (_name.equals(AHEAD)) return 4;
+			if (_name.equals(BEHIND)) return 5;
 			if (_name.equals(MERGECLEAN)) return 6;
 			if (_name.equals(TESTCONFLICT)) return 7;
 			if (_name.equals(COMPILECONFLICT)) return 8;
@@ -309,7 +309,7 @@ public class RelationshipResult implements Result {
 
 		/*
 		 * Nothing to do: PENDING < SAME < ERROR
-		 * Action will succeed:   BEHIND < AHEAD < MERGECLEAN
+		 * Action will succeed:   AHEAD < BEHIND < MERGECLEAN
 		 * Action will fail:  TESTCONFLICT < COMPILECONLFICT < MERGECONFLICT.
 		The latter two categories have solid/unsaturated/hollow versions.
 
