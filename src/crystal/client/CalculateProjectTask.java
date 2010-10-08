@@ -67,7 +67,7 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 
 		// UPDATE: turns out we don't have to do this.
 		// And update the GUI
-//		publish(localStateResult);
+		publish(localStateResult);
 		
 
 		// Second, do the relationships.
@@ -123,13 +123,16 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 				// calculate the Consequences
 				ourRelationship.setConsequences(mine.getConsequences(yours, parent, ourRelationship));
 				// calculate the Capable
-				ourRelationship.setCapable(mine.getCapable(yours, parent, ourRelationship));
+				boolean isParent = source.getShortName().equals(_prefs.getEnvironment().getParent());
+				ourRelationship.setCapable(mine.getCapable(yours, parent, ourRelationship, isParent));
 				// calculate the Ease
 				ourRelationship.setEase(mine.getEase());
 			}
 			_log.trace("Relationship computed: " + relationships.get(source));
-			// And finally update the GUI:
-			publish(relationships.get(source));
+			// And finally, set the relationship to ready and update the GUI:
+			RelationshipResult current = relationships.get(source);
+			current.setReady();
+			publish(current);
 		}
 		return null;
 	}
