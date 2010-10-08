@@ -25,6 +25,10 @@ public class RevisionHistory {
 		ME, YOU
 	}
 	
+	public enum Action {
+		CHECKPOINT, RESOLVE, SYNC, PUBLISH, UNKNOWN, NOTHING
+	}
+	
 	private HashMap<String, Checkpoint> _changesets;
 	
 	public RevisionHistory(String log) {
@@ -57,8 +61,8 @@ public class RevisionHistory {
 		return GuidanceChecker.getConsequences(_changesets.keySet(), you._changesets.keySet(), parent._changesets.keySet(), r);		
 	}
 	
-	public Capable getCapable(RevisionHistory you, RevisionHistory parent, Relationship r) {
-		return GuidanceChecker.getCapable(_changesets.keySet(), you._changesets.keySet(), parent._changesets.keySet(), r);
+	public Capable getCapable(RevisionHistory you, RevisionHistory parent, Relationship r, boolean isParent) {
+		return GuidanceChecker.getCapable(_changesets.keySet(), you._changesets.keySet(), parent._changesets.keySet(), r, isParent);
 	}
 	
 	public Ease getEase() {
