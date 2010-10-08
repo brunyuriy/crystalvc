@@ -60,7 +60,7 @@ public class HgLogParser {
 			return _parents;
 		}
 	}
-  
+
 	public static HashMap<String, Checkpoint> parseLog(String log) {
 		
 		HashMap<String, Checkpoint> answer = new HashMap<String, Checkpoint>();
