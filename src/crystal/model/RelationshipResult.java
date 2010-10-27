@@ -23,8 +23,8 @@ import crystal.model.RevisionHistory.When;
  */
 
 public class RelationshipResult implements Result {
-	
-	
+
+
 	/**
 	 * Represents a conflict detection answer.
 	 * 
@@ -32,9 +32,9 @@ public class RelationshipResult implements Result {
 	 * 
 	 * ResultStatus is interned
 	 */
-	
+
 	public static class Relationship implements Comparable<Relationship>{
-		
+
 		public static String SAME = "SAME";
 		public static String AHEAD = "AHEAD";
 		public static String BEHIND = "BEHIND";
@@ -44,8 +44,8 @@ public class RelationshipResult implements Result {
 		public static String TESTCONFLICT = "TESTCONFLICT";
 		public static String PENDING = "PENDING";
 		public static String ERROR = "ERROR";
-				
-		
+
+
 		private static String PATH = "/crystal/client/images/";
 		private static String SIZE32 = "32X32/";
 		private static String SIZE16 = "16X16/";
@@ -53,10 +53,10 @@ public class RelationshipResult implements Result {
 		private static String CAPABLE_MUST = "must/";
 		private static String CAPABLE_MIGHT = "might/";
 		private static String CAPABLE_CANNOT = "cannot/";
-		
+
 		private static String WHEN_NOW = "must/";
 		private static String WHEN_LATER = "cannot/";
-		
+
 		private static Map<String, String> ICON_ADDRESSES = new HashMap<String, String>();
 		static {
 			ICON_ADDRESSES.put(SAME, "same.png");
@@ -70,42 +70,42 @@ public class RelationshipResult implements Result {
 			ICON_ADDRESSES.put(ERROR, "error.png");
 		}
 
-//		private final ImageIcon _icon;
-//		private final Image _image;
+		//		private final ImageIcon _icon;
+		//		private final Image _image;
 		private final String _name;
-		
+
 		private String _committers;
 		private When _when;
 		private Capable _capable;
 		private Ease _ease;
 		private Relationship _consequences;
-		
+
 		private Action _action;
-		
+
 		private boolean _ready;
 
 		public Relationship(String name) {
-			
-//			_icon = new ImageIcon(Constants.class.getResource(iconAddress));
-//			_image = (new ImageIcon(Constants.class.getResource(iconAddress.replaceAll("32", "16")))).getImage();
+
+			//			_icon = new ImageIcon(Constants.class.getResource(iconAddress));
+			//			_image = (new ImageIcon(Constants.class.getResource(iconAddress.replaceAll("32", "16")))).getImage();
 			_name = name.toUpperCase();
 			if (ICON_ADDRESSES.get(_name) == null)
 				throw new RuntimeException("Trying to create an invalid Relationship");
-				_ready = false;
+			_ready = false;
 		}
-				
+
 		public String getName() {
 			return _name;
 		}
-		
+
 		public void setReady() {
 			_ready = true;
 		}
-		
+
 		public boolean isReady() {
 			return _ready;
 		}
-		
+
 		private int getIconShape() {
 			if (_name.equals(PENDING)) return 1;
 			if (_name.equals(SAME)) return 2;
@@ -119,7 +119,7 @@ public class RelationshipResult implements Result {
 			else
 				return 0;
 		}
-	
+
 		//return 2 if solid
 		// 1 if unsaturated
 		// 0 if hollow
@@ -144,10 +144,10 @@ public class RelationshipResult implements Result {
 				// default icon
 				return 2;
 		}
-		
+
 		public ImageIcon getIcon() {
 			String iconAddress = PATH + SIZE32;
-			
+
 			if (getIconFill() == 2)
 				iconAddress += CAPABLE_MUST;
 			else if (getIconFill() == 1)
@@ -163,14 +163,14 @@ public class RelationshipResult implements Result {
 				iconAddress += ICON_ADDRESSES.get(PENDING);
 			return (new ImageIcon(Constants.class.getResource(iconAddress)));
 		}
-		
+
 		public Image getImage() {
-//			String imageAddress = PATH + SIZE16 + ICON_ADDRESSES.get(_name);
-//			System.out.println(imageAddress);
-//			return (new ImageIcon(Constants.class.getResource(imageAddress)).getImage());
-			
+			//			String imageAddress = PATH + SIZE16 + ICON_ADDRESSES.get(_name);
+			//			System.out.println(imageAddress);
+			//			return (new ImageIcon(Constants.class.getResource(imageAddress)).getImage());
+
 			String iconAddress = PATH + SIZE16;
-			
+
 			if (getIconFill() == 2)
 				iconAddress += CAPABLE_MUST;
 			else if (getIconFill() == 1)
@@ -184,12 +184,12 @@ public class RelationshipResult implements Result {
 				iconAddress += ICON_ADDRESSES.get(_name);
 			else 
 				iconAddress += ICON_ADDRESSES.get(PENDING);
-			
-//			System.out.println(iconAddress);
+
+			//			System.out.println(iconAddress);
 
 			return (new ImageIcon(Constants.class.getResource(iconAddress)).getImage());
 		}
-		
+
 		public void setCommitters(String committers) {
 			_committers = committers;
 		}
@@ -229,7 +229,7 @@ public class RelationshipResult implements Result {
 		public Relationship getConsequences() {
 			return _consequences;
 		}
-		
+
 		public void calculateAction(LocalState localState, Relationship parent) {
 			if ((parent == null) || (localState == LocalState.PENDING))
 				_action = Action.UNKNOWN;
@@ -246,11 +246,11 @@ public class RelationshipResult implements Result {
 			else
 				_action = null;
 		}
-		
+
 		public Action getAction() {
 			return _action;
 		}
-		
+
 		public String getAction(RepoKind rk) {
 			if (rk == RepoKind.HG) {
 				if (_action == Action.RESOLVE)
@@ -270,7 +270,7 @@ public class RelationshipResult implements Result {
 			} else 
 				return "unsupported repository kind";
 		}
-		
+
 		public String getToolTipText() {
 			String answer = "";
 			if ((_action != null) && (_action != Action.NOTHING)) 
@@ -286,7 +286,7 @@ public class RelationshipResult implements Result {
 		public int compareTo(Relationship other) {
 			// handle comparison to null 
 			if (other == null) return 1;
-			
+
 			// handle one or both items not being ready
 			if (_ready && !other._ready)
 				return 1;
@@ -295,14 +295,14 @@ public class RelationshipResult implements Result {
 			if (!_ready && !other._ready)
 				return 0;
 
-/*			// this is code for all hollow < all unsaturated < all solid
+			/*			// this is code for all hollow < all unsaturated < all solid
 			if (getIconFill() > other.getIconFill()) 
 				return 1;
 			else if (getIconFill() < other.getIconFill())
 				return -1;
 			else
 				return (getIconShape() - other.getIconShape());
-*/
+			 */
 			// this is code for using the getIntRepresentation for ordering icons
 			return getIntRepresentation() - other.getIntRepresentation();
 		}
@@ -335,8 +335,8 @@ public class RelationshipResult implements Result {
 				answer = 2 * 3 + getIconShape() + getIconFill() * 3;
 			return answer;
 		}
-		
-		
+
+
 		public static Relationship getDominant(Collection<RelationshipResult> statesAndRelationships) {
 			Relationship dominant = null;
 			for (RelationshipResult currentStateAndRelationship : statesAndRelationships) {
@@ -353,17 +353,28 @@ public class RelationshipResult implements Result {
 			}
 			return dominant;
 		}
-		
+
 		@Override
 		public String toString() {
 			return _name;
-		}		
+		}
+
+		public boolean equals(Object o) {
+			if (o instanceof Relationship)
+				return _name.equals(((Relationship) o)._name);
+			else
+				return false;
+		}
+		
+		public int hashCode() {
+			return _name.hashCode();
+		}
 	}
-	
+
 	private final DataSource _source;
 	private final Relationship _relationship;
 	private final Relationship _lastRelationship;
-	
+
 	public RelationshipResult(DataSource source, Relationship relationship, Relationship lastRelationship) {
 		_source = source;
 		_relationship = relationship;
@@ -386,7 +397,7 @@ public class RelationshipResult implements Result {
 	public Relationship getLastRelationship() {
 		return _lastRelationship;
 	}
-	
+
 	public void setReady() {
 		_relationship.setReady();
 	}
