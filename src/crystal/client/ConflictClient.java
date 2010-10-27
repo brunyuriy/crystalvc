@@ -282,7 +282,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 					// if it's pending, show whatever value it had last time
 					String tip = null;
-					if (relationship.equals(Relationship.PENDING) && lastRelationship != null) {
+					if ((relationship.getName().equals(Relationship.PENDING) || (!(relationship.isReady()))) && lastRelationship != null) {
 						current.setIcon(lastRelationship.getIcon());
 						tip = lastRelationship.getToolTipText();
 					} else {
