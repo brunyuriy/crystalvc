@@ -194,7 +194,6 @@ public class ConflictDaemon {
 			// if we don't have a relationship, pretend it is pending.
 			relationship = new RelationshipResult(source, new Relationship(Relationship.PENDING), null);
 			_relationshipMap.put(source, relationship);
-			// TODO: actually start the pending operation testing
 		}
 
 		return relationship;
@@ -207,7 +206,6 @@ public class ConflictDaemon {
 			// we don't have a local state, pretend it is pending.
 			localState = new LocalStateResult(source, LocalState.PENDING, null);
 			_localStateMap.put(source, localState);
-			// TODO: actually start the pending operation testing
 		}
 		
 		return localState;

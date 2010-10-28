@@ -291,7 +291,7 @@ public class ConflictSystemTray implements ComputationListener {
 			}
 		}
 		for (RelationshipResult relationship : ConflictDaemon.getInstance().getRelationships()) {
-			if (relationship.getRelationship().equals(Relationship.PENDING)) {
+			if (!(relationship.getRelationship().isReady())) {
 				pTask = true;
 			}
 		}

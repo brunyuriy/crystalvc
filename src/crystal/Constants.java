@@ -4,7 +4,9 @@ import org.apache.log4j.Level;
 
 public class Constants {
 
-	public static long TIMER_CONSTANT = 10 * 60 * 1000; // 10 mins default
+//	public static long TIMER_CONSTANT = 10 * 60 * 1000; // 10 mins default
+	public static long TIMER_CONSTANT = 1000; // 10 mins default
+
 
 	// for debugging
 	// public static long TIMER_CONSTANT = 5 * 1000; // 15 seconds
