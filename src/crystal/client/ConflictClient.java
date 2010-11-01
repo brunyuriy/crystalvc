@@ -277,8 +277,14 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 					current.removeAll();
 
 					RelationshipResult result = ConflictDaemon.getInstance().getRelationship(source);
+					
+					String tip = result.getToolTipText();
+					current.setIcon(result.getIcon());
+/*
+					
 					Relationship relationship = result.getRelationship();
 					Relationship lastRelationship = result.getLastRelationship();
+
 
 					// if it's pending, show whatever value it had last time
 					String tip = null;
@@ -290,6 +296,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 						current.setIcon(relationship.getIcon());
 						tip = relationship.getToolTipText();
 					}
+*/
 					if (tip.trim().equals(""))
 						current.setToolTipText(null);
 					else

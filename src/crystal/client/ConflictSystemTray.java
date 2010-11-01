@@ -379,7 +379,8 @@ public class ConflictSystemTray implements ComputationListener {
 		Executor ex = new SerialExecutor();
 		// if (!pendingTask) {
 		// get all of the tasks in pending mode
-		ConflictDaemon.getInstance().prePerformCalculations(_prefs);
+		// got rid of it; dunno what the heck it was supposed to do
+//		ConflictDaemon.getInstance().prePerformCalculations(_prefs);
 
 		updateNowItem.setLabel("Updating...");
 		_log.trace("update now text: " + updateNowItem.getLabel());

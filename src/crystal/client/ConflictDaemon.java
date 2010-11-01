@@ -92,6 +92,7 @@ public class ConflictDaemon {
 			} else {
 				result = new RelationshipResult(source, relationship, null);
 			}
+			_relationshipMap.put(source, result);
 			return result;
 		}  catch (IOException ioe) {
 			_log.error(ioe);
@@ -184,7 +185,6 @@ public class ConflictDaemon {
 	/**
 	 * 
 	 * @param source
-	 * @param prefs
 	 * @return
 	 */
 	public RelationshipResult getRelationship(DataSource source) {
@@ -225,10 +225,9 @@ public class ConflictDaemon {
 	public Collection<LocalStateResult> getLocalStates() {
 		return _localStateMap.values();
 	}
-	
-	
 
-	public void prePerformCalculations(ClientPreferences prefs) {
+	// I have no idea what this code was supposed to do.  I got rid of it.  
+/*	public void prePerformCalculations(ClientPreferences prefs) {
 
 		// for each project
 		for (ProjectPreferences pp : prefs.getProjectPreference()) {
@@ -242,15 +241,17 @@ public class ConflictDaemon {
 			}
 			
 			// and then the relationships
-			for (DataSource ds : pp.getDataSources()) {
-				if (getRelationship(ds) != null) {
-					_relationshipMap.put(ds, new RelationshipResult(ds, new Relationship(Relationship.PENDING), _relationshipMap.get(ds).getRelationship()));
-				} else {
-					_relationshipMap.put(ds, new RelationshipResult(ds, new Relationship(Relationship.PENDING), null));
-				}
+//			for (DataSource ds : pp.getDataSources()) {
+//				if (getRelationship(ds) != null) {
+//				_relationshipMap.put(ds, new RelationshipResult(ds, new Relationship(Relationship.PENDING), _relationshipMap.get(ds).getRelationship()));
+//				System.out.println("4: " + getRelationship(ds).getRelationship().getName());
+//				} else {
+//					_relationshipMap.put(ds, new RelationshipResult(ds, new Relationship(Relationship.PENDING), null));
+//					System.out.println("5: " + getRelationship(ds).getRelationship().getName());
+//				}
 			}
+			
 		}
-
 	}
-
+	*/
 }
