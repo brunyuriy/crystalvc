@@ -157,10 +157,10 @@ public class RelationshipResult implements Result {
 			else
 				// default icon
 				iconAddress += CAPABLE_MUST;
-			if (_ready)
+//			if (_ready)
 				iconAddress += ICON_ADDRESSES.get(_name);
-			else 
-				iconAddress += ICON_ADDRESSES.get(PENDING);
+//			else 
+//				iconAddress += ICON_ADDRESSES.get(PENDING);
 			return (new ImageIcon(Constants.class.getResource(iconAddress)));
 		}
 
