@@ -401,4 +401,22 @@ public class RelationshipResult implements Result {
 	public void setReady() {
 		_relationship.setReady();
 	}
+	
+	public ImageIcon getIcon() {
+		if (((_relationship.getName().equals(Relationship.PENDING)) || (!(_relationship.isReady()))) && (_lastRelationship != null)) {
+//			System.out.println(_lastRelationship.getIcon().toString() + "\t" + _lastRelationship.getName());
+			return _lastRelationship.getIcon();
+		}
+		else {
+//			System.out.println(_relationship.getIcon().toString());
+			return _relationship.getIcon();
+		}
+	}
+	
+	public String getToolTipText() {
+		if (((_relationship.getName().equals(Relationship.PENDING)) || (!(_relationship.isReady()))) && (_lastRelationship != null))
+			return _lastRelationship.getToolTipText();
+		else
+			return _relationship.getToolTipText();
+	}
 }
