@@ -61,7 +61,7 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 //		publish(localStatePlaceholder);
 		
 		// Now calculate the new state:
-		LocalStateResult localStateResult = ConflictDaemon.getInstance().calculateLocalStates(_prefs);
+		LocalStateResult localStateResult = ConflictDaemon.getInstance().calculateLocalState(_prefs);
 
 		_log.trace("Local state computed: " + localStateResult);
 
@@ -95,7 +95,7 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 		
 		// And then perform the calculations for all the relationships:
 		for (DataSource source : _prefs.getDataSources()) {
-			RelationshipResult relationshipResult = ConflictDaemon.getInstance().calculateRelationships(source, _prefs);
+			RelationshipResult relationshipResult = ConflictDaemon.getInstance().calculateRelationship(source, _prefs);
 			relationships.put(source, relationshipResult);
 		}
 		
