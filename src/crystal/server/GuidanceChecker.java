@@ -8,7 +8,7 @@ import crystal.model.RevisionHistory.Action;
 import crystal.model.RevisionHistory.Capable;
 import crystal.model.RevisionHistory.Ease;
 import crystal.model.RevisionHistory.When;
-import crystal.model.RelationshipResult.Relationship;
+import crystal.model.Relationship;
 import crystal.server.HgLogParser.Checkpoint;
 import crystal.util.SetOperations;
 
@@ -76,18 +76,18 @@ public class GuidanceChecker {
 			return null;
 		else if (a == Action.CHECKPOINT)
 			if (r.getName().equals(Relationship.SAME))
-				return new Relationship(Relationship.AHEAD);
+				return new Relationship(Relationship.AHEAD, r.getIcon(), r.getImage());
 			else if (r.getName().equals(Relationship.BEHIND))
 				// might be clean or conflict, we don't know
-				return new Relationship(Relationship.MERGECLEAN);
+				return new Relationship(Relationship.MERGECLEAN, r.getIcon(), r.getImage());
 			else
 				return r;
 		else if (a == Action.RESOLVE)
 			if ((r.getName().equals(Relationship.SAME)) || (r.getName().equals(Relationship.AHEAD)))
-				return new Relationship(Relationship.AHEAD);
+				return new Relationship(Relationship.AHEAD, r.getIcon(), r.getImage());
 			else if (r.getName().equals(Relationship.BEHIND))
 				// might be clean or conflict, we don't know
-				return new Relationship(Relationship.MERGECLEAN);
+				return new Relationship(Relationship.MERGECLEAN, r.getIcon(), r.getImage());
 			else 
 				return r; 
 		else if (a == Action.PUBLISH)
@@ -96,15 +96,15 @@ public class GuidanceChecker {
 			Set<String> mynew = SetOperations.union(me, parent);
 			if (SetOperations.setDifference(you, mynew).isEmpty()) // you won't have anything I don't
 				if (SetOperations.setDifference(mynew, you).isEmpty()) // I won't have anything you don't
-					return new Relationship(Relationship.SAME);
+					return new Relationship(Relationship.SAME, r.getIcon(), r.getImage());
 				else // I will have something you don't
-					return new Relationship(Relationship.AHEAD);
+					return new Relationship(Relationship.AHEAD, r.getIcon(), r.getImage());
 			else // you will have something I don't
 				if (SetOperations.setDifference(mynew, you).isEmpty()) // I won't have anything you don't
-					return new Relationship(Relationship.BEHIND);
+					return new Relationship(Relationship.BEHIND, r.getIcon(), r.getImage());
 				else // I will have something you don't
 					// might be clean or conflict, we don't know
-					return new Relationship(Relationship.MERGECLEAN);
+					return new Relationship(Relationship.MERGECLEAN, r.getIcon(), r.getImage());
 		}		
 		
 		return null;

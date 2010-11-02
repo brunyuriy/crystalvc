@@ -21,9 +21,8 @@ import org.apache.log4j.Logger;
 import crystal.Constants;
 import crystal.client.ConflictDaemon.ComputationListener;
 import crystal.model.LocalStateResult;
-import crystal.model.RelationshipResult;
+import crystal.model.Relationship;
 import crystal.model.LocalStateResult.LocalState;
-import crystal.model.RelationshipResult.Relationship;
 import crystal.util.LSMRLogger;
 import crystal.util.TimeUtility;
 
@@ -286,12 +285,12 @@ public class ConflictSystemTray implements ComputationListener {
 		
 		// check if anything is PENDING (first local states then relationships
 		for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()){
-			if (localState.getLocalState().equals(LocalState.PENDING)) {
+			if (localState.getLocalState().getName().equals(LocalState.PENDING)) {
 				pTask = true;
 			}
 		}
-		for (RelationshipResult relationship : ConflictDaemon.getInstance().getRelationships()) {
-			if (!(relationship.getRelationship().isReady())) {
+		for (Relationship relationship : ConflictDaemon.getInstance().getRelationships()) {
+			if (!(relationship.isReady())) {
 				pTask = true;
 			}
 		}
@@ -445,12 +444,12 @@ public class ConflictSystemTray implements ComputationListener {
 		// check if anything is PENDING (first local states then relationships
 		boolean pendingTask = false;
 		for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()){
-			if (localState.getLocalState().equals(LocalState.PENDING)) {
+			if (localState.getLocalState().getName().equals(LocalState.PENDING)) {
 				pendingTask = true;
 			}
 		}
-		for (RelationshipResult relationship : ConflictDaemon.getInstance().getRelationships()) {
-			if (relationship.getRelationship().equals(Relationship.PENDING)) {
+		for (Relationship relationship : ConflictDaemon.getInstance().getRelationships()) {
+			if (relationship.getName().equals(Relationship.PENDING)) {
 				pendingTask = true;
 			}
 		}
@@ -486,7 +485,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		_trayIcon.getImage().flush();
 		
-		Image icon = (Relationship.getDominant(ConflictDaemon.getInstance().getRelationships())).getImage();
+		Image icon = Relationship.getDominant(ConflictDaemon.getInstance().getRelationships());
 
 		_trayIcon.setImage(icon);
 		

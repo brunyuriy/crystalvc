@@ -8,10 +8,9 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import crystal.model.LocalStateResult;
-import crystal.model.RelationshipResult;
 import crystal.model.DataSource;
 import crystal.model.LocalStateResult.LocalState;
-import crystal.model.RelationshipResult.Relationship;
+import crystal.model.Relationship;
 import crystal.model.DataSource.RepoKind;
 import crystal.server.HgStateChecker;
 import crystal.util.TimeUtility;
@@ -40,7 +39,7 @@ public class ConflictDaemon {
 	 * Stores the results of the analysis. This provides a simple decoupling between the DataSource and the
 	 * ConflictResult.
 	 */
-	private Hashtable<DataSource, RelationshipResult> _relationshipMap = new Hashtable<DataSource, RelationshipResult>();
+	private Hashtable<DataSource, Relationship> _relationshipMap = new Hashtable<DataSource, Relationship>();
 	private Hashtable<DataSource, LocalStateResult> _localStateMap = new Hashtable<DataSource, LocalStateResult>();
 
 	private ConflictDaemon() {
@@ -61,8 +60,8 @@ public class ConflictDaemon {
 	 *            Preferences to abide by.
 	 * @return the conflict status of the given data source to the developer's environment.
 	 */
-	public RelationshipResult calculateRelationship(DataSource source, ProjectPreferences prefs) {
-		Relationship relationship = null;
+	public Relationship calculateRelationship(DataSource source, ProjectPreferences prefs) {
+		String relationship = null;
 		long start = System.currentTimeMillis();
 
 		try {
@@ -72,7 +71,7 @@ public class ConflictDaemon {
 
 				relationship = HgStateChecker.getRelationship(prefs, source);
 				if (relationship == null)
-					relationship = new Relationship(Relationship.ERROR);
+					relationship = Relationship.ERROR;
 
 				_log.info("Relationship calculated::" + source + "::" + relationship);
 
@@ -85,15 +84,17 @@ public class ConflictDaemon {
 			}
 			_log.info("Computed relationship for: " + source + " in: " + TimeUtility.msToHumanReadableDelta(start));
 
-			RelationshipResult result = getRelationship(source);
+			Relationship result = getRelationship(source);
 			if (result != null) {
-				result = new RelationshipResult(source, relationship, result.getLastRelationship());
+				result = new Relationship(relationship, result.getIcon(), result.getImage());
 			} else {
-				result = new RelationshipResult(source, relationship, null);
+				result = new Relationship(relationship, null, null);
 			}
 			_relationshipMap.put(source, result);
+			/* don't see how this is possible, so removing:
 			if (result == null)
-				result = new RelationshipResult(source, new Relationship(Relationship.ERROR), null);
+				result = new Relationship(source, new Relationship(Relationship.ERROR), null);
+			*/
 			for (ComputationListener cl : _listeners) {
 				cl.update();
 			}
@@ -165,12 +166,12 @@ public class ConflictDaemon {
 	 * @param source
 	 * @return
 	 */
-	public RelationshipResult getRelationship(DataSource source) {
-		RelationshipResult relationship = _relationshipMap.get(source);
+	public Relationship getRelationship(DataSource source) {
+		Relationship relationship = _relationshipMap.get(source);
 
 		if (relationship == null) {
 			// if we don't have a relationship, pretend it is pending.
-			relationship = new RelationshipResult(source, new Relationship(Relationship.PENDING), null);
+			relationship = new Relationship(Relationship.PENDING, null, null);
 			_relationshipMap.put(source, relationship);
 		}
 
@@ -196,7 +197,7 @@ public class ConflictDaemon {
 		return _instance;
 	}
 
-	public Collection<RelationshipResult> getRelationships() {
+	public Collection<Relationship> getRelationships() {
 		return _relationshipMap.values();
 	}
 	
@@ -215,7 +216,7 @@ public class ConflictDaemon {
 			
 			// and then the relationships
 			for (DataSource ds : pp.getDataSources()) {
-				_relationshipMap.put(ds, new RelationshipResult(ds, new Relationship(Relationship.PENDING), _relationshipMap.get(ds).getRelationship()));
+				_relationshipMap.put(ds, new Relationship(Relationship.PENDING, _relationshipMap.get(ds).getIcon(), _relationshipMap.get(ds).getImage()));
 			}
 		}
 	}

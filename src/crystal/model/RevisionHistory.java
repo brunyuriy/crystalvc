@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import crystal.model.RelationshipResult.Relationship;
+import crystal.model.Relationship;
 import crystal.server.GuidanceChecker;
 import crystal.server.HgLogParser;
 import crystal.server.HgLogParser.Checkpoint;

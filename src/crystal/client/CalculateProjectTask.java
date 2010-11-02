@@ -8,10 +8,9 @@ import org.apache.log4j.Logger;
 import crystal.client.ConflictDaemon.ComputationListener;
 import crystal.model.DataSource;
 import crystal.model.LocalStateResult;
-import crystal.model.RelationshipResult;
+import crystal.model.Relationship;
 import crystal.model.Result;
 import crystal.model.RevisionHistory;
-import crystal.model.RelationshipResult.Relationship;
 
 /**
  * This class enables the calculations to happen on a background thread but _STILL_ update the UI. When we were doing
@@ -77,7 +76,7 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 		// And finally updating the GUI.  
 
 		// We'll store the relationships here:
-		Map<DataSource, RelationshipResult> relationships = new HashMap<DataSource, RelationshipResult>(); 
+		Map<DataSource, Relationship> relationships = new HashMap<DataSource, Relationship>(); 
 		
 		// UPDATE: turns out we don't have to do this.
 //		// So, first check the current state.  
@@ -95,7 +94,7 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 		
 		// And then perform the calculations for all the relationships:
 		for (DataSource source : _prefs.getDataSources()) {
-			RelationshipResult relationshipResult = ConflictDaemon.getInstance().calculateRelationship(source, _prefs);
+			Relationship relationshipResult = ConflictDaemon.getInstance().calculateRelationship(source, _prefs);
 			relationships.put(source, relationshipResult);
 		}
 		
@@ -103,14 +102,14 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 		RevisionHistory mine = _prefs.getEnvironment().getHistory();
 		for (DataSource source : _prefs.getDataSources()) {
 			RevisionHistory yours = source.getHistory();
-			Relationship ourRelationship = relationships.get(source).getRelationship();
+			Relationship ourRelationship = relationships.get(source);
 			// calculate the relevant Committers
 			ourRelationship.setCommitters(mine.getCommitters(yours));
 			
 			DataSource parentSource = _prefs.getDataSource((_prefs.getEnvironment().getParent()));
 			// If parent is not set, can't compute action
 			if (parentSource != null) {
-				Relationship parentRelationship = relationships.get(parentSource).getRelationship();
+				Relationship parentRelationship = relationships.get(parentSource);
 				ourRelationship.calculateAction(localStateResult.getLocalState(), parentRelationship);
 			}
 			
@@ -130,7 +129,7 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 			}
 			_log.trace("Relationship computed: " + relationships.get(source));
 			// And finally, set the relationship to ready and update the GUI:
-			RelationshipResult current = relationships.get(source);
+			Relationship current = relationships.get(source);
 			current.setReady();
 			publish(current);
 		}
