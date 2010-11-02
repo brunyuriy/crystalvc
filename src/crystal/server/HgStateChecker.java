@@ -15,7 +15,7 @@ import org.junit.Assert;
 
 import crystal.client.ProjectPreferences;
 import crystal.model.LocalStateResult.LocalState;
-import crystal.model.RelationshipResult.Relationship;
+import crystal.model.Relationship;
 import crystal.model.DataSource;
 import crystal.model.RevisionHistory;
 import crystal.util.RunIt;
@@ -239,7 +239,7 @@ public class HgStateChecker {
 	 * 
 	 * @returns whether prefs.getEnvironment() repository is same, behind, ahead, cleanmerge, or conflictmerge with the source repository.
 	 */
-	public static Relationship getRelationship(ProjectPreferences prefs, DataSource source) throws IOException, HgOperationException {
+	public static String getRelationship(ProjectPreferences prefs, DataSource source) throws IOException, HgOperationException {
 
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);
@@ -320,7 +320,7 @@ public class HgStateChecker {
 		} else
 			createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath, source.getRemoteHg());
 
-		Relationship answer;
+		String answer;
 
 		Output output;
 
@@ -362,14 +362,14 @@ public class HgStateChecker {
 			 * changes found
 			 */
 			if (output.getOutput().indexOf("no changes found") >= 0)
-				answer = new Relationship(Relationship.SAME);
+				answer = Relationship.SAME;
 			/*
 			 * mine is AHEAD (yours is BEHIND) if output looks something like this: searching for changes adding
 			 * changesets adding manifests adding file changes added 1 changesets with 1 changes to 1 files (run 'hg
 			 * update' to get a working copy)
 			 */
 			else if (output.getOutput().indexOf("(run 'hg update' to get a working copy)") >= 0)
-				answer = new Relationship(Relationship.AHEAD);
+				answer = Relationship.AHEAD;
 			else {
 				log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output);
 				String dialogMsg = "Crystal is having trouble comparing\n" + 
@@ -397,7 +397,7 @@ public class HgStateChecker {
 		 * file changes added 1 changesets with 1 changes to 1 files (run 'hg update' to get a working copy)
 		 */
 		else if (output.getOutput().indexOf("(run 'hg update' to get a working copy)") >= 0)
-			answer = new Relationship(Relationship.BEHIND);
+			answer = Relationship.BEHIND;
 
 		/*
 		 * CONFLICT if output looks something like this: pulling from ../firstcopy/ searching for changes adding
@@ -413,7 +413,7 @@ public class HgStateChecker {
 				// try to compile {
 				// if successful, try to test {
 				// if successful:
-				answer = new Relationship(Relationship.MERGECLEAN);
+				answer = Relationship.MERGECLEAN;
 				// if unsuccessful:
 				// answer = ResultStatus.TESTCONFLICT;
 				// }
@@ -422,7 +422,7 @@ public class HgStateChecker {
 			}
 			// otherwise, the merge failed
 			else
-				answer = new Relationship(Relationship.MERGECONFLICT);
+				answer = Relationship.MERGECONFLICT;
 		} else {
 			log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output.toString());
 			String dialogMsg = "Crystal is having trouble comparing\n" + 

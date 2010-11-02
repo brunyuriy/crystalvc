@@ -24,8 +24,7 @@ import crystal.Constants;
 import crystal.model.DataSource;
 import crystal.model.LocalStateResult;
 import crystal.model.LocalStateResult.LocalState;
-import crystal.model.RelationshipResult;
-import crystal.model.RelationshipResult.Relationship;
+import crystal.model.Relationship;
 import crystal.util.JMultiLineToolTip;
 
 /**
@@ -276,7 +275,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 					JLabel current = _iconMap.get(source);
 					current.removeAll();
 
-					RelationshipResult result = ConflictDaemon.getInstance().getRelationship(source);
+					Relationship result = ConflictDaemon.getInstance().getRelationship(source);
 					
 					String tip = result.getToolTipText();
 					current.setIcon(result.getIcon());
