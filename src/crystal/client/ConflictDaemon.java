@@ -61,7 +61,7 @@ public class ConflictDaemon {
 	 *            Preferences to abide by.
 	 * @return the conflict status of the given data source to the developer's environment.
 	 */
-	private RelationshipResult calculateRelationship(DataSource source, ProjectPreferences prefs) {
+	public RelationshipResult calculateRelationship(DataSource source, ProjectPreferences prefs) {
 		Relationship relationship = null;
 		long start = System.currentTimeMillis();
 
@@ -85,14 +85,18 @@ public class ConflictDaemon {
 			}
 			_log.info("Computed relationship for: " + source + " in: " + TimeUtility.msToHumanReadableDelta(start));
 
-			RelationshipResult lastResult = getRelationship(source);
-			RelationshipResult result = null;
-			if (lastResult != null) {
-				result = new RelationshipResult(source, relationship, lastResult.getRelationship());
+			RelationshipResult result = getRelationship(source);
+			if (result != null) {
+				result = new RelationshipResult(source, relationship, result.getLastRelationship());
 			} else {
 				result = new RelationshipResult(source, relationship, null);
 			}
 			_relationshipMap.put(source, result);
+			if (result == null)
+				result = new RelationshipResult(source, new Relationship(Relationship.ERROR), null);
+			for (ComputationListener cl : _listeners) {
+				cl.update();
+			}
 			return result;
 		}  catch (IOException ioe) {
 			_log.error(ioe);
@@ -105,7 +109,7 @@ public class ConflictDaemon {
 		return null;
 	}
 
-	private LocalStateResult calculateLocalState(ProjectPreferences prefs) {
+	public LocalStateResult calculateLocalState(ProjectPreferences prefs) {
 		LocalState localState = null;
 		long start = System.currentTimeMillis();
 
@@ -130,13 +134,18 @@ public class ConflictDaemon {
 			}
 			_log.info("Computed local state for: " + source + " in: " + TimeUtility.msToHumanReadableDelta(start));
 
-			LocalStateResult lastResult = getLocalState(source);
-			LocalStateResult result = null;
-			if (lastResult != null) {
-				result = new LocalStateResult(prefs.getEnvironment(), localState, lastResult.getLocalState());
+			LocalStateResult result = getLocalState(source);
+			if (result != null) {
+				result = new LocalStateResult(prefs.getEnvironment(), localState, result.getLastLocalState());
 			} else {
 				result = new LocalStateResult(prefs.getEnvironment(), localState, null);
 			}
+			_localStateMap.put(prefs.getEnvironment(), result);
+			
+			for (ComputationListener cl : _listeners) {
+				cl.update();
+			}
+
 			return result;
 		}  catch (IOException ioe) {
 			_log.error(ioe);
@@ -148,39 +157,8 @@ public class ConflictDaemon {
 		} 
 		return null;
 	}
-
-	public RelationshipResult calculateRelationships(DataSource source, ProjectPreferences prefs) {
-		RelationshipResult relationship = calculateRelationship(source, prefs);
-
-		if (relationship == null) {
-			relationship = new RelationshipResult(source, new Relationship(Relationship.ERROR), null);
-		}
-
-		_relationshipMap.put(source, relationship);
-
-		for (ComputationListener cl : _listeners) {
-			cl.update();
-		}
-
-		return relationship;
-	}
 	
 	
-	public LocalStateResult calculateLocalStates(ProjectPreferences prefs) {
-		LocalStateResult localState = calculateLocalState(prefs);
-		
-		if (localState == null) {
-			localState = new LocalStateResult(prefs.getEnvironment(), LocalState.ERROR, null);
-		}
-		
-		_localStateMap.put(prefs.getEnvironment(), localState);
-		
-		for (ComputationListener cl : _listeners) {
-			cl.update();
-		}
-		
-		return localState;
-	}
 
 	/**
 	 * 
@@ -226,32 +204,20 @@ public class ConflictDaemon {
 		return _localStateMap.values();
 	}
 
-	// I have no idea what this code was supposed to do.  I got rid of it.  
-/*	public void prePerformCalculations(ClientPreferences prefs) {
+	public void prePerformCalculations(ClientPreferences prefs) {
 
 		// for each project
 		for (ProjectPreferences pp : prefs.getProjectPreference()) {
 			
-			// first compute the local state
+			// first look up the local state
 			DataSource ps = pp.getEnvironment();
-			if (getLocalState(ps) != null) {
-				_localStateMap.put(ps, new LocalStateResult(ps, LocalState.PENDING, _localStateMap.get(ps).getLocalState()));
-			} else {
-				_localStateMap.put(ps, new LocalStateResult(ps, LocalState.PENDING, null));
-			}
+			_localStateMap.put(ps, new LocalStateResult(ps, LocalState.PENDING, _localStateMap.get(ps).getLocalState()));
 			
 			// and then the relationships
-//			for (DataSource ds : pp.getDataSources()) {
-//				if (getRelationship(ds) != null) {
-//				_relationshipMap.put(ds, new RelationshipResult(ds, new Relationship(Relationship.PENDING), _relationshipMap.get(ds).getRelationship()));
-//				System.out.println("4: " + getRelationship(ds).getRelationship().getName());
-//				} else {
-//					_relationshipMap.put(ds, new RelationshipResult(ds, new Relationship(Relationship.PENDING), null));
-//					System.out.println("5: " + getRelationship(ds).getRelationship().getName());
-//				}
+			for (DataSource ds : pp.getDataSources()) {
+				_relationshipMap.put(ds, new RelationshipResult(ds, new Relationship(Relationship.PENDING), _relationshipMap.get(ds).getRelationship()));
 			}
-			
 		}
 	}
-	*/
+	
 }
