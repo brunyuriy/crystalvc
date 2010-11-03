@@ -182,6 +182,7 @@ public class Relationship implements Result{
 			return 0;
 		else 
 			// default icon
+			System.out.println("oops");
 			return 2;
 	}
 
@@ -390,12 +391,13 @@ public class Relationship implements Result{
 	}
 	*/
 	
-	private static int getImageIntRepresentation(Image i) {
-		if (i == null) return -1;
-		String address = i.toString();
+	private static int getImageIntRepresentation(Relationship r) {
+		if (r == null) return -1;
+		if (r.getIcon() == null) return -1;
+		String address = r.getIcon().toString();
 		
 		int answer;
-		// 0 -- 3
+		// 1 -- 3
 		if (getIconShape(address) <= 3)
 			answer = getIconShape(address);
 		// 4 -- 12
@@ -408,9 +410,9 @@ public class Relationship implements Result{
 	}
 	
 	/*
-	 * Compares Images a and b (same was as getIntRepresenation does) and returns the dominant Image.
+	 * Compares Images a and b (same way as getIntRepresenation does) and returns the dominant Image.
 	 */
-	private static Image compareImages(Image a, Image b) {
+	private static Relationship compareImages(Relationship a, Relationship b) {
 		if (getImageIntRepresentation(a) > getImageIntRepresentation(b)) 
 			return a;
 		else
@@ -418,10 +420,10 @@ public class Relationship implements Result{
 	}
 
 	public static Image getDominant(Collection<Relationship> relationships) {
-		Image dominant = null;
+		Relationship dominant = null;
 		for (Relationship currentRelationship : relationships)
-			dominant = compareImages(currentRelationship.getImage(), dominant);
-		return dominant;
+			dominant = compareImages(currentRelationship, dominant);
+		return dominant.getImage();
 	}
 
 	@Override
