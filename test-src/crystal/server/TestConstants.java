@@ -3,6 +3,9 @@ package crystal.server;
 import java.io.File;
 import java.util.Vector;
 
+import org.junit.Ignore;
+
+@Ignore
 public class TestConstants {
 
 	public static String PROJECT_PATH = null;
@@ -14,6 +17,7 @@ public class TestConstants {
 		possiblePaths.add("/var/lib/hudson/jobs/edu.washington.cs.se.crystal/workspace/"); // for ci server
 		possiblePaths.add("/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/");
 		possiblePaths.add("/Users/rtholmes/Documents/workspaces/_updated/speculation-inconsistency/edu.washington.cse.se.crystal/");
+		possiblePaths.add("/Users/rtholmes/Workspaces/speculation-inconsistency/edu.washington.cse.se.crystal/"); // iMac
 		possiblePaths.add("/Users/rtholmes/Documents/Crystal/"); // MBP
 		possiblePaths.add("/homes/gws/brun/tempCrystal/sourceRepo/");
 		possiblePaths.add("C:\\Users\\Yuriy\\Desktop\\work\\crystalSource");
