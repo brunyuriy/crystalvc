@@ -13,25 +13,33 @@ import crystal.model.Result;
 import crystal.model.RevisionHistory;
 
 /**
- * This class enables the calculations to happen on a background thread but _STILL_ update the UI. When we were doing
- * the analysis on a regular Thread the UI woudln't update until all of the tasks were done; the UI didn't block, but it
- * didn't update either. This fixes that problem.
+ * CalculateProjectTask is a worker that executes crystal tasks in the background thread while _STILL_ updating the UI. 
+ * When Crystal does the analysis on a regular Thread, the UI won't update until all of the tasks are done; 
+ * the UI doesn't block, but it doesn't update either. 
+ * CalculateProjectTask fixes that problem.
  * 
  * @author brun
  */
 public class CalculateProjectTask extends SwingWorker<Void, Result> {
-	
+
+	// The logger
 	private Logger _log = Logger.getLogger(this.getClass());
+	
+	// The project whose relationships this CalculateProjectTask will calculate.  
 	private ProjectPreferences _prefs;
+	
+	// The system tray listener to call when an update is ready.
 	private ComputationListener _trayListener;
+	
+	// The frame listener to call when an update is ready.
 	private ComputationListener _clientListener;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param prefs
-	 * @param client
-	 * @param conflictSystemTray
+	 * @param prefs:  			the project whose relationships this CalculateProjectTask will calculate.
+	 * @param trayListener: 	the system tray listener to call when an update is ready.
+	 * @param clientListener: 	the frame listener to call when an update is ready.
 	 */
 	CalculateProjectTask(ProjectPreferences prefs, ComputationListener trayListener, ComputationListener clientListener) {
 		_prefs = prefs;
@@ -40,6 +48,12 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 		_clientListener = clientListener;
 	}
 
+	/**
+	 * Calculate the local state of the main repository in the project, 
+	 * the action,
+	 * the relationships with each other repository,  
+	 * and the guidance for each relationship.
+	 */
 	@Override
 	protected Void doInBackground() throws Exception {
 		
@@ -136,8 +150,11 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 		return null;
 	}
 
+	/**
+	 * Process never seems to actually execute.  
+	 * By description, it is supposed to update the GUI listeners.  
+	 */
 	@Override
-	// This never executes
 	protected void process(List<Result> chunks) {
 		for (Result result : chunks) {
 			_log.trace("Processing computed result: " + result);
