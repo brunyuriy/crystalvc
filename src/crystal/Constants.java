@@ -3,7 +3,8 @@ package crystal;
 /**
  * Constants contains several constants for Crystal to use.  
  * 
- * @author rtholmes & brun
+ * @author brun
+ * @author rtholmes
  */
 
 import org.apache.log4j.Level;
