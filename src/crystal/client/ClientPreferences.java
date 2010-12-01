@@ -24,7 +24,8 @@ import crystal.model.DataSource.RepoKind;
 import crystal.util.XMLTools;
 
 /**
- * Maintains multiple sets of preferences, rather than just one.
+ * ClientPreferences is the top level object that describes all the preferences and the projects 
+ * and relevant repositories of a Crystal instance.  
  * 
  * @author brun
  * @author rtholmes
@@ -32,35 +33,56 @@ import crystal.util.XMLTools;
  */
 public class ClientPreferences {
 
+	// IPrefXML contains some constants for use when parsing and writing ClientPreferences to XML.
 	private interface IPrefXML {
+		
+		/** 
+		 * Each constant consists of an array of logically equivalent elements.  
+		 * For example, either the element "ccConfig" or "ccconfig", in an XML file, will be considered the root element.
+		 * When writing XML, the [0]th element in the array will be used.  
+		 */
 
+		// the name of the root element
 		static final String[] ROOT = { "ccConfig", "ccconfig", "CcConfig", "CCConfig" };
 
+		// the path to the temp directory
 		static final String[] TMP_DIR = { "tempDirectory", "TempDirectory" };
+
+		// the path to the hg executable
 		static final String[] HG_PATH = { "hgPath", "HgPath", "HGPath" };
 
+		// a project
 		static final String[] PROJECT = { "project", "Project", "PROJECT" };
 
+		// a source (repository) within a project
 		static final String[] SOURCE = { "source", "Source", "SOURCE", "mysource", "mySource", "mySOURCE" };
 
+		// a source's kind
 		static final String[] KIND = { "Kind", "kind", "KIND", "myKind", "mykind", "myKIND" };
+
+		// a source's address
 		static final String[] CLONE = { "Clone", "clone", "CLONE", "myClone", "myclone", "myCLONE" };
+		
+		// a source's name
 		static final String[] LABEL = { "ShortName", "shortName", "SHORTNAME", "myShortName", "myshortName", "mySHORTNAME" };
+		
+		// whether or not a source is hidden
 		static final String[] HIDE = { "Hidden", "hidden", "HIDDEN" };
+		
+		// a source's parent
 		static final String[] PARENT = { "commonParent", "parent", "CommonParent", "COMMONPARENT", "myParent", "Parent" };
 
+		// the path to the remote HG
 		static final String[] REMOTE_HG = { "RemoteHG", "remoteHG", "REMOTEHG", "Remotehg", "RemoteHg" };
 	}
 
-	/**
-	 * Path to the configuration (user.home)
-	 */
+	// The path to the configuration file.
 	public static String CONFIG_PATH;
 
 	public static Logger _log = Logger.getLogger(ClientPreferences.class);
 
+	// The default to use if the config file cannot be read or parsed.  
 	public static ClientPreferences DEFAULT_CLIENT_PREFERENCES;
-
 	static {
 		String path = System.getProperty("user.home");
 		if (!path.endsWith(File.separator))
@@ -73,10 +95,16 @@ public class ClientPreferences {
 				DEFAULT_CLIENT_PREFERENCES);
 		pp.addDataSource(new DataSource("jim", "https://path/to/repo", DataSource.RepoKind.HG, false, "MASTER"));
 		pp.addDataSource(new DataSource("MASTER", "http://path/to/repo", DataSource.RepoKind.HG, false, null));
-		DEFAULT_CLIENT_PREFERENCES.addProjectPreferences(pp);
+		try {
+			DEFAULT_CLIENT_PREFERENCES.addProjectPreferences(pp);
+		} catch (DuplicateProjectNameException e) {
+			// This will never happen because we know exactly what's in DEFAULT_CLIENT_PREFERENCES
+			throw new RuntimeException(e);
+		}
 	}
+	
 	/**
-	 * Maps a short name (usually project id) to a preference.
+	 * A vector of projects.
 	 */
 	// Hashtable<String, ProjectPreferences> _projectPreferences = new Hashtable<String, ProjectPreferences>();
 	Vector<ProjectPreferences> _projectPreferences = new Vector<ProjectPreferences>();
@@ -92,7 +120,7 @@ public class ClientPreferences {
 	private String _hgPath;
 
 	/**
-	 * Indicates whether these preferences have changed since the last load.
+	 * Indicates whether these preferences have changed since the last load from file.
 	 */
 	private boolean _hasChanged;
 
@@ -104,7 +132,8 @@ public class ClientPreferences {
 	}
 
 	/**
-	 * Default constructor.
+	 * Default constructor.  Creates a new ClientPreferences with the tempDirectory and hgPath set 
+	 * and 0 projects.  
 	 * 
 	 * @param tempDirectory
 	 * @param hgPath
@@ -116,76 +145,74 @@ public class ClientPreferences {
 	}
 
 	/**
-	 * Adds the preference to the project.
+	 * Adds a project to this ClientPreferences.
 	 * 
-	 * @param pref
-	 *            Preference to add; the pref short name must be unique or an assertion will fail.
+	 * @param pref: Preference to add;
+	 * @throws DuplicateProjectNameException if pref.getShortName() is not unique in the set of 
+	 *  	   projects in this ClientPreferences.
 	 */
-	public void addProjectPreferences(ProjectPreferences pref) {
+	public void addProjectPreferences(ProjectPreferences pref) throws DuplicateProjectNameException {
 		// String shortName = pref.getEnvironment().getShortName();
 
 		for (ProjectPreferences pp : _projectPreferences) {
 			if (pp.getEnvironment().getShortName().equals(pref.getEnvironment().getShortName())) {
-				throw new RuntimeException("Duplicate project name: " + pp.getEnvironment().getShortName());
+				throw new DuplicateProjectNameException("Duplicate project name: " + pp.getEnvironment().getShortName());
 			}
 		}
-
 		_projectPreferences.add(pref);
 	}
 
 	/**
-	 * Removes the preference from the project.
+	 * Removes the project pref from this ClientPreferences.
 	 * 
-	 * @param pref
-	 *            : preference to remove; if pref is not present, do nothing.
+	 * @param pref: project to remove.  
+	 * If pref is not present, do nothing.
 	 */
 	public void removeProjectPreferences(ProjectPreferences pref) {
-
 		_projectPreferences.remove(pref);
 	}
 
 	/**
-	 * Removes the preference from the project.
+	 * Removes the project at the index index from this ClientPreferences.
 	 * 
-	 * @param index
-	 *            : index of the preference to remove.
+	 * @param index: the index of the project to remove.  
 	 */
 	public void removeProjectPreferencesAtIndex(int index) {
-
 		_projectPreferences.remove(index);
 	}
 
 	/**
-	 * Returns the preferences.
+	 * Returns a Collection of projects.  (Leaks internal representation.)
 	 * 
-	 * @return
+	 * @return a Collection of projects.
 	 */
 	public Collection<ProjectPreferences> getProjectPreference() {
 		return _projectPreferences;
 	}
 
 	/**
-	 * Get the preference for a given key.
+	 * Returns the project with the specified shortName.
 	 * 
-	 * @param shortName
-	 * @return
+	 * @param shortName: the name of the project to return
+	 * @return the project with the specified shortName.
+	 * @throws NonexistentProjectException 
 	 */
-	public ProjectPreferences getProjectPreferences(String shortName) {
-		// assert _projectPreferences.containsKey(shortName);
+	public ProjectPreferences getProjectPreferences(String shortName) throws NonexistentProjectException {
 		for (ProjectPreferences pp : _projectPreferences) {
 			if (pp.getEnvironment().getShortName().equals(shortName)) {
 				return pp;
 			}
 		}
-		throw new RuntimeException("Project preferences: " + shortName + " does not exist.");
+		// could not find the project with shortName
+		throw new NonexistentProjectException ("Project preferences: " + shortName + " does not exist.");
 	}
 
 	/**
-	 * Load the saved preferences from config.xml.
+	 * Load the saved preferences from a config file.
 	 * 
-	 * TODO: Sensibly display when a preference is invalid.
-	 * 
-	 * @return
+	 * @return the ClientPreferences represented by the config file.  
+	 * If the config file does not exist, then it reads the defaultConfig.xml file from Crystal's build.  
+	 * @throws various Runtime exceptions from the XML reader and parser. 
 	 */
 	public static ClientPreferences loadPreferencesFromXML() {
 		ClientPreferences prefs = null;
@@ -377,8 +404,8 @@ public class ClientPreferences {
 		return prefs;
 	}
 
-	/*
-	 * Returns the value of the first existing attribute in element
+	/**
+	 * @return the value of the first existing attribute in element.
 	 */
 	private static String getValue(Element element, String[] attributes) {
 		for (String attribute : attributes) {
@@ -389,8 +416,8 @@ public class ClientPreferences {
 		return null;
 	}
 
-	/*
-	 * Returns the list of children of the first existing attribute in element
+	/**
+	 * @return the list of children of the first existing attribute in element.
 	 */
 	private static List<Element> getChildren(Element element, String[] attributes) {
 		for (String attribute : attributes) {
@@ -402,8 +429,8 @@ public class ClientPreferences {
 		return null;
 	}
 
-	/*
-	 * Returns the child of the first existing attribute in element
+	/**
+	 * @return the child of the first existing attribute in element.
 	 */
 	private static Element getChild(Element element, String[] attributes) {
 		for (String attribute : attributes) {
@@ -426,6 +453,7 @@ public class ClientPreferences {
 	/**
 	 * Save preferences to fName
 	 * 
+	 * @param fName: the name of the file
 	 * @effect saves preferences to a file fName
 	 */
 	public static void savePreferencesToXML(ClientPreferences prefs, String fName) {
@@ -485,8 +513,10 @@ public class ClientPreferences {
 	/**
 	 * Check to ensure the provided file exists.
 	 * 
-	 * @param fName
-	 * @throws ConfigurationReadingException
+	 * @effect Nothing!  Just throws exceptions if something goes wrong.
+	 * @param fName: the filename to check
+	 * @throws ConfigurationReadingException if the file does not exist or is a directory
+	 * @throws NullPointerException if fname is null
 	 */
 	private static void verifyFile(String fName) throws ConfigurationReadingException {
 
@@ -505,8 +535,10 @@ public class ClientPreferences {
 	/**
 	 * Check to ensure the provided path is a valid directory.
 	 * 
-	 * @param path
-	 * @throws ConfigurationReadingException
+	 * @effect Nothing!  Just throws exceptions if something goes wrong.
+	 * @param path: the path to check
+	 * @throws ConfigurationReadingException if the path does not exist or is not a directory
+	 * @throws NullPointerException if path is null
 	 */
 	private static void verifyPath(String path) throws ConfigurationReadingException {
 
@@ -523,7 +555,6 @@ public class ClientPreferences {
 	}
 
 	/**
-	 * 
 	 * @return path to the user's hg binary
 	 */
 	public String getHgPath() {
@@ -531,8 +562,8 @@ public class ClientPreferences {
 	}
 
 	/**
-	 * 
 	 * @effect set the path to the user's hg binary
+	 * @param hgPath : the path to hg
 	 */
 	public void setHgPath(String hgPath) {
 		_hgPath = hgPath;
@@ -547,6 +578,7 @@ public class ClientPreferences {
 
 	/**
 	 * @effect set the path to the user's scratch space
+	 * @param tempDirectory : the path to the scratch space
 	 */
 	public void setTempDirectory(String tempDirectory) {
 		_tempDirectory = tempDirectory;
@@ -560,16 +592,22 @@ public class ClientPreferences {
 	}
 
 	/**
-	 * 
 	 * @effect set whether this has changed since loading or creating
+	 * @param status: whether this has changed since loading or creating
 	 */
 	public void setChanged(boolean status) {
 		_hasChanged = status;
 	}
 
+	/**
+	 * Thrown when there is a a problem reading a configuration, such as a path or file locations are invalid.  
+	 *
+	 * @author brun
+	 */
 	public static class ConfigurationReadingException extends Exception {
 		private static final long serialVersionUID = 3577953111265604385L;
 
+		// type differentiates possible reasons for the excception.
 		public static final int HG_PATH_INVALID = 0;
 		public static final int TEMP_PATH_INVALID = 1;
 		public static final int PATH_INVALID = 2;
@@ -578,18 +616,48 @@ public class ClientPreferences {
 
 		private int _type;
 
+		// Create a new ConfigurationReadingException of type type.
 		public ConfigurationReadingException(int type) {
 			super();
 			_type = type;
 		}
 
+		// Create a new ConfigurationReadingException of type type with a message.
 		public ConfigurationReadingException(String message, int type) {
 			super(message);
 			_type = type;
 		}
 
+		// Get the type of this ConfigurationReadingException.
 		public int getType() {
 			return _type;
 		}
 	}
+	
+	/**
+	 * Thrown when two projects with the same name are added.
+	 * 
+	 * @author brun
+	 */
+	public static class DuplicateProjectNameException extends Exception {
+		private static final long serialVersionUID = 236669323196097853L;
+
+		public DuplicateProjectNameException(String message) {
+			super(message);
+		}
+	}
+	
+	/**
+	 * Thrown when a requested project does not exist.
+	 * 
+	 * @author brun
+	 */
+	public static class NonexistentProjectException extends Exception {
+		private static final long serialVersionUID = 3426961654411908508L;
+
+		public NonexistentProjectException (String message) {
+			super(message);
+		}
+	}
+
 }
