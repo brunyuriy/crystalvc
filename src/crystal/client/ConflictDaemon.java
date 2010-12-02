@@ -16,35 +16,48 @@ import crystal.server.HgStateChecker;
 import crystal.util.TimeUtility;
 
 /**
- * Daemon that decouples the UI from the analysis. This class can be extended to perform the analysis on an external
- * machine, enable caching, or serve tea without having to update the UI.
- * 
+ * ConflictDaemon decouples the UI from the analysis.  
+ *  
  * ConflictDaemon is a singleton.
  * 
- * @author rtholmes & brun
+ * @author rtholmes
+ * @author brun
  */
 public class ConflictDaemon {
 
 	private Logger _log = Logger.getLogger(this.getClass());
 
+	/**
+	 *  A set of listeners for this ConflictDaemon.    
+	 */
 	Vector<ComputationListener> _listeners = new Vector<ComputationListener>();
 
+	/**
+	 * An Interface for a computational listener.  
+	 * Whenever the ConflictDaemon finishes a task, it calls .update on the listeners
+	 * to update their status.   
+	 */
 	public interface ComputationListener {
 		public void update();
 	}
 
+	// the singleton value
 	private static ConflictDaemon _instance = null;
 
 	/**
-	 * Stores the results of the analysis. This provides a simple decoupling between the DataSource and the
-	 * ConflictResult.
+	 * _relationshipMap and _localStateMap store the results of the analysis. 
 	 */
 	private Hashtable<DataSource, Relationship> _relationshipMap = new Hashtable<DataSource, Relationship>();
 	private Hashtable<DataSource, LocalStateResult> _localStateMap = new Hashtable<DataSource, LocalStateResult>();
 
+	// disable constructor	
 	private ConflictDaemon() {
 	}
 
+	/**
+	 * Adds a listener
+	 * @param listener: the new listener to add
+	 */
 	public void addListener(ComputationListener listener) {
 		if (!_listeners.contains(listener)) {
 			_listeners.add(listener);
@@ -52,13 +65,11 @@ public class ConflictDaemon {
 	}
 
 	/**
-	 * Perform the analysis.
+	 * Computes the relationship between my repo and one given other repo.
 	 * 
-	 * @param source
-	 *            Data source to consider.
-	 * @param prefs
-	 *            Preferences to abide by.
-	 * @return the conflict status of the given data source to the developer's environment.
+	 * @param source: data source (repo) to consider.
+	 * @param prefs: the configuration to use.
+	 * @return the relationship between the given data source and the developer's environment.
 	 */
 	public Relationship calculateRelationship(DataSource source, ProjectPreferences prefs) {
 		String relationship = null;
@@ -110,6 +121,12 @@ public class ConflictDaemon {
 		return null;
 	}
 
+	/**
+	 * Computes the local state of my repo.
+	 * 
+	 * @param prefs: the configuration to use.
+	 * @return the local state of the developer's environment.
+	 */
 	public LocalStateResult calculateLocalState(ProjectPreferences prefs) {
 		LocalState localState = null;
 		long start = System.currentTimeMillis();
@@ -159,12 +176,12 @@ public class ConflictDaemon {
 		return null;
 	}
 	
-	
 
 	/**
+	 * Looks up the last calculated relationship between the environment and the given source.
 	 * 
 	 * @param source
-	 * @return
+	 * @return the current known relationship between the environment and the given source
 	 */
 	public Relationship getRelationship(DataSource source) {
 		Relationship relationship = _relationshipMap.get(source);
@@ -178,6 +195,12 @@ public class ConflictDaemon {
 		return relationship;
 	}
 	
+	/**
+	 * Looks up the last calculated local state of the given source.
+	 * 
+	 * @param source
+	 * @return the current known local state of the given source
+	 */
 	public LocalStateResult getLocalState(DataSource source) {
 		LocalStateResult localState = _localStateMap.get(source);
 		
@@ -190,6 +213,9 @@ public class ConflictDaemon {
 		return localState;
 	}
 
+	/**
+	 * @return the singleton instance of ConflictDaemon  
+	 */
 	public static ConflictDaemon getInstance() {
 		if (_instance == null) {
 			_instance = new ConflictDaemon();
@@ -197,14 +223,27 @@ public class ConflictDaemon {
 		return _instance;
 	}
 
+	/**
+	 * @return a collection of all the relationships over all the repos,
+	 * as compared to the environment.
+	 */
 	public Collection<Relationship> getRelationships() {
 		return _relationshipMap.values();
 	}
 	
+	/**
+	 * @return a collection of all the local states over all the projects.
+	 */	
 	public Collection<LocalStateResult> getLocalStates() {
 		return _localStateMap.values();
 	}
 
+	/**
+	 * Performs the local state computations for each project 
+	 * and the relationships between the environment and each repository in each project. 	
+	 * 
+	 * @param prefs: the configuration over which to do the computations
+	 */
 	public void prePerformCalculations(ClientPreferences prefs) {
 
 		// for each project
