@@ -9,31 +9,26 @@ import crystal.model.DataSource;
 /**
  * Stores the preferences for a specific project.
  * 
- * @author rtholmes & brun
+ * @author rtholmes
+ * @author brun
  * 
  */
 public class ProjectPreferences {
 
-	/**
-	 * Shortname -> data source map.
-	 */
+	// A vector of configurations of repositories.
 	private Vector<DataSource> _dataSources;
 
-	/**
-	 * The developer's environment; this corresponds to their own repository.
-	 */
+	// The configuration of the project's main repository.
 	private DataSource _myEnvironment = null;
 
-	/**
-	 * Client preferences; this isn't a great design since it's a bidirectional relationship (i.e., it's a hack)
-	 */
+	// The full configuration.
 	private ClientPreferences _clientPreferences = null;
 
 	/**
-	 * Constructor.
+	 * Creates a new ProjectPreferences with myEnvironment as the main repository and clientPrefs as the overall configuration.
 	 * 
-	 * @param myEnvironment
-	 * @param tempDirectory
+	 * @param myEnvironment: the configuration of the project's main repository.
+	 * @param clientPrefs: the overall configuration
 	 */
 	public ProjectPreferences(DataSource myEnvironment, ClientPreferences clientPrefs) {
 		_myEnvironment = myEnvironment;
@@ -41,29 +36,10 @@ public class ProjectPreferences {
 		_dataSources = new Vector<DataSource>();
 	}
 
-	/*
-	public boolean hasMaster() {
-		for (DataSource ds : _dataSources) {
-			if (ds.isMaster())
-				return true;
-		}
-		return false;
-	}
-	
-	public DataSource getMaster() {
-		for (DataSource ds : _dataSources) {
-			if (ds.isMaster())
-				return ds;
-		}
-		return null;
-	}
-*/
-
 	/**
 	 * Adds a new data source.
 	 * 
-	 * @param source
-	 *            The source to add; the short name must be unique or an assertion will fail.
+	 * @param source: the source to add; the short name must be unique.
 	 */
 	public void addDataSource(DataSource source) {
 		// assert !_dataSources.containsKey(source.getShortName());
@@ -73,21 +49,19 @@ public class ProjectPreferences {
 						+ _myEnvironment.getShortName());
 			}
 		}
-		// _dataSources.put(source.getShortName(), source);
 		_dataSources.add(source);
 	}
 
 	/**
-	 * Returns the data sources.
-	 * 
-	 * @return
+	 * @return a collection of all the repositories associated with this project.
+	 * The collection does not include  main repository.
 	 */
 	public Collection<DataSource> getDataSources() {
 		return _dataSources;
 	}
 	
 	/**
-	 * Returns the number of nonhidden data sources
+	 * @return the number of nonhidden data sources
 	 */
 	public int getNumOfVisibleSources() {
 		int answer = 0;
@@ -99,23 +73,18 @@ public class ProjectPreferences {
 	}
 
 	/**
-	 * Returns the data source corresponding to the developer's environment.
+	 * @return the data source of the main repository.
 	 * 
-	 * @return
 	 */
 	public DataSource getEnvironment() {
 		return _myEnvironment;
 	}
 
 	/**
-	 * Returns a specific data source
-	 * 
-	 * @param shortName
-	 *            The shortName corresponding to the desired datasource.
-	 * @return
+	 * @return a specific repository configuration
+	 * @param shortName: the name of the desired repository configuration
 	 */
 	public DataSource getDataSource(String shortName) {
-		// return _dataSources.get(shortName);
 		for (DataSource ds : _dataSources) {
 			if (ds.getShortName().toLowerCase().trim().equals(shortName.toLowerCase().trim())) {
 				return ds;
@@ -125,23 +94,24 @@ public class ProjectPreferences {
 	}
 
 	/**
-	 * Removes a data source.
-	 * 
-	 * @param sourceToRemove
+	 * Removes a repository configuration.
+	 * @param sourceToRemove: the repository configuration to remove
 	 */
 	public void removeDataSource(DataSource sourceToRemove) {
 		_dataSources.remove(sourceToRemove);
 	}
 
 	/**
-	 * Returns the high-level preferences for this project.
-	 * 
-	 * @return
+	 * @return the full configuration.
 	 */
 	public ClientPreferences getClientPreferences() {
 		return _clientPreferences;
 	}
 
+	/**
+	 * @return the location on disk of the specific repository in this project
+	 * @param source: the repository for which to find the location 
+	 */
 	public String getProjectCheckoutLocation(DataSource source) {
 		String basePath = getClientPreferences().getTempDirectory();
 		if (!basePath.endsWith(File.separator))

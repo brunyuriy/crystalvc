@@ -21,16 +21,23 @@ import javax.swing.JTextField;
 import crystal.model.DataSource;
 
 /**
- * @author brun
+ * A panel used for the configuration editor (PreferencesGUIEditorFrame) to display a single project. 
  * 
+ * @author brun
  */
 public class ProjectPanel extends JPanel {
 
 	private static final long serialVersionUID = 5244512987255240473L;
+
+	// The name of the project
 	private String _name;
 
 	/**
-	 * 
+	 * Creates a new panel, with the pref Project configuration.
+	 * @param: pref : the project configuration to display
+	 * @param: prefs: the overall configuration associated with this project
+	 * @param mainFrame: the frame that will keep this panel
+	 * @param tabbedPane: the pane on the mainFrame that will keep this panel
 	 */
 	public ProjectPanel(final ProjectPreferences pref, final ClientPreferences prefs, final JFrame mainFrame, final JTabbedPane tabbedPane) {
 		super();
@@ -183,10 +190,22 @@ public class ProjectPanel extends JPanel {
 		add(sourcesPanel);
 	}
 
+	/**
+	 * @return this project's name
+	 */
 	public String getName() {
 		return _name;
 	}
 
+	/**
+	 * Creates a panel used to display a single repository of a project.
+	 * @param source: the configuration of the repo
+	 * @param pref: the configuration of the project
+	 * @param prefs: the overall configuration 
+	 * @param panel: the panel in which this panel sits
+	 * @param mainFrame: the frame in which this panel sits
+	 * @return a panel used to display a single repository of a project.
+	 */
 	private JPanel repoPanel(final DataSource source, final ProjectPreferences pref, final ClientPreferences prefs, final JPanel panel,
 			final JFrame mainFrame) {
 		final JPanel repoPanel = new JPanel();

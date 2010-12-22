@@ -5,33 +5,37 @@ import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+/**
+ * A class to ensure serial execution of all the computation tasks
+ * @author brun
+ */
 class SerialExecutor implements Executor {
-    final Queue<Runnable> tasks = new ArrayDeque<Runnable>();
-    final Executor _executor;
-    Runnable active;
+	final Queue<Runnable> tasks = new ArrayDeque<Runnable>();
+	final Executor _executor;
+	Runnable active;
 
-    SerialExecutor() {
-        _executor = new ScheduledThreadPoolExecutor(1);
-    }
+	SerialExecutor() {
+		_executor = new ScheduledThreadPoolExecutor(1);
+	}
 
-    public synchronized void execute(final Runnable r) {
-        tasks.offer(new Runnable() {
-            public void run() {
-                try {
-                    r.run();
-                } finally {
-                    scheduleNext();
-                }
-            }
-        });
-        if (active == null) {
-            scheduleNext();
-        }
-    }
+	public synchronized void execute(final Runnable r) {
+		tasks.offer(new Runnable() {
+			public void run() {
+				try {
+					r.run();
+				} finally {
+					scheduleNext();
+				}
+			}
+		});
+		if (active == null) {
+			scheduleNext();
+		}
+	}
 
-    protected synchronized void scheduleNext() {
-        if ((active = tasks.poll()) != null) {
-            _executor.execute(active);
-        }
-    }
+	protected synchronized void scheduleNext() {
+		if ((active = tasks.poll()) != null) {
+			_executor.execute(active);
+		}
+	}
 }
