@@ -4,6 +4,8 @@ To Launch:
 
 java -jar crystal.jar
 
+(or, when building from the repository:  java -jar builds/crystal_latest.jar)
+
 Requirements:
 
 - Mercurial version 1.6 or greater (hg --version to check).
