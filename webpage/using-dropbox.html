@@ -12,11 +12,19 @@
 <p>
 <a href="./">Crystal</a> requires read-access to your co-workers' repositories.
 This document describes how to do this via
-<a href="http://www.dropbox.com/">Dropbox</a>.  
+<a href="http://www.dropbox.com/">Dropbox</a>.  There are four steps:
 </p>
+<!-- start toc.  do not edit; run html-update-toc instead -->
+    <ul>
+      <li><a href="#install-dropbox">Install Dropbox</a></li>
+      <li><a href="#create-dropbox-folder">Create the Dropbox folder</a></li>
+      <li><a href="#link">Link your repository to Dropbox</a></li>
+      <li><a href="#using-crystal">Use Crystal with Dropbox</a></li>
+    </ul>
+<!-- end toc -->
 
 
-<h2 name="creating">Install Dropbox</h2>
+<h2 name="install-dropbox">Install Dropbox</h2>
 
 <p>
 Sign up for <a href="http://www.dropbox.com/">Dropbox</a> and install the
@@ -25,12 +33,12 @@ application.
 
 <p>
 We will call the Dropbox folder <em>MY_DROPBOX_FOLDER</em>.
-It is <tt>~/Dropbox/</tt>, under Unix-like environments.
+It defaults to <tt>~/Dropbox/</tt>, under Unix-like environments.
 </p>
 
 
 
-<h2 name="create">Create the Dropbox folder</h2>
+<h2 name="create-dropbox-folder">Create the Dropbox folder</h2>
 
 <p>
 Only one person has to perform this step, but it must be performed before
@@ -47,7 +55,8 @@ In MY_DROPBOX_FOLDER, create a folder called PROJECT.
 <p>
 Follow the instructions at
 <a href="#link">Link your repository to Dropbox</a> for the master
-repository, using the folder name "master".
+repository, using the folder name "master" and the location of the master
+repository.
 </p>
 
 <p>
@@ -124,7 +133,7 @@ folder, so that they can add it to their <a href="#using-crystal">Crystal
 </ol>
 
 
-<h2 name="using-crystal">Using Crystal with Dropbox</h2>
+<h2 name="using-crystal">Use Crystal with Dropbox</h2>
 
 <p>
 Download and set up Crystal, as described at
