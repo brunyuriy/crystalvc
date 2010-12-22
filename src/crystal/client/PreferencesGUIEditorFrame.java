@@ -21,20 +21,28 @@ import javax.swing.JTextField;
 import org.junit.Assert;
 
 import crystal.Constants;
+import crystal.client.ClientPreferences.DuplicateProjectNameException;
 import crystal.model.DataSource;
 
 /**
+ *		The GUI that allows editing of the Crystal configuration.  
+ *		Basically, PreferencesGUIEditorFrame lets you edit a ClientPreferences object by adding,
+ *			removing, and augmenting projects, and changing other attributes.
+ *
  * @author brun
- * 
- *         This class is a singleton. A PreferencesGUIEditorFrame is a GUI to edit a ClientPreferences object by adding,
- *         removing, and augmenting projects, and changing other attributes.
  */
 public class PreferencesGUIEditorFrame extends JFrame {
 
 	private static final long serialVersionUID = 4574346360968958312L;
 
+	// The singleton instance of this frame.
 	private static PreferencesGUIEditorFrame editorFrame;
 
+	/**
+	 * @return the singleton instance of this frame.  If a frame already exists, just returns that one. 
+	 * 		otherwise, it creates a new one with the specified prefs configuration.
+	 * @param prefs: the configuration to use if no frame exists yet.
+	 */
 	public static PreferencesGUIEditorFrame getPreferencesGUIEditorFrame(ClientPreferences prefs) {
 		if (editorFrame == null)
 			editorFrame = new PreferencesGUIEditorFrame(prefs);
@@ -42,12 +50,19 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		return editorFrame;
 	}
 
+	/**
+	 * @return the singleton instance of this frame.  
+	 */
 	public static PreferencesGUIEditorFrame getPreferencesGUIEditorFrame() {
 		if (editorFrame != null)
 			editorFrame.setVisible(true);
 		return editorFrame;
 	}
 
+	/**
+	 * A private constructor to create a new editor frame based on the specified prefs configuration.
+	 * @param prefs: the configuration to use.
+	 */
 	private PreferencesGUIEditorFrame(final ClientPreferences prefs) {
 		super("Crystal Configuration Editor");
 		Assert.assertNotNull(prefs);
@@ -58,8 +73,12 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		if (prefs.getProjectPreference().isEmpty()) {
 			// ClientPreferences client = new ClientPreferences("/usr/bin/hg/", "/tmp/crystalClient/");
 			ProjectPreferences newGuy = new ProjectPreferences(new DataSource("", "", DataSource.RepoKind.HG, false, null), prefs);
-			prefs.addProjectPreferences(newGuy);
-			prefs.setChanged(true);
+			try {
+				prefs.addProjectPreferences(newGuy);
+				prefs.setChanged(true);
+			} catch (DuplicateProjectNameException e) {
+				// Just ignore the duplicate project name
+			}
 		}
 
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
@@ -154,7 +173,15 @@ public class PreferencesGUIEditorFrame extends JFrame {
 					;
 
 				ProjectPreferences newGuy = new ProjectPreferences(new DataSource("New Project " + --count, "", DataSource.RepoKind.HG, false, null), prefs);
-				prefs.addProjectPreferences(newGuy);
+				try {
+					prefs.addProjectPreferences(newGuy);
+				} catch (DuplicateProjectNameException e1) {
+					// This should never happen because we just found a clean project name to use.
+					throw new RuntimeException("When I tried to create a new project, I found a nice, clean, unused name:\n" + 
+							"New Project " + count + "\nbut then the preferences told me that name was in use.  \n" + 
+							"This should never happen!");
+				}
+				
 				ProjectPanel newGuyPanel = new ProjectPanel(newGuy, prefs, frame, projectsTabs);
 				projectsTabs.addTab("New Project " + count, newGuyPanel);
 				prefs.setChanged(true);
@@ -209,6 +236,10 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		setVisible(true);
 	}
 
+	/**
+	 * A file chooser to select paths
+	 * @author brun
+	 */
 	private static class MyPathChooser extends JFrame {
 		private static final long serialVersionUID = 4078764196578702307L;
 
@@ -238,8 +269,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 	}
 
 	/**
-	 * @param args
-	 *            none
+	 * An execution point used only for testing.  
 	 */
 	public static void main(String[] args) {
 		ClientPreferences client = new ClientPreferences("temp", "hgPath");
@@ -254,8 +284,14 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		two.addDataSource(threeOther);
 		two.addDataSource(oneOther);
 
+		try {
 		client.addProjectPreferences(one);
 		client.addProjectPreferences(two);
+		} catch (DuplicateProjectNameException e) {
+			// This should really never happen because we're dealing with an empty set of preferences.
+			throw new RuntimeException("When I was creating some nice fresh preferences with two projects, one and two, I got this error:\n" + 
+					e.getMessage());  
+		}
 
 		getPreferencesGUIEditorFrame(client);
 
