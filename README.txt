@@ -1,15 +1,9 @@
 ConflictClient
 
+For documentation, see webpage/index.html .
+
 To Launch:
 
 java -jar crystal.jar
 
-Requirements:
-
-- Mercurial version 1.6 or greater (hg --version to check).
-- Mercurial fetch extension enabled. To enable this you can add:
-
-[extensions]
-fetch=
-
-to your ~/.hgrc file (or Mercurial.ini on Windows).
+(or, when building from the repository:  java -jar builds/crystal_latest.jar)
