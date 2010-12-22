@@ -1,0 +1,43 @@
+<!-- This is the default Conflict Client configuration file             -->
+<!--                                                                    -->
+<!-- Provided values are for example only.                              -->
+<!--                                                                    -->
+<!-- NOTE ABOUT PATHS: Please ensure all paths are properly escaped.    -->
+<!--    e.g., on windows use / instead of                               -->
+<!--    c:/Program Files/path/to/hg                                     -->
+<!--                                                                    -->
+
+<!--                                                                    -->
+<!-- The root ccConfig element must contain two attributes:             -->
+<!-- tempDirectory: 	this is a path to scratch space                    -->
+<!--        hgPath: 	this is the path to your hg executable             -->
+<!--                                                                    -->
+
+<!--                                                                    -->
+<!-- The project element must contain three attributes:                 -->
+<!--       myKind:    this can only be HG (for now)                     -->
+<!--  myShortName:    the name of your project                          -->
+<!--      myClone:    the path to your project                          -->
+<!--                                                                    -->
+
+<!--                                                                    -->
+<!-- A project can contain any number of sources elements.              -->
+<!-- These pertain to your teammates' repositories, forks, or other     -->
+<!-- clones you may be interested in following.                         -->
+<!--                                                                    -->
+
+<!--                                                                    -->
+<!-- The source element must contain three attributes:                  -->
+<!--    kind:       this can only be HG (for now)                       -->
+<!--    shortName:  the name of your project                            -->
+<!--    clone:      the string you would provide to hg clone            -->
+<!--                                                                    -->
+
+<ccConfig tempDirectory="/tmp/conflictClient" hgPath="/path/to/hg">
+
+  <project kind="HG" label="myProject" clone="$HOME/dev/myProject/">
+      <source label="jim" clone="https://path/to/repo" />
+      <source label="HEAD" clone="http://path/to/repo" />	
+  </project>
+
+</ccConfig>
