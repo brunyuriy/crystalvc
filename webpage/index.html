@@ -1,16 +1,21 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <title>Crystal: Proactive Conflict Detector for Distributed Version Control</title>
-  <link rel="Start" href="http://www.mit.edu/~6.170/" />
-  <link rel="StyleSheet" href="stylesheet.css" />
+<style type="text/css">
+body
+{
+background-color:yellow;
+}
+</style>
 </head>
 
-<body bgcolor="#FFFF99">
+<body>
 
-<h1 id="Crystal:_Distributed_Version_Control_Speculative_Conflict_Detector"><img src="crystal-ball_blue_128.png" align="middle" alt="Crystal ball"/> Crystal: Proactive Conflict Detector for Distributed Version Control</h1>
+<h1 id="Crystal:_Distributed_Version_Control_Speculative_Conflict_Detector"><img src="crystal-ball_blue_128.png" alt="Crystal ball"/> Crystal: Proactive Conflict Detector for Distributed Version Control</h1>
 
  
 <p>Contents:</p>
@@ -22,7 +27,7 @@
       <li><a href="#screen-shot">Crystal screen shot</a>
         <ul>
           <li><a href="#local-state">Local state</a></li>
-          <li><a href="#relationship">Relationships</a></li>
+          <li><a href="#relationship">Relationship</a></li>
           <li><a href="#action">Action</a></li>
           <li><a href="#guidance">Guidance</a></li>
         </ul></li>
@@ -31,9 +36,8 @@
         <ul>
           <li><a href="#copying-repository">Making a copy of your repository</a></li>
         </ul></li>
-      <li><a href="#password-request">Why does Crystal keep asking me for a password?</a>
-
-			<li><a href="#Acknowledgements">Acknowledgements</a></li>
+      <li><a href="#password-request">Why does Crystal keep asking me for a password?</a></li>
+      <li><a href="#Acknowledgements">Acknowledgements</a></li>
       <li><a href="#Contacts">Contacts</a></li>
     </ul>
 <!-- end toc -->
@@ -97,6 +101,7 @@ fetch=
 
 <p>
 Crystal displays four types of information: local state, relationship, possible action, and guidance.  
+</p>
 
 <p>
 <img src="CrystalScreenShot.png" alt="A screen shot of the Crystal tool."></img>
@@ -106,12 +111,12 @@ Crystal displays four types of information: local state, relationship, possible 
 
 <p>
 The working copy can be in one of three states, shown below the project name: 
-<OL>
-<LI> UNCHECKPOINTED (denoted as <tt>hg commit</tt>)</LI>
-<LI> MUST RESOLVE (denoted as <tt>hg fetch</tt>)</LI>
-<LI> ALL CLEAR (denoted as a blank)</LI>
-</OL>
 </p>
+<ol>
+<li> UNCHECKPOINTED (denoted as <tt>hg commit</tt>)</li>
+<li> MUST RESOLVE (denoted as <tt>hg fetch</tt>)</li>
+<li> ALL CLEAR (denoted as a blank)</li>
+</ol>
 
 <h3 id="relationship">Relationship</h3>
 
@@ -179,15 +184,14 @@ Holding the mouse over an icon displays a tool tip.  At the top of the tool tip,
 
 <p>
 There are five types of guidance Crystal displays:
-<OL>
-<LI> Committer: the list of committers relevant to the relationship.  Crystal displays this information in the tool tip.</LI>
-<LI> When: whether or not the developer can act right now to affect this relationship.  The relationship icon is solid if the developer can act now, and hollow if the developer cannot act until later.</LI>
-<LI> Capable: whether or not the developer must, might, or cannot act to affect the relationship.  The relationship icon is solid if the developer must be the one to take action, solid but unsaturated if the developer might be the one to take action, and hollow if the developer cannot be the one to take action.</LI>
-<LI> Consequences: the new relationship after the developer executes the available action.  Crystal displays this information in the tool tip.</LI>
-<LI> Ease: Whether another developer may have an easier time affecting this relationship.Crystal displays this information in the tool tip.</LI>
-</OL>
-
 </p>
+<ol>
+<li> Committer: the list of committers relevant to the relationship.  Crystal displays this information in the tool tip.</li>
+<li> When: whether or not the developer can act right now to affect this relationship.  The relationship icon is solid if the developer can act now, and hollow if the developer cannot act until later.</li>
+<li> Capable: whether or not the developer must, might, or cannot act to affect the relationship.  The relationship icon is solid if the developer must be the one to take action, solid but unsaturated if the developer might be the one to take action, and hollow if the developer cannot be the one to take action.</li>
+<li> Consequences: the new relationship after the developer executes the available action.  Crystal displays this information in the tool tip.</li>
+<li> Ease: Whether another developer may have an easier time affecting this relationship.Crystal displays this information in the tool tip.</li>
+</ol>
 
 <p>
 In the task bar, Crystal displays the most severe icon that appears
@@ -236,10 +240,21 @@ Finally, for each repository you wish Crystal to compare to your repository, the
 The more of your co-workers' repositories you have read access to, the
 more useful Crystal will be.  This section explains how to make your
 repositories (your clones) available to a co-worker.
+</p>
+
+<p>
+If you and your co-worker have access to the same file system, then you can
+use the "File system sharing" technique.
+If you have access to a machine that runs a web server, then you can use
+the "Http sharing" technique.
+You can always use the "Dropbox sharing" technique.
+</p>
+
+<!--
 Your coworker can access your clones either via a file system or via http.
 (This corresponds to the different types of URLs that can be passed to the
 <tt>hg clone</tt> command.)
-</p>
+-->
 
 <dl>
 <dt>File system sharing</dt>
@@ -248,9 +263,19 @@ If you and your co-worker have access to the same file system, then you can
 store your repository in a place where your co-worker can read it.
 <br />
 You can either grant your co-worker read permission to your repository, or
-you can <a href="#copying-repository">copy</a> your repository to a location that your co-worker can read.
-
+you can <a href="#copying-repository">copy</a> your repository to a
+location that your co-worker can read.
 </dd>
+
+<dt>Dropbox sharing</dt>
+<dd>
+You can use the <a href="http://www.dropbox.com/">Dropbox</a> file sharing
+service to share your repository with your co-workers.  This approach has
+several benefits:  changes are copied immediately, and the same technique
+works for all co-workers.  For full details, see the document
+<a href="using-dropbox.html">Sharing repositories using Dropbox</a>.
+</dd>
+
 <dt>Http sharing</dt>
 <dd>
 The http sharing approach is often easier, but it only works if you have
@@ -294,8 +319,8 @@ the path to the repository is just <tt>.../accessible-path</tt>.
 </p>
 
 <p>
-The destination path can even be on a different computer, in which case it
-looks like 
+The <tt>rsync</tt> program even permits the destination path to be on a
+different computer, in which case it looks like 
 <tt><em>machinename</em>:<em>filename</em></tt>, for example
 <tt>barb.cs.washington.edu:/homes/gws/mernst/www/crystal-repositories/...</tt>
 </p>
@@ -308,11 +333,12 @@ Crystal creates local clones of the repositories you specify in your configurati
 
 <p>
 Depending on how you access your repositories, there are ways to get around entering your password every time:  
-<UL>
-<LI>If you are using ssh to access the repositories, you can set up ssh agent. See these <a href="http://mah.everybody.org/docs/ssh">instructions</a> for how to set up ssh agent.</LI>  
-<LI>If you are using http or https to access the repositories, you can enter the passwords within your mercurial configuration files.  See these <a href="http://mercurial.selenic.com/wiki/FAQ#FAQ.2BAC8-CommonProblems.How_can_I_store_my_HTTP_login_once_and_for_all_.3F">instructions</a> for setting up http/https passwords; however, beware that they require storing your passwords in plain text within the configuration files.</LI>
-</UL>  
 </p>
+<ul>
+<li>If you are using ssh to access the repositories, you can set up ssh agent. See these <a href="http://mah.everybody.org/docs/ssh">instructions</a> for how to set up ssh agent.</li>  
+<li>If you are using http or https to access the repositories, you can enter the passwords within your mercurial configuration files.  See these <a href="http://mercurial.selenic.com/wiki/FAQ#FAQ.2BAC8-CommonProblems.How_can_I_store_my_HTTP_login_once_and_for_all_.3F">instructions</a> for setting up http/https passwords; however, beware that they require storing your passwords in plain text within the configuration files.</li>
+</ul>  
+
 
 <h2 id="Acknowledgements">Acknowledgements</h2>
 
