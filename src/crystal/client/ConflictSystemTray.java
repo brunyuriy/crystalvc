@@ -366,7 +366,8 @@ public class ConflictSystemTray implements ComputationListener {
 		}
 
 		// if the deamon is enabled.  
-		Executor ex = new SerialExecutor();
+//# lines marked with //# are removed to simply the execution process
+//#		Executor ex = new SerialExecutor();
 
 		updateNowItem.setLabel("Updating...");
 		_log.trace("update now text: " + updateNowItem.getLabel());
@@ -387,7 +388,8 @@ public class ConflictSystemTray implements ComputationListener {
 		
 		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
 			final CalculateProjectTask cpt = new CalculateProjectTask(projPref, this, _client);
-			ex.execute(cpt);
+//#			ex.execute(cpt);
+			cpt.execute();
 		}
 	}
 
