@@ -14,6 +14,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
+import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.xml.XMLLayout;
 
 public class LSMRLogger {
@@ -144,6 +145,13 @@ public class LSMRLogger {
 				rfa.setMaxBackupIndex(10);
 				rfa.setMaxFileSize("10MB");
 				Logger.getRootLogger().addAppender(rfa);
+
+				PatternLayout layout = new PatternLayout(LOG_PATTERN_VERBOSE);
+				rfa = new RollingFileAppender(layout, logDirectory + logFNamePrefix + ".log");
+				rfa.setMaxBackupIndex(10);
+				rfa.setMaxFileSize("10MB");
+				Logger.getRootLogger().addAppender(rfa);
+
 			}
 
 		} catch (IOException ioe) {

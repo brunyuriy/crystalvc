@@ -341,6 +341,12 @@ Depending on how you access your repositories, there are ways to get around ente
 <li>If you are using http or https to access the repositories, you can enter the passwords within your mercurial configuration files.  See these <a href="http://mercurial.selenic.com/wiki/FAQ#FAQ.2BAC8-CommonProblems.How_can_I_store_my_HTTP_login_once_and_for_all_.3F">instructions</a> for setting up http/https passwords; however, beware that they require storing your passwords in plain text within the configuration files.</li>
 </ul>  
 
+<h2 id="Log_File">Log files</h2>
+
+<p>Crystal maintains two log files to help with diagnosing unexpected problems. One is a plain text log that is easy to read (.conflictClientLog.log) and the other is an XML log that can be more easily analyzed programmatically (.conflictClientLog.xml). 
+On a Unix-like environment, these appear in <tt>~/</tt>.
+On a Windows environment, these appears in the user's home directory , e.g., <tt>C:\Users\$USER\</tt>.
+</p>
 
 <h2 id="Acknowledgements">Acknowledgements</h2>
 
