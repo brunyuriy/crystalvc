@@ -41,7 +41,7 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 	 * @param trayListener: 	the system tray listener to call when an update is ready.
 	 * @param clientListener: 	the frame listener to call when an update is ready.
 	 */
-	CalculateProjectTask(ProjectPreferences prefs, ComputationListener trayListener, ComputationListener clientListener) {
+	public CalculateProjectTask(ProjectPreferences prefs, ComputationListener trayListener, ComputationListener clientListener) {
 		_prefs = prefs;
 
 		_trayListener = trayListener;
@@ -56,7 +56,7 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 	 */
 	@Override
 	protected Void doInBackground() throws Exception {
-		
+
 		// First, do the local state.
 		// We do this by checking the current local state, updating the GUI (mostly to show the pending icons).
 		// And then performing the calculation and updating the GUI again.  

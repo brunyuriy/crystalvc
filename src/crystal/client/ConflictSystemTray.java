@@ -358,7 +358,7 @@ public class ConflictSystemTray implements ComputationListener {
 	 *   the calculations on all repos of all projects of the current configuration.
 	 */
 	public void performCalculations() {
-
+		
 		// if the daemon is disabled, don't perform calculations.
 		if (daemonEnabledItem.getLabel().equals("Enable Daemon")) {
 			return;
