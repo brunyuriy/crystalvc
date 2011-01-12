@@ -169,7 +169,9 @@ public class HgStateChecker {
 			// check if any of the lines in the output don't start with "?"
 			StringTokenizer tokens = new StringTokenizer(output.getOutput().trim(), "\n");
 			while (tokens.hasMoreTokens()) {
-				if (!(tokens.nextToken().startsWith("?")))
+				String nextToken = tokens.nextToken();
+				System.out.println(prefs.getEnvironment().getCloneString() + "#" + nextToken + "#");
+				if (!(nextToken.startsWith("?")))
 					return LocalState.UNCHECKPOINTED;
 			}
 			return LocalState.ALL_CLEAR;
