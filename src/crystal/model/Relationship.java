@@ -50,8 +50,8 @@ public class Relationship implements Result{
 	private static String CAPABLE_MIGHT = "might/";
 	private static String CAPABLE_CANNOT = "cannot/";
 
-	private static String WHEN_NOW = "must/";
-	private static String WHEN_LATER = "cannot/";
+//	private static String WHEN_NOW = "must/";
+//	private static String WHEN_LATER = "cannot/";
 
 	private static Map<String, String> ICON_ADDRESSES = new HashMap<String, String>();
 	static {
