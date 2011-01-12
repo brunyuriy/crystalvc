@@ -366,7 +366,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		// if the deamon is enabled.  
 //# lines marked with //# are removed to simplify the execution process
-//#		Executor ex = new SerialExecutor(); 
+//#		Executor ex = new SerialExecutor();
 
 		updateNowItem.setLabel("Updating...");
 		_log.trace("update now text: " + updateNowItem.getLabel());
