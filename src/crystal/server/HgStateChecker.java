@@ -183,8 +183,7 @@ public class HgStateChecker {
 			if (new File(mine).exists()) {
 				try {
 					updateLocalRepository(hg, mine, prefs.getEnvironment().getCloneString(), tempWorkPath, prefs.getEnvironment().getRemoteHg());
-				}
-				catch (HgOperationException e) {
+				} catch (HgOperationException e) {
 					String dialogMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
 					e.getPath() + "\n for your repository of project " + 
 					prefs.getEnvironment().getShortName() + ".\n" + 
@@ -197,15 +196,27 @@ public class HgStateChecker {
 					int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 					if (answer == JOptionPane.YES_OPTION) {
 						RunIt.deleteDirectory(new File(mine));
-						createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
+						try {
+							createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
+						} catch(HgOperationException e_useless) {
+							// We got the error again; there is no hope, you have no chance to survive, make your time.
+							// TODO Um, is there a chance that we're leaving half-copied directories around?
+							return LocalState.ERROR;
+						}			
 					} else {
 						prefs.getEnvironment().setEnabled(false);
 						return null;
 					}
 				}
-			} else
-				createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
-
+			} else {
+				try {
+					createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
+				} catch(HgOperationException e) {
+					// We got the error when we didn't expect it; there is no hope, you have no chance to survive, make your time.
+					// TODO Um, is there a chance that we're leaving half-copied directories around?
+					return LocalState.ERROR;
+				}
+			}
 			String[] myArgs = { "clone", mine, tempMyName };
 			Output output = RunIt.execute(hg, myArgs, tempWorkPath);
 			/*
@@ -286,15 +297,27 @@ public class HgStateChecker {
 				int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 				if (answer == JOptionPane.YES_OPTION) {
 					RunIt.deleteDirectory(new File(mine));
-					createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
+					try {
+						createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
+					} catch (HgOperationException e_useless) {
+						// We got the error again; there is no hope, you have no chance to survive, make your time.
+						// TODO Um, is there a chance that we're leaving half-copied directories around?
+						return Relationship.ERROR;
+					}
 				} else {
 					prefs.getEnvironment().setEnabled(false);
 					return null;
 				}
 			}
-		} else
-			createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
-
+		} else {
+			try {
+				createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
+			} catch (HgOperationException e_useless) {
+				// We got the error when we didn't expect it; there is no hope, you have no chance to survive, make your time.
+				// TODO Um, is there a chance that we're leaving half-copied directories around?
+				return Relationship.ERROR;
+			}
+		}
 		// Check if a local copy of your repository exists. If it does, update it. If it does not, create it.
 		if ((new File(yours)).exists()) {
 			try {
