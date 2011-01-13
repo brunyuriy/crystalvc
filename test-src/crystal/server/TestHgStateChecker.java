@@ -167,9 +167,9 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-		} catch (HgOperationException ioe) {
-			ioe.printStackTrace();
-			Assert.fail(ioe.getMessage());
+//		} catch (HgOperationException ioe) {
+//			ioe.printStackTrace();
+//			Assert.fail(ioe.getMessage());
 		}
 	}
 
@@ -183,9 +183,9 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-		} catch (HgOperationException ioe) {
-			ioe.printStackTrace();
-			Assert.fail(ioe.getMessage());
+//		} catch (HgOperationException ioe) {
+//			ioe.printStackTrace();
+//			Assert.fail(ioe.getMessage());
 		}
 	}
 
@@ -199,9 +199,9 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-		} catch (HgOperationException ioe) {
-			ioe.printStackTrace();
-			Assert.fail(ioe.getMessage());
+//		} catch (HgOperationException ioe) {
+//			ioe.printStackTrace();
+//			Assert.fail(ioe.getMessage());
 		}
 
 	}
@@ -216,9 +216,9 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-		} catch (HgOperationException ioe) {
-			ioe.printStackTrace();
-			Assert.fail(ioe.getMessage());
+//		} catch (HgOperationException ioe) {
+//			ioe.printStackTrace();
+//			Assert.fail(ioe.getMessage());
 		}
 
 	}
@@ -233,9 +233,9 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-		} catch (HgOperationException ioe) {
-			ioe.printStackTrace();
-			Assert.fail(ioe.getMessage());
+//		} catch (HgOperationException ioe) {
+//			ioe.printStackTrace();
+//			Assert.fail(ioe.getMessage());
 		}
 
 	}
