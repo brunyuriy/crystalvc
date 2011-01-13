@@ -127,7 +127,7 @@ public class HgStateChecker {
 			throw new HgOperationException(command, pathToLocalRepo, output.toString());
 	}
 	
-	public static LocalState getLocalState(ProjectPreferences prefs) throws IOException, HgOperationException {
+	public static LocalState getLocalState(ProjectPreferences prefs) throws IOException {
 		
 		Assert.assertNotNull(prefs);
 		
@@ -252,7 +252,7 @@ public class HgStateChecker {
 	 * 
 	 * @returns whether prefs.getEnvironment() repository is same, behind, ahead, cleanmerge, or conflictmerge with the source repository.
 	 */
-	public static String getRelationship(ProjectPreferences prefs, DataSource source) throws IOException, HgOperationException {
+	public static String getRelationship(ProjectPreferences prefs, DataSource source) throws IOException {
 
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);
@@ -336,15 +336,27 @@ public class HgStateChecker {
 				int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 				if (answer == JOptionPane.YES_OPTION) {
 					RunIt.deleteDirectory(new File(yours));
-					createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath, source.getRemoteHg());
+					try {
+						createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath, source.getRemoteHg());
+					} catch (HgOperationException e_useless) {
+						// We got the error again; there is no hope, you have no chance to survive, make your time.
+						// TODO Um, is there a chance that we're leaving half-copied directories around?
+						return Relationship.ERROR;
+					}
 				} else {
 					source.setEnabled(false);
 					return null;
 				}
 			}
-		} else
-			createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath, source.getRemoteHg());
-
+		} else {
+			try {
+				createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath, source.getRemoteHg());
+			} catch (HgOperationException e_useless) {
+				// We got the error again; there is no hope, you have no chance to survive, make your time.
+				// TODO Um, is there a chance that we're leaving half-copied directories around?
+				return Relationship.ERROR;
+			}
+		}
 		String answer;
 
 		Output output;
