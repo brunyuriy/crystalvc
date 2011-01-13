@@ -170,7 +170,7 @@ public class HgStateChecker {
 			StringTokenizer tokens = new StringTokenizer(output.getOutput().trim(), "\n");
 			while (tokens.hasMoreTokens()) {
 				String nextToken = tokens.nextToken();
-				System.out.println(prefs.getEnvironment().getCloneString() + "#" + nextToken + "#");
+				//System.out.println(prefs.getEnvironment().getCloneString() + "#" + nextToken + "#");
 				if (!(nextToken.startsWith("?")))
 					return LocalState.UNCHECKPOINTED;
 			}
