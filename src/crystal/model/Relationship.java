@@ -92,10 +92,14 @@ public class Relationship implements Result{
 //		_source = source;
 		if (icon != null)
 			_icon = icon;
+		else if (name.equals(ERROR))
+			_icon = new ImageIcon(Constants.class.getResource(PATH + SIZE32+CAPABLE_MUST+ICON_ADDRESSES.get(ERROR)));
 		else
 			_icon = new ImageIcon(Constants.class.getResource(PATH + SIZE32 + CAPABLE_MUST + ICON_ADDRESSES.get(PENDING)));
 		if (image != null)
 			_image = image;
+		else if (name.equals(ERROR))
+			_image = new ImageIcon(Constants.class.getResource(PATH + SIZE16 + CAPABLE_MUST + ICON_ADDRESSES.get(ERROR))).getImage();
 		else
 			_image = new ImageIcon(Constants.class.getResource(PATH + SIZE16 + CAPABLE_MUST + ICON_ADDRESSES.get(PENDING))).getImage();
 	}
@@ -186,7 +190,7 @@ public class Relationship implements Result{
 			return 2;
 	}
 
-
+	
 	private ImageIcon computeIcon() {
 		String iconAddress = PATH + SIZE32;
 
