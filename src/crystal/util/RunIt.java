@@ -140,6 +140,8 @@ public class RunIt {
 
 		String goodOutput = outCatcher.getOutput();
 		String errOutput = errCatcher.getOutput();
+		int exitStatus = proc.exitValue();
+		
 //		String output = "";
 //
 //		if (errOutput.length() > 0) {
@@ -154,7 +156,7 @@ public class RunIt {
 
 		// System.out.println("\t\tRunIt::execute(..) - output: " + output);
 
-		return new Output(goodOutput, errOutput);
+		return new Output(goodOutput, errOutput, exitStatus);
 	}
 
 	static public boolean deleteDirectory(File path) {
