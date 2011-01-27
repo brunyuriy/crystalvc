@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import crystal.Constants;
 import crystal.client.ClientPreferences;
 import crystal.client.ProjectPreferences;
 import crystal.model.DataSource;
@@ -146,7 +147,7 @@ public class TestHgStateChecker {
 		DataSource fiveSource = new DataSource("fiveRepository", path + "five", RepoKind.HG, false, null);
 		DataSource sixSource = new DataSource("sixRepository", path + "six", RepoKind.HG, false, null);
 
-		ClientPreferences prefs = new ClientPreferences(tempDirectory, TestConstants.HG_COMMAND);
+		ClientPreferences prefs = new ClientPreferences(tempDirectory, TestConstants.HG_COMMAND, Constants.DEFAULT_REFRESH);
 
 		_prefs = new ProjectPreferences(myEnvironment, prefs);
 
