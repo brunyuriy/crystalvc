@@ -51,6 +51,9 @@ public class ClientPreferences {
 		// the path to the hg executable
 		static final String[] HG_PATH = { "hgPath", "HgPath", "HGPath" };
 
+		// the refresh rate in seconds
+		static final String[] REFRESH = { "refresh", "Refresh", "REFRESH", "" };
+		
 		// a project
 		static final String[] PROJECT = { "project", "Project", "PROJECT" };
 
@@ -76,6 +79,9 @@ public class ClientPreferences {
 		static final String[] REMOTE_HG = { "RemoteHG", "remoteHG", "REMOTEHG", "Remotehg", "RemoteHg" };
 	}
 
+	// The current refresh rate that's static because it needs to be visible to the GUI
+	public static long REFRESH = Constants.DEFAULT_REFRESH;
+	
 	// The path to the configuration file.
 	public static String CONFIG_PATH;
 
@@ -90,7 +96,7 @@ public class ClientPreferences {
 
 		CONFIG_PATH = path + ".conflictClient.xml";
 
-		DEFAULT_CLIENT_PREFERENCES = new ClientPreferences("/tmp/conflictClient/", "/path/to/hg");
+		DEFAULT_CLIENT_PREFERENCES = new ClientPreferences("/tmp/conflictClient/", "/path/to/hg", Constants.DEFAULT_REFRESH);
 		ProjectPreferences pp = new ProjectPreferences(new DataSource("myProject", "$HOME/dev/myProject/", DataSource.RepoKind.HG, false, "MASTER"),
 				DEFAULT_CLIENT_PREFERENCES);
 		pp.addDataSource(new DataSource("jim", "https://path/to/repo", DataSource.RepoKind.HG, false, "MASTER"));
@@ -118,6 +124,11 @@ public class ClientPreferences {
 	 * Points to the user's hg path.
 	 */
 	private String _hgPath;
+	
+	/**
+	 * The number of seconds between refreshes.
+	 */
+	private long _refresh;
 
 	/**
 	 * Indicates whether these preferences have changed since the last load from file.
@@ -138,9 +149,11 @@ public class ClientPreferences {
 	 * @param tempDirectory
 	 * @param hgPath
 	 */
-	public ClientPreferences(String tempDirectory, String hgPath) {
+	public ClientPreferences(String tempDirectory, String hgPath, long refresh) {
 		_tempDirectory = tempDirectory;
 		_hgPath = hgPath;
+		_refresh = refresh;
+		REFRESH = refresh;
 		_hasChanged = false;
 	}
 
@@ -290,6 +303,10 @@ public class ClientPreferences {
 						}
 				}
 			}
+			
+			long refresh = Long.parseLong(getValue(rootElement, IPrefXML.REFRESH));
+			if (refresh < 0)
+				refresh = Constants.DEFAULT_REFRESH;
 
 			String hgPath = getValue(rootElement, IPrefXML.HG_PATH);
 			boolean happyHgPath = false;
@@ -306,7 +323,7 @@ public class ClientPreferences {
 				}
 			}
 
-			prefs = new ClientPreferences(tempDirectory, hgPath);
+			prefs = new ClientPreferences(tempDirectory, hgPath, refresh);
 			prefs.setChanged(prefsChanged);
 
 			// read the attributes.

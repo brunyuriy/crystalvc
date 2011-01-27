@@ -258,10 +258,12 @@ public class ConflictSystemTray implements ComputationListener {
 
 	/**
 	 * Creates and starts a new timer (throws away the old one).
-	 * The timer fires an update every Constants.TIMER_CONSTANT, unless there is a pending task.
+	 * The timer fires an update every refresh seconds, unless there is a pending task.
 	 */
 	private void createTimer() {
 
+		// note that the timer works in milliseconds and the argument is in seconds
+		
 		boolean pTask = false;
 		
 		// check if anything is PENDING (first local states then relationships
@@ -283,7 +285,7 @@ public class ConflictSystemTray implements ComputationListener {
 			_timer = null;
 		}
 
-		_timer = new Timer((int) Constants.TIMER_CONSTANT, new ActionListener() {
+		_timer = new Timer((int) ClientPreferences.REFRESH * 1000, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -295,7 +297,7 @@ public class ConflictSystemTray implements ComputationListener {
 			}
 		});
 
-		_timer.setInitialDelay((int) Constants.TIMER_CONSTANT);
+		_timer.setInitialDelay((int) ClientPreferences.REFRESH * 1000);
 		_timer.start();
 
 		long nextFire = System.currentTimeMillis() + _timer.getDelay();

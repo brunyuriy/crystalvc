@@ -16,7 +16,11 @@ public class Constants {
 	 * Crystal will attempt to refresh the local state, actions, relationships, and guidance every
 	 *   TIMER_CONSTANT milliseconds.  
 	 */
-	public static long TIMER_CONSTANT = 10 * 60 * 1000; // 10 mins default
+	
+	// the refresh time in seconds
+	public static long DEFAULT_REFRESH = 10 * 60; // 10 mins default
+	// public static long REFRESH = DEFAULT_REFRESH;
+	// public static long TIMER_CONSTANT = 10 * 60 * 1000; // 10 mins default
 	// for demos:
 	//	public static long TIMER_CONSTANT = 1000; 
 	// for debugging:
