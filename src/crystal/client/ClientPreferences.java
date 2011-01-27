@@ -498,6 +498,7 @@ public class ClientPreferences {
 
 		rootElem.setAttribute(IPrefXML.TMP_DIR[0], prefs.getTempDirectory());
 		rootElem.setAttribute(IPrefXML.HG_PATH[0], prefs.getHgPath());
+		rootElem.setAttribute(IPrefXML.REFRESH[0], Long.toString(prefs.getRefresh()));
 		doc.setRootElement(rootElem);
 
 		for (ProjectPreferences pp : prefs.getProjectPreference()) {
@@ -600,6 +601,22 @@ public class ClientPreferences {
 	public void setTempDirectory(String tempDirectory) {
 		_tempDirectory = tempDirectory;
 	}
+	
+	/**
+	 * @return the refresh rate
+	 */
+	public long getRefresh() {
+		return _refresh;
+	}
+
+	/**
+	 * @effect set the refresh rate
+	 * @param refresh : the new refresh rate
+	 */
+	public void setHgPath(long refresh) {
+		_refresh = refresh;
+	}
+
 
 	/**
 	 * @return whether this has changed since loading or creating
