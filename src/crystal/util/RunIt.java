@@ -22,10 +22,12 @@ public class RunIt {
 	public static class Output {
 		String _output;
 		String _error;
+		int _status;
 		
-		Output(String output, String error) {
+		Output(String output, String error, int status) {
 			_output = output;
 			_error = error;
+			_status = status;
 		}
 		
 		public String getOutput() {
@@ -36,9 +38,13 @@ public class RunIt {
 			return _error;
 		}
 		
+		public int getStatus() {
+			return _status;
+		}
+		
 		@Override
 		public String toString() {
-			String answer = "";
+			String answer = "Exit status: " + _status + "\n";
 			if (_error.length() > 0) {
 				answer += "*****-START-ERROR-*****\n";
 				answer += _error;
