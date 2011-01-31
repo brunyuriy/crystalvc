@@ -6,15 +6,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 import crystal.Constants;
+import crystal.client.ClientPreferences;
 
 /**
  * The main runner. This performs system commands and captures their output.
  * 
  * @author rtholmes
+ * @author brun
  * 
  */
 public class RunIt {
+
+	// the logger
+	public static Logger _log = Logger.getLogger(ClientPreferences.class);
 	
 	/*
 	 * Represents the output of a run command.  Consists of two strings, output and error.
@@ -110,6 +117,7 @@ public class RunIt {
 			builder.command(cmd);
 		}
 
+		_log.info("\tRunIt::execute(..) - command: " + builder.command().toString() + "; in path: " + builder.directory());
 		if (Constants.DEBUG_RUNIT) {
 			System.out.println("\tRunIt::execute(..) - command: " + builder.command().toString() + "; in path: " + builder.directory());
 		}
@@ -131,6 +139,7 @@ public class RunIt {
 		try {
 			errCatcherThread.join();
 			outCatcherThread.join();
+			_log.info("RunIt::execute(..) - Threads joined peacefully after: " + TimeUtility.msToHumanReadableDelta(start));
 			if (Constants.DEBUG_RUNIT) {
 				System.out.println("\t\tRunIt::execute(..) - Threads joined peacefully after: " + TimeUtility.msToHumanReadableDelta(start));
 			}
@@ -160,6 +169,7 @@ public class RunIt {
 	}
 
 	static public boolean deleteDirectory(File path) {
+		_log.info("RunIt::deleteDirectory(..) - deleting " + path);
 		if (path.exists()) {
 			File[] files = path.listFiles();
 			for (int i = 0; i < files.length; i++) {
@@ -170,6 +180,11 @@ public class RunIt {
 				}
 			}
 		}
-		return (path.delete());
+		boolean answer = path.delete();
+		if (answer)
+			_log.info("RunIt::deleteDirectory(..) - " + path + " deleted successfully");
+		else
+			_log.info("RunIt::deleteDirectory(..) - deleting " + path + " failed");
+		return answer;
 	}
 }
