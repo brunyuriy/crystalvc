@@ -24,13 +24,13 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 
 	// The logger
 	private Logger _log = Logger.getLogger(this.getClass());
-	
+
 	// The project whose relationships this CalculateProjectTask will calculate.  
 	private ProjectPreferences _prefs;
-	
+
 	// The system tray listener to call when an update is ready.
 	private ComputationListener _trayListener;
-	
+
 	// The frame listener to call when an update is ready.
 	private ComputationListener _clientListener;
 
@@ -60,28 +60,28 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 		// First, do the local state.
 		// We do this by checking the current local state, updating the GUI (mostly to show the pending icons).
 		// And then performing the calculation and updating the GUI again.  
-		
+
 		// So, first check the current state:
 		// UPDATE: turns out we don't have to do this.
-//		LocalStateResult localStatePlaceholder = null;
-//		if (ConflictDaemon.getInstance().getLocalState(_prefs.getEnvironment()) != null) {
-//			localStatePlaceholder = new LocalStateResult(_prefs.getEnvironment(), LocalState.PENDING, ConflictDaemon.getInstance().getLocalState(_prefs.getEnvironment()).getLocalState());
-//		} else {
-//			localStatePlaceholder = new LocalStateResult(_prefs.getEnvironment(), LocalState.PENDING, null);
-//		}
-//
-//		// Now update the GUI with current state:
-//		publish(localStatePlaceholder);
-		
-		// Now calculate the new state:
-		LocalStateResult localStateResult = ConflictDaemon.getInstance().calculateLocalState(_prefs);
+		//		LocalStateResult localStatePlaceholder = null;
+		//		if (ConflictDaemon.getInstance().getLocalState(_prefs.getEnvironment()) != null) {
+		//			localStatePlaceholder = new LocalStateResult(_prefs.getEnvironment(), LocalState.PENDING, ConflictDaemon.getInstance().getLocalState(_prefs.getEnvironment()).getLocalState());
+		//		} else {
+		//			localStatePlaceholder = new LocalStateResult(_prefs.getEnvironment(), LocalState.PENDING, null);
+		//		}
+		//
+		//		// Now update the GUI with current state:
+		//		publish(localStatePlaceholder);
 
-		_log.trace("Local state computed: " + localStateResult);
+		// Now calculate the new state:
+		_log.trace("Stating computing local state computed for " + _prefs.getEnvironment().getShortName());
+		LocalStateResult localStateResult = ConflictDaemon.getInstance().calculateLocalState(_prefs);
+		_log.trace("Local state computed for " + _prefs.getEnvironment().getShortName() + ": " + localStateResult);
 
 		// UPDATE: turns out we don't have to do this.
 		// And update the GUI
 		publish(localStateResult);
-		
+
 
 		// Second, do the relationships.
 		// We do this by checking the current local state, updating the GUI (mostly to show the pending icons).
@@ -91,42 +91,49 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 
 		// We'll store the relationships here:
 		Map<DataSource, Relationship> relationships = new HashMap<DataSource, Relationship>(); 
-		
+
 		// UPDATE: turns out we don't have to do this.
-//		// So, first check the current state.  
-//		for (DataSource source : _prefs.getDataSources()) {
-//			RelationshipResult relationshipPlaceholder = null;
-//
-//			if (ConflictDaemon.getInstance().getRelationship(source) != null) {
-//				relationshipPlaceholder = new RelationshipResult(source, Relationship.PENDING, ConflictDaemon.getInstance().getRelationship(source).getRelationship());
-//			} else {
-//				relationshipPlaceholder = new RelationshipResult(source, Relationship.PENDING, null);
-//			}
-//			// And update the GUI with current relationship:
-//			publish(relationshipPlaceholder);
-//		}
-		
+		//		// So, first check the current state.  
+		//		for (DataSource source : _prefs.getDataSources()) {
+		//			RelationshipResult relationshipPlaceholder = null;
+		//
+		//			if (ConflictDaemon.getInstance().getRelationship(source) != null) {
+		//				relationshipPlaceholder = new RelationshipResult(source, Relationship.PENDING, ConflictDaemon.getInstance().getRelationship(source).getRelationship());
+		//			} else {
+		//				relationshipPlaceholder = new RelationshipResult(source, Relationship.PENDING, null);
+		//			}
+		//			// And update the GUI with current relationship:
+		//			publish(relationshipPlaceholder);
+		//		}
+
 		// And then perform the calculations for all the relationships:
+		_log.trace("Stating computing relationships for the " + _prefs.getEnvironment().getShortName() + "project");
 		for (DataSource source : _prefs.getDataSources()) {
+			_log.trace("Stating computing relationships for the " + _prefs.getEnvironment().getShortName() + "project " + 
+					source.getShortName() + " repository");
 			Relationship relationshipResult = ConflictDaemon.getInstance().calculateRelationship(source, _prefs);
+			_log.trace("Relationship computed for the " + _prefs.getEnvironment().getShortName() + "project " + 
+					source.getShortName() + " repository: " + relationshipResult);
 			relationships.put(source, relationshipResult);
 		}
-		
+		_log.trace("Finished computing relationships for the " + _prefs.getEnvironment().getShortName() + "project");
+
 		// And then calculate the Guidance and update the relationships:
+		_log.trace("Stating computing the guidance for the " + _prefs.getEnvironment().getShortName() + "project");
 		RevisionHistory mine = _prefs.getEnvironment().getHistory();
 		for (DataSource source : _prefs.getDataSources()) {
 			RevisionHistory yours = source.getHistory();
 			Relationship ourRelationship = relationships.get(source);
 			// calculate the relevant Committers
 			ourRelationship.setCommitters(mine.getCommitters(yours));
-			
+
 			DataSource parentSource = _prefs.getDataSource((_prefs.getEnvironment().getParent()));
 			// If parent is not set, can't compute action
 			if (parentSource != null) {
 				Relationship parentRelationship = relationships.get(parentSource);
 				ourRelationship.calculateAction(localStateResult.getLocalState(), parentRelationship);
 			}
-			
+
 			DataSource commonParentSource = _prefs.getDataSource(source.getParent());
 			// If commonParent is not set, we can't do guidance
 			if (commonParentSource != null) {
@@ -141,12 +148,19 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 				// calculate the Ease
 				ourRelationship.setEase(mine.getEase());
 			}
-			_log.trace("Relationship computed: " + relationships.get(source));
+
+			_log.trace("Relationship and guidance computed for the " + _prefs.getEnvironment().getShortName() + "project " + 
+					source.getShortName() + " repository: " + relationships.get(source));
 			// And finally, set the relationship to ready and update the GUI:
+		}
+		_log.trace("Finished computing the guidance for the " + _prefs.getEnvironment().getShortName() + "project");
+		
+		for (DataSource source : _prefs.getDataSources()) {
 			Relationship current = relationships.get(source);
 			current.setReady();
 			publish(current);
 		}
+
 		return null;
 	}
 
