@@ -155,9 +155,10 @@ public class HgStateChecker {
 			 */
 			String[] headArgs = { "heads" };
 			output = RunIt.execute(hg, headArgs, prefs.getEnvironment().getCloneString());
-			Pattern heads = Pattern.compile(".*changeset.*changeset.*", Pattern.DOTALL);
+			Pattern heads = Pattern.compile(".*^changeset: .*^changeset: .*", Pattern.DOTALL | Pattern.MULTILINE);
 			Matcher matcher = heads.matcher(output.getOutput());		
 			if (matcher.matches()) {
+				System.out.println("MUST_RESOLVE for: " + output.getOutput());
 				return LocalState.MUST_RESOLVE;
 			}
 			
@@ -237,10 +238,11 @@ public class HgStateChecker {
 			 */
 			String[] headArgs = { "heads" };
 			output = RunIt.execute(hg, headArgs, tempWorkPath + tempMyName);
-			Pattern heads = Pattern.compile(".*changeset.*changeset.*", Pattern.DOTALL);
+			Pattern heads = Pattern.compile(".*^changeset: .*^changeset: .*", Pattern.DOTALL | Pattern.MULTILINE);
 			Matcher matcher = heads.matcher(output.getOutput());
 			RunIt.deleteDirectory(new File(tempWorkPath + tempMyName));
 			if (matcher.matches()) {
+				System.out.println("MUST_RESOLVE for: " + output.getOutput());
 				return LocalState.MUST_RESOLVE;
 			}
 		}
