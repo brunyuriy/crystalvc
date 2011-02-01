@@ -149,8 +149,13 @@ public class RunIt {
 
 		String goodOutput = outCatcher.getOutput();
 		String errOutput = errCatcher.getOutput();
-		int exitStatus = proc.exitValue();
-		
+		int exitStatus;
+		try {
+			exitStatus = proc.waitFor();
+		} catch (InterruptedException e) {
+			_log.error("Encountered an interrupt exception while executing " + builder.command().toString() + "; in path: " + builder.directory());
+			exitStatus = -1;
+		}
 //		String output = "";
 //
 //		if (errOutput.length() > 0) {
