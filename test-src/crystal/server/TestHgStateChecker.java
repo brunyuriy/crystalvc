@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import crystal.Constants;
 import crystal.client.ClientPreferences;
+import crystal.client.ConflictSystemTray;
 import crystal.client.ProjectPreferences;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
@@ -29,6 +30,7 @@ public class TestHgStateChecker {
 	private ProjectPreferences _prefs;
 
 	public TestHgStateChecker() {
+		ConflictSystemTray.startLogging();
 		generatePreferences();
 	}
 
@@ -168,9 +170,9 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-//		} catch (HgOperationException ioe) {
-//			ioe.printStackTrace();
-//			Assert.fail(ioe.getMessage());
+			// } catch (HgOperationException ioe) {
+			// ioe.printStackTrace();
+			// Assert.fail(ioe.getMessage());
 		}
 	}
 
@@ -184,9 +186,9 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-//		} catch (HgOperationException ioe) {
-//			ioe.printStackTrace();
-//			Assert.fail(ioe.getMessage());
+			// } catch (HgOperationException ioe) {
+			// ioe.printStackTrace();
+			// Assert.fail(ioe.getMessage());
 		}
 	}
 
@@ -200,9 +202,9 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-//		} catch (HgOperationException ioe) {
-//			ioe.printStackTrace();
-//			Assert.fail(ioe.getMessage());
+			// } catch (HgOperationException ioe) {
+			// ioe.printStackTrace();
+			// Assert.fail(ioe.getMessage());
 		}
 
 	}
@@ -217,9 +219,9 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-//		} catch (HgOperationException ioe) {
-//			ioe.printStackTrace();
-//			Assert.fail(ioe.getMessage());
+			// } catch (HgOperationException ioe) {
+			// ioe.printStackTrace();
+			// Assert.fail(ioe.getMessage());
 		}
 
 	}
@@ -234,9 +236,9 @@ public class TestHgStateChecker {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
-//		} catch (HgOperationException ioe) {
-//			ioe.printStackTrace();
-//			Assert.fail(ioe.getMessage());
+			// } catch (HgOperationException ioe) {
+			// ioe.printStackTrace();
+			// Assert.fail(ioe.getMessage());
 		}
 
 	}

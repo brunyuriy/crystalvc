@@ -5,9 +5,15 @@ import java.util.Vector;
 
 import org.junit.Ignore;
 
+import crystal.client.ConflictSystemTray;
+
 @Ignore
 public class TestConstants {
 
+	static {
+		ConflictSystemTray.startLogging();
+	}
+	
 	public static String PROJECT_PATH = null;
 	static {
 		/**

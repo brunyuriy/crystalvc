@@ -26,9 +26,8 @@ import crystal.util.LSMRLogger;
 import crystal.util.TimeUtility;
 
 /**
- * The system tray icon UI.  (This lives in the title bar in OS X or somewhere else in Linux). 
- * This UI contains a few menu options and allows opening up the larger window UI.  
- * If the system tray is not supported, the UI switches to a window-only view.  
+ * The system tray icon UI. (This lives in the title bar in OS X or somewhere else in Linux). This UI contains a few menu options and allows opening
+ * up the larger window UI. If the system tray is not supported, the UI switches to a window-only view.
  * 
  * ConflictSystemTray is a singleton.
  * 
@@ -57,7 +56,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 	// A timer that we use to refresh the results.
 	private Timer _timer;
-	
+
 	// A placekeeper to remember when we start each calculation.
 	long startCalculations = 0L;
 
@@ -69,21 +68,21 @@ public class ConflictSystemTray implements ComputationListener {
 
 	// A menu element that dictates whether Crystal ConflictDeamon is running (refreshing).
 	private MenuItem daemonEnabledItem;
-	
+
 	// A menu element that allows the user to start a new update right now.
 	private MenuItem updateNowItem;
-	
+
 	// The other menu elements are not referenced from listeners, so they are declared only locally.
 
 	/**
-	 * Constructs a brand new Crystal system tray icon, if the OS allows it.
-	 * If the OS does not allow it, creates an empty tray icon object holding some nulls.
+	 * Constructs a brand new Crystal system tray icon, if the OS allows it. If the OS does not allow it, creates an empty tray icon object holding
+	 * some nulls.
 	 */
 	private ConflictSystemTray() {
 		_log.info("ConflictSystemTray - started at: " + TimeUtility.getCurrentLSMRDateString());
 		if (TRAY_SUPPORTED) {
 			_tray = SystemTray.getSystemTray();
-//			_trayIcon = new TrayIcon((new ImageIcon(Constants.class.getResource("/crystal/client/images/bulb.gif"))).getImage());
+			// _trayIcon = new TrayIcon((new ImageIcon(Constants.class.getResource("/crystal/client/images/bulb.gif"))).getImage());
 			_trayIcon = new TrayIcon((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_32.png"))).getImage());
 		} else {
 			_tray = null;
@@ -92,17 +91,17 @@ public class ConflictSystemTray implements ComputationListener {
 	}
 
 	/**
-	 * A listener on the about menu item.  
-	 * When the user clicks on "about", a dialog pops up with some info on Crystal.
+	 * A listener on the about menu item. When the user clicks on "about", a dialog pops up with some info on Crystal.
 	 */
 	public void aboutAction() {
-		JOptionPane.showMessageDialog(
+		JOptionPane
+				.showMessageDialog(
 						null,
-						"Crystal version: " + VERSION_ID + 
-								"\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.\nhttp://www.cs.washington.edu/homes/brun/research/crystal",
-								"Crystal: Proactive Conflict Detector for Distributed Version Control", 
-								JOptionPane.PLAIN_MESSAGE,
-								new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.png")));
+						"Crystal version: "
+								+ VERSION_ID
+								+ "\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.\nhttp://www.cs.washington.edu/homes/brun/research/crystal",
+						"Crystal: Proactive Conflict Detector for Distributed Version Control", JOptionPane.PLAIN_MESSAGE, new ImageIcon(
+								Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.png")));
 	}
 
 	/**
@@ -257,17 +256,16 @@ public class ConflictSystemTray implements ComputationListener {
 	}
 
 	/**
-	 * Creates and starts a new timer (throws away the old one).
-	 * The timer fires an update every refresh seconds, unless there is a pending task.
+	 * Creates and starts a new timer (throws away the old one). The timer fires an update every refresh seconds, unless there is a pending task.
 	 */
 	private void createTimer() {
 
 		// note that the timer works in milliseconds and the argument is in seconds
-		
+
 		boolean pTask = false;
-		
+
 		// check if anything is PENDING (first local states then relationships
-		for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()){
+		for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()) {
 			if (localState.getLocalState().getName().equals(LocalState.PENDING)) {
 				pTask = true;
 			}
@@ -307,7 +305,7 @@ public class ConflictSystemTray implements ComputationListener {
 	}
 
 	/**
-	 * A listener for clicking the menu to enable the deamon. 
+	 * A listener for clicking the menu to enable the deamon.
 	 */
 	public void daemonAbleAction() {
 		if (daemonEnabledItem.getLabel().equals("Enable Daemon")) {
@@ -341,7 +339,7 @@ public class ConflictSystemTray implements ComputationListener {
 	}
 
 	/**
-	 * A listener for clicking the menu to exit. 
+	 * A listener for clicking the menu to exit.
 	 */
 	public void exitAction() {
 		if (TRAY_SUPPORTED)
@@ -355,20 +353,19 @@ public class ConflictSystemTray implements ComputationListener {
 	}
 
 	/**
-	 * If the deamon is not running, does nothing.
-	 * If the deamon is running, creates a new executor and performs 
-	 *   the calculations on all repos of all projects of the current configuration.
+	 * If the deamon is not running, does nothing. If the deamon is running, creates a new executor and performs the calculations on all repos of all
+	 * projects of the current configuration.
 	 */
 	public void performCalculations() {
-		
+
 		// if the daemon is disabled, don't perform calculations.
 		if (daemonEnabledItem.getLabel().equals("Enable Daemon")) {
 			return;
 		}
 
-		// if the deamon is enabled.  
-//# lines marked with //# are removed to simplify the execution process
-//#		Executor ex = new SerialExecutor();
+		// if the deamon is enabled.
+		// # lines marked with //# are removed to simplify the execution process
+		// # Executor ex = new SerialExecutor();
 
 		updateNowItem.setLabel("Updating...");
 		_log.trace("update now text: " + updateNowItem.getLabel());
@@ -377,19 +374,19 @@ public class ConflictSystemTray implements ComputationListener {
 
 		startCalculations = System.currentTimeMillis();
 
-//		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
-//			final CalculateLocalStateTask clst = new CalculateLocalStateTask(projPref, this, _client);
-//			ex.execute(clst);
-//			
-//			for (final DataSource source : projPref.getDataSources()) {
-//				final CalculateRelationshipTask crt = new CalculateRelationshipTask(source, projPref, this, _client);
-//				ex.execute(crt);
-//			}
-//		}
-		
+		// for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
+		// final CalculateLocalStateTask clst = new CalculateLocalStateTask(projPref, this, _client);
+		// ex.execute(clst);
+		//
+		// for (final DataSource source : projPref.getDataSources()) {
+		// final CalculateRelationshipTask crt = new CalculateRelationshipTask(source, projPref, this, _client);
+		// ex.execute(crt);
+		// }
+		// }
+
 		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
 			final CalculateProjectTask cpt = new CalculateProjectTask(projPref, this, _client);
-//#			ex.execute(cpt);
+			// # ex.execute(cpt);
 			cpt.execute();
 		}
 	}
@@ -403,7 +400,9 @@ public class ConflictSystemTray implements ComputationListener {
 
 	/**
 	 * Quit Crystal with a status.
-	 * @param status: the exit status (0 means normal).  
+	 * 
+	 * @param status
+	 *            : the exit status (0 means normal).
 	 */
 	private void quit(int status) {
 		_log.info("ConflictSystemTray exited - code: " + status + " at: " + TimeUtility.getCurrentLSMRDateString());
@@ -425,7 +424,7 @@ public class ConflictSystemTray implements ComputationListener {
 	}
 
 	/**
-	 * Updates the images and tool tips of all the projects and all the repositories within the current configuration.  
+	 * Updates the images and tool tips of all the projects and all the repositories within the current configuration.
 	 */
 	@Override
 	public void update() {
@@ -435,7 +434,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		// check if anything is PENDING (first local states then relationships
 		boolean pendingTask = false;
-		for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()){
+		for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()) {
 			if (localState.getLocalState().getName().equals(LocalState.PENDING)) {
 				pendingTask = true;
 			}
@@ -445,7 +444,7 @@ public class ConflictSystemTray implements ComputationListener {
 				pendingTask = true;
 			}
 		}
-		
+
 		if (pendingTask) {
 			_log.trace("Update called with tasks still pending.");
 
@@ -474,15 +473,15 @@ public class ConflictSystemTray implements ComputationListener {
 	 * Updates the tray icon image to the harshest relationship in the current configuration.
 	 */
 	private void updateTrayIcon() {
-		
+
 		if (!TRAY_SUPPORTED)
 			return;
 
 		_trayIcon.getImage().flush();
-		
+
 		Image icon = Relationship.getDominant(ConflictDaemon.getInstance().getRelationships());
 
-		_trayIcon.setImage(icon);		
+		_trayIcon.setImage(icon);
 	}
 
 	/**
@@ -498,8 +497,8 @@ public class ConflictSystemTray implements ComputationListener {
 	/**
 	 * Main execution point that starts Crystal.
 	 * 
-	 * @param args:
-	 * --version : Prints the version number.
+	 * @param args
+	 *            : --version : Prints the version number.
 	 */
 	public static void main(String[] args) {
 
@@ -510,12 +509,14 @@ public class ConflictSystemTray implements ComputationListener {
 			}
 		}
 
-		LSMRLogger.startLog4J(Constants.QUIET_CONSOLE, true, Constants.LOG_LEVEL, System.getProperty("user.home"), ".conflictClientLog");
-
+		ConflictSystemTray.startLogging();
 		// UIManager.put("swing.boldMetal", Boolean.FALSE);
 
 		ConflictSystemTray cst = ConflictSystemTray.getInstance();
 		cst.createAndShowGUI();
 	}
 
+	public static void startLogging() {
+		LSMRLogger.startLog4J(Constants.QUIET_CONSOLE, true, Constants.LOG_LEVEL, System.getProperty("user.home"), ".conflictClientLog");
+	}
 }
