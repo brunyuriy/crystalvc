@@ -24,8 +24,7 @@ import crystal.model.DataSource.RepoKind;
 import crystal.util.XMLTools;
 
 /**
- * ClientPreferences is the top level object that describes all the preferences and the projects 
- * and relevant repositories of a Crystal instance.  
+ * ClientPreferences is the top level object that describes all the preferences and the projects and relevant repositories of a Crystal instance.
  * 
  * @author brun
  * @author rtholmes
@@ -33,13 +32,16 @@ import crystal.util.XMLTools;
  */
 public class ClientPreferences {
 
+	static {
+		ConflictSystemTray.startLogging();
+	}
+
 	// IPrefXML contains some constants for use when parsing and writing ClientPreferences to XML.
 	private interface IPrefXML {
-		
-		/** 
-		 * Each constant consists of an array of logically equivalent elements.  
-		 * For example, either the element "ccConfig" or "ccconfig", in an XML file, will be considered the root element.
-		 * When writing XML, the [0]th element in the array will be used.  
+
+		/**
+		 * Each constant consists of an array of logically equivalent elements. For example, either the element "ccConfig" or "ccconfig", in an XML
+		 * file, will be considered the root element. When writing XML, the [0]th element in the array will be used.
 		 */
 
 		// the name of the root element
@@ -53,7 +55,7 @@ public class ClientPreferences {
 
 		// the refresh rate in seconds
 		static final String[] REFRESH = { "refresh", "Refresh", "REFRESH", "" };
-		
+
 		// a project
 		static final String[] PROJECT = { "project", "Project", "PROJECT" };
 
@@ -65,13 +67,13 @@ public class ClientPreferences {
 
 		// a source's address
 		static final String[] CLONE = { "Clone", "clone", "CLONE", "myClone", "myclone", "myCLONE" };
-		
+
 		// a source's name
 		static final String[] LABEL = { "ShortName", "shortName", "SHORTNAME", "myShortName", "myshortName", "mySHORTNAME" };
-		
+
 		// whether or not a source is hidden
 		static final String[] HIDE = { "Hidden", "hidden", "HIDDEN" };
-		
+
 		// a source's parent
 		static final String[] PARENT = { "commonParent", "parent", "CommonParent", "COMMONPARENT", "myParent", "Parent" };
 
@@ -81,13 +83,13 @@ public class ClientPreferences {
 
 	// The current refresh rate that's static because it needs to be visible to the GUI
 	public static long REFRESH = Constants.DEFAULT_REFRESH;
-	
+
 	// The path to the configuration file.
 	public static String CONFIG_PATH;
 
 	public static Logger _log = Logger.getLogger(ClientPreferences.class);
 
-	// The default to use if the config file cannot be read or parsed.  
+	// The default to use if the config file cannot be read or parsed.
 	public static ClientPreferences DEFAULT_CLIENT_PREFERENCES;
 	static {
 		String path = System.getProperty("user.home");
@@ -108,7 +110,7 @@ public class ClientPreferences {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * A vector of projects.
 	 */
@@ -124,7 +126,7 @@ public class ClientPreferences {
 	 * Points to the user's hg path.
 	 */
 	private String _hgPath;
-	
+
 	/**
 	 * The number of seconds between refreshes.
 	 */
@@ -143,8 +145,7 @@ public class ClientPreferences {
 	}
 
 	/**
-	 * Default constructor.  Creates a new ClientPreferences with the tempDirectory and hgPath set 
-	 * and 0 projects.  
+	 * Default constructor. Creates a new ClientPreferences with the tempDirectory and hgPath set and 0 projects.
 	 * 
 	 * @param tempDirectory
 	 * @param hgPath
@@ -160,9 +161,10 @@ public class ClientPreferences {
 	/**
 	 * Adds a project to this ClientPreferences.
 	 * 
-	 * @param pref: Preference to add;
-	 * @throws DuplicateProjectNameException if pref.getShortName() is not unique in the set of 
-	 *  	   projects in this ClientPreferences.
+	 * @param pref
+	 *            : Preference to add;
+	 * @throws DuplicateProjectNameException
+	 *             if pref.getShortName() is not unique in the set of projects in this ClientPreferences.
 	 */
 	public void addProjectPreferences(ProjectPreferences pref) throws DuplicateProjectNameException {
 		// String shortName = pref.getEnvironment().getShortName();
@@ -178,8 +180,8 @@ public class ClientPreferences {
 	/**
 	 * Removes the project pref from this ClientPreferences.
 	 * 
-	 * @param pref: project to remove.  
-	 * If pref is not present, do nothing.
+	 * @param pref
+	 *            : project to remove. If pref is not present, do nothing.
 	 */
 	public void removeProjectPreferences(ProjectPreferences pref) {
 		_projectPreferences.remove(pref);
@@ -188,14 +190,15 @@ public class ClientPreferences {
 	/**
 	 * Removes the project at the index index from this ClientPreferences.
 	 * 
-	 * @param index: the index of the project to remove.  
+	 * @param index
+	 *            : the index of the project to remove.
 	 */
 	public void removeProjectPreferencesAtIndex(int index) {
 		_projectPreferences.remove(index);
 	}
 
 	/**
-	 * Returns a Collection of projects.  (Leaks internal representation.)
+	 * Returns a Collection of projects. (Leaks internal representation.)
 	 * 
 	 * @return a Collection of projects.
 	 */
@@ -206,9 +209,10 @@ public class ClientPreferences {
 	/**
 	 * Returns the project with the specified shortName.
 	 * 
-	 * @param shortName: the name of the project to return
+	 * @param shortName
+	 *            : the name of the project to return
 	 * @return the project with the specified shortName.
-	 * @throws NonexistentProjectException 
+	 * @throws NonexistentProjectException
 	 */
 	public ProjectPreferences getProjectPreferences(String shortName) throws NonexistentProjectException {
 		for (ProjectPreferences pp : _projectPreferences) {
@@ -217,15 +221,16 @@ public class ClientPreferences {
 			}
 		}
 		// could not find the project with shortName
-		throw new NonexistentProjectException ("Project preferences: " + shortName + " does not exist.");
+		throw new NonexistentProjectException("Project preferences: " + shortName + " does not exist.");
 	}
 
 	/**
 	 * Load the saved preferences from a config file.
 	 * 
-	 * @return the ClientPreferences represented by the config file.  
-	 * If the config file does not exist, then it reads the defaultConfig.xml file from Crystal's build.  
-	 * @throws various Runtime exceptions from the XML reader and parser. 
+	 * @return the ClientPreferences represented by the config file. If the config file does not exist, then it reads the defaultConfig.xml file from
+	 *         Crystal's build.
+	 * @throws various
+	 *             Runtime exceptions from the XML reader and parser.
 	 */
 	public static ClientPreferences loadPreferencesFromXML() {
 		ClientPreferences prefs = null;
@@ -303,10 +308,10 @@ public class ClientPreferences {
 						}
 				}
 			}
-			
+
 			long refresh;
 			String refreshStr = getValue(rootElement, IPrefXML.REFRESH);
-			if (refreshStr == null) 
+			if (refreshStr == null)
 				refresh = Constants.DEFAULT_REFRESH;
 			else
 				refresh = Long.parseLong(refreshStr);
@@ -475,11 +480,11 @@ public class ClientPreferences {
 	/**
 	 * Save preferences to fName
 	 * 
-	 * @param fName: the name of the file
+	 * @param fName
+	 *            : the name of the file
 	 * @effect saves preferences to a file fName
 	 */
 	public static void savePreferencesToXML(ClientPreferences prefs, String fName) {
-
 		Document doc = XMLTools.newXMLDocument();
 
 		Element rootElem = new Element(IPrefXML.ROOT[0]);
@@ -536,10 +541,13 @@ public class ClientPreferences {
 	/**
 	 * Check to ensure the provided file exists.
 	 * 
-	 * @effect Nothing!  Just throws exceptions if something goes wrong.
-	 * @param fName: the filename to check
-	 * @throws ConfigurationReadingException if the file does not exist or is a directory
-	 * @throws NullPointerException if fname is null
+	 * @effect Nothing! Just throws exceptions if something goes wrong.
+	 * @param fName
+	 *            : the filename to check
+	 * @throws ConfigurationReadingException
+	 *             if the file does not exist or is a directory
+	 * @throws NullPointerException
+	 *             if fname is null
 	 */
 	private static void verifyFile(String fName) throws ConfigurationReadingException {
 
@@ -558,10 +566,13 @@ public class ClientPreferences {
 	/**
 	 * Check to ensure the provided path is a valid directory.
 	 * 
-	 * @effect Nothing!  Just throws exceptions if something goes wrong.
-	 * @param path: the path to check
-	 * @throws ConfigurationReadingException if the path does not exist or is not a directory
-	 * @throws NullPointerException if path is null
+	 * @effect Nothing! Just throws exceptions if something goes wrong.
+	 * @param path
+	 *            : the path to check
+	 * @throws ConfigurationReadingException
+	 *             if the path does not exist or is not a directory
+	 * @throws NullPointerException
+	 *             if path is null
 	 */
 	private static void verifyPath(String path) throws ConfigurationReadingException {
 
@@ -586,7 +597,8 @@ public class ClientPreferences {
 
 	/**
 	 * @effect set the path to the user's hg binary
-	 * @param hgPath : the path to hg
+	 * @param hgPath
+	 *            : the path to hg
 	 */
 	public void setHgPath(String hgPath) {
 		_hgPath = hgPath;
@@ -601,12 +613,13 @@ public class ClientPreferences {
 
 	/**
 	 * @effect set the path to the user's scratch space
-	 * @param tempDirectory : the path to the scratch space
+	 * @param tempDirectory
+	 *            : the path to the scratch space
 	 */
 	public void setTempDirectory(String tempDirectory) {
 		_tempDirectory = tempDirectory;
 	}
-	
+
 	/**
 	 * @return the refresh rate
 	 */
@@ -616,12 +629,12 @@ public class ClientPreferences {
 
 	/**
 	 * @effect set the refresh rate
-	 * @param refresh : the new refresh rate
+	 * @param refresh
+	 *            : the new refresh rate
 	 */
 	public void setHgPath(long refresh) {
 		_refresh = refresh;
 	}
-
 
 	/**
 	 * @return whether this has changed since loading or creating
@@ -632,15 +645,16 @@ public class ClientPreferences {
 
 	/**
 	 * @effect set whether this has changed since loading or creating
-	 * @param status: whether this has changed since loading or creating
+	 * @param status
+	 *            : whether this has changed since loading or creating
 	 */
 	public void setChanged(boolean status) {
 		_hasChanged = status;
 	}
 
 	/**
-	 * Thrown when there is a a problem reading a configuration, such as a path or file locations are invalid.  
-	 *
+	 * Thrown when there is a a problem reading a configuration, such as a path or file locations are invalid.
+	 * 
 	 * @author brun
 	 */
 	public static class ConfigurationReadingException extends Exception {
@@ -672,7 +686,7 @@ public class ClientPreferences {
 			return _type;
 		}
 	}
-	
+
 	/**
 	 * Thrown when two projects with the same name are added.
 	 * 
@@ -685,7 +699,7 @@ public class ClientPreferences {
 			super(message);
 		}
 	}
-	
+
 	/**
 	 * Thrown when a requested project does not exist.
 	 * 
@@ -694,7 +708,7 @@ public class ClientPreferences {
 	public static class NonexistentProjectException extends Exception {
 		private static final long serialVersionUID = 3426961654411908508L;
 
-		public NonexistentProjectException (String message) {
+		public NonexistentProjectException(String message) {
 			super(message);
 		}
 	}
