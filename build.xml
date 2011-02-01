@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse.ant.import?>
 <project basedir="." default="build" name="edu.washington.cse.se.crystal">
+
     <property environment="env"/>
     <property name="junit.output.dir" value="junit"/>
 	<property name="jar.dir" value="builds"/>
@@ -11,7 +12,6 @@
 	<!-- configuration for one-jar -->
 	<property name="one-jar.dist.dir" value="lib-exc"/> 
 	<import file="${one-jar.dist.dir}/one-jar-ant-task.xml" optional="true" /> 
-	
 	
     <path id="edu.washington.cse.se.crystal.classpath">
         <pathelement location="bin"/>
@@ -56,18 +56,7 @@
         </javac>
     </target>
 	
-	<!--
-	<target name="jar">
-		<mkdir dir="${jar.dir}"/>
-		<jar destfile="${jar.dir}/crystal_latest.jar" basedir="bin">
-			<manifest>
-				<attribute name="Main-Class" value="crystal.client.ConflictSystemTray"/>
-			</manifest>
-		</jar>
-	</target>
-	-->
-
-    <target name="jar" depends="init,build">
+    <target name="jar" depends="clean,build">
     	<mkdir dir="${jar.dir}"/>
         <one-jar destfile="${jar.dir}/crystal_${DSTAMP}.jar">
         	<manifest>
@@ -82,7 +71,7 @@
         </one-jar>
     	<copy file="${jar.dir}/crystal_${DSTAMP}.jar" tofile="${jar.dir}/crystal_latest.jar"/>
     	<echo>
-          crystal_latest.jar built.
+${jar.dir}/crystal_latest.jar built.
         </echo>   
     	
     </target>
@@ -93,7 +82,7 @@
         </java>
     </target>
 	
-    <target name="test" depends="build">
+    <target name="test" depends="clean,build">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="xml"/>
