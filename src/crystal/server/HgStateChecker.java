@@ -155,10 +155,8 @@ public class HgStateChecker {
 			 */
 			String[] headArgs = { "heads" };
 			output = RunIt.execute(hg, headArgs, prefs.getEnvironment().getCloneString());
-			Pattern heads = Pattern.compile(".*^changeset: .*^changeset: .*", Pattern.DOTALL | Pattern.MULTILINE);
-			Matcher matcher = heads.matcher(output.getOutput());		
-			if (matcher.matches()) {
-				System.out.println("MUST_RESOLVE for: " + output.getOutput());
+			if (hasTwoHeads(output)) {
+				//System.out.println("MUST_RESOLVE for: " + output.getOutput());
 				return LocalState.MUST_RESOLVE;
 			}
 			
@@ -237,16 +235,20 @@ public class HgStateChecker {
 			 * Check if mine is two headed.  If it is, return MUST_RESOLVE
 			 */
 			String[] headArgs = { "heads" };
-			output = RunIt.execute(hg, headArgs, tempWorkPath + tempMyName);
-			Pattern heads = Pattern.compile(".*^changeset: .*^changeset: .*", Pattern.DOTALL | Pattern.MULTILINE);
-			Matcher matcher = heads.matcher(output.getOutput());
+			output = RunIt.execute(hg, headArgs, tempWorkPath + tempMyName);	
 			RunIt.deleteDirectory(new File(tempWorkPath + tempMyName));
-			if (matcher.matches()) {
-				System.out.println("MUST_RESOLVE for: " + output.getOutput());
+			if (hasTwoHeads(output)) {
+			//	System.out.println("MUST_RESOLVE for: " + output.getOutput());
 				return LocalState.MUST_RESOLVE;
 			}
 		}
 		return LocalState.ALL_CLEAR;
+	}
+	
+	private static boolean hasTwoHeads(Output output) {
+		Pattern heads = Pattern.compile(".*^changeset: .*^changeset: .*", Pattern.DOTALL | Pattern.MULTILINE);
+		Matcher matcher = heads.matcher(output.getOutput());
+		return matcher.matches();
 	}
 
 	/*
