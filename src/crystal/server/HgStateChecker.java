@@ -43,7 +43,7 @@ public class HgStateChecker {
 		Assert.assertNotNull(tempWorkPath);
 
 		String[] myArgs = { "clone", pathToRepo };
-		String output = (RunIt.execute(pathToHg, myArgs, tempWorkPath + "status_check")).getOutput();
+		String output = (RunIt.execute(pathToHg, myArgs, tempWorkPath + "status_check", false)).getOutput();
 
 		RunIt.deleteDirectory(new File(tempWorkPath + "status_check"));
 
@@ -84,7 +84,7 @@ public class HgStateChecker {
 		myArgsList.add(pathToLocalRepo);
 		command += " " + pathToRemoteRepo + " " + pathToLocalRepo; 
 		
-		Output output = RunIt.execute(pathToHg, myArgsList.toArray(new String[0]), tempWorkPath);
+		Output output = RunIt.execute(pathToHg, myArgsList.toArray(new String[0]), tempWorkPath, false);
 
 		if (output.getOutput().indexOf("updating to branch") < 0) {
 			String dialogMsg = "Crystal tried to execute command:\n" +
@@ -121,7 +121,7 @@ public class HgStateChecker {
 		}
 
 //		String[] myArgs = { "pull", "-u" };
-		Output output = RunIt.execute(pathToHg, myArgsList.toArray(new String[0]), pathToLocalRepo);
+		Output output = RunIt.execute(pathToHg, myArgsList.toArray(new String[0]), pathToLocalRepo, false);
 
 		if ((output.getOutput().indexOf("files updated") < 0) && (output.getOutput().indexOf("no changes found") < 0))
 			throw new HgOperationException(command, pathToLocalRepo, output.toString());
@@ -147,14 +147,14 @@ public class HgStateChecker {
 			 * Get the log and set the changeset
 			 */
 			String[] logArgs = { "log" };
-			Output output = RunIt.execute(hg, logArgs, prefs.getEnvironment().getCloneString());
+			Output output = RunIt.execute(hg, logArgs, prefs.getEnvironment().getCloneString(), false);
 			prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput()));
 			
 			/*
 			 * Check if repo has two heads.  If it is, return MUST_RESOLVE
 			 */
 			String[] headArgs = { "heads" };
-			output = RunIt.execute(hg, headArgs, prefs.getEnvironment().getCloneString());
+			output = RunIt.execute(hg, headArgs, prefs.getEnvironment().getCloneString(), false);
 			if (hasTwoHeads(output)) {
 				//System.out.println("MUST_RESOLVE for: " + output.getOutput());
 				return LocalState.MUST_RESOLVE;
@@ -164,7 +164,7 @@ public class HgStateChecker {
 			 * Check if repo status has non-empty response.  If it does, return UNCHECKPOINTED
 			 */
 			String[] statusArgs = { "status" };
-			output = RunIt.execute(hg, statusArgs , prefs.getEnvironment().getCloneString());
+			output = RunIt.execute(hg, statusArgs , prefs.getEnvironment().getCloneString(), false);
 			// check if any of the lines in the output don't start with "?"
 			StringTokenizer tokens = new StringTokenizer(output.getOutput().trim(), "\n");
 			while (tokens.hasMoreTokens()) {
@@ -217,7 +217,7 @@ public class HgStateChecker {
 				}
 			}
 			String[] myArgs = { "clone", mine, tempMyName };
-			Output output = RunIt.execute(hg, myArgs, tempWorkPath);
+			Output output = RunIt.execute(hg, myArgs, tempWorkPath, false);
 			/*
 			 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0
 			 * files removed, 0 files unresolved
@@ -227,7 +227,7 @@ public class HgStateChecker {
 			 * Get the log and set the changeset
 			 */
 			String[] logArgs = { "log" };
-			output = RunIt.execute(hg, logArgs, tempWorkPath + tempMyName);
+			output = RunIt.execute(hg, logArgs, tempWorkPath + tempMyName, false);
 			prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput()));
 
 			
@@ -235,7 +235,7 @@ public class HgStateChecker {
 			 * Check if mine is two headed.  If it is, return MUST_RESOLVE
 			 */
 			String[] headArgs = { "heads" };
-			output = RunIt.execute(hg, headArgs, tempWorkPath + tempMyName);	
+			output = RunIt.execute(hg, headArgs, tempWorkPath + tempMyName, false);	
 			RunIt.deleteDirectory(new File(tempWorkPath + tempMyName));
 			if (hasTwoHeads(output)) {
 			//	System.out.println("MUST_RESOLVE for: " + output.getOutput());
@@ -366,7 +366,7 @@ public class HgStateChecker {
 		Output output;
 
 		String[] myArgs = { "clone", mine, tempMyName };
-		output = RunIt.execute(hg, myArgs, tempWorkPath);
+		output = RunIt.execute(hg, myArgs, tempWorkPath, false);
 
 		/*
 		 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0
@@ -374,7 +374,7 @@ public class HgStateChecker {
 		 */
 		
 		String[] yourArgs = { "clone", yours, tempYourName };
-		output = RunIt.execute(hg, yourArgs, tempWorkPath);
+		output = RunIt.execute(hg, yourArgs, tempWorkPath, false);
 		/*
 		 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0
 		 * files removed, 0 files unresolved
@@ -384,12 +384,12 @@ public class HgStateChecker {
 		 * Get the log and set the changeset
 		 */
 		String[] logArgs = { "log" };
-		output = RunIt.execute(hg, logArgs, tempWorkPath + tempYourName);
+		output = RunIt.execute(hg, logArgs, tempWorkPath + tempYourName, false);
 		source.setHistory(new RevisionHistory(output.getOutput()));
 		
 
 		String[] pullArgs = { "pull", tempWorkPath + tempYourName };
-		output = RunIt.execute(hg, pullArgs, tempWorkPath + tempMyName);
+		output = RunIt.execute(hg, pullArgs, tempWorkPath + tempMyName, false);
 		/*
 		 * SAME or AHEAD if output looks something like this: pulling from /homes/gws/brun/temp/orig searching for
 		 * changes no changes found
@@ -397,7 +397,7 @@ public class HgStateChecker {
 		if (output.getOutput().indexOf("no changes found") >= 0) {
 			// Mine is either the same or ahead, so let's check if yours is ahead
 			String[] reversePullArgs = { "pull", tempWorkPath + tempMyName };
-			output = RunIt.execute(hg, reversePullArgs, tempWorkPath + tempYourName);
+			output = RunIt.execute(hg, reversePullArgs, tempWorkPath + tempYourName, false);
 			/*
 			 * SAME if output looks something like this: pulling from /homes/gws/brun/temp/orig searching for changes no
 			 * changes found
@@ -448,7 +448,7 @@ public class HgStateChecker {
 		else if (output.getOutput().indexOf("(run 'hg heads' to see heads, 'hg merge' to merge)") >= 0) {
 			// there are two heads, so let's see if they merge cleanly
 			String[] mergeArgs = { "merge", "--noninteractive" };
-			output = RunIt.execute(hg, mergeArgs, tempWorkPath + tempMyName);
+			output = RunIt.execute(hg, mergeArgs, tempWorkPath + tempMyName, false);
 			// if the merge goes through cleanly, we can try to compile and test
 			if (output.getOutput().indexOf("(branch merge, don't forget to commit)") >= 0) {
 				// try to compile {
