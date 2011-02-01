@@ -74,9 +74,9 @@ public class RunIt {
 	 * @return
 	 * @throws IOException
 	 */
-	public static Output executeTwice(String command, String[] args, String path) throws IOException {
-		execute(command, args, path);
-		Output result = execute(command, args, path);
+	public static Output executeTwice(String command, String[] args, String path, boolean getStatus) throws IOException {
+		execute(command, args, path, false);
+		Output result = execute(command, args, path, getStatus);
 		return result;
 	}
 
@@ -89,7 +89,7 @@ public class RunIt {
 	 * @return
 	 * @throws IOException
 	 */
-	public static Output execute(String command, String[] args, String path) throws IOException {
+	public static Output execute(String command, String[] args, String path, boolean getStatus) throws IOException {
 		// System.out.println("\t" + TimeUtility.getCurrentLSMRDateString() + ": RunIt::execute(..) - : " + command +
 		// " ...");
 
@@ -150,12 +150,17 @@ public class RunIt {
 		String goodOutput = outCatcher.getOutput();
 		String errOutput = errCatcher.getOutput();
 		int exitStatus;
-		try {
-			exitStatus = proc.waitFor();
-		} catch (InterruptedException e) {
-			_log.error("Encountered an interrupt exception while executing " + builder.command().toString() + "; in path: " + builder.directory());
-			exitStatus = -1;
-		}
+		if (getStatus) {
+			_log.info("Waiting for exit status of " + builder.command().toString() + "; in path: " + builder.directory());
+			try {
+				exitStatus = proc.waitFor();
+			} catch (InterruptedException e) {
+				_log.error("Encountered an interrupt exception while executing " + builder.command().toString() + "; in path: " + builder.directory());
+				exitStatus = -1;
+			}
+		} else
+			exitStatus = 0;
+
 //		String output = "";
 //
 //		if (errOutput.length() > 0) {
