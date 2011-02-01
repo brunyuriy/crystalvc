@@ -304,7 +304,12 @@ public class ClientPreferences {
 				}
 			}
 			
-			long refresh = Long.parseLong(getValue(rootElement, IPrefXML.REFRESH));
+			long refresh;
+			String refreshStr = getValue(rootElement, IPrefXML.REFRESH);
+			if (refreshStr == null) 
+				refresh = Constants.DEFAULT_REFRESH;
+			else
+				refresh = Long.parseLong(refreshStr);
 			if (refresh < 0)
 				refresh = Constants.DEFAULT_REFRESH;
 
