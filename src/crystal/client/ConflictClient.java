@@ -106,6 +106,8 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_disableDaemon = new JMenuItem("Disable Daemon");
 		JMenuItem exit = new JMenuItem("Exit");
 		JMenuItem about = new JMenuItem("About");
+		JMenuItem blank = new JMenuItem("");
+		blank.setArmed(false);
 
 		fileMenu.add(_update);
 		fileMenu.add(editConfiguration);
@@ -113,6 +115,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		fileMenu.add(exit);
 		// aboutMenu.add(about);
 		menuBar.add(about);
+		menuBar.add(blank);
 
 		about.addActionListener(new ActionListener() {
 			@Override
