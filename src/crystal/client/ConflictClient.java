@@ -96,6 +96,8 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		// Set up the menu:
 		JMenuBar menuBar = new JMenuBar();
+		// could set the manuBar layout to make the last, invisible blank menu item take up all the space.
+		// menuBar.setLayout(mgr)
 		JMenu fileMenu = new JMenu("File");
 		// JMenu aboutMenu = new JMenu("About");
 		menuBar.add(fileMenu);
