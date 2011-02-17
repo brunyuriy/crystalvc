@@ -129,15 +129,15 @@ public class HgStateChecker {
 	}
 	
 	private static void updateLocalRepositoryAndCheckCacheError(DataSource ds, String hg, String localRepo, String tempWorkPath, String remoteHg, 
-																String shortName) throws HgOperationException, IOException {
+																String repoName, String projectName) throws HgOperationException, IOException {
 		Logger log = Logger.getLogger(HgStateChecker.class);
 		if (new File(localRepo).exists()) {
 			try {
 				updateLocalRepository(hg, localRepo, ds.getCloneString(), tempWorkPath, remoteHg);
 			} catch (HgOperationException e) {
 				String dialogMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
-				e.getPath() + "\n for your repository of project " + 
-				shortName + ".\n" + 
+				e.getPath() + "\n for your " + repoName + " repository of project " + 
+				projectName + ".\n" + 
 				"Crystal got the unexpected output:\n" + 
 				e.getOutput() + "\n";
 				log.error(dialogMsg);
@@ -165,8 +165,6 @@ public class HgStateChecker {
 		if (!prefs.getEnvironment().isEnabled())
 			return null;
 
-		Logger log = Logger.getLogger(HgStateChecker.class);
-		
 		/*
 		 * We are going to:
 		 * 1.  update the local clone
@@ -183,7 +181,7 @@ public class HgStateChecker {
 		// Step 1. Update the local clone.  If cloning fails, return ERROR state
 		try {
 			updateLocalRepositoryAndCheckCacheError(prefs.getEnvironment(), hg, mine, tempWorkPath, prefs.getEnvironment().getRemoteHg(), 
-					prefs.getEnvironment().getShortName());
+					"your own", prefs.getEnvironment().getShortName());
 		} catch (HgOperationException e) {
 			return LocalState.ERROR;
 		} catch (IOException e) {
@@ -247,13 +245,9 @@ public class HgStateChecker {
 		if ((!prefs.getEnvironment().isEnabled()) || (!source.isEnabled()))
 			return null;
 
-		// String mine = prefs.getEnvironment().getLocalString();
-		// String yours = source.getLocalString();
-
 		String mine = prefs.getProjectCheckoutLocation(prefs.getEnvironment());
 		String yours = prefs.getProjectCheckoutLocation(source);
 
-		// String hg = Constants.HG_COMMAND;
 		String hg = prefs.getClientPreferences().getHgPath();
 
 		String tempWorkPath = prefs.getClientPreferences().getTempDirectory();
@@ -261,86 +255,16 @@ public class HgStateChecker {
 		String tempMyName = "tempMine_" + TimeUtility.getCurrentLSMRDateString();
 		// tempWorkPath + tempYourName used to store a local copy of your repo
 		String tempYourName = "tempYour_" + TimeUtility.getCurrentLSMRDateString();
+		
+		// My local copy has already been updated when we checked the local status
+		// So we are just going to update yours
+		try {
+			updateLocalRepositoryAndCheckCacheError(source, hg, yours, tempWorkPath, source.getRemoteHg(), 
+					source.getShortName(), prefs.getEnvironment().getShortName());
+		} catch (HgOperationException e1) {
+			return Relationship.ERROR;
+		}
 
-		// Check if a local copy of my repository exists. If it does, update it. If it does not, create it.
-		//		System.out.println("*** " + tempWorkPath + " *** " + mine + " ***\n");
-		if ((new File(mine)).exists()) {
-			try {
-				updateLocalRepository(hg, mine, prefs.getEnvironment().getCloneString(), tempWorkPath, prefs.getEnvironment().getRemoteHg());
-			}
-			catch (HgOperationException e) {
-				String dialogMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
-				e.getPath() + "\n for your repository of project " + 
-				prefs.getEnvironment().getShortName() + ".\n" + 
-				"Crystal got the unexpected output:\n" + 
-				e.getOutput() + "\n";
-				log.error(dialogMsg);
-				dialogMsg += "Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
-				"Would you like Crystal to try that?\n" +
-				"The alternative is to skip this project.";
-				int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-				if (answer == JOptionPane.YES_OPTION) {
-					RunIt.deleteDirectory(new File(mine));
-					try {
-						createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
-					} catch (HgOperationException e_useless) {
-						// We got the error again; there is no hope, you have no chance to survive, make your time.
-						// TODO Um, is there a chance that we're leaving half-copied directories around?
-						return Relationship.ERROR;
-					}
-				} else {
-					prefs.getEnvironment().setEnabled(false);
-					return null;
-				}
-			}
-		} else {
-			try {
-				createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
-			} catch (HgOperationException e_useless) {
-				// We got the error when we didn't expect it; there is no hope, you have no chance to survive, make your time.
-				// TODO Um, is there a chance that we're leaving half-copied directories around?
-				return Relationship.ERROR;
-			}
-		}
-		// Check if a local copy of your repository exists. If it does, update it. If it does not, create it.
-		if ((new File(yours)).exists()) {
-			try {
-				updateLocalRepository(hg, yours, source.getCloneString(), tempWorkPath, source.getRemoteHg());
-			}
-			catch (HgOperationException e) {
-				String dialogMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
-				e.getPath() + "\n for the repository " + source.getShortName() + 
-				" in project " + prefs.getEnvironment().getShortName() + ".\n" +
-				"Crystal got the unexpected output:\n" + 
-				e.getOutput() + "\n";
-				log.error(dialogMsg);
-				dialogMsg += "Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
-				"Would you like Crystal to try that?\n" +
-				"The alternative is to skip this repository.";
-				int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-				if (answer == JOptionPane.YES_OPTION) {
-					RunIt.deleteDirectory(new File(yours));
-					try {
-						createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath, source.getRemoteHg());
-					} catch (HgOperationException e_useless) {
-						// We got the error again; there is no hope, you have no chance to survive, make your time.
-						// TODO Um, is there a chance that we're leaving half-copied directories around?
-						return Relationship.ERROR;
-					}
-				} else {
-					source.setEnabled(false);
-					return null;
-				}
-			}
-		} else {
-			try {
-				createLocalRepository(hg, source.getCloneString(), yours, tempWorkPath, source.getRemoteHg());
-			} catch (HgOperationException e_useless) {
-				// We got the error again; there is no hope, you have no chance to survive, make your time.
-				// TODO Um, is there a chance that we're leaving half-copied directories around?
-				return Relationship.ERROR;
-			}
-		}
 		String answer;
 
 		Output output;
