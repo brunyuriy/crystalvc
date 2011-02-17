@@ -128,12 +128,12 @@ public class HgStateChecker {
 			throw new HgOperationException(command, pathToLocalRepo, output.toString());
 	}
 	
-	private static void updateLocalRepositoryAndCheckCacheError(DataSource ds, String pathToHg, String localRepo, String tempWorkPath, String remoteHg, 
+	private static void updateLocalRepositoryAndCheckCacheError(DataSource ds, String hg, String localRepo, String tempWorkPath, String remoteHg, 
 																String shortName) throws HgOperationException, IOException {
 		Logger log = Logger.getLogger(HgStateChecker.class);
 		if (new File(localRepo).exists()) {
 			try {
-				updateLocalRepository(pathToHg, localRepo, ds.getCloneString(), tempWorkPath, remoteHg);
+				updateLocalRepository(hg, localRepo, ds.getCloneString(), tempWorkPath, remoteHg);
 			} catch (HgOperationException e) {
 				String dialogMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
 				e.getPath() + "\n for your repository of project " + 
@@ -147,13 +147,13 @@ public class HgStateChecker {
 				int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 				if (answer == JOptionPane.YES_OPTION) {
 					RunIt.deleteDirectory(new File(localRepo));
-					createLocalRepository(pathToHg, ds.getCloneString(), localRepo, tempWorkPath, remoteHg);
+					createLocalRepository(hg, ds.getCloneString(), localRepo, tempWorkPath, remoteHg);
 				} else {
 					ds.setEnabled(false);
 				}
 			}
 		} else {
-			createLocalRepository(pathToHg, ds.getCloneString(), localRepo, tempWorkPath, remoteHg);
+			createLocalRepository(hg, ds.getCloneString(), localRepo, tempWorkPath, remoteHg);
 		}
 	}
 	
@@ -167,29 +167,37 @@ public class HgStateChecker {
 
 		Logger log = Logger.getLogger(HgStateChecker.class);
 		
+		/*
+		 * We are going to:
+		 * 1.  update the local clone
+		 * 2.  get the log from the local clone
+		 * 3.  if the cloneString is local, we will also get heads and check for UNCHECKPOINTED
+		 * 4.  check for MUST_RESOLVE or ALL_CLEAR and return
+		 */
+		
 		String hg = prefs.getClientPreferences().getHgPath();
 		String tempWorkPath = prefs.getClientPreferences().getTempDirectory();
-		
-		// if the environment repository is local, we can find out if we need to checkpoint or resolve
-		if ((new File(prefs.getEnvironment().getCloneString())).exists()) {
+		String mine = prefs.getProjectCheckoutLocation(prefs.getEnvironment());
 
-			/*
-			 * Get the log and set the changeset
-			 */
-			String[] logArgs = { "log" };
-			Output output = RunIt.execute(hg, logArgs, prefs.getEnvironment().getCloneString(), false);
-			prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput()));
-			
-			/*
-			 * Check if repo has two heads.  If it is, return MUST_RESOLVE
-			 */
-			String[] headArgs = { "heads" };
-			output = RunIt.execute(hg, headArgs, prefs.getEnvironment().getCloneString(), false);
-			if (hasTwoHeads(output)) {
-				//System.out.println("MUST_RESOLVE for: " + output.getOutput());
-				return LocalState.MUST_RESOLVE;
-			}
-			
+		
+		// Step 1. Update the local clone.  If cloning fails, return ERROR state
+		try {
+			updateLocalRepositoryAndCheckCacheError(prefs.getEnvironment(), hg, mine, tempWorkPath, prefs.getEnvironment().getRemoteHg(), 
+					prefs.getEnvironment().getShortName());
+		} catch (HgOperationException e) {
+			return LocalState.ERROR;
+		} catch (IOException e) {
+			return LocalState.ERROR;
+		}
+		
+		// Step 2. Get the log from the local clone and set the history
+		String[] logArgs = { "log" };
+		Output output = RunIt.execute(hg, logArgs, mine, false);
+		prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput()));
+		
+		
+		//  Step 3.  If the cloneString is local, we will also get heads and check for UNCHECKPOINTED
+		if ((new File(prefs.getEnvironment().getCloneString())).exists()) {
 			/*
 			 * Check if repo status has non-empty response.  If it does, return UNCHECKPOINTED
 			 */
@@ -203,75 +211,17 @@ public class HgStateChecker {
 				if (!(nextToken.startsWith("?")))
 					return LocalState.UNCHECKPOINTED;
 			}
-			return LocalState.ALL_CLEAR;
-		} else {
-			// We can't find out the status, but we can find out if you must resolve
-			// by cloning, updating, and seeing how many heads there are
-			String mine = prefs.getProjectCheckoutLocation(prefs.getEnvironment());
-			String tempMyName = "tempMine_" + TimeUtility.getCurrentLSMRDateString();
-			if (new File(mine).exists()) {
-				try {
-					updateLocalRepository(hg, mine, prefs.getEnvironment().getCloneString(), tempWorkPath, prefs.getEnvironment().getRemoteHg());
-				} catch (HgOperationException e) {
-					String dialogMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
-					e.getPath() + "\n for your repository of project " + 
-					prefs.getEnvironment().getShortName() + ".\n" + 
-					"Crystal got the unexpected output:\n" + 
-					e.getOutput() + "\n";
-					log.error(dialogMsg);
-					dialogMsg += "Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
-					"Would you like Crystal to try that?\n" +
-					"The alternative is to skip this project.";
-					int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-					if (answer == JOptionPane.YES_OPTION) {
-						RunIt.deleteDirectory(new File(mine));
-						try {
-							createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
-						} catch(HgOperationException e_useless) {
-							// We got the error again; there is no hope, you have no chance to survive, make your time.
-							// TODO Um, is there a chance that we're leaving half-copied directories around?
-							return LocalState.ERROR;
-						}			
-					} else {
-						prefs.getEnvironment().setEnabled(false);
-						return null;
-					}
-				}
-			} else {
-				try {
-					createLocalRepository(hg, prefs.getEnvironment().getCloneString(), mine, tempWorkPath, prefs.getEnvironment().getRemoteHg());
-				} catch(HgOperationException e) {
-					// We got the error when we didn't expect it; there is no hope, you have no chance to survive, make your time.
-					// TODO Um, is there a chance that we're leaving half-copied directories around?
-					return LocalState.ERROR;
-				}
-			}
-			String[] myArgs = { "clone", mine, tempMyName };
-			Output output = RunIt.execute(hg, myArgs, tempWorkPath, false);
-			/*
-			 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0
-			 * files removed, 0 files unresolved
-			 */
-
-			/*
-			 * Get the log and set the changeset
-			 */
-			String[] logArgs = { "log" };
-			output = RunIt.execute(hg, logArgs, tempWorkPath + tempMyName, false);
-			prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput()));
-
-			
-			/*
-			 * Check if mine is two headed.  If it is, return MUST_RESOLVE
-			 */
-			String[] headArgs = { "heads" };
-			output = RunIt.execute(hg, headArgs, tempWorkPath + tempMyName, false);	
-			RunIt.deleteDirectory(new File(tempWorkPath + tempMyName));
-			if (hasTwoHeads(output)) {
-			//	System.out.println("MUST_RESOLVE for: " + output.getOutput());
-				return LocalState.MUST_RESOLVE;
-			}
 		}
+		
+		// We can't find out the status, but we can find out if MUST_RESOLVE 
+
+		/*
+		 * Check if mine is two headed.  If it is, return MUST_RESOLVE
+		 */
+		String[] headArgs = { "heads" };
+		output = RunIt.execute(hg, headArgs, mine, false);	
+		if (hasTwoHeads(output))
+			return LocalState.MUST_RESOLVE;
 		return LocalState.ALL_CLEAR;
 	}
 	
