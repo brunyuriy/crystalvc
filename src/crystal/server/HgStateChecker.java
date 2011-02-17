@@ -264,10 +264,32 @@ public class HgStateChecker {
 		} catch (HgOperationException e1) {
 			return Relationship.ERROR;
 		}
+		
+		// Get your log and set your history
+		String[] logArgs = { "log" };
+		Output output = RunIt.execute(hg, logArgs, yours, false);
+		RevisionHistory yourHistory = new RevisionHistory(output.getOutput());
+		source.setHistory(yourHistory);
 
+		RevisionHistory myHistory = prefs.getEnvironment().getHistory();
+		
+
+		
+		
+		
+		
+		
 		String answer;
 
 		Output output;
+		
+		
+		
+		
+		
+		
+		
+		
 
 		String[] myArgs = { "clone", mine, tempMyName };
 		output = RunIt.execute(hg, myArgs, tempWorkPath, false);
