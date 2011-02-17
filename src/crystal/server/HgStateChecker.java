@@ -254,7 +254,7 @@ public class HgStateChecker {
 		// tempWorkPath + tempMyName used to store a local copy of my repo
 		String tempMyName = "tempMine_" + TimeUtility.getCurrentLSMRDateString();
 		// tempWorkPath + tempYourName used to store a local copy of your repo
-		String tempYourName = "tempYour_" + TimeUtility.getCurrentLSMRDateString();
+//		String tempYourName = "tempYour_" + TimeUtility.getCurrentLSMRDateString();
 		
 		// My local copy has already been updated when we checked the local status
 		// So we are just going to update yours
@@ -267,111 +267,33 @@ public class HgStateChecker {
 		
 		// Get your log and set your history
 		String[] logArgs = { "log" };
-		Output output = RunIt.execute(hg, logArgs, yours, false);
-		RevisionHistory yourHistory = new RevisionHistory(output.getOutput());
+		Output logOutput = RunIt.execute(hg, logArgs, yours, false);
+		RevisionHistory yourHistory = new RevisionHistory(logOutput.getOutput());
 		source.setHistory(yourHistory);
 
 		RevisionHistory myHistory = prefs.getEnvironment().getHistory();
 		
-
+		if (myHistory.equals(yourHistory))
+			return Relationship.SAME;
 		
+		else if (myHistory.superHistory(yourHistory))
+			return Relationship.AHEAD;
 		
+		else if (myHistory.subHistory(yourHistory))
+			return Relationship.BEHIND;
 		
-		
+		// Well, we are either in the MERGE or CONFLICT relationship, so we are going to have to bite the bullet and make loca clones.  
 		
 		String answer;
-
 		Output output;
 		
-		
-		
-		
-		
-		
-		
-		
-
+		// pull your repo into [a temp clone of] mine
 		String[] myArgs = { "clone", mine, tempMyName };
 		output = RunIt.execute(hg, myArgs, tempWorkPath, false);
-
-		/*
-		 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0
-		 * files removed, 0 files unresolved
-		 */
-		
-		String[] yourArgs = { "clone", yours, tempYourName };
-		output = RunIt.execute(hg, yourArgs, tempWorkPath, false);
-		/*
-		 * Could assert that output looks something like: updating to branch default 1 files updated, 0 files merged, 0
-		 * files removed, 0 files unresolved
-		 */
-		
-		/*
-		 * Get the log and set the changeset
-		 */
-		String[] logArgs = { "log" };
-		output = RunIt.execute(hg, logArgs, tempWorkPath + tempYourName, false);
-		source.setHistory(new RevisionHistory(output.getOutput()));
-		
-
-		String[] pullArgs = { "pull", tempWorkPath + tempYourName };
+		String[] pullArgs = { "pull", yours };
 		output = RunIt.execute(hg, pullArgs, tempWorkPath + tempMyName, false);
-		/*
-		 * SAME or AHEAD if output looks something like this: pulling from /homes/gws/brun/temp/orig searching for
-		 * changes no changes found
-		 */
-		if (output.getOutput().indexOf("no changes found") >= 0) {
-			// Mine is either the same or ahead, so let's check if yours is ahead
-			String[] reversePullArgs = { "pull", tempWorkPath + tempMyName };
-			output = RunIt.execute(hg, reversePullArgs, tempWorkPath + tempYourName, false);
-			/*
-			 * SAME if output looks something like this: pulling from /homes/gws/brun/temp/orig searching for changes no
-			 * changes found
-			 */
-			if (output.getOutput().indexOf("no changes found") >= 0)
-				answer = Relationship.SAME;
-			/*
-			 * mine is AHEAD (yours is BEHIND) if output looks something like this: searching for changes adding
-			 * changesets adding manifests adding file changes added 1 changesets with 1 changes to 1 files (run 'hg
-			 * update' to get a working copy)
-			 */
-			else if (output.getOutput().indexOf("(run 'hg update' to get a working copy)") >= 0)
-				answer = Relationship.AHEAD;
-			else {
-				log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output);
-				String dialogMsg = "Crystal is having trouble comparing\n" + 
-				mine + " and " + yours + "\n" + 
-				"for the repository " + source.getShortName() + " in project " + prefs.getEnvironment().getShortName() + ".\n" +
-				"Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
-				"Would you like Crystal to try that?\n" +
-				"The alternative is to skip this repository.";
-				int dialogAnswer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-				if (dialogAnswer == JOptionPane.YES_OPTION) {
-					RunIt.deleteDirectory(new File(mine));
-					RunIt.deleteDirectory(new File(yours));
-					return getRelationship(prefs, source);
-				} else {
-					source.setEnabled(false);
-					return null;
-				}
-			}
-			//				throw new RuntimeException("Unknown reverse pull output: " + output + "\n Could not determine the relative state of " + yours
-			//						+ " and " + mine);
-		}
 
-		/*
-		 * BEHIND if output looks something like this: searching for changes adding changesets adding manifests adding
-		 * file changes added 1 changesets with 1 changes to 1 files (run 'hg update' to get a working copy)
-		 */
-		else if (output.getOutput().indexOf("(run 'hg update' to get a working copy)") >= 0)
-			answer = Relationship.BEHIND;
-
-		/*
-		 * CONFLICT if output looks something like this: pulling from ../firstcopy/ searching for changes adding
-		 * changesets adding manifests adding file changes added 1 changesets with 1 changes to 1 files (+1 heads) (run
-		 * 'hg heads' to see heads, 'hg merge' to merge)
-		 */
-		else if (output.getOutput().indexOf("(run 'hg heads' to see heads, 'hg merge' to merge)") >= 0) {
+		if (output.getOutput().indexOf("(run 'hg heads' to see heads, 'hg merge' to merge)") >= 0) {
 			// there are two heads, so let's see if they merge cleanly
 			String[] mergeArgs = { "merge", "--noninteractive" };
 			output = RunIt.execute(hg, mergeArgs, tempWorkPath + tempMyName, false);
@@ -391,27 +313,17 @@ public class HgStateChecker {
 			else
 				answer = Relationship.MERGECONFLICT;
 		} else {
+			// something went wrong; disabling this relationship
 			log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output.toString());
 			String dialogMsg = "Crystal is having trouble comparing\n" + 
 			mine + " and " + yours + "\n" + 
-			"for the repository " + source.getShortName() + " in project " + prefs.getEnvironment().getShortName() + ".\n" +
-			"Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
-			"Would you like Crystal to try that?\n" +
-			"The alternative is to skip this repository.";
-			int dialogAnswer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-			if (dialogAnswer == JOptionPane.YES_OPTION) {
-				RunIt.deleteDirectory(new File(mine));
-				RunIt.deleteDirectory(new File(yours));
-				return getRelationship(prefs, source);
-			} else {
-				source.setEnabled(false);
-				return null;
-			}
+			"for the repository " + source.getShortName() + " in project " + prefs.getEnvironment().getShortName() + ".\n";
+			JOptionPane.showConfirmDialog(null, dialogMsg);
+			source.setEnabled(false);
+			return Relationship.ERROR;
 		}
-		// throw new RuntimeException("Unknown pull output: " + output + "\n Could not determine the relative state of " + mine + " and " + yours);
 		// Clean up temp directories:
 		RunIt.deleteDirectory(new File(tempWorkPath + tempMyName));
-		RunIt.deleteDirectory(new File(tempWorkPath + tempYourName));
 		return answer;
 	}
 
