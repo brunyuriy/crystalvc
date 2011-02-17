@@ -83,7 +83,7 @@ public class HgLogParser {
 					else if (currentLine.startsWith("tag:")); // ignore
 
 					else if (currentLine.startsWith("parent:"))
-						parents.add(clipFront(currentLine));
+						parents.add(clipFront(currentLine).intern());
 
 					else if (currentLine.startsWith("user:"))
 						user = clipFront(currentLine);
@@ -98,7 +98,7 @@ public class HgLogParser {
 						throw new RuntimeException("Unexpected line in the log file: " + currentLine);
 				}
 				if (changeset != null) {
-					answer.put(changeset, new Checkpoint(changeset, user, date, summary, parents));
+					answer.put(changeset.intern(), new Checkpoint(changeset.intern(), user.intern(), date.intern(), summary.intern(), parents));
 				} else
 					throw new RuntimeException("Log contained a changeset description that did not start with \"changeset:\"");
 			}

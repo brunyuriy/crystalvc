@@ -38,6 +38,46 @@ public class RevisionHistory {
 	public int size() {
 		return _changesets.keySet().size();
 	}
+	
+	/*
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object o) {
+		if (o instanceof RevisionHistory){
+			RevisionHistory r = (RevisionHistory) o;
+			Set<String> you = r._changesets.keySet();
+			Set<String> me = _changesets.keySet();
+			
+			return ((me.size() == you.size()) && me.containsAll(you));
+		} else 
+		return false;
+	}
+	
+	/*
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		return _changesets.hashCode();
+	}
+
+	/*
+	 * @returns true iff this history is a superset of r
+	 */
+	public boolean superHistory(RevisionHistory r) {
+		Set<String> you = r._changesets.keySet();
+		Set<String> me = _changesets.keySet();
+		
+		return me.containsAll(you);
+	}
+	
+	/*
+	 * @returns true iff this history is a subset of r
+	 */
+	public boolean subHistory(RevisionHistory r) {
+		return r.superHistory(this);
+	}
+	
+	
 	public String getCommitters (RevisionHistory you) {
 		Set<String> changes = new HashSet<String>();
 		changes = SetOperations.xor(_changesets.keySet(), you._changesets.keySet());
