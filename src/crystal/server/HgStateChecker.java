@@ -104,7 +104,8 @@ public class HgStateChecker {
 	 * @arg String tempWorkPath: path to a temp directory
 	 * @effect: performs a pull and update on the pathToLocalRepo repository
 	 */
-	private static synchronized void updateLocalRepository(String pathToHg, String pathToLocalRepo, String pathToRemoteRepo, String tempWorkPath, String remoteHg) throws IOException, HgOperationException {
+	private static synchronized void updateLocalRepository(String pathToHg, String pathToLocalRepo, String pathToRemoteRepo, String tempWorkPath, 
+														   String remoteHg) throws IOException, HgOperationException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToLocalRepo);
 		Assert.assertNotNull(tempWorkPath);
@@ -125,6 +126,35 @@ public class HgStateChecker {
 
 		if ((output.getOutput().indexOf("files updated") < 0) && (output.getOutput().indexOf("no changes found") < 0))
 			throw new HgOperationException(command, pathToLocalRepo, output.toString());
+	}
+	
+	private static void updateLocalRepositoryAndCheckCacheError(DataSource ds, String pathToHg, String localRepo, String tempWorkPath, String remoteHg, 
+																String shortName) throws HgOperationException, IOException {
+		Logger log = Logger.getLogger(HgStateChecker.class);
+		if (new File(localRepo).exists()) {
+			try {
+				updateLocalRepository(pathToHg, localRepo, ds.getCloneString(), tempWorkPath, remoteHg);
+			} catch (HgOperationException e) {
+				String dialogMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
+				e.getPath() + "\n for your repository of project " + 
+				shortName + ".\n" + 
+				"Crystal got the unexpected output:\n" + 
+				e.getOutput() + "\n";
+				log.error(dialogMsg);
+				dialogMsg += "Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
+				"Would you like Crystal to try that?\n" +
+				"The alternative is to skip this project.";
+				int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (answer == JOptionPane.YES_OPTION) {
+					RunIt.deleteDirectory(new File(localRepo));
+					createLocalRepository(pathToHg, ds.getCloneString(), localRepo, tempWorkPath, remoteHg);
+				} else {
+					ds.setEnabled(false);
+				}
+			}
+		} else {
+			createLocalRepository(pathToHg, ds.getCloneString(), localRepo, tempWorkPath, remoteHg);
+		}
 	}
 	
 	public static LocalState getLocalState(ProjectPreferences prefs) throws IOException {
