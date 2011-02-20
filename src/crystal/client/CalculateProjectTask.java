@@ -55,7 +55,7 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 	 * and the guidance for each relationship.
 	 */
 	@Override
-	protected Void doInBackground() throws Exception {
+	protected synchronized Void doInBackground() {
 
 		// First, do the local state.
 		// We do this by checking the current local state, updating the GUI (mostly to show the pending icons).
