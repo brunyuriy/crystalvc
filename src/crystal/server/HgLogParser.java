@@ -97,6 +97,12 @@ public class HgLogParser {
 					else 
 						throw new RuntimeException("Unexpected line in the log file: " + currentLine);
 				}
+				if (summary == null)
+					summary = "";
+				if (user == null)
+					user = "";
+				if (date == null)
+					date = "";
 				if (changeset != null) {
 					answer.put(changeset.intern(), new Checkpoint(changeset.intern(), user.intern(), date.intern(), summary.intern(), parents));
 				} else
