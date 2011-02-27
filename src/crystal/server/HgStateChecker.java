@@ -300,27 +300,31 @@ public class HgStateChecker {
 			if (output.getOutput().indexOf("(branch merge, don't forget to commit)") >= 0) {
 				// try to compile
 				String compileCommand = prefs.getEnvironment().getCompileCommand();
-				Output compileOutput = RunIt.tryCommand(compileCommand, tempWorkPath + tempMyName);
-				if (compileOutput.getStatus() != 0)
-					// if unsuccessful:
-					answer = Relationship.COMPILECONFLICT;
-				else {
-					// if successful try to test
-					String testCommand = prefs.getEnvironment().getTestCommand();
-					Output testOutput = RunIt.tryCommand(testCommand, tempWorkPath + tempMyName);
-					if (testOutput.getStatus() != 0)
+				if (compileCommand != null) {
+					Output compileOutput = RunIt.tryCommand(compileCommand, tempWorkPath + tempMyName);
+					if (compileOutput.getStatus() != 0)
 						// if unsuccessful:
-						answer = Relationship.TESTCONFLICT;
+						answer = Relationship.COMPILECONFLICT;
 					else {
-						// if successful:
-						answer = Relationship.MERGECLEAN;
+						// if successful try to test
+						String testCommand = prefs.getEnvironment().getTestCommand();
+						if (testCommand != null) {
+							Output testOutput = RunIt.tryCommand(testCommand, tempWorkPath + tempMyName);
+							if (testOutput.getStatus() != 0)
+								// if unsuccessful:
+								answer = Relationship.TESTCONFLICT;
+							else
+								// if successful:
+								answer = Relationship.MERGECLEAN;
+						}
+						else
+							// we don't know how to test
+							answer = Relationship.MERGECLEAN;
 					}
 				}
-				// if unsuccessful:
-				// answer = ResultStatus.TESTCONFLICT;
-				// }
-				// if unsuccessful (compile):
-				// answer = ResultStatus.COMPILECONFLICT;
+				else
+					// we don't know how to compile
+					answer = Relationship.MERGECLEAN;
 			}
 			// otherwise, the merge failed
 			else
