@@ -3,7 +3,9 @@ package crystal.util;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -197,4 +199,16 @@ public class RunIt {
 			_log.info("RunIt::deleteDirectory(..) - deleting " + path + " failed");
 		return answer;
 	}
+	
+	public static Output tryCommand(String command, String path) throws IOException {
+		StringTokenizer tokens = new StringTokenizer(command);
+		String executable;
+		List<String> argumentsList = new ArrayList<String>();
+		executable = tokens.nextToken();
+		while (tokens.hasMoreTokens()) {
+			argumentsList.add(tokens.nextToken());
+		}
+		return execute(executable, argumentsList.toArray(new String[0]), path, true);
+	}
+
 }
