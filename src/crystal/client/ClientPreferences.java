@@ -81,7 +81,7 @@ public class ClientPreferences {
 		static final String[] REMOTE_HG = { "RemoteHG", "remoteHG", "REMOTEHG", "Remotehg", "RemoteHg" };
 
 		// the command to compile
-		static final String[] COMPILE = { "compile", "Compile","COMPILE" };
+		static final String[] COMPILE = { "compile", "Compile", "COMPILE" };
 
 		// the command to test
 		static final String[] TEST = { "test", "Test", "TEST" };

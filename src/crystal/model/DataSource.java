@@ -83,7 +83,7 @@ public class DataSource {
 	}
 	
 	public void setCompileCommand(String compileCommand) {
-		_remoteHg = compileCommand;
+		_compileCommand = compileCommand;
 	}
 	
 	public String getCompileCommand() {
@@ -91,7 +91,7 @@ public class DataSource {
 	}
 	
 	public void setTestCommand(String testCommand) {
-		_remoteHg = testCommand;
+		_testCommand = testCommand;
 	}
 	
 	public String getTestCommand() {
