@@ -38,6 +38,12 @@ public class DataSource {
 	
 	// optional argument to pass to hg for --remotecmd in case the remote hg path is not just "hg"
 	private String _remoteHg = null;
+
+	// optional command for compiling a project
+	private String _compileCommand = null;
+	
+	// optional command for compiling a project
+	private String _testCommand = null;
 	
 	private RevisionHistory _history;
 
@@ -74,6 +80,22 @@ public class DataSource {
 	
 	public String getRemoteHg() {
 		return _remoteHg;
+	}
+	
+	public void setCompileCommand(String compileCommand) {
+		_remoteHg = compileCommand;
+	}
+	
+	public String getCompileCommand() {
+		return _compileCommand;
+	}
+	
+	public void setTestCommand(String testCommand) {
+		_remoteHg = testCommand;
+	}
+	
+	public String getTestCommand() {
+		return _testCommand;
 	}
 
 	public String getShortName() {
