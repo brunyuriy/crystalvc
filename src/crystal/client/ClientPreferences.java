@@ -79,6 +79,12 @@ public class ClientPreferences {
 
 		// the path to the remote HG
 		static final String[] REMOTE_HG = { "RemoteHG", "remoteHG", "REMOTEHG", "Remotehg", "RemoteHg" };
+
+		// the command to compile
+		static final String[] COMPILE = { "compile", "Compile","COMPILE" };
+
+		// the command to test
+		static final String[] TEST = { "test", "Test", "TEST" };
 	}
 
 	// The current refresh rate that's static because it needs to be visible to the GUI
@@ -345,6 +351,9 @@ public class ClientPreferences {
 				String projectClone = getValue(projectElement, IPrefXML.CLONE);
 				String projectRemoteHg = getValue(projectElement, IPrefXML.REMOTE_HG);
 				String projectParent = getValue(projectElement, IPrefXML.PARENT);
+				String compileCommand = getValue(projectElement, IPrefXML.COMPILE);
+				String testCommand = getValue(projectElement, IPrefXML.TEST);
+
 
 				if (projectKind == null) {
 					throw new RuntimeException("Kind attribute must be set for project element.");
@@ -379,6 +388,10 @@ public class ClientPreferences {
 
 				DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind, false, projectParent);
 				myEnvironment.setRemoteHg(projectRemoteHg);
+				if (!(compileCommand.trim().isEmpty()))
+					myEnvironment.setCompileCommand(compileCommand);
+				if (!(testCommand.trim().isEmpty()))
+					myEnvironment.setTestCommand(testCommand);
 
 				_log.trace("Loaded project: " + myEnvironment);
 

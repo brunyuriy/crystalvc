@@ -299,14 +299,14 @@ public class HgStateChecker {
 			// if the merge goes through cleanly, we can try to compile and test
 			if (output.getOutput().indexOf("(branch merge, don't forget to commit)") >= 0) {
 				// try to compile
-				String compileCommand = prefs.getEnvironment().getCompileString();
+				String compileCommand = prefs.getEnvironment().getCompileCommand();
 				Output compileOutput = RunIt.tryCommand(compileCommand, tempWorkPath + tempMyName);
 				if (compileOutput.getStatus() != 0)
 					// if unsuccessful:
 					answer = Relationship.COMPILECONFLICT;
 				else {
 					// if successful try to test
-					String testCommand = prefs.getEnvironment().getTestString();
+					String testCommand = prefs.getEnvironment().getTestCommand();
 					Output testOutput = RunIt.tryCommand(testCommand, tempWorkPath + tempMyName);
 					if (testOutput.getStatus() != 0)
 						// if unsuccessful:
