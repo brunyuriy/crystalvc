@@ -388,9 +388,9 @@ public class ClientPreferences {
 
 				DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind, false, projectParent);
 				myEnvironment.setRemoteHg(projectRemoteHg);
-				if (!(compileCommand.trim().isEmpty()))
+				if ((compileCommand != null) && (!(compileCommand.trim().isEmpty())))
 					myEnvironment.setCompileCommand(compileCommand);
-				if (!(testCommand.trim().isEmpty()))
+				if ((testCommand != null) && (!(testCommand.trim().isEmpty())))
 					myEnvironment.setTestCommand(testCommand);
 
 				_log.trace("Loaded project: " + myEnvironment);
