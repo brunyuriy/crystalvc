@@ -282,8 +282,7 @@ public class HgStateChecker {
 		else if (myHistory.subHistory(yourHistory))
 			return Relationship.BEHIND;
 		
-		// Well, we are either in the MERGE or CONFLICT relationship, so we are going to have to bite the bullet and make loca clones.  
-		
+		// Well, we in one of {MERGE, CONFLICT, COMPILECONFLICT, TESTCONFLICT} relationships, so we are going to have to bite the bullet and make local clones.  
 		String answer;
 		Output output;
 		
@@ -299,10 +298,24 @@ public class HgStateChecker {
 			output = RunIt.execute(hg, mergeArgs, tempWorkPath + tempMyName, false);
 			// if the merge goes through cleanly, we can try to compile and test
 			if (output.getOutput().indexOf("(branch merge, don't forget to commit)") >= 0) {
-				// try to compile {
-				// if successful, try to test {
-				// if successful:
-				answer = Relationship.MERGECLEAN;
+				// try to compile
+				String compileCommand = prefs.getEnvironment().getCompileString();
+				Output compileOutput = RunIt.tryCommand(compileCommand, tempWorkPath + tempMyName);
+				if (compileOutput.getStatus() != 0)
+					// if unsuccessful:
+					answer = Relationship.COMPILECONFLICT;
+				else {
+					// if successful try to test
+					String testCommand = prefs.getEnvironment().getTestString();
+					Output testOutput = RunIt.tryCommand(testCommand, tempWorkPath + tempMyName);
+					if (testOutput.getStatus() != 0)
+						// if unsuccessful:
+						answer = Relationship.TESTCONFLICT;
+					else {
+						// if successful:
+						answer = Relationship.MERGECLEAN;
+					}
+				}
 				// if unsuccessful:
 				// answer = ResultStatus.TESTCONFLICT;
 				// }
@@ -326,7 +339,7 @@ public class HgStateChecker {
 		RunIt.deleteDirectory(new File(tempWorkPath + tempMyName));
 		return answer;
 	}
-
+		
 	// a super quick test function that checks the status of "one" and "two" and prints the result
 	// public static void main(String[] args) throws IOException {
 	// ResultStatus answer = getState("one", "two");
@@ -334,7 +347,6 @@ public class HgStateChecker {
 	// }
 
 	public static class HgOperationException extends Exception {
-
 		private static final long serialVersionUID = -6885233021486785003L;
 		
 		private String _output;
