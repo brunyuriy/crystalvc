@@ -80,7 +80,8 @@ public class ConflictDaemon {
 
 				_log.trace("ConflictDaemon::calculateRelationship( " + source + ", ... )");
 
-				relationship = HgStateChecker.getRelationship(prefs, source);
+				String oldRelationship = _relationshipMap.get(source).getName();
+				relationship = HgStateChecker.getRelationship(prefs, source, oldRelationship);
 				if (relationship == null)
 					relationship = Relationship.ERROR;
 
