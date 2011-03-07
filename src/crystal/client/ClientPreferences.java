@@ -51,8 +51,9 @@ public class ClientPreferences {
 		// the path to the temp directory
 		static final String[] TMP_DIR = { "tempDirectory", "TempDirectory" };
 
+		// @deprecated
 		// the path to the hg executable
-		static final String[] HG_PATH = { "hgPath", "HgPath", "HGPath" };
+		// static final String[] HG_PATH = { "hgPath", "HgPath", "HGPath" };
 
 		// the refresh rate in seconds
 		static final String[] REFRESH = { "refresh", "Refresh", "REFRESH", "" };
@@ -147,6 +148,7 @@ public class ClientPreferences {
 	/**
 	 * Private constructor to restrict usage.
 	 */
+	@SuppressWarnings("unused")
 	private ClientPreferences() {
 		// disabled
 	}
@@ -325,8 +327,9 @@ public class ClientPreferences {
 			if (refresh < 0)
 				refresh = Constants.DEFAULT_REFRESH;
 
-			String hgPath = getValue(rootElement, IPrefXML.HG_PATH);
-			hgPath = RunIt.getExecutable(hgPath);
+			// @deprecated
+			// String hgPath = getValue(rootElement, IPrefXML.HG_PATH);
+			String hgPath = RunIt.getExecutable("hg");
 			
 			boolean happyHgPath = false;
 			while (!happyHgPath) {
@@ -515,7 +518,7 @@ public class ClientPreferences {
 		Comment webref2 = new Comment(" http://www.cs.washington.edu/homes/brun/research/crystal/ . ");
 
 		Comment sample = new Comment(" Example:\n" + "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-				+ "<ccConfig tempDirectory=\"C:/temp/conflictClient/\" hgPath=\"C:/Program Files/TortoiseHg/hg.exe\">\n"
+				+ "<ccConfig tempDirectory=\"C:/temp/conflictClient/\" refresh=\"60\">\n"
 				+ "  <project Kind=\"HG\" ShortName=\"MyFirstProject\" Clone=\"C:/projects/myLocalFirstProjectRepo/\">\n"
 				+ "    <source ShortName=\"MASTER\" Clone=\"ssh://user@host/path/to/repo/\" />\n"
 				+ "    <source ShortName=\"Friend\" Clone=\"ssh://user@host/path/to/friend/repo/\" />\n" + "  </project>\n"
@@ -529,7 +532,7 @@ public class ClientPreferences {
 		doc.addContent(sample);
 
 		rootElem.setAttribute(IPrefXML.TMP_DIR[0], prefs.getTempDirectory());
-		rootElem.setAttribute(IPrefXML.HG_PATH[0], prefs.getHgPath());
+//		rootElem.setAttribute(IPrefXML.HG_PATH[0], prefs.getHgPath()); @deprecated
 		rootElem.setAttribute(IPrefXML.REFRESH[0], Long.toString(prefs.getRefresh()));
 		doc.setRootElement(rootElem);
 
@@ -539,6 +542,8 @@ public class ClientPreferences {
 			projectElem.setAttribute(IPrefXML.LABEL[0], pp.getEnvironment().getShortName());
 			projectElem.setAttribute(IPrefXML.CLONE[0], pp.getEnvironment().getCloneString());
 			projectElem.setAttribute(IPrefXML.PARENT[0], pp.getEnvironment().getParent());
+			projectElem.setAttribute(IPrefXML.COMPILE[0], pp.getEnvironment().getCompileCommand());
+			projectElem.setAttribute(IPrefXML.TEST[0], pp.getEnvironment().getTestCommand());
 
 			rootElem.addContent(projectElem);
 
