@@ -78,7 +78,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			ConflictSystemTray.getInstance().exitAction();
 	}
 
-	private JMenuItem _update = null;
+	private JMenuItem _refresh = null;
 	private JMenuItem _disableDaemon;
 
 	/**
@@ -103,7 +103,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		menuBar.add(fileMenu);
 		// menuBar.add(aboutMenu);
 
-		_update = new JMenuItem("Update Now");
+		_refresh = new JMenuItem("Refresh");
 		JMenuItem editConfiguration = new JMenuItem("Edit Configuration");
 		_disableDaemon = new JMenuItem("Disable Daemon");
 		JMenuItem exit = new JMenuItem("Exit");
@@ -111,7 +111,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		JMenuItem blank = new JMenuItem("");
 		blank.setArmed(false);
 
-		fileMenu.add(_update);
+		fileMenu.add(_refresh);
 		fileMenu.add(editConfiguration);
 		fileMenu.add(_disableDaemon);
 		fileMenu.add(exit);
@@ -133,10 +133,10 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			}
 		});
 
-		_update.addActionListener(new ActionListener() {
+		_refresh.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				_log.info("Update now manually selected.");
+				_log.info("Refresh manually selected.");
 				setCanUpdate(false);
 				ConflictSystemTray.getInstance().performCalculations();
 			}
@@ -237,11 +237,11 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 	public void setCanUpdate(boolean enable) {
 		if (enable) {
-			_update.setText("Update Now");
-			_update.setEnabled(true);
+			_refresh.setText("Refresh");
+			_refresh.setEnabled(true);
 		} else {
-			_update.setText("Updating...");
-			_update.setEnabled(false);
+			_refresh.setText("Refreshing...");
+			_refresh.setEnabled(false);
 		}
 	}
 

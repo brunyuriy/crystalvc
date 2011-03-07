@@ -69,8 +69,8 @@ public class ConflictSystemTray implements ComputationListener {
 	// A menu element that dictates whether Crystal ConflictDeamon is running (refreshing).
 	private MenuItem daemonEnabledItem;
 
-	// A menu element that allows the user to start a new update right now.
-	private MenuItem updateNowItem;
+	// A menu element that allows the user to start a new refresh right now.
+	private MenuItem refreshItem;
 
 	// The other menu elements are not referenced from listeners, so they are declared only locally.
 
@@ -112,7 +112,7 @@ public class ConflictSystemTray implements ComputationListener {
 		MenuItem aboutItem = new MenuItem("About");
 		MenuItem preferencesItem = new MenuItem("Edit Configuration");
 		daemonEnabledItem = new MenuItem("Disable Daemon");
-		updateNowItem = new MenuItem("Update Now");
+		refreshItem = new MenuItem("Refresh");
 		final MenuItem showClientItem = new MenuItem("Show Client");
 		MenuItem exitItem = new MenuItem("Exit");
 
@@ -188,7 +188,7 @@ public class ConflictSystemTray implements ComputationListener {
 			trayMenu.add(preferencesItem);
 			trayMenu.add(daemonEnabledItem);
 			trayMenu.addSeparator();
-			trayMenu.add(updateNowItem);
+			trayMenu.add(refreshItem);
 			trayMenu.addSeparator();
 			trayMenu.add(showClientItem);
 			trayMenu.addSeparator();
@@ -218,9 +218,9 @@ public class ConflictSystemTray implements ComputationListener {
 				}
 			});
 
-			updateNowItem.addActionListener(new ActionListener() {
+			refreshItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					_log.info("Update now manually selected.");
+					_log.info("Refresh manually selected.");
 					performCalculations();
 				}
 			});
@@ -367,9 +367,9 @@ public class ConflictSystemTray implements ComputationListener {
 		// # lines marked with //# are removed to simplify the execution process
 		// # Executor ex = new SerialExecutor();
 
-		updateNowItem.setLabel("Updating...");
-		_log.trace("update now text: " + updateNowItem.getLabel());
-		updateNowItem.setEnabled(false);
+		refreshItem.setLabel("Refreshing...");
+		_log.trace("refresh text: " + refreshItem.getLabel());
+		refreshItem.setEnabled(false);
 		_client.setCanUpdate(false);
 
 		startCalculations = System.currentTimeMillis();
@@ -449,15 +449,15 @@ public class ConflictSystemTray implements ComputationListener {
 			_log.trace("Update called with tasks still pending.");
 
 			// keep the UI in updating mode
-			updateNowItem.setLabel("Updating...");
-			updateNowItem.setEnabled(false);
+			refreshItem.setLabel("Refreshing...");
+			refreshItem.setEnabled(false);
 			_client.setCanUpdate(false);
 		} else {
 			_log.trace("Update called with no tasks pending.");
 
 			createTimer();
-			updateNowItem.setLabel("Update Now");
-			updateNowItem.setEnabled(true);
+			refreshItem.setLabel("Refresh");
+			refreshItem.setEnabled(true);
 			_client.setCanUpdate(true);
 		}
 
