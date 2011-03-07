@@ -226,10 +226,10 @@ public class RunIt {
 	
 		while (pathTokens.hasMoreTokens()) {
 			String token = pathTokens.nextToken();
-			if ((new File(token + "/" + executable)).exists())
-				return token + "/" + executable;
-			if ((new File(token + "/" + executable + ".exe")).exists())
-				return token + "/" + executable + ".exe";
+			if ((new File(token + File.separator + executable)).exists())
+				return token + File.separator + executable;
+			if ((new File(token + File.separator + executable + ".exe")).exists())
+				return token + File.separator + executable + ".exe";
 		}
 		// Could not find any executable
 		return null;
