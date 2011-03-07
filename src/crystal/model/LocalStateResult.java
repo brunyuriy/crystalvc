@@ -13,7 +13,9 @@ public class LocalStateResult implements Result {
 		public static LocalState ALL_CLEAR = new LocalState("", "ALL CLEAR");
 		public static LocalState PENDING = new LocalState("", "PENDING");
 		public static LocalState ERROR = new LocalState("", "ERROR");
-
+		public static LocalState BUILD = new LocalState("", "BUILD");
+		public static LocalState TEST = new LocalState("", "TEST");
+		
 		private final String _name;
 		private final String _action;
 
