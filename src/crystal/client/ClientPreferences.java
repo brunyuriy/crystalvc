@@ -177,7 +177,6 @@ public class ClientPreferences {
 	 */
 	public void addProjectPreferences(ProjectPreferences pref) throws DuplicateProjectNameException {
 		// String shortName = pref.getEnvironment().getShortName();
-
 		for (ProjectPreferences pp : _projectPreferences) {
 			if (pp.getEnvironment().getShortName().equals(pref.getEnvironment().getShortName())) {
 				throw new DuplicateProjectNameException("Duplicate project name: " + pp.getEnvironment().getShortName());
