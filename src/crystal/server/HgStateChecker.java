@@ -195,7 +195,6 @@ public class HgStateChecker {
 		
 		// TODO Step 2.5.  If the history has changed, find out if build or test fails.
 		
-		
 		if ((new File(prefs.getEnvironment().getCloneString())).exists()) {
 			/*
 			 * Check if repo status has non-empty response.  If it does, return UNCHECKPOINTED
@@ -273,7 +272,10 @@ public class HgStateChecker {
 		source.setHistory(yourHistory);
 
 		RevisionHistory myHistory = prefs.getEnvironment().getHistory();
-		
+
+		// TODO figure out if we need to check for compile and test whenever histories change: 
+		// one of (source.hasHistoryChanged()) or (prefs.getEnvironment.hasHistoryChanged()) are true
+
 		if (myHistory.equals(yourHistory))
 			return Relationship.SAME;
 		
