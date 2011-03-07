@@ -88,7 +88,7 @@ fetch=
 <h2 id="download">How to run Crystal</h2>
 
 <ol>
-<li> Download <a href="crystal.jar">crystal.jar</a>. (Current version is 0.1.20110226.  To learn the version of an executable, run <tt>java -jar crystal.jar --version</tt> or select the <tt>about</tt> menu in the GUI.)</li>
+<li> Download <a href="crystal.jar">crystal.jar</a>. (Current version is 0.1.20110307.  To learn the version of an executable, run <tt>java -jar crystal.jar --version</tt> or select the <tt>about</tt> menu in the GUI.)</li>
 <li> Run:  <tt>java -jar crystal.jar</tt></li>
 <li> The tool will complain that your configuration file is invalid and
   give you instructions on how to fix it.  You can do so either via a GUI
@@ -213,12 +213,12 @@ Here is an example valid configuration file:
 
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;ccConfig tempDirectory=&quot;C:/temp/conflictClient/&quot; hgPath=&quot;C:/Program Files/TortoiseHg/hg.exe&quot; refresh=&quot;60&quot;&gt;
+&lt;ccConfig tempDirectory=&quot;C:/temp/conflictClient/&quot; refresh=&quot;60&quot;&gt;
   &lt;project Kind=&quot;HG&quot; ShortName=&quot;MyFirstProject&quot; Clone=&quot;C:/projects/MyLocalFirstProjectRepo/&quot; parent=&quot;MASTER&quot;&gt;
     &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
     &lt;source ShortName=&quot;Friend&quot; Clone=&quot;ssh://user@host/path/to/friend/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
   &lt;/project&gt;
-  &lt;project Kind=&quot;HG&quot; ShortName=&quot;MySecondProject&quot; Clone=&quot;C:/projects/MyLocalSecondProjectRepo/&quot; parent=&quot;MASTER&quot;&gt;
+  &lt;project Kind=&quot;HG&quot; ShortName=&quot;MySecondProject&quot; Clone=&quot;C:/projects/MyLocalSecondProjectRepo/&quot; parent=&quot;MASTER&quot; compile=&quot;make&quot; test=&quot;make test&quot;&gt;
     &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/socond/project/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
     &lt;source ShortName=&quot;Friend&quot; Clone=&quot;https://user@host/path/to/friend/second/repo&quot; commonParent=&quot;MASTER&quot; /&gt;
   &lt;/project&gt;
@@ -226,11 +226,11 @@ Here is an example valid configuration file:
 </pre>
 
 <p>
-At the root level, there is a single XML element: <tt>ccConfig</tt>.  This element has two attributes: <tt>tempDirectory</tt> and <tt>hgPath</tt>.  These attributes show the path to the scratch space and the hg executable, respectively.
+At the root level, there is a single XML element: <tt>ccConfig</tt>.  This element has two attributes: <tt>tempDirectory</tt> and <tt>refresh</tt>.  These attributes specify the path to the scratch space and how often, in seconds, Crystal should attempt to refresh itself.
 </p>
 
 <p>
-For each project you wish Crystal to track, <tt>ccConfig</tt> will have a <tt>project</tt> child with four required attributes: <tt>Kind</tt>, <tt>ShortName</tt>, <tt>Clone</tt>, <tt>refresh</tt>, and four optional attributes: <tt>parent</tt>, <tt>RemoteHG</tt>, <tt>compile</tt>, and <tt>test</tt>.  The <tt>Kind</tt> element describes the kind of the repository: HG for mercurial or GIT for git, although, for now, Crystal only supports HG.  The <tt>ShortName</tt> element is the name of the project you want Crystal to display (on the left side on the screen shot above).  The <tt>Clone</tt> element is the path to your local repository; you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.  The <tt>refresh</tt> element is the period, in seconds, with which you want Crystal to refresh its results.  The optional <tt>parent</tt> element is the shortName of the repository that is your repository's parent; that is, the default place you push to and pull from.  Crystal needs to know the parent to determine your possible actions; if you do not supply the <tt>parent</tt> attribute, Crystal will not report the action information.  The optional <tt>RemoteHG</tt> element is only necessary if the <tt>--remotecmd</tt> option is necessary to specify the path to <tt>hg</tt> on the server where your local repository resides; the value of this element is passed directly to the <hg> command with the <tt>--remotecmd</tt> option.  Finally, the optional <tt>compile</tt> and <tt>test</tt> attributes specify what command to execute for this project to build and to run the tests, respectively (e.g., the <tt>compile</tt> attribute may be set to <tt>"make"</tt> and the <tt>test</tt> attribute may be set to <tt>"make test"</tt>).  
+For each project you wish Crystal to track, <tt>ccConfig</tt> will have a <tt>project</tt> child with three required attributes: <tt>Kind</tt>, <tt>ShortName</tt>, and <tt>Clone</tt>, and four optional attributes: <tt>parent</tt>, <tt>RemoteHG</tt>, <tt>compile</tt>, and <tt>test</tt>.  The <tt>Kind</tt> element describes the kind of the repository: HG for mercurial or GIT for git, although, for now, Crystal only supports HG.  The <tt>ShortName</tt> element is the name of the project you want Crystal to display (on the left side on the screen shot above).  The <tt>Clone</tt> element is the path to your local repository; you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.  The <tt>refresh</tt> element is the period, in seconds, with which you want Crystal to refresh its results.  The optional <tt>parent</tt> element is the shortName of the repository that is your repository's parent; that is, the default place you push to and pull from.  Crystal needs to know the parent to determine your possible actions; if you do not supply the <tt>parent</tt> attribute, Crystal will not report the action information.  The optional <tt>RemoteHG</tt> element is only necessary if the <tt>--remotecmd</tt> option is necessary to specify the path to <tt>hg</tt> on the server where your local repository resides; the value of this element is passed directly to the <hg> command with the <tt>--remotecmd</tt> option.  Finally, the optional <tt>compile</tt> and <tt>test</tt> attributes specify what command to execute for this project to build and to run the tests, respectively (e.g., the <tt>compile</tt> attribute may be set to <tt>"make"</tt> and the <tt>test</tt> attribute may be set to <tt>"make test"</tt>).  
 
 </p>
 
