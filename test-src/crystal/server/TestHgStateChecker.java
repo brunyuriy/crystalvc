@@ -164,7 +164,7 @@ public class TestHgStateChecker {
 	public void testBasicMergeConflict() {
 		try {
 
-			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("twoRepository"));
+			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("twoRepository"),null);
 			Assert.assertEquals(Relationship.MERGECONFLICT, answer);
 
 		} catch (IOException ioe) {
@@ -180,7 +180,7 @@ public class TestHgStateChecker {
 	public void testBasicCleanMerge() {
 		try {
 
-			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("sixRepository"));
+			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("sixRepository"), null);
 			Assert.assertEquals(Relationship.MERGECLEAN, answer);
 
 		} catch (IOException ioe) {
@@ -196,7 +196,7 @@ public class TestHgStateChecker {
 	public void testBasicAhead() {
 		try {
 
-			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("threeRepository"));
+			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("threeRepository"), null);
 			Assert.assertEquals(Relationship.AHEAD, answer);
 
 		} catch (IOException ioe) {
@@ -213,7 +213,7 @@ public class TestHgStateChecker {
 	public void testBasicBehind() {
 		try {
 
-			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("fourRepository"));
+			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("fourRepository"), null);
 			Assert.assertEquals(Relationship.BEHIND, answer);
 
 		} catch (IOException ioe) {
@@ -230,7 +230,7 @@ public class TestHgStateChecker {
 	public void testBasicSame() {
 		try {
 
-			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("fiveRepository"));
+			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("fiveRepository"), null);
 			Assert.assertEquals(Relationship.SAME, answer);
 
 		} catch (IOException ioe) {

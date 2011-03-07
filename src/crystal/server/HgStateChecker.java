@@ -234,7 +234,7 @@ public class HgStateChecker {
 	 * 
 	 * @returns whether prefs.getEnvironment() repository is same, behind, ahead, cleanmerge, or conflictmerge with the source repository.
 	 */
-	public static String getRelationship(ProjectPreferences prefs, DataSource source) throws IOException {
+	public static String getRelationship(ProjectPreferences prefs, DataSource source, String oldRelationship) throws IOException {
 
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);
@@ -286,6 +286,13 @@ public class HgStateChecker {
 			return Relationship.BEHIND;
 		
 		// Well, we in one of {MERGE, CONFLICT, COMPILECONFLICT, TESTCONFLICT} relationships, so we are going to have to bite the bullet and make local clones.  
+		
+		// First, check if anything has changed.
+		if (!(prefs.getEnvironment().hasHistoryChanged() || source.hasHistoryChanged())) {
+			// Nothing has changed.  Keep old status.
+			return oldRelationship;
+		}
+		// OK, things have changed.  We have to recompute.  
 		String answer;
 		Output output;
 		
