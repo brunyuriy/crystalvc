@@ -210,5 +210,28 @@ public class RunIt {
 		}
 		return execute(executable, argumentsList.toArray(new String[0]), path, true);
 	}
-
+	
+	public static String getExecutable(String executable) {
+		if ((new File(executable)).exists())
+			return executable;
+		
+		String path = System.getenv("PATH");
+		StringTokenizer pathTokens;
+		if ((path.indexOf(";") > -1) && (path.indexOf(":") > -1))  
+			// windows path
+			pathTokens = new StringTokenizer(path, ";");
+		else
+			// linux path
+			pathTokens = new StringTokenizer(path, ":");
+	
+		while (pathTokens.hasMoreTokens()) {
+			String token = pathTokens.nextToken();
+			if ((new File(token + "/" + executable)).exists())
+				return token + "/" + executable;
+			if ((new File(token + "/" + executable + ".exe")).exists())
+				return token + "/" + executable + ".exe";
+		}
+		// Could not find any executable
+		return null;
+	}
 }
