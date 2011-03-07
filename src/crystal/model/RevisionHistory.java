@@ -43,6 +43,8 @@ public class RevisionHistory {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object o) {
+		if (o == null) 
+			return false;
 		if (o instanceof RevisionHistory){
 			RevisionHistory r = (RevisionHistory) o;
 			Set<String> you = r._changesets.keySet();

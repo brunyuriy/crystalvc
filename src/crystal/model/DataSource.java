@@ -46,6 +46,8 @@ public class DataSource {
 	private String _testCommand = null;
 	
 	private RevisionHistory _history;
+	private RevisionHistory _oldHistory;
+
 
 	// Create a new, enabled source.  
 	public DataSource(String shortName, String cloneString, RepoKind repoKind, boolean hide, String parent) {
@@ -63,15 +65,23 @@ public class DataSource {
 		_hide = hide;
 		setParent(parent);
 		_history = null;
+		_oldHistory = null;
 	}
 	
 	public void setHistory(RevisionHistory history) {
+		_oldHistory = _history;
 		_history = history;
 //		System.out.println(_shortName + " " + _history.size());
 	}
 		
 	public RevisionHistory getHistory() {
 		return _history;
+	}
+	
+	public boolean hasHistoryChanged() {
+		if (_history == null)
+			return true;
+		return (!(_history.equals(_oldHistory)));
 	}
 	
 	public void setRemoteHg(String remoteHg) {

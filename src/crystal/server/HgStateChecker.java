@@ -193,8 +193,9 @@ public class HgStateChecker {
 		Output output = RunIt.execute(hg, logArgs, mine, false);
 		prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput()));
 		
+		// TODO Step 2.5.  If the history has changed, find out if build or test fails.
 		
-		//  Step 3.  If the cloneString is local, we will also get heads and check for UNCHECKPOINTED
+		
 		if ((new File(prefs.getEnvironment().getCloneString())).exists()) {
 			/*
 			 * Check if repo status has non-empty response.  If it does, return UNCHECKPOINTED
