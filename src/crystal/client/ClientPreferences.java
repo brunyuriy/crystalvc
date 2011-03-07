@@ -21,6 +21,7 @@ import org.jdom.input.SAXBuilder;
 import crystal.Constants;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
+import crystal.util.RunIt;
 import crystal.util.XMLTools;
 
 /**
@@ -325,6 +326,8 @@ public class ClientPreferences {
 				refresh = Constants.DEFAULT_REFRESH;
 
 			String hgPath = getValue(rootElement, IPrefXML.HG_PATH);
+			hgPath = RunIt.getExecutable(hgPath);
+			
 			boolean happyHgPath = false;
 			while (!happyHgPath) {
 				try {
@@ -388,10 +391,16 @@ public class ClientPreferences {
 
 				DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind, false, projectParent);
 				myEnvironment.setRemoteHg(projectRemoteHg);
-				if ((compileCommand != null) && (!(compileCommand.trim().isEmpty())))
+				if ((compileCommand != null) && (!(compileCommand.trim().isEmpty()))) {
+					compileCommand = RunIt.getExecutable(compileCommand);
+					assert(compileCommand != null);
 					myEnvironment.setCompileCommand(compileCommand);
-				if ((testCommand != null) && (!(testCommand.trim().isEmpty())))
+				}
+				if ((testCommand != null) && (!(testCommand.trim().isEmpty()))) {
+					testCommand = RunIt.getExecutable(testCommand);
+					assert(testCommand != null);
 					myEnvironment.setTestCommand(testCommand);
+				}
 
 				_log.trace("Loaded project: " + myEnvironment);
 
