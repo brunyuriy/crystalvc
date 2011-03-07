@@ -216,20 +216,19 @@ public class RunIt {
 			return executable;
 		
 		String path = System.getenv("PATH");
-		StringTokenizer pathTokens;
-		if ((path.indexOf(";") > -1) && (path.indexOf(":") > -1))  
-			// windows path
-			pathTokens = new StringTokenizer(path, ";");
-		else
-			// linux path
-			pathTokens = new StringTokenizer(path, ":");
-	
+		StringTokenizer pathTokens = new StringTokenizer(path, File.pathSeparator);	
 		while (pathTokens.hasMoreTokens()) {
 			String token = pathTokens.nextToken();
-			if ((new File(token + File.separator + executable)).exists())
-				return token + File.separator + executable;
-			if ((new File(token + File.separator + executable + ".exe")).exists())
+			if ((new File(token + File.separator + executable)).exists()) {
+				if (!(token.endsWith(File.separator)))
+					token += File.separator;
+				return token + executable;
+			}
+			if ((new File(token + File.separator + executable + ".exe")).exists()) {
+				if (!(token.endsWith(File.separator)))
+					token += File.separator;	
 				return token + File.separator + executable + ".exe";
+			}
 		}
 		// Could not find any executable
 		return null;
