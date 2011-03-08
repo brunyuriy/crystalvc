@@ -22,9 +22,11 @@ background-color:#FFFF99
 <!-- start toc.  do not edit; run html-update-toc instead -->
     <ul>
       <li><a href="#motivation">Goal: Increased developer awareness of conflicts</a></li>
-      <li><a href="#Requirements">Requirements</a></li>
-      <li><a href="#download">How to run Crystal</a></li>
-      <li><a href="#screen-shot">Crystal screen shot</a>
+      <li><a href="#run">How to run Crystal</a>
+        <ul>
+          <li><a href="#installation">Download and installation</a></li>
+        </ul></li>
+      <li><a href="#Crystal-window">What Crystal displays</a>
         <ul>
           <li><a href="#local-state">Local state</a></li>
           <li><a href="#relationship">Relationship</a></li>
@@ -47,16 +49,19 @@ background-color:#FFFF99
 <h2 id="motivation">Goal: Increased developer awareness of conflicts</h2>
 
 <p>
-The Crystal tool increases developer awareness of potential version control conflicts.  For example, it informs a developer of the answer to the question, &#8220;Might my changes conflict with others' changes?&#8221;
+When two or more developers collaborate, it is possible for their
+independent changes to conflict &mdash; either <em>syntactically</em> as a version
+control conflict or </em>behaviorally</em> if the changes merge cleanly but have
+unintended interactions.
 </p>
 
 <p>
-Crystal keeps an eye on all the participating developers' repositories.  It informs each developer when it is safe to push her changes, when she has fallen behind and could pull changes from others or a central repository, and when changes other developers have made will cause a syntactic (or, soon to be implemented, behavioral) conflict.
+The Crystal tool informs each developer of the answer to the question, &#8220;Might my changes conflict with others' changes?&#8221;
 </p>
-<ul>
-<li>If conflicts occur, Crystal informs developers early, so they may discuss and resolve these conflicts while the causes are fresh in their minds.  Long-established conflicts can be much harder to resolve.</li>
-<li>If changes are made (locally or remotely) without conflicts, Crystal increases developers' confidence that the changes will not cause problems for the team.</li>
-</ul>
+
+<p>
+Crystal monitors multiple developers' repositories.  It informs each developer when it is safe to push her changes, when she has fallen behind and could pull changes from others or a central repository, and when changes other developers have made will cause a syntactic or behavioral conflict.
+</p>
 
 <p>
 Crystal examines commits.  It does not examine your working copy &mdash;
@@ -65,58 +70,96 @@ to be coherent and desired units of work, for which notification about
 (non-)conflicts is of value.
 </p>
 
+<ul>
+<li>If conflicts occur, Crystal informs developers early, so they may resolve these conflicts quickly.  Long-established conflicts can be much harder to resolve.</li>
+<li>If changes are made without conflicts, Crystal gives developers
+  confidence to merge their changes without fearing unanticipated side effects.</li>
+</ul>
+
 <p>
-The Crystal client is now in beta and is available for <a href="#download">download</a>.
+The Crystal client is available for <a href="#installation">download</a>.
 </p>
 
-<h2 id="Requirements">Requirements</h2>
 
+<h2 id="run">How to run Crystal</h2>
+
+<p>
+To run Crystal, execute from the command line:
+</p>
+<pre>
+  java -jar crystal.jar</pre>
+<p>
+Crystal runs as an icon in your task bar.
+Click on the icon to see the <a href="#Crystal-window">full client</a> and more options.
+</p>
+
+
+<h3 id="installation">Download and installation</h2>
+
+<p>
+Crystal has the following <b>requirements</b>:
+</p>
 <ul>
 <li> <a href="http://java.sun.com/javase/downloads/index.jsp">JRE (Java Runtime Environment).</a></li>
 <li> <a href="http://mercurial.selenic.com">Mercurial</a>, version <b>1.6 or later</b>. (Crystal only supports Mercurial, for now.)</li>
-<li> The fetch mercurial extension must be enabled.  To do this, add the following text to your hg configuration file: <tt>~/.hgrc</tt> on Linux, or <tt>mercurial.ini</tt> on Windows.  (There is nothing after the "<tt>=</tt>" in "<tt>fetch=</tt>".)
+<li> Enable the fetch extension for Mercurial.  To do this, add the following text to your hg configuration file: <tt>~/.hgrc</tt> on Linux, or <tt>mercurial.ini</tt> on Windows.  (There is nothing after the "<tt>=</tt>" in "<tt>fetch=</tt>".)
 <pre>
 [extensions]
 fetch=
 </pre></li>
-<li> The more of your co-workers' repositories you have read access to, the
+<li> The more of your co-workers' repositories <a href="#access-to-remote-repos">you have read access to</a>, the
   more useful Crystal will be.  However, Crystal can be useful even if you
   only have access to your repository's parent.</li>
 </ul>
 
-
-<h2 id="download">How to run Crystal</h2>
-
+<p>
+To <b>install</b> Crystal:
+</p>
 <ol>
-<li> Download <a href="crystal.jar">crystal.jar</a>. (Current version is 0.1.20110307.  To learn the version of an executable, run <tt>java -jar crystal.jar --version</tt> or select the <tt>about</tt> menu in the GUI.)</li>
-<li> Run:  <tt>java -jar crystal.jar</tt></li>
-<li> The tool will complain that your configuration file is invalid and
+<li> Download <a href="crystal.jar">crystal.jar</a>.<br/> (The current version is 0.1.20110307.  To learn the version of an executable, run <tt>java -jar crystal.jar --version</tt> or select the <tt>about</tt> menu in the GUI.)</li>
+<li> Run Crystal: <tt>java -jar crystal.jar</tt>
+<li> The first time that you run Crystal, it will complain that your configuration file is invalid and
   give you instructions on how to fix it.  You can do so either via a GUI
   that creates the configuration file for you, or by editing the
   configuration file directly.  See below for the
   <a href="#Configuration_File_Format">configuration file format</a>.</li>
-<li> Restart Crystal.  Crystal will run as an icon in your task bar.  Click on the icon to see the full client and more options.</li>
+<li> Restart Crystal.  </li>
 </ol>
 
-<h2 id="screen-shot">Crystal screen shot</h2>
+<h2 id="installation">
+
+
+
+<ul>
+</ul>
+
+
+
+<h2 id="Crystal-window">What Crystal displays</h2>
 
 <p>
-Crystal displays four types of information: local state, relationship, possible action, and guidance.  
+This is a screen shot of the main Crystal window.  <!-- TODO: It shows ... -->
 </p>
 
 <p>
 <img src="CrystalScreenShot.png" alt="A screen shot of the Crystal tool."></img>
 </p>
 
+<p>
+Crystal displays four types of information: local state, relationship, possible action, and guidance.  
+</p>
+
 <h3 id="local-state">Local state</h3>
 
 <p>
-The working copy can be in one of three states, shown below the project name: 
+The "local state", shown below the project name, describes the working
+copy.
+It shows a command that can be run on the working copy.
 </p>
 <ol>
-<li> UNCHECKPOINTED (denoted as <tt>hg commit</tt>)</li>
-<li> MUST RESOLVE (denoted as <tt>hg fetch</tt>)</li>
-<li> ALL CLEAR (denoted as a blank)</li>
+<li> If there are uncommitted local changes, it shows <tt>hg commit</tt></li>
+<li> If there are unresolved conflicts, it shows <tt>hg fetch</tt></li>
+<li> Otherwise, it is blank</li>
 </ol>
 
 <h3 id="relationship">Relationship</h3>
@@ -148,7 +191,7 @@ There are five possible relationships (plus two descriptors) between the develop
   </tr>
   <tr>
     <td align="center"><img src="mergeconflict.png" height="48" alt="red merge"></img></td>
-    <td align="left">CONFICT: Each of the two repositories has commits not present in the other one and merging them will result in a textual conflict. </td>
+    <td align="left">CONFICT: Each of the two repositories has commits not present in the other one, and merging them will result in a textual conflict. </td>
   </tr>
   <tr>
     <td align="center"><img src="clock.png" height="48" alt="clock"></img></td>
@@ -175,6 +218,12 @@ There are five possible relationships (plus two descriptors) between the develop
   -->
 </table>
 
+<p>
+In the task bar, Crystal displays the most severe relationship icon that appears
+anywhere in the full window.
+</p>
+
+
 <h3 id="action">Action</h3>
 
 <p>
@@ -187,22 +236,23 @@ Holding the mouse over an icon displays a tool tip.  At the top of the tool tip,
 There are five types of guidance Crystal displays:
 </p>
 <ol>
-<li> Committer: the list of committers relevant to the relationship.  Crystal displays this information in the tool tip.</li>
-<li> When: whether or not the developer can act right now to affect this relationship.  The relationship icon is solid if the developer can act now, and hollow if the developer cannot act until later.</li>
-<li> Capable: whether or not the developer must, might, or cannot act to affect the relationship.  The relationship icon is solid if the developer must be the one to take action, solid but unsaturated if the developer might be the one to take action, and hollow if the developer cannot be the one to take action.</li>
+<li> Committer: the list of committers <!-- TODO: this phrase is not clear: -->relevant to the relationship.  Crystal displays this information in the tool tip.</li>
+<li> When: whether or not the developer can act right now to affect this
+  relationship.  The relationship icon is solid if the developer can act
+  now, and hollow if the developer cannot act until later, after some other
+  developer has performed an action.</li>
+<li> <!-- TODO: Is this bullet still true? --> Capable: whether or not the developer must, might, or cannot act to affect the relationship.  The relationship icon is solid if the developer must be the one to take action, solid but unsaturated if the developer might be the one to take action, and hollow if the developer cannot be the one to take action.</li>
 <li> Consequences: the new relationship after the developer executes the available action.  Crystal displays this information in the tool tip.</li>
 <li> Ease: Whether another developer may have an easier time affecting this relationship.Crystal displays this information in the tool tip.</li>
 </ol>
 
-<p>
-In the task bar, Crystal displays the most severe icon that appears
-anywhere in the full window.
-</p>
 
 
 <h2 id="Configuration_File_Format">Configuration file format</h2>
 
-<p>The Crystal configuration file is an XML file that describes the locations of the scratch space and the <tt>hg</tt> executable, as well as contains information on the repositories crystal monitors.
+<p>The Crystal configuration file is an XML file that describes the
+  locations of the scratch space, the <tt>hg</tt> executable, and the
+  repositories Crystal monitors.
 On a Unix-like environment, it appears in <tt>~/.conflictClient.xml</tt>.
 On a Windows environment, it appears in the user's home directory , e.g., <tt>C:\Users\$USER\.conflictClient.xml</tt>.
 </p>
@@ -214,11 +264,13 @@ Here is an example valid configuration file:
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;ccConfig tempDirectory=&quot;C:/temp/conflictClient/&quot; refresh=&quot;60&quot;&gt;
-  &lt;project Kind=&quot;HG&quot; ShortName=&quot;MyFirstProject&quot; Clone=&quot;C:/projects/MyLocalFirstProjectRepo/&quot; parent=&quot;MASTER&quot;&gt;
+  &lt;project ShortName=&quot;MyFirstProject&quot; Kind=&quot;HG&quot; Clone=&quot;C:/projects/MyLocalFirstProjectRepo/&quot;
+           parent=&quot;MASTER&quot;&gt;
     &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
     &lt;source ShortName=&quot;Friend&quot; Clone=&quot;ssh://user@host/path/to/friend/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
   &lt;/project&gt;
-  &lt;project Kind=&quot;HG&quot; ShortName=&quot;MySecondProject&quot; Clone=&quot;C:/projects/MyLocalSecondProjectRepo/&quot; parent=&quot;MASTER&quot; compile=&quot;make&quot; test=&quot;make test&quot;&gt;
+  &lt;project ShortName=&quot;MySecondProject&quot; Kind=&quot;HG&quot; Clone=&quot;C:/projects/MyLocalSecondProjectRepo/&quot;
+           parent=&quot;MASTER&quot; compile=&quot;make&quot; test=&quot;make test&quot;&gt;
     &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/socond/project/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
     &lt;source ShortName=&quot;Friend&quot; Clone=&quot;https://user@host/path/to/friend/second/repo&quot; commonParent=&quot;MASTER&quot; /&gt;
   &lt;/project&gt;
@@ -226,17 +278,80 @@ Here is an example valid configuration file:
 </pre>
 
 <p>
-At the root level, there is a single XML element: <tt>ccConfig</tt>.  This element has two attributes: <tt>tempDirectory</tt> and <tt>refresh</tt>.  These attributes specify the path to the scratch space and how often, in seconds, Crystal should attempt to refresh itself.
+A configuration file consists of a single XML element: <tt>ccConfig</tt>.
+This element has two attributes: <tt>tempDirectory</tt> and (optionally) <tt>refresh</tt>.  These attributes specify the path to the scratch space and how often, in seconds, Crystal should attempt to refresh itself.
+<tt>ccConfig</tt> has a <tt>project</tt> child for each project that
+Crystal monitors.
 </p>
 
 <p>
-For each project you wish Crystal to track, <tt>ccConfig</tt> will have a <tt>project</tt> child with three required attributes: <tt>Kind</tt>, <tt>ShortName</tt>, and <tt>Clone</tt>, and four optional attributes: <tt>parent</tt>, <tt>RemoteHG</tt>, <tt>compile</tt>, and <tt>test</tt>.  The <tt>Kind</tt> element describes the kind of the repository: HG for mercurial or GIT for git, although, for now, Crystal only supports HG.  The <tt>ShortName</tt> element is the name of the project you want Crystal to display (on the left side on the screen shot above).  The <tt>Clone</tt> element is the path to your local repository; you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.  The <tt>refresh</tt> element is the period, in seconds, with which you want Crystal to refresh its results.  The optional <tt>parent</tt> element is the shortName of the repository that is your repository's parent; that is, the default place you push to and pull from.  Crystal needs to know the parent to determine your possible actions; if you do not supply the <tt>parent</tt> attribute, Crystal will not report the action information.  The optional <tt>RemoteHG</tt> element is only necessary if the <tt>--remotecmd</tt> option is necessary to specify the path to <tt>hg</tt> on the server where your local repository resides; the value of this element is passed directly to the <hg> command with the <tt>--remotecmd</tt> option.  Finally, the optional <tt>compile</tt> and <tt>test</tt> attributes specify what command to execute for this project to build and to run the tests, respectively (e.g., the <tt>compile</tt> attribute may be set to <tt>"make"</tt> and the <tt>test</tt> attribute may be set to <tt>"make test"</tt>).  
+The <tt>project</tt> XML element has 7 attributes; the first three are
+required and the last four are
+optional.
+</p>
+<ul>
+<li>
+<tt>ShortName</tt>: the name of the project that Crystal will display on
+the left side on the <a href="#Crystal-window">main window</a>
+</li>
+<li>
+<tt>Kind</tt>: the DVCS; currently, must be HG <!-- eventually:  HG for mercurial or GIT for git -->
+</li>
+<li>
+<tt>Clone</tt>:  the path to your local repository.  This may be any
+address that is a valid argument to the <tt>hg clone</tt> command.
+</li>
+<li>
+<tt>parent</tt>:  the shortName of the repository that is your repository's
+parent; that is, the default place you push to and pull from.  Crystal
+needs to know the parent to determine your possible actions; if you do not
+supply the <tt>parent</tt> attribute, Crystal will not report the <a href="#action">action
+information</a>.
+</li>
+<li>
+<tt>RemoteHG</tt>:  necessary only if the <tt>--remotecmd</tt> option is necessary to specify the path to <tt>hg</tt> on the server where your local repository resides; the value of this element is passed directly to the <hg> command with the <tt>--remotecmd</tt> option.
+</li>
+<li>
+<tt>compile</tt>:  a command to execute to compile the project, such as <tt>"make"</tt>
+</li>
+<li>
+<tt>test</tt>
+<tt>test</tt>:  a command to execute to run the project's tests, such as <tt>"make test"</tt>
+</li>
+</ul>
 
+<p>
+The <tt>project</tt> element has a <tt>source</tt> child
+for each remote repository that Crystal should compare to your repository.
 </p>
 
 <p>
-Finally, for each repository you wish Crystal to compare to your repository, the <tt>project</tt> element will have a <tt>source</tt> child with two required attributes: <tt>ShortName</tt> and <tt>Clone</tt>, and two optional attributes: <tt>commonParent</tt> and <tt>RemoteHG</tt>.  The <tt>ShortName</tt> element is the name of the repository you want Crystal to display (above the icons on the screen shot above).  The <tt>Clone</tt> element is the path to this repository; again, you can put any address that can legally go after the <tt>&quot;hg clone&quot;</tt> command.  The optional <tt>commonParent</tt> element is the shortName of the repository that is the common parent between your repository and the repository this <tt>source</tt> element represents.  Most often, the common parent is the master repository.  Crystal needs to know the common parent to determine the guidance information; if you do not supply the <tt>commonParent</tt> attribute, Crystal will not report any guidance and all relationship icons will appear solid.  Finally, the optional <tt>RemoteHG</tt> element is only necessary if the <tt>--remotecmd</tt> option is necessary to specify the path to <tt>hg</tt> on the server where the repository this <tt>source</tt> element represents resides; the value of this element is passed directly to the <hg> command with the <tt>--remotecmd</tt> option.  
+The <tt>source</tt> element has four attributes.  The first two are
+required and the last two are optional.
 </p>
+<ul>
+<li>
+<tt>ShortName</tt>:  the name of the repository that Crystal to displays
+above the relationship icon in the <a href="#Crystal-window">main window</a>.
+</li>
+<li>
+<tt>Clone</tt>:  the path to this repository.  This can be any address that
+is a valid argument to <tt>hg clone</tt>.
+</li>
+<li>
+<tt>commonParent</tt>: the shortName of the repository that is the common
+parent between your repository and the repository this <tt>source</tt>
+element represents.  Most often, the common parent is the master
+repository.  Crystal needs to know the common parent to determine the
+guidance information; if you do not supply the <tt>commonParent</tt>
+attribute, Crystal will not report any <a href="#guidance">guidance</a> and
+all relationship icons will appear solid.
+</li>
+<li>
+<tt>RemoteHG</tt>:  only necessary if the <tt>--remotecmd</tt> option is necessary to specify the path to <tt>hg</tt> on the server where the repository this <tt>source</tt> element represents resides; the value of this element is passed directly to the <hg> command with the <tt>--remotecmd</tt> option.  
+</li>
+</ul>
+
 
 <h2 id="access-to-remote-repos">Making your repository available to your co-workers</h2>
 
