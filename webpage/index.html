@@ -25,6 +25,7 @@ background-color:#FFFF99
       <li><a href="#run">How to run Crystal</a>
         <ul>
           <li><a href="#installation">Download and installation</a></li>
+          <li><a href="#password-request">Preventing Crystal from asking for a password</a></li>
         </ul></li>
       <li><a href="#Crystal-window">What Crystal displays</a>
         <ul>
@@ -38,7 +39,6 @@ background-color:#FFFF99
         <ul>
           <li><a href="#copying-repository">Making a copy of your repository</a></li>
         </ul></li>
-      <li><a href="#password-request">Why does Crystal keep asking me for a password?</a></li>
       <li><a href="#log-file">Log files</a></li>
       <li><a href="#Acknowledgements">Acknowledgements</a></li>
       <li><a href="#Contacts">Contacts</a></li>
@@ -126,12 +126,25 @@ To <b>install</b> Crystal:
 <li> Restart Crystal.  </li>
 </ol>
 
-<h2 id="installation">
+<h3 id="password-request">Preventing Crystal from asking for a password</h2>
 
+<p>
+If accessing the remote repositories in your configuration file prompts you
+for a password, then Crystal will forward that prompt to you.  Crystal
+accesses these repositories frequently &mdash; by default, every 10 minutes
+for each repository.
+</p>
 
-
+<p>
+Depending on how you access your repositories, there are ways to get around entering your password every time:  
+</p>
 <ul>
-</ul>
+<li>If you use ssh to access the repositories, you can <a href="http://mah.everybody.org/docs/ssh">set up ssh agent</a>.</li>  
+<li>If you use http or https to access the repositories, you can
+  <a href="http://mercurial.selenic.com/wiki/FAQ#FAQ.2BAC8-CommonProblems.How_can_I_store_my_HTTP_login_once_and_for_all_.3F">enter
+    the passwords</a> in plain text in your mercurial configuration file.</li>
+</ul>  
+
 
 
 
@@ -444,19 +457,6 @@ different computer, in which case it looks like
 <tt>barb.cs.washington.edu:/homes/gws/mernst/www/crystal-repositories/...</tt>
 </p>
 
-<h2 id="password-request">Why does Crystal keep asking me for a password?</h2>
-
-<p>
-Crystal creates local clones of the repositories you specify in your configuration file.  If accessing those repositories (e.g., if running <tt>hg clone ...</tt> or <tt>hg pull</tt>) prompts you for a password, then Crystal will forward that prompt to you.  Because Crystal performs a pull every time it computes its relationships, entering the password may become burdensome.  
-</p>
-
-<p>
-Depending on how you access your repositories, there are ways to get around entering your password every time:  
-</p>
-<ul>
-<li>If you are using ssh to access the repositories, you can set up ssh agent. See these <a href="http://mah.everybody.org/docs/ssh">instructions</a> for how to set up ssh agent.</li>  
-<li>If you are using http or https to access the repositories, you can enter the passwords within your mercurial configuration files.  See these <a href="http://mercurial.selenic.com/wiki/FAQ#FAQ.2BAC8-CommonProblems.How_can_I_store_my_HTTP_login_once_and_for_all_.3F">instructions</a> for setting up http/https passwords; however, beware that they require storing your passwords in plain text within the configuration files.</li>
-</ul>  
 
 <h2 id="log-file">Log files</h2>
 
