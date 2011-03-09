@@ -211,23 +211,36 @@ public class RunIt {
 		return execute(executable, argumentsList.toArray(new String[0]), path, true);
 	}
 	
+	/**
+	 * @requires the executable is the first part of the executable parameter and has no spaces in it
+	 * @param executable: a String that can be run from the command line
+	 * @return a String that runs the same command as executable, but that has an absolute path to the executable.  
+	 * If there is no such executable in the system PATH, returns null
+	 */
 	public static String getExecutable(String executable) {
 		if ((new File(executable)).exists())
+			return executable;
+
+		int firstSpaceIndex = executable.indexOf(" ");
+		String execPart = executable.substring(0, firstSpaceIndex);
+		String arguments = executable.substring(firstSpaceIndex);
+		
+		if ((new File(execPart)).exists())
 			return executable;
 		
 		String path = System.getenv("PATH");
 		StringTokenizer pathTokens = new StringTokenizer(path, File.pathSeparator);	
 		while (pathTokens.hasMoreTokens()) {
 			String token = pathTokens.nextToken();
-			if ((new File(token + File.separator + executable)).exists()) {
+			if ((new File(token + File.separator + execPart)).exists()) {
 				if (!(token.endsWith(File.separator)))
 					token += File.separator;
 				return token + executable;
 			}
-			if ((new File(token + File.separator + executable + ".exe")).exists()) {
+			if ((new File(token + File.separator + execPart + ".exe")).exists()) {
 				if (!(token.endsWith(File.separator)))
 					token += File.separator;	
-				return token + File.separator + executable + ".exe";
+				return token + File.separator + execPart + ".exe" + arguments;
 			}
 		}
 		// Could not find any executable
