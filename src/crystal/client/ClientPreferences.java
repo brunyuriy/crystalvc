@@ -394,14 +394,18 @@ public class ClientPreferences {
 				DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind, false, projectParent);
 				myEnvironment.setRemoteHg(projectRemoteHg);
 				if ((compileCommand != null) && (!(compileCommand.trim().isEmpty()))) {
-					compileCommand = RunIt.getExecutable(compileCommand);
-					assert(compileCommand != null);
-					myEnvironment.setCompileCommand(compileCommand);
+					String compileCommandExecutable = RunIt.getExecutable(compileCommand);
+					if (compileCommandExecutable == null) {
+						throw new Error("No executable found for " + compileCommand);
+					}
+					myEnvironment.setCompileCommand(compileCommandExecutable);
 				}
 				if ((testCommand != null) && (!(testCommand.trim().isEmpty()))) {
-					testCommand = RunIt.getExecutable(testCommand);
-					assert(testCommand != null);
-					myEnvironment.setTestCommand(testCommand);
+					String testCommandExecutable = RunIt.getExecutable(testCommand);
+					if (testCommandExecutable == null) {
+						throw new Error("No executable found for " + testCommand);
+					}
+					myEnvironment.setTestCommand(testCommandExecutable);
 				}
 
 				_log.trace("Loaded project: " + myEnvironment);
