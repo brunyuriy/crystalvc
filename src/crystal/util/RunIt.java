@@ -14,7 +14,7 @@ import crystal.Constants;
 import crystal.client.ClientPreferences;
 
 /**
- * The main runner. This performs system commands and captures their output.
+ * RunIt executes system commands, captures their outputs, performs file system operations, and finds paths.
  * 
  * @author rtholmes
  * @author brun
@@ -26,7 +26,9 @@ public class RunIt {
 	public static Logger _log = Logger.getLogger(ClientPreferences.class);
 	
 	/*
-	 * Represents the output of a run command.  Consists of two strings, output and error.
+	 * Represents the output of a run command.  Consists of:
+	 * two strings: output and error,
+	 * one int    : exit status.
 	 */
 	public static class Output {
 		String _output;
@@ -180,6 +182,11 @@ public class RunIt {
 		return new Output(goodOutput, errOutput, exitStatus);
 	}
 
+	/**
+	 * Deletes the File pointed to by path.  
+	 * @param path: the File to delete
+	 * @return true iff path is successfully deleted
+	 */
 	static public boolean deleteDirectory(File path) {
 		_log.info("RunIt::deleteDirectory(..) - deleting " + path);
 		if (path.exists()) {
@@ -200,6 +207,13 @@ public class RunIt {
 		return answer;
 	}
 	
+	/**
+	 * Parses out the executable and the arguments from the command and executes the command.  
+	 * @param command: the command to run
+	 * @param path: the path in which to run the command
+	 * @return: the Output of the command's execution
+	 * @throws IOException
+	 */
 	public static Output tryCommand(String command, String path) throws IOException {
 		StringTokenizer tokens = new StringTokenizer(command);
 		String executable;
