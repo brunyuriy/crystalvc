@@ -310,7 +310,7 @@ public class HgStateChecker {
 			if (output.getOutput().indexOf("(branch merge, don't forget to commit)") >= 0) {
 				// try to compile
 				String compileCommand = prefs.getEnvironment().getCompileCommand();
-				System.out.println(compileCommand);
+				//System.out.println(compileCommand);
 				if (compileCommand != null) {
 					Output compileOutput = RunIt.tryCommand(compileCommand, tempWorkPath + tempMyName);
 					if (compileOutput.getStatus() != 0)
