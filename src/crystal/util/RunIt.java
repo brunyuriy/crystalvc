@@ -226,18 +226,28 @@ public class RunIt {
 	}
 	
 	/**
-	 * @requires the executable is the first part of the executable parameter and has no spaces in it
+	 * @requires the executable is the first part of the executable parameter 
+	 *           and executable has no spaces in it 
+	 *           and arguments have no spaces in them
 	 * @param executable: a String that can be run from the command line
 	 * @return a String that runs the same command as executable, but that has an absolute path to the executable.  
-	 * If there is no such executable in the system PATH, returns null
+	 * 		   If there is no such executable in the system PATH, returns null
 	 */
 	public static String getExecutable(String executable) {
+		if (executable == null)
+			return null;
+		
 		if ((new File(executable)).exists())
 			return executable;
 
-		int firstSpaceIndex = executable.indexOf(" ");
-		String execPart = executable.substring(0, firstSpaceIndex);
-		String arguments = executable.substring(firstSpaceIndex);
+		StringTokenizer args = new StringTokenizer(executable);
+		
+		if (!(args.hasMoreTokens()))
+			return null;
+		String execPart = args.nextToken();
+		String arguments = "";
+		while (args.hasMoreTokens()) 
+			arguments += " " + args.nextToken();
 		
 		if ((new File(execPart)).exists())
 			return executable;
