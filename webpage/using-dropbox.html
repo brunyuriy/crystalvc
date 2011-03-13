@@ -41,7 +41,8 @@ application.
 
 <p>
 We will call the Dropbox folder <em>MY_DROPBOX_FOLDER</em>.
-It defaults to <tt>~/Dropbox/</tt>, under Unix-like environments.
+It defaults to <tt>~/Dropbox/</tt> under Unix-like environments, and to
+<tt>My Dropbox</tt> under Windows.
 </p>
 
 
@@ -120,13 +121,24 @@ that for all your work.
 
   <li>
 If you use a Unix-like system (Linux/Mac), then you can clone the
-repository from the master to wherever you want.  Create a symbolic link
+repository from the master to wherever you want.  Then, create a symbolic
+link to the repository
 to that location in MY_DROPBOX_FOLDER/PROJECT/jsmith.  For example:
 <pre>
-  ln -s PROJECT_REPO MY_DROPBOX_FOLDER/PROJECT/jsmith
+  ln -s <em>WORKING_COPY</em>/.hg ~/Dropbox/<em>PROJECT</em>/jsmith/<em>PROJECT</em>/.hg
 </pre>
-where PROJECT_REPO is really your working copy:  the directory that
-contains a <tt>.hg/</tt> subdirectory.
+where WORKING_COPY is the "working copy" or "repository root" &mdash the
+directory that contains a <tt>.hg/</tt> subdirectory, which is the
+repository itself.
+<!--
+It's also possible to just link the whole working directory, but then
+Dropbox will do extra work for every change to a file, such as when compiling
+your source code.  So, linking just to the repository is better.
+
+The extra level of indirection is for consistency with coworkers who clone
+directly into the Mercurial repository.  It lets them have a logical name for
+their working copy, rather than their username.
+-->
 
   </li>
 </ul>
@@ -134,7 +146,7 @@ contains a <tt>.hg/</tt> subdirectory.
 </li>
 
 <li>
-Tell your collaborators about the new MY_DROPBOX_FOLDER/PROJECT/jsmith/PROJECT_REPO
+Tell your collaborators about the new MY_DROPBOX_FOLDER/PROJECT/jsmith/PROJECT
 folder, so that they can add it to their <a href="#using-crystal">Crystal
     configuration file</a>.
 </li>
