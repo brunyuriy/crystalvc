@@ -10,38 +10,53 @@ import crystal.server.HgLogParser;
 import crystal.server.HgLogParser.Checkpoint;
 import crystal.util.SetOperations;
 
-
+/**
+ * A RevisionHistory represents the linear (log) history of a repository
+ * 
+ * @author brun
+ */
 public class RevisionHistory {
 	
+	// represents a WHEN guidance
 	public enum When {
 		NOW, LATER, NOTHING
 	}
-	
+
+	// represents a CAPABLE guidance
 	public enum Capable {
 		MUST, MIGHT, CANNOT, NOTHING
 	}
 	
+	// represents an EASE guidance
 	public enum Ease {
 		ME, YOU
 	}
 	
+	// represents an action
 	public enum Action {
 		CHECKPOINT, RESOLVE, SYNC, PUBLISH, UNKNOWN, NOTHING
 	}
 	
+	// a Map of changeset hashcodes to Checkpoint objects (each Checkpoint represents a changeset)
 	private HashMap<String, Checkpoint> _changesets;
 	
+	/**
+	 * Parses a log and creates a new RevisionHistory
+	 * @param log: the log
+	 * Current only works for HG
+	 */
 	public RevisionHistory(String log) {
 		_changesets = HgLogParser.parseLog(log);
 	}
 	
+	/**
+	 * @returns the number of changesets in the log
+	 */
 	public int size() {
 		return _changesets.keySet().size();
 	}
 	
-	/*
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o == null) 
 			return false;
@@ -55,9 +70,7 @@ public class RevisionHistory {
 		return false;
 	}
 	
-	/*
-	 * @see java.lang.Object#hashCode()
-	 */
+	@Override
 	public int hashCode() {
 		return _changesets.hashCode();
 	}
@@ -79,7 +92,12 @@ public class RevisionHistory {
 		return r.superHistory(this);
 	}
 	
-	
+
+	/**
+	 * Computes the relevant committers to the differences between this and you histories
+	 * @param you: the "other" history
+	 * @return the relevant committers to the differences between this and you histories
+	 */
 	public String getCommitters (RevisionHistory you) {
 		Set<String> changes = new HashSet<String>();
 		changes = SetOperations.xor(_changesets.keySet(), you._changesets.keySet());
@@ -95,18 +113,44 @@ public class RevisionHistory {
 		return GuidanceChecker.getCommitters(checkpoints);
 	}
 	
+	/**
+	 * Computes the WHEN guidance
+	 * @param you: the "other" history
+	 * @param parent: the common parent's history
+	 * @param r: this' relationship with you
+	 * @return the WHEN guidance
+	 */
 	public When getWhen(RevisionHistory you, RevisionHistory parent, Relationship r) {
 		return GuidanceChecker.getWhen(_changesets.keySet(), you._changesets.keySet(), parent._changesets.keySet(), r);		
 	}
 	
+	/**
+	 * Computes the CONSEQUENCES guidance
+	 * @param you: the "other" history
+	 * @param parent: the common parent's history
+	 * @param r: this' relationship with you
+	 * @return the CONSEQUENCES guidance
+	 */
 	public Relationship getConsequences(RevisionHistory you, RevisionHistory parent, Relationship r) {
 		return GuidanceChecker.getConsequences(_changesets.keySet(), you._changesets.keySet(), parent._changesets.keySet(), r);		
 	}
 	
+	/**
+	 * Computes the CAPABLE guidance
+	 * @param you: the "other" history
+	 * @param parentparent: the common parent's history
+	 * @param r: this' relationship with you
+	 * @param isParent: true iff this is the common parent
+	 * @return the CAPABLE guidance
+	 */
 	public Capable getCapable(RevisionHistory you, RevisionHistory parent, Relationship r, boolean isParent) {
 		return GuidanceChecker.getCapable(_changesets.keySet(), you._changesets.keySet(), parent._changesets.keySet(), r, isParent);
 	}
 	
+	/**
+	 * Computes the EASE guidance
+	 * @return the EASE guidance
+	 */
 	public Ease getEase() {
 		return GuidanceChecker.getEase();
 	}
