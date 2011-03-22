@@ -16,20 +16,11 @@ import crystal.model.RevisionHistory.Ease;
 import crystal.model.RevisionHistory.When;
 
 /**
- * Represents a conflict detection question.
+ * A Relationship represents the relatiionship between two repositories.  
  * 
  * @author brun
- * 
  */
-
-public class Relationship implements Result{
-
-	/**
-	 * Represents a conflict detection answer.
-	 * 
-	 * @author brun
-	 * 
-	 */
+public class Relationship implements Result {
 
 	public static String SAME = "SAME";
 	public static String AHEAD = "AHEAD";
@@ -41,13 +32,19 @@ public class Relationship implements Result{
 	public static String PENDING = "PENDING";
 	public static String ERROR = "ERROR";
 
-
+	// path to the images
 	private static String PATH = "/crystal/client/images/";
+	
+	// path suffix for 32X32 size images
 	private static String SIZE32 = "32X32/";
+	// path suffix for 32X32 size images
 	private static String SIZE16 = "16X16/";
 
+	// path suffix for must icons
 	private static String CAPABLE_MUST = "must/";
+	// path suffix for might icons
 	private static String CAPABLE_MIGHT = "might/";
+	// path suffix for cannot icons
 	private static String CAPABLE_CANNOT = "cannot/";
 
 //	private static String WHEN_NOW = "must/";
@@ -66,24 +63,39 @@ public class Relationship implements Result{
 		ICON_ADDRESSES.put(ERROR, "error.png");
 	}
 
-	//		private final ImageIcon _icon;
-	//		private final Image _image;
+	// a String representation of this relationship
 	private final String _name;	
-//	private final DataSource _source;
-	
+
+	// the icon for this relationship (32X32, to be shown by a Crystal window)
 	private ImageIcon _icon;
+
+	// the image for this relationship (16X16, to be shown by a task bar)
 	private Image _image;
 	
+	// a list of committers relevant to this relationship
 	private String _committers;
+	// the WHEN guidance
 	private When _when;
+	// the CAPABLE guidance
 	private Capable _capable;
+	// the EASE guidance
 	private Ease _ease;
+	// the CONSEQUENCES guidance
 	private Relationship _consequences;
 	
+	// the action that can be taken for this relationship
 	private Action _action;
 
+	// is the relationship ready to be displayed?
 	private boolean _ready;
 
+	/**
+	 * Creates a new Relationship
+	 * 
+	 * @param name: the String representation of the relationship
+	 * @param icon: the icon to display (if null then it'll either be set to pending, error (if appropriate), or computed later)
+	 * @param image: the image to display (if null then it'll either be set to pending, error (if appropriate), or computed later)
+	 */
 	public Relationship(String name, ImageIcon icon, Image image) {
 		_name = name.toUpperCase();
 		if (ICON_ADDRESSES.get(_name) == null)
@@ -104,22 +116,31 @@ public class Relationship implements Result{
 			_image = new ImageIcon(Constants.class.getResource(PATH + SIZE16 + CAPABLE_MUST + ICON_ADDRESSES.get(PENDING))).getImage();
 	}
 
+	/**
+	 * @return the String representation of this relationship (the name)
+	 */
 	public String getName() {
 		return _name;
 	}
 
+	/**
+	 * Set this relationship ready to be displayed and compute its icon and image.  
+	 */
 	public void setReady() {
 		_ready = true;
 		_icon = computeIcon();
 		_image = computeImage();
 	}
 
+	/**
+	 * @return true iff this relationship is ready to be displayed
+	 */
 	public boolean isReady() {
 		return _ready;
 	}
 
 	/*
-	 * Depricated because only images are now compared 
+	 * deprecated because only images are now compared 
 	private int getIconShape() {
 		if (_name.equals(PENDING)) return 1;
 		if (_name.equals(SAME)) return 2;
@@ -135,6 +156,9 @@ public class Relationship implements Result{
 	}
 	*/
 
+	/**
+	 *	Returns and int representation of the icon shape (using a priority order) 
+	 */
 	private static int getIconShape(String address) {
 		if (address.indexOf(ICON_ADDRESSES.get(PENDING)) > -1) return 1;
 		else if (address.indexOf(ICON_ADDRESSES.get(SAME)) > -1) return 2;
@@ -149,9 +173,9 @@ public class Relationship implements Result{
 			return 0;
 	}
 
-	//return 2 if solid
-	// 1 if unsaturated
-	// 0 if hollow
+	/**
+	 * @return 2 if should be solid, 1 if unsaturated, and 0 if hollow
+	 */
 	private int getIconFill() {
 		if (_capable == Capable.MUST)
 			return 2;
@@ -174,9 +198,10 @@ public class Relationship implements Result{
 			return 2;
 	}
 	
-	//return 2 if solid
-	// 1 if unsaturated
-	// 0 if hollow
+	/**
+	 * @return 2 if should be solid, 1 if unsaturated, and 0 if hollow for an icon specified by address
+	 * @param address: the address of an icon file
+	 */
 	private static int getIconFill(String address) {
 		if (address.indexOf(CAPABLE_MUST) > -1)
 			return 2;
@@ -186,11 +211,14 @@ public class Relationship implements Result{
 			return 0;
 		else 
 			// default icon
-			System.out.println("oops");
+			// should never happen
+			assert(false);
 			return 2;
 	}
 
-	
+	/**
+	 * @return computes and returns the icon to display for this relationship
+	 */
 	private ImageIcon computeIcon() {
 		String iconAddress = PATH + SIZE32;
 
@@ -210,6 +238,9 @@ public class Relationship implements Result{
 		return (new ImageIcon(Constants.class.getResource(iconAddress)));
 	}
 
+	/**
+	 * @return computes and returns the image to display for this relationship
+	 */
 	private Image computeImage() {
 		//			String imageAddress = PATH + SIZE16 + ICON_ADDRESSES.get(_name);
 		//			System.out.println(imageAddress);
@@ -235,55 +266,101 @@ public class Relationship implements Result{
 
 		return (new ImageIcon(Constants.class.getResource(iconAddress)).getImage());
 	}
-	
+
+	/**
+	 * @return the icon to display
+	 */
 	public ImageIcon getIcon() {
 		return _icon;
 	}
 	
+	/**
+	 * @return the image to display
+	 */
 	public Image getImage() {
 			return _image;
 	}
 
+	/**
+	 * Set the committers guidance
+	 * @param committers: the committers guidance
+	 */
 	public void setCommitters(String committers) {
 		_committers = committers;
 	}
 
+	/**
+	 * @return the committers guidance
+	 */
 	public String getCommitters() {
 		return _committers;
 	}
 
+	/**
+	 * Set the when guidance
+	 * @param when: the when guidance
+	 */
 	public void setWhen(When when) {
 		_when = when;
 	}
 
+	/**
+	 * @return the when guidance
+	 */
 	public When getWhen() {
 		return _when;
 	}
 
+	/**
+	 * Set the capable guidance
+	 * @param capable: the capable guidance
+	 */
 	public void setCapable(Capable capable) {
 		_capable = capable;
 	}
 
+	/**
+	 * @return the capable guindance
+	 */
 	public Capable getCapable() {
 		return _capable;
 	}
 
+	/**
+	 * Set the ease guidance
+	 * @param ease: the ease guindance
+	 */
 	public void setEase(Ease ease) {
 		_ease = ease;
 	}
 
+	/**
+	 * @return the ease guidance
+	 */
 	public Ease getEase() {
 		return _ease;
 	}
 
+	/**
+	 * Set the consequences guidance
+	 * @param consequences: the consequences guidance
+	 */
 	public void setConsequences(Relationship consequences) {
 		_consequences = consequences;
 	}
 
+	/**
+	 * @return the consequences guidance
+	 */
 	public Relationship getConsequences() {
 		return _consequences;
 	}
 
+	/**
+	 * Calculate the action to perform
+	 * @param localState: the local state of the "my" repository
+	 * @param parent: the Relatonship with the common parent
+	 */
 	public void calculateAction(LocalState localState, Relationship parent) {
 		if ((parent == null) || (localState == LocalState.PENDING))
 			_action = Action.UNKNOWN;
@@ -301,10 +378,19 @@ public class Relationship implements Result{
 			_action = null;
 	}
 
+	/**
+	 * @return the action to perform
+	 */
 	public Action getAction() {
 		return _action;
 	}
 
+	/**
+	 * Translates the action into the appropriate VC command
+	 * (only works for HG right now)
+	 * @param rk: the kind of the repository
+	 * @return the command to execute in the repository's VC to execute the action
+	 */
 	public String getAction(RepoKind rk) {
 		if (rk == RepoKind.HG) {
 			if (_action == Action.RESOLVE)
@@ -325,6 +411,9 @@ public class Relationship implements Result{
 			return "unsupported repository kind";
 	}
 
+	/**
+	 * @return the String to display in the tool tip over this relationship's icon.
+	 */
 	public String getToolTipText() {
 		String answer = "";
 		if ((_action != null) && (_action != Action.NOTHING)) 
@@ -395,6 +484,10 @@ public class Relationship implements Result{
 	}
 	*/
 	
+	/**
+	 * Convert a relationship into an int, observing relationship priority
+	 * (This method defines the priority)
+	 */
 	private static int getImageIntRepresentation(Relationship r) {
 		if (r == null) return -1;
 		if (r.getIcon() == null) return -1;
@@ -423,6 +516,10 @@ public class Relationship implements Result{
 			return b;
 	}
 
+	/**
+	 * @param relationships: a collection of Relationships
+	 * @return the dominant Relationship of a collection
+	 */
 	public static Image getDominant(Collection<Relationship> relationships) {
 		Relationship dominant = null;
 		for (Relationship currentRelationship : relationships)
@@ -431,10 +528,17 @@ public class Relationship implements Result{
 	}
 
 	@Override
+	/**
+	 * a String representation of this Relationship (just the name)
+	 */
 	public String toString() {
 		return _name;
 	}
 
+	@Override
+	/**
+	 * Two Relationship objects are .equal whenever they have the same name.
+	 */
 	public boolean equals(Object o) {
 		if (o instanceof Relationship)
 			return _name.equals(((Relationship) o)._name);
@@ -442,13 +546,11 @@ public class Relationship implements Result{
 			return false;
 	}
 
+	@Override
+	/**
+	 * Two Relationship objects are .equal whenever they have the same name.
+	 */
 	public int hashCode() {
 		return _name.hashCode();
 	}
-
-
-//	public DataSource getDataSource() {
-//		return _source;
-//	}
-
 }
