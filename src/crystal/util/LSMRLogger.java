@@ -17,6 +17,10 @@ import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.xml.XMLLayout;
 
+/**
+ * A wrapper for a logger.
+ * @author rtholmes
+ */
 public class LSMRLogger {
 
 	public static String LOG_PATTERN_VERBOSE = "%5p %d (%F:%L) - %m%n";
