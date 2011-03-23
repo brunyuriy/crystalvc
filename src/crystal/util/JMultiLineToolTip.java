@@ -12,6 +12,7 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicToolTipUI;
 
 /**
+ * Creates a ToolTip with multiple lines for use with Swing.
  * @author Zafir Anjum
  */
 
@@ -20,8 +21,6 @@ public class JMultiLineToolTip extends JToolTip {
 	 * 
 	 */
 	private static final long serialVersionUID = 5082526024093288696L;
-
-	private static final String uiClassID = "ToolTipUI";
 
 	String tipText;
 	JComponent component;
