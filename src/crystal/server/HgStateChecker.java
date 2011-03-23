@@ -23,18 +23,17 @@ import crystal.util.TimeUtility;
 import crystal.util.RunIt.Output;
 
 /**
- * Performs hg operations.  
- * Acts as the back end for Crystal.
+ * Performs hg operations to compute the states of hg repositories.  
+ * Acts as the hg back end for Crystal.
  * 
- * @author brun
- * 
+ * @author brun 
  */
 public class HgStateChecker {
 
-	/*
-	 * @arg String pathToHg: the path to the hg executable
-	 * @arg String pathToRepo: the full path to the remote repo
-	 * @arg String tempWorkPath: path to a temp directory
+	/**
+	 * @param String pathToHg: the path to the hg executable
+	 * @param String pathToRepo: the full path to the remote repo
+	 * @param String tempWorkPath: path to a temp directory
 	 * @return: Whether or not the pathToRepo is a valid hg repository
 	 */
 	public static boolean isHGRepository(String pathToHg, String pathToRepo, String tempWorkPath) throws IOException {
@@ -50,11 +49,11 @@ public class HgStateChecker {
 		return (output.indexOf("does not appear to be an hg repository!") < 0);
 	}
 
-	/*
-	 * @arg String pathToHg: the path to the hg executable
-	 * @arg String pathToRemoteRepo: the full path to the remote repo
-	 * @arg String pathToLocalRepo: the path to the local repo which this method creates
-	 * @arg String tempWorkPath: path to a temp directory
+	/**
+	 * @param String pathToHg: the path to the hg executable
+	 * @param String pathToRemoteRepo: the full path to the remote repo
+	 * @param String pathToLocalRepo: the path to the local repo which this method creates
+	 * @param String tempWorkPath: path to a temp directory
 	 * @effect: clones the pathToRemoteRepo repository to pathToLocalRepo
 	 */
 	private static synchronized void createLocalRepository(String pathToHg, String pathToRemoteRepo, String pathToLocalRepo, String tempWorkPath, String remoteHg)
@@ -98,10 +97,10 @@ public class HgStateChecker {
 		}
 	}
 
-	/*
-	 * @arg String pathToHg: the path to the hg executable
-	 * @arg String pathToLocalRepo: the path to the local repo which this method creates
-	 * @arg String tempWorkPath: path to a temp directory
+	/**
+	 * @param String pathToHg: the path to the hg executable
+	 * @param String pathToLocalRepo: the path to the local repo which this method creates
+	 * @param String tempWorkPath: path to a temp directory
 	 * @effect: performs a pull and update on the pathToLocalRepo repository
 	 */
 	private static synchronized void updateLocalRepository(String pathToHg, String pathToLocalRepo, String pathToRemoteRepo, String tempWorkPath, 
@@ -128,6 +127,18 @@ public class HgStateChecker {
 			throw new HgOperationException(command, pathToLocalRepo, output.toString());
 	}
 	
+	/**
+	 * Pulls into the local repo and checks for an error in the cache.  
+	 * @param ds: the repo to pull into
+	 * @param hg: path to hg executable
+	 * @param localRepo: path to the local copy of the repo
+	 * @param tempWorkPath: the temp path
+	 * @param remoteHg: the optional remoteHg command (null if none)
+	 * @param repoName: the name of the repo
+	 * @param projectName: the name of the project
+	 * @throws HgOperationException
+	 * @throws IOException
+	 */
 	private static void updateLocalRepositoryAndCheckCacheError(DataSource ds, String hg, String localRepo, String tempWorkPath, String remoteHg, 
 																String repoName, String projectName) throws HgOperationException, IOException {
 		Logger log = Logger.getLogger(HgStateChecker.class);
@@ -157,6 +168,11 @@ public class HgStateChecker {
 		}
 	}
 	
+	/**
+	 * @param prefs: the ProjectPreferences for the project to consider
+	 * @return the local state of my repo of the prefs project
+	 * @throws IOException
+	 */
 	public static LocalState getLocalState(ProjectPreferences prefs) throws IOException {
 		
 		Assert.assertNotNull(prefs);
@@ -223,16 +239,24 @@ public class HgStateChecker {
 		return LocalState.ALL_CLEAR;
 	}
 	
+	/**
+	 * @param output: the output of "hg heads"
+	 * @return true iff the output indicated there are two heads.
+	 * known problem: if the log message looks like the output of a changelog in the "hg log" command, this method gets confused.
+	 */
 	private static boolean hasTwoHeads(Output output) {
 		Pattern heads = Pattern.compile(".*^changeset: .*^changeset: .*", Pattern.DOTALL | Pattern.MULTILINE);
 		Matcher matcher = heads.matcher(output.getOutput());
 		return matcher.matches();
 	}
 
-	/*
-	 * @arg prefs: a set of preferences
-	 * 
-	 * @returns whether prefs.getEnvironment() repository is same, behind, ahead, cleanmerge, or conflictmerge with the source repository.
+	/**
+	 * Computes the Relationship of my repo and one other source repo
+	 * @param prefs: the ProjectPreferences for the project to consider.
+	 * @param source: the repo to compare to.
+	 * @param oldRelationship: the old Relationship, in String form.
+	 * @return the current relationship between my repo in prefs and source
+	 * @throws IOException
 	 */
 	public static String getRelationship(ProjectPreferences prefs, DataSource source, String oldRelationship) throws IOException {
 
@@ -354,13 +378,10 @@ public class HgStateChecker {
 		RunIt.deleteDirectory(new File(tempWorkPath + tempMyName));
 		return answer;
 	}
-		
-	// a super quick test function that checks the status of "one" and "two" and prints the result
-	// public static void main(String[] args) throws IOException {
-	// ResultStatus answer = getState("one", "two");
-	// System.out.println(answer);
-	// }
 
+	/**
+	 * An exception for HgOperations
+	 */
 	public static class HgOperationException extends Exception {
 		private static final long serialVersionUID = -6885233021486785003L;
 		
@@ -368,6 +389,12 @@ public class HgStateChecker {
 		private String _command;
 		private String _path;
 
+		/**
+		 * Creates a new HgOperationException 
+		 * @param command: the hg command that caused the exception.
+		 * @param path: the path from which the command was run.
+		 * @param output: the output of the command.
+		 */
 		public HgOperationException(String command, String path, String output) {
 			super("Tried to execute \n\"" + command + "\"\n in \"" + path + "\"\n" +
 					"but got the output\n" + output);
@@ -376,14 +403,23 @@ public class HgStateChecker {
 			_command = command;
 		}
 		
+		/**
+		 * @return the output of the command.
+		 */
 		public String getOutput() {
 			return _output;
 		}
 		
+		/**
+		 * @return the path in which this command was run.
+		 */
 		public String getPath() {
 			return _path;
 		}
 
+		/**
+		 * @return the command that was run.
+		 */
 		public String getCommand() {
 			return _command;
 		}
