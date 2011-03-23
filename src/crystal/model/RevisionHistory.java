@@ -140,7 +140,7 @@ public class RevisionHistory {
 	 * @param you: the "other" history
 	 * @param parentparent: the common parent's history
 	 * @param r: this' relationship with you
-	 * @param isParent: true iff this is the common parent
+	 * @param isParent: true iff you are my common parent
 	 * @return the CAPABLE guidance
 	 */
 	public Capable getCapable(RevisionHistory you, RevisionHistory parent, Relationship r, boolean isParent) {
