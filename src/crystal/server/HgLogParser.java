@@ -5,8 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/**
+ * HgLogParser parses the result of an "hg log" command into a mapping of hexes into Checkpoint objects.
+ * 
+ * @author brun
+ */
 public class HgLogParser {
 	
+	/**
+	 * A Checkpoint represents a VC checkpoint (Checkpoint is not specific to hg, though I've made it in this hg context).
+	 * Checkpoint is immutable.
+	 * 
+	 * @author brun
+	 */
 	public static class Checkpoint {
 		String _changeset;
 		String _user;
@@ -14,6 +25,14 @@ public class HgLogParser {
 		String _summary;
 		List<String> _parents;
 		
+		/**
+		 * Creates a new Checkpoint
+		 * @param changeset: the hex
+		 * @param user: the committer
+		 * @param date: the date
+		 * @param summary: the summary log message
+		 * @param parents: the [0..\infty) parents (one hex per parent)
+		 */
 		public Checkpoint(String changeset, String user, String date, String summary, List<String> parents) {
 			_changeset = changeset;
 			_user = user;
@@ -22,11 +41,17 @@ public class HgLogParser {
 			_parents = parents;
 		}
 		
+		/**
+		 * two Checkpoints are .equal as long as their hexes are equal
+		 */
 		@Override
 		public int hashCode() {
 			return _changeset.hashCode();
 		}
-		
+
+		/**
+		 * two Checkpoints are .equal as long as their hexes are equal
+		 */
 		@Override
 		public boolean equals(Object o) {
 			if (o instanceof Checkpoint)
@@ -40,27 +65,47 @@ public class HgLogParser {
 			return _changeset + "\n" + _user  + "\n" + _date  + "\n" + _summary  + "\n" + _parents;
 		}
 		
+		/**
+		 * @return this hex
+		 */
 		public String getChangeset() {
 			return _changeset;
 		}
 		
+		/**
+		 * @return the committer
+		 */
 		public String getCommitter() {
 			return _user;
 		}
 		
+		/**
+		 * @return the date of this Checkpoint
+		 */
 		public String getDate() {
 			return _date;
 		}
 		
+		/**
+		 * @return the log message
+		 */
 		public String getSummary() {
 			return _summary;
 		}
 		
+		/**
+		 * @return the list of parents' hexes
+		 */
 		public List<String> getParents() {
 			return _parents;
 		}
 	}
 
+	/**
+	 * Parses the output of "hg log" into a mapping of hexes to Checkpoints
+	 * @param log: the output of "hg log"
+	 * @return a mapping of hexes to Checkpoints in the log.
+	 */
 	public static HashMap<String, Checkpoint> parseLog(String log) {
 		
 		HashMap<String, Checkpoint> answer = new HashMap<String, Checkpoint>();
@@ -112,6 +157,11 @@ public class HgLogParser {
 		return answer;
 	}
 	
+	/**
+	 * replaces all whitespace characters with a space, combining multiple consecutive white space chars into just one space.
+	 * @param line: a String to de-white-space
+	 * @return the same String as line but with all white space replaced with spaces, combining multiple consecutive white space chars into just one space.
+	 */
 	private static String clipFront(String line) {
 		StringTokenizer tokens = new StringTokenizer(line);
 
