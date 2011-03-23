@@ -3,7 +3,6 @@ package crystal.server;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
 import crystal.model.RevisionHistory.Action;
 import crystal.model.RevisionHistory.Capable;
 import crystal.model.RevisionHistory.Ease;
@@ -12,8 +11,18 @@ import crystal.model.Relationship;
 import crystal.server.HgLogParser.Checkpoint;
 import crystal.util.SetOperations;
 
+/**
+ * The GuidanceChecker calculates guidance information
+ * 
+ * @author brun
+ */
+
 public class GuidanceChecker {
 
+	/**
+	 * @param committers: a set of Checkpoints with relevant committers
+	 * @return a pretty printed String listing all the commiitters
+	 */
 	public static String getCommitters (Set<Checkpoint> committers) {
 		Set<String> committerNames = new HashSet<String>();
 		
@@ -42,6 +51,13 @@ public class GuidanceChecker {
 		}
 	}
 
+	/**
+	 * @param me: a set of my checkpoint hexes
+	 * @param you: a set of your checkpoint hexes
+	 * @param parent: a set of parent's checkpoint hexes
+	 * @param r: my and your relationship
+	 * @return the WHEN guidance
+	 */
 	// NOTHING if SAME, MERGE, or CONFLICT
 	// if BEHIND or AHEAD:
 	// NOW if parent has your things I do not
@@ -64,8 +80,15 @@ public class GuidanceChecker {
 		return When.NOTHING;
 	}
 
-	// This is not actually speculated.  Therefore, it may be imprecise. 
-	// In particular, if you and parent are the same, these are wrong.
+	/**
+	 * @param me: a set of my checkpoint hexes
+	 * @param you: a set of your checkpoint hexes
+	 * @param parent: a set of parent's checkpoint hexes
+	 * @param r: my and your relationship
+	 * @return the CONSEQUENCES guidance
+	 * This is not actually speculated.  Therefore, it may be imprecise. 
+	 * In particular, if you and parent are the same, these are wrong.
+	 */
 	public static Relationship getConsequences(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
 		Action a = r.getAction();
 		if (a == null) 
@@ -110,10 +133,19 @@ public class GuidanceChecker {
 		return null;
 	}
 
-	// I CANNOT if we're SAME, AHEAD, or BEHIND
-	// I MUST if parent has your things I do not
-	// I CANNOT if parent has my things you do not
-	// I MIGHT if parent does not have some of my things and does not have some of your things
+	/**
+	 * 
+	 * @param me: a set of my checkpoint hexes
+	 * @param you: a set of your checkpoint hexes
+	 * @param parent: a set of parent's checkpoint hexes
+	 * @param r: my and your relationship
+	 * @param isParent: true iff you are my parent
+	 * @return the CAPABLE guidance:
+	 * I CANNOT if we're SAME, AHEAD, or BEHIND
+	 * I MUST if parent has your things I do not
+	 * I CANNOT if parent has my things you do not
+	 * I MIGHT if parent does not have some of my things and does not have some of your things
+	 */
 	public static Capable getCapable(Set<String> me, Set<String> you, Set<String> parent, Relationship r, boolean isParent) {
 		if (isParent)
 			if (r.getName().equals(Relationship.SAME))
@@ -138,7 +170,10 @@ public class GuidanceChecker {
 		return Capable.NOTHING;
 	}
 
-	// yeah, i dunno yet.
+	/**
+	 * @return the EASE guidance
+	 * Except I don't know how to compute it yet so it returns null for now.
+	 */
 	public static Ease getEase() {
 		return null;
 	}
