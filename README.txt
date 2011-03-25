@@ -1,10 +1,7 @@
-
 ConflictClient
 
-For documentation, see webpage/index.html .
+To run ConflictClient:  java -jar crystal.jar
 
-To Launch:
+For user documentation:  see webpage/index.html .
 
-java -jar crystal.jar
-
-(or, when building from the repository via "ant clean jar":  java -jar builds/crystal_latest.jar)
+For design documentation:  see design.txt.
