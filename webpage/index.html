@@ -102,11 +102,6 @@ Crystal has the following <b>requirements</b>:
 <ul>
 <li> <a href="http://java.sun.com/javase/downloads/index.jsp">JRE (Java Runtime Environment).</a></li>
 <li> <a href="http://mercurial.selenic.com">Mercurial</a>, version <b>1.6 or later</b>. (Crystal only supports Mercurial, for now.)</li>
-<li> Enable the fetch extension for Mercurial.  To do this, add the following text to your hg configuration file: <tt>~/.hgrc</tt> on Linux, or <tt>mercurial.ini</tt> on Windows.  (There is nothing after the "<tt>=</tt>" in "<tt>fetch=</tt>".)
-<pre>
-[extensions]
-fetch=
-</pre></li>
 <li> The more of your co-workers' repositories <a href="#access-to-remote-repos">you have read access to</a>, the
   more useful Crystal will be.  However, Crystal can be useful even if you
   only have access to your repository's parent.</li>
@@ -204,7 +199,15 @@ There are five possible relationships (plus two descriptors) between the develop
   </tr>
   <tr>
     <td align="center"><img src="mergeconflict.png" height="48" alt="red merge"></img></td>
-    <td align="left">CONFICT: Each of the two repositories has commits not present in the other one, and merging them will result in a textual conflict. </td>
+    <td align="left">TEXTUAL_X: Each of the two repositories has commits not present in the other one, and merging them will result in a textual conflict. </td>
+  </tr>
+  <tr>
+    <td align="center"><img src="compileconflict.png" height="48" alt="build red merge"></img></td>
+    <td align="left">BUILD_X: Each of the two repositories has commits not present in the other one, they can be merged textually cleanly, but merging them results in code that fails to build. </td>
+  </tr>
+  <tr>
+    <td align="center"><img src="testconflict.png" height="48" alt="test red merge"></img></td>
+    <td align="left">TEST_X: Each of the two repositories has commits not present in the other one, they can be merged textually cleanly, but merging them results in code that fails tests.  </td>
   </tr>
   <tr>
     <td align="center"><img src="clock.png" height="48" alt="clock"></img></td>
