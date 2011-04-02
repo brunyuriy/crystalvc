@@ -24,7 +24,10 @@ This document describes how to do this via
 </p>
 <!-- start toc.  do not edit; run html-update-toc instead -->
     <ul>
-      <li><a href="#install-dropbox">1. Install Dropbox</a></li>
+      <li><a href="#install-dropbox">1. Install Dropbox</a>
+        <ul>
+          <li><a href="#install-dropbox">1.1 Installing Dropbox without root privileges</a></li>
+        </ul></li>
       <li><a href="#create-dropbox-folder">2. Create the Dropbox folder</a></li>
       <li><a href="#link">3. Link your repository to Dropbox</a></li>
       <li><a href="#using-crystal">4. Use Crystal with Dropbox</a></li>
@@ -44,6 +47,39 @@ We will call the Dropbox folder <em>MY_DROPBOX_FOLDER</em>.
 It defaults to <tt>~/Dropbox/</tt> under Unix-like environments, and to
 <tt>My Dropbox</tt> under Windows.
 </p>
+
+
+<h3 id="install-dropbox">1.1 Installing Dropbox without root privileges</h3>
+
+<p>
+Here are instructions for installing dropbox on Linux, whether or not you
+are a root user (an administrator).  For instance, these instructions
+should work on a centrally-administered computer cluster.
+(You don't need the "Nautilus integration" which does not provide or affect Dropbox
+functionality, just modifies the icons when you open a Dropbox folder in
+the graphical file browser Nautilus.)
+</p>
+
+<pre>
+# Install the command-line Dropbox frontend script, in ~/bin/share, and run
+dropbox.  Adjust the directory to your liking.
+mkdir -p ~/bin/share
+cd ~/bin/share
+wget -O dropbox.py "http://www.dropbox.com/download?dl=packages/dropbox.py"
+chmod 755 dropbox.py
+# For a usage message:  ./dropbox.py help
+./dropbox.py start -i
+./dropbox.py autostart y
+</pre>
+
+<p>
+You may also want to add the following to your
+crontab, because the daemon 
+</p>
+<pre>
+# Ensure that Dropbox daemon is running
+0 * * * *	if [ "`$HOME/bin/share/dropbox.py status`" = 'Dropbox isn'"'"'t running!' ] ; then $HOME/bin/share/dropbox.py start ; fi
+</pre>
 
 
 
