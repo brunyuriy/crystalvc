@@ -8,6 +8,7 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -23,6 +24,7 @@ import crystal.model.LocalStateResult;
 import crystal.model.Relationship;
 import crystal.model.LocalStateResult.LocalState;
 import crystal.util.LSMRLogger;
+import crystal.util.RunIt;
 import crystal.util.TimeUtility;
 
 /**
@@ -173,6 +175,21 @@ public class ConflictSystemTray implements ComputationListener {
 			}
 		}
 
+		// Check that we have a recent-enough version of hg
+		try {
+		    if (!(RunIt.validHG(Constants.MIN_HG_VERSION, _prefs.getHgPath(), _prefs.getTempDirectory()))) {
+		        JOptionPane.showMessageDialog(null, 
+		                "Your computer is running an outdated version of hg.\nThe must be running at least version " + Constants.MIN_HG_VERSION, 
+		                "outdated hg", JOptionPane.ERROR_MESSAGE);
+		        quit(1);
+		    }
+		} catch (IOException e) {
+		    JOptionPane.showMessageDialog(null, "Encountered an exception while checking hg version", 
+                    "Error checking hg version", JOptionPane.ERROR_MESSAGE);
+            quit(1);
+		}
+		
+		
 		// Start out with the client showing.
 		showClient();
 
