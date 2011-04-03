@@ -39,6 +39,7 @@ background-color:#FFFF99
         <ul>
           <li><a href="#copying-repository">Making a copy of your repository</a></li>
         </ul></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
       <li><a href="#log-file">Log files</a></li>
       <li><a href="#Acknowledgements">Acknowledgements</a></li>
       <li><a href="#Contacts">Contacts</a></li>
@@ -111,7 +112,7 @@ Crystal has the following <b>requirements</b>:
 To <b>install</b> Crystal:
 </p>
 <ol>
-<li> Download <a href="crystal.jar">crystal.jar</a>.<br/> (The current version is 0.1.20110308.  To learn the version of an executable, run <tt>java -jar crystal.jar --version</tt> or select the <tt>about</tt> menu in the GUI.)</li>
+<li> Download <a href="crystal.jar">crystal.jar</a>.<br/> (The current version is 0.1.20110402.  To learn the version of an executable, run <tt>java -jar crystal.jar --version</tt> or select the <tt>about</tt> menu in the GUI.)</li>
 <li> Run Crystal: <tt>java -jar crystal.jar</tt></li>
 <li> The first time that you run Crystal, it will complain that your configuration file is invalid and
   give you instructions on how to fix it.  You can do so either via a GUI
@@ -460,6 +461,15 @@ different computer, in which case it looks like
 <tt>barb.cs.washington.edu:/homes/gws/mernst/www/crystal-repositories/...</tt>
 </p>
 
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<p>
+If Crystal reports that it can't run Mercurial:
+<ul>
+<li>Make sure you have the latest version of Mercurial.  Crystal will let you know the oldest compatible version.  Repositories created with newer versions do not always operate with older versions of the tool.</li>
+<li>If you created a symbolic link to your .hg directory, make sure it actually points where you think it does by browsing it.</li>
+</ul>
+</p>
 
 <h2 id="log-file">Log files</h2>
 
