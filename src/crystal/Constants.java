@@ -25,6 +25,12 @@ public class Constants {
 	//	public static long TIMER_CONSTANT = 1000; 
 	// for debugging:
 	// public static long TIMER_CONSTANT = 5 * 1000; // 5 seconds
+	
+	/**
+     * Minimum hg version
+     * may only contain 1 decimal point.
+     */
+	public static final double MIN_HG_VERSION = 1.6;
 
 	/**
 	 * Debug constants.
