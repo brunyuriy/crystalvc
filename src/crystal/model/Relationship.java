@@ -101,7 +101,6 @@ public class Relationship implements Result {
 	 */
 	public Relationship(String name, ImageIcon icon, Image image) {
 		
-		String errorMessage = null;
 		if (name.startsWith(ERROR)) {
 		    _errorMessage = name.substring(ERROR.length());
 		    _name = ERROR;
