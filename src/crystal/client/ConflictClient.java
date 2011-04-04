@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 import crystal.Constants;
 import crystal.model.DataSource;
 import crystal.model.LocalStateResult;
-import crystal.model.LocalStateResult.LocalState;
 import crystal.model.Relationship;
 import crystal.util.JMultiLineToolTip;
 
@@ -186,7 +185,13 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			name.setLayout(new BoxLayout(name, BoxLayout.Y_AXIS));
 			name.add(new JLabel(projPref.getEnvironment().getShortName()));
 //				name.add(new JLabel(" "));
-			JLabel action = new JLabel("");
+			JLabel action = new JLabel("") {
+                private static final long serialVersionUID = 1L;
+
+                public JToolTip createToolTip() {
+                    return new JMultiLineToolTip();
+                }
+            };
 			action.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 15));
 			_iconMap.put(projPref.getEnvironment(), action);
 			ConflictDaemon.getInstance().getLocalState(projPref.getEnvironment());
@@ -265,15 +270,24 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			
 			DataSource projectSource = projPref.getEnvironment();
 			LocalStateResult actionResult = ConflictDaemon.getInstance().getLocalState(projectSource);
-			LocalState localState = actionResult.getLocalState();
-			LocalState lastLocalState = actionResult.getLastLocalState();
 			
 			// if it's pending, show whatever value it had last time
-			if (localState.equals(LocalState.PENDING) && lastLocalState != null)
-				action.setText(lastLocalState.getAction());
-			else // otherwise, show fresh value
-				action.setText(localState.getAction());
+			if (actionResult.getLocalState().equals(LocalStateResult.PENDING) && actionResult.getLastLocalState() != null) {
+				action.setText(actionResult.getLastAction());
 
+				
+				
+			} else  { // otherwise, show fresh value
+				action.setText(actionResult.getAction());
+                String tip = actionResult.getErrorMessage();
+                if ((tip == null) || (tip.trim().equals("")))
+                    action.setToolTipText(null);
+                else {
+                    action.setToolTipText(tip);
+                    if ((action.getText() == null) || (action.getText().isEmpty()))
+                        action.setText("   ");
+                }
+			}
 			// second, set the Relationships
 			for (DataSource source : projPref.getDataSources()) {
 				if (!(source.isHidden())) {
