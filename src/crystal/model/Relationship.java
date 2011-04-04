@@ -9,7 +9,6 @@ import javax.swing.ImageIcon;
 
 import crystal.Constants;
 import crystal.model.DataSource.RepoKind;
-import crystal.model.LocalStateResult.LocalState;
 import crystal.model.RevisionHistory.Action;
 import crystal.model.RevisionHistory.Capable;
 import crystal.model.RevisionHistory.Ease;
@@ -377,16 +376,16 @@ public class Relationship implements Result {
 	/**
 	 * Calculate the action to perform
 	 * @param localState: the local state of the "my" repository
-	 * @param parent: the Relatonship with the common parent
+	 * @param parent: the Relationship with the common parent
 	 */
-	public void calculateAction(LocalState localState, Relationship parent) {
-		if ((parent == null) || (localState == LocalState.PENDING))
+	public void calculateAction(String localState, Relationship parent) {
+		if ((parent == null) || (localState == LocalStateResult.PENDING))
 			_action = Action.UNKNOWN;
 		else if (parent.getName().equals(Relationship.SAME))
 			_action = Action.NOTHING;
-		else if (localState.equals(LocalState.MUST_RESOLVE))
+		else if (localState.equals(LocalStateResult.MUST_RESOLVE))
 			_action = Action.RESOLVE;
-		else if (localState.equals(LocalState.UNCHECKPOINTED))
+		else if (localState.equals(LocalStateResult.UNCHECKPOINTED))
 			_action = Action.CHECKPOINT;
 		else if (parent.getName().equals(Relationship.AHEAD))
 			_action = Action.PUBLISH;

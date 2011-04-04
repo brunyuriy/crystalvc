@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 
 import crystal.model.LocalStateResult;
 import crystal.model.DataSource;
-import crystal.model.LocalStateResult.LocalState;
 import crystal.model.Relationship;
 import crystal.model.DataSource.RepoKind;
 import crystal.server.HgStateChecker;
@@ -129,7 +128,7 @@ public class ConflictDaemon {
 	 * @return the local state of the developer's environment.
 	 */
 	public LocalStateResult calculateLocalState(ProjectPreferences prefs) {
-		LocalState localState = null;
+		String localState = null;
 		long start = System.currentTimeMillis();
 
 		DataSource source = prefs.getEnvironment();
@@ -141,7 +140,7 @@ public class ConflictDaemon {
 
 				localState = HgStateChecker.getLocalState(prefs);
 				if (localState == null)
-					localState = LocalState.ERROR;
+					localState = LocalStateResult.ERROR;
 
 				_log.info("Local State calculated::" + source + "::" + localState);
 
@@ -155,9 +154,9 @@ public class ConflictDaemon {
 
 			LocalStateResult result = getLocalState(source);
 			if (result != null) {
-				result = new LocalStateResult(prefs.getEnvironment(), localState, result.getLastLocalState());
+				result = new LocalStateResult(prefs.getEnvironment(), localState, result.getLastLocalState(), result.getLastAction(), result.getLastErrorMessage());
 			} else {
-				result = new LocalStateResult(prefs.getEnvironment(), localState, null);
+				result = new LocalStateResult(prefs.getEnvironment(), localState, null, null, null);
 			}
 			_localStateMap.put(prefs.getEnvironment(), result);
 			
@@ -207,7 +206,7 @@ public class ConflictDaemon {
 		
 		if (localState == null) {
 			// we don't have a local state, pretend it is pending.
-			localState = new LocalStateResult(source, LocalState.PENDING, null);
+			localState = new LocalStateResult(source, LocalStateResult.PENDING, null, null, null);
 			_localStateMap.put(source, localState);
 		}
 		
@@ -252,7 +251,8 @@ public class ConflictDaemon {
 			
 			// first look up the local state
 			DataSource ps = pp.getEnvironment();
-			_localStateMap.put(ps, new LocalStateResult(ps, LocalState.PENDING, _localStateMap.get(ps).getLocalState()));
+			_localStateMap.put(ps, new LocalStateResult(ps, LocalStateResult.PENDING, _localStateMap.get(ps).getLocalState(), 
+			        _localStateMap.get(ps).getAction(), _localStateMap.get(ps).getErrorMessage()));
 			
 			// and then the relationships
 			for (DataSource ds : pp.getDataSources()) {

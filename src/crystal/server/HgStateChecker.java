@@ -8,13 +8,11 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JOptionPane;
-
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 
 import crystal.client.ProjectPreferences;
-import crystal.model.LocalStateResult.LocalState;
+import crystal.model.LocalStateResult;
 import crystal.model.Relationship;
 import crystal.model.DataSource;
 import crystal.model.RevisionHistory;
@@ -86,13 +84,13 @@ public class HgStateChecker {
 		Output output = RunIt.execute(pathToHg, myArgsList.toArray(new String[0]), tempWorkPath, false);
 
 		if (output.getOutput().indexOf("updating to branch") < 0) {
-			String dialogMsg = "Crystal tried to execute command:\n" +
+			String errorMsg = "Crystal tried to execute command:\n" +
 			"\"" + pathToHg + " clone " + pathToRemoteRepo + " " + pathToLocalRepo + "\"\n" +
 			"from \"" + tempWorkPath + "\"\n" +
 			"but got the unexpected output:\n" + 
 			output.toString();
 		//	JOptionPane.showMessageDialog(null, dialogMsg, "hg clone failure", JOptionPane.ERROR_MESSAGE);
-			throw new HgOperationException(command, tempWorkPath, output.toString());
+			throw new HgOperationException(errorMsg, tempWorkPath, output.toString());
 		//			throw new RuntimeException("Could not clone repository " + pathToRemoteRepo + " to " + pathToLocalRepo + "\n" + output);
 		}
 	}
@@ -146,22 +144,14 @@ public class HgStateChecker {
 			try {
 				updateLocalRepository(hg, localRepo, ds.getCloneString(), tempWorkPath, remoteHg);
 			} catch (HgOperationException e) {
-				String dialogMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
+				String errorMsg = "Crystal is having trouble executing\n" + e.getCommand() + "\nin " +
 				e.getPath() + "\n for your " + repoName + " repository of project " + 
 				projectName + ".\n" + 
 				"Crystal got the unexpected output:\n" + 
 				e.getOutput() + "\n";
-				log.error(dialogMsg);
-				dialogMsg += "Sometimes, clearing Crystal's local cache can remedy this problem, but this may take a few minutes.\n" + 
-				"Would you like Crystal to try that?\n" +
-				"The alternative is to skip this project.";
-				int answer = JOptionPane.showConfirmDialog(null, dialogMsg, "hg pull problem", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-				if (answer == JOptionPane.YES_OPTION) {
-					RunIt.deleteDirectory(new File(localRepo));
-					createLocalRepository(hg, ds.getCloneString(), localRepo, tempWorkPath, remoteHg);
-				} else {
-					ds.setEnabled(false);
-				}
+				log.error(errorMsg);
+				errorMsg += "Sometimes, clearing Crystal's local cache can remedy this problem";
+				throw new HgOperationException(errorMsg, e.getPath(), e.getOutput());
 			}
 		} else {
 			createLocalRepository(hg, ds.getCloneString(), localRepo, tempWorkPath, remoteHg);
@@ -173,7 +163,7 @@ public class HgStateChecker {
 	 * @return the local state of my repo of the prefs project
 	 * @throws IOException
 	 */
-	public static LocalState getLocalState(ProjectPreferences prefs) throws IOException {
+	public static String getLocalState(ProjectPreferences prefs) throws IOException {
 		
 		Assert.assertNotNull(prefs);
 		
@@ -200,9 +190,9 @@ public class HgStateChecker {
 			updateLocalRepositoryAndCheckCacheError(prefs.getEnvironment(), hg, mine, tempWorkPath, prefs.getEnvironment().getRemoteHg(), 
 					"your own", prefs.getEnvironment().getShortName());
 		} catch (HgOperationException e) {
-			return LocalState.ERROR;
+			return LocalStateResult.ERROR + " " + e.getMessage();
 		} catch (IOException e) {
-			return LocalState.ERROR;
+			return LocalStateResult.ERROR + " " + e.getMessage();
 		}
 		
 		// Step 2. Get the log from the local clone and set the history
@@ -224,7 +214,7 @@ public class HgStateChecker {
 				String nextToken = tokens.nextToken();
 				//System.out.println(prefs.getEnvironment().getCloneString() + "#" + nextToken + "#");
 				if (!(nextToken.startsWith("?")))
-					return LocalState.UNCHECKPOINTED;
+					return LocalStateResult.UNCHECKPOINTED;
 			}
 		}
 		
@@ -236,8 +226,8 @@ public class HgStateChecker {
 		String[] headArgs = { "heads" };
 		output = RunIt.execute(hg, headArgs, mine, false);	
 		if (hasTwoHeads(output))
-			return LocalState.MUST_RESOLVE;
-		return LocalState.ALL_CLEAR;
+			return LocalStateResult.MUST_RESOLVE;
+		return LocalStateResult.ALL_CLEAR;
 	}
 	
 	/**
@@ -298,6 +288,9 @@ public class HgStateChecker {
 
 		RevisionHistory myHistory = prefs.getEnvironment().getHistory();
 
+		if (myHistory == null)
+		    return Relationship.ERROR + " Could not parse the history of your repository.";
+				
 		// TODO figure out if we need to check for compile and test whenever histories change: 
 		// one of (source.hasHistoryChanged()) or (prefs.getEnvironment.hasHistoryChanged()) are true
 

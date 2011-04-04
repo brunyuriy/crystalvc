@@ -22,7 +22,6 @@ import crystal.Constants;
 import crystal.client.ConflictDaemon.ComputationListener;
 import crystal.model.LocalStateResult;
 import crystal.model.Relationship;
-import crystal.model.LocalStateResult.LocalState;
 import crystal.util.LSMRLogger;
 import crystal.util.RunIt;
 import crystal.util.TimeUtility;
@@ -283,7 +282,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		// check if anything is PENDING (first local states then relationships
 		for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()) {
-			if (localState.getLocalState().getName().equals(LocalState.PENDING)) {
+			if (localState.getLocalState().equals(LocalStateResult.PENDING)) {
 				pTask = true;
 			}
 		}
@@ -452,7 +451,7 @@ public class ConflictSystemTray implements ComputationListener {
 		// check if anything is PENDING (first local states then relationships
 		boolean pendingTask = false;
 		for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()) {
-			if (localState.getLocalState().getName().equals(LocalState.PENDING)) {
+			if (localState.getLocalState().equals(LocalStateResult.PENDING)) {
 				pendingTask = true;
 			}
 		}
