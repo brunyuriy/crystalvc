@@ -430,6 +430,9 @@ public class Relationship implements Result {
 	 * @return the String to display in the tool tip over this relationship's icon.
 	 */
 	public String getToolTipText() {
+	    if (_name.equals(ERROR))
+	        return _errorMessage.trim();
+
 		String answer = "";
 		if ((_action != null) && (_action != Action.NOTHING)) 
 			answer += "Action: " + getAction(RepoKind.HG) + "\n";
