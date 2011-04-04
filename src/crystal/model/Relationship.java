@@ -88,6 +88,9 @@ public class Relationship implements Result {
 
 	// is the relationship ready to be displayed?
 	private boolean _ready;
+	
+	// the error message associated with this ERROR relationship
+	private String _errorMessage;
 
 	/**
 	 * Creates a new Relationship
@@ -97,23 +100,35 @@ public class Relationship implements Result {
 	 * @param image: the image to display (if null then it'll either be set to pending, error (if appropriate), or computed later)
 	 */
 	public Relationship(String name, ImageIcon icon, Image image) {
-		_name = name.toUpperCase();
+		
+		String errorMessage = null;
+		if (name.startsWith(ERROR)) {
+		    _errorMessage = name.substring(ERROR.length());
+		    _name = ERROR;
+		} else
+		    _name = name.toUpperCase();
+		    
 		if (ICON_ADDRESSES.get(_name) == null)
 			throw new RuntimeException("Trying to create an invalid Relationship");
+
 		_ready = false;
-//		_source = source;
+
 		if (icon != null)
 			_icon = icon;
-		else if (name.equals(ERROR))
-			_icon = new ImageIcon(Constants.class.getResource(PATH + SIZE32+CAPABLE_MUST+ICON_ADDRESSES.get(ERROR)));
-		else
-			_icon = new ImageIcon(Constants.class.getResource(PATH + SIZE32 + CAPABLE_MUST + ICON_ADDRESSES.get(PENDING)));
 		if (image != null)
-			_image = image;
-		else if (name.equals(ERROR))
-			_image = new ImageIcon(Constants.class.getResource(PATH + SIZE16 + CAPABLE_MUST + ICON_ADDRESSES.get(ERROR))).getImage();
-		else
-			_image = new ImageIcon(Constants.class.getResource(PATH + SIZE16 + CAPABLE_MUST + ICON_ADDRESSES.get(PENDING))).getImage();
+            _image = image;
+        
+		// if the icon should be an error, then override
+		if (_name.equals(ERROR)) {
+			_icon = new ImageIcon(Constants.class.getResource(PATH + SIZE32 + CAPABLE_MUST + ICON_ADDRESSES.get(ERROR)));
+	        _image = new ImageIcon(Constants.class.getResource(PATH + SIZE16 + CAPABLE_MUST + ICON_ADDRESSES.get(ERROR))).getImage();
+		}
+		
+		// no icon assigned, make it pending as the default
+		if (_icon == null)
+			_icon = new ImageIcon(Constants.class.getResource(PATH + SIZE32 + CAPABLE_MUST + ICON_ADDRESSES.get(PENDING)));
+		if (_image == null)
+		    _image = new ImageIcon(Constants.class.getResource(PATH + SIZE16 + CAPABLE_MUST + ICON_ADDRESSES.get(PENDING))).getImage();
 	}
 
 	/**

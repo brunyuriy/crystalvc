@@ -91,7 +91,7 @@ public class HgStateChecker {
 			"from \"" + tempWorkPath + "\"\n" +
 			"but got the unexpected output:\n" + 
 			output.toString();
-			JOptionPane.showMessageDialog(null, dialogMsg, "hg clone failure", JOptionPane.ERROR_MESSAGE);
+		//	JOptionPane.showMessageDialog(null, dialogMsg, "hg clone failure", JOptionPane.ERROR_MESSAGE);
 			throw new HgOperationException(command, tempWorkPath, output.toString());
 		//			throw new RuntimeException("Could not clone repository " + pathToRemoteRepo + " to " + pathToLocalRepo + "\n" + output);
 		}
@@ -286,7 +286,7 @@ public class HgStateChecker {
 			updateLocalRepositoryAndCheckCacheError(source, hg, yours, tempWorkPath, source.getRemoteHg(), 
 					source.getShortName(), prefs.getEnvironment().getShortName());
 		} catch (HgOperationException e1) {
-			return Relationship.ERROR;
+			return Relationship.ERROR + " " + e1.getMessage();
 		}
 		
 		// Get your log and set your history
