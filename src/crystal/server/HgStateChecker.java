@@ -195,6 +195,7 @@ public class HgStateChecker {
 
 		
 		// Step 1. Update the local clone.  If cloning fails, return ERROR state
+		// TODO: The errors on the local state are not reported as toottips yet (need to make LocalState not interned)
 		try {
 			updateLocalRepositoryAndCheckCacheError(prefs.getEnvironment(), hg, mine, tempWorkPath, prefs.getEnvironment().getRemoteHg(), 
 					"your own", prefs.getEnvironment().getShortName());
@@ -365,14 +366,14 @@ public class HgStateChecker {
 			else
 				answer = Relationship.MERGECONFLICT;
 		} else {
-			// something went wrong; disabling this relationship
+			// something went wrong
 			log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output.toString());
-			String dialogMsg = "Crystal is having trouble comparing\n" + 
+			String errorMsg = "Crystal is having trouble comparing\n" + 
 			mine + " and " + yours + "\n" + 
 			"for the repository " + source.getShortName() + " in project " + prefs.getEnvironment().getShortName() + ".\n";
-			JOptionPane.showConfirmDialog(null, dialogMsg);
-			source.setEnabled(false);
-			return Relationship.ERROR;
+			// JOptionPane.showConfirmDialog(null, dialogMsg);
+			// source.setEnabled(false);
+			return Relationship.ERROR + " " + errorMsg;
 		}
 		// Clean up temp directories:
 		RunIt.deleteDirectory(new File(tempWorkPath + tempMyName));

@@ -100,7 +100,10 @@ public class Relationship implements Result {
 	 * @param image: the image to display (if null then it'll either be set to pending, error (if appropriate), or computed later)
 	 */
 	public Relationship(String name, ImageIcon icon, Image image) {
-		
+
+	    // TODO: delete
+	    System.out.println("yuriy says: " + name);
+	    
 		if (name.startsWith(ERROR)) {
 		    _errorMessage = name.substring(ERROR.length());
 		    _name = ERROR;
@@ -121,6 +124,7 @@ public class Relationship implements Result {
 		if (_name.equals(ERROR)) {
 			_icon = new ImageIcon(Constants.class.getResource(PATH + SIZE32 + CAPABLE_MUST + ICON_ADDRESSES.get(ERROR)));
 	        _image = new ImageIcon(Constants.class.getResource(PATH + SIZE16 + CAPABLE_MUST + ICON_ADDRESSES.get(ERROR))).getImage();
+	        _ready = true;
 		}
 		
 		// no icon assigned, make it pending as the default
