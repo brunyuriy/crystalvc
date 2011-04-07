@@ -272,7 +272,7 @@ There are five types of guidance Crystal displays:
   locations of the scratch space, the <tt>hg</tt> executable, and the
   repositories Crystal monitors.
 On a Unix-like environment, it appears in <tt>~/.conflictClient.xml</tt>.
-On a Windows environment, it appears in the user's home directory , e.g., <tt>C:\Users\$USER\.conflictClient.xml</tt>.
+On a Windows environment, it appears in the user's home directory , e.g., <tt>%UserProfile%\.conflictClient.xml</tt>.
 </p>
 
 <p>
@@ -333,7 +333,6 @@ information</a>.
 <tt>compile</tt>:  a command to execute to compile the project, such as <tt>"make"</tt>
 </li>
 <li>
-<tt>test</tt>
 <tt>test</tt>:  a command to execute to run the project's tests, such as <tt>"make test"</tt>
 </li>
 </ul>
@@ -476,7 +475,7 @@ If Crystal reports that it can't run Mercurial:
 
 <p>Crystal maintains two log files to help with diagnosing unexpected problems. One is a plain text log that is easy to read (.conflictClientLog.log) and the other is an XML log that can be more easily analyzed programmatically (.conflictClientLog.xml). 
 On a Unix-like environment, these appear in <tt>~/</tt>.
-On a Windows environment, these appears in the user's home directory , e.g., <tt>C:\Users\$USER\</tt>.
+On a Windows environment, these appears in the user's home directory <tt>%UserProfile%\</tt>.
 </p>
 
 <h2 id="Acknowledgements">Acknowledgements</h2>
