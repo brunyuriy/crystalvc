@@ -99,9 +99,10 @@ public class HgStateChecker {
 	 * @param String pathToHg: the path to the hg executable
 	 * @param String pathToLocalRepo: the path to the local repo which this method creates
 	 * @param String tempWorkPath: path to a temp directory
+	 * @return 
 	 * @effect: performs a pull and update on the pathToLocalRepo repository
 	 */
-	private static synchronized void updateLocalRepository(String pathToHg, String pathToLocalRepo, String pathToRemoteRepo, String tempWorkPath, 
+	private static synchronized  void updateLocalRepository(String pathToHg, String pathToLocalRepo, String pathToRemoteRepo, String tempWorkPath, 
 														   String remoteHg) throws IOException, HgOperationException {
 		Assert.assertNotNull(pathToHg);
 		Assert.assertNotNull(pathToLocalRepo);
