@@ -128,11 +128,6 @@ public class ConflictSystemTray implements ComputationListener {
 				System.err.println(msg);
 				_log.error(msg);
 			}
-
-			if (_prefs.hasChanged()) {
-				ClientPreferences.savePreferencesToDefaultXML(_prefs);
-				_prefs.setChanged(false);
-			}
 		} catch (Exception e) {
 			// e.printStackTrace();
 			String msg = "Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )";
@@ -173,6 +168,15 @@ public class ConflictSystemTray implements ComputationListener {
 				quit(0);
 			}
 		}
+		try {
+		    if (_prefs.hasChanged()) {
+		        ClientPreferences.savePreferencesToDefaultXML(_prefs);
+		        _prefs.setChanged(false);
+		    }
+		} catch (Exception e) {
+		    _log.error("Could not write to the configuration file: " + e.getMessage());
+		}
+
 
 		// Check that we have a recent-enough version of hg
 		try {
