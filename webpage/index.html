@@ -296,6 +296,7 @@ Here is an example valid configuration file:
 </pre>
 
 <p>
+To be a valid XML file, it cannot have any whitespace before the <tt>&lt;?xml ...?&gt;</tt> element. <br/>
 A configuration file consists of a single XML element: <tt>ccConfig</tt>.
 This element has two attributes: <tt>tempDirectory</tt> and (optionally) <tt>refresh</tt>.  These attributes specify the path to the scratch space and how often, in seconds, Crystal should attempt to refresh itself.
 <tt>ccConfig</tt> has a <tt>project</tt> child for each project that
@@ -463,13 +464,24 @@ different computer, in which case it looks like
 
 <h2 id="troubleshooting">Troubleshooting</h2>
 
-<p>
+<ul>
+<li>
+If Crystal complains that it cannot load the <tt>.conflictClient.xml</tt> file and the error message contains <tt>&quot;&gt; &gt; &gt; null&quot;</tt>, your <tt>.conflictClient.xml</tt> file is invalid:
+<ul>
+<li>Make sure there is a <tt>&lt;?xml ... &gt;</tt> element.</li>
+<li>Make sure the <tt>&lt;?xml ... &gt;</tt> element contains no blank lines or spaces before it.</li>
+<li>Make sure all the required elements are present</li>
+</ul>
+</li>
+
+<li>
 If Crystal reports that it can't run Mercurial:
 <ul>
 <li>Make sure you have the latest version of Mercurial.  Crystal will let you know the oldest compatible version.  Repositories created with newer versions do not always operate with older versions of the tool.</li>
 <li>If you created a symbolic link to your .hg directory, make sure it actually points where you think it does by browsing it.</li>
 </ul>
-</p>
+</li>
+</ul>
 
 <h2 id="log-file">Log files</h2>
 
