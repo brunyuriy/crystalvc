@@ -281,15 +281,17 @@ Here is an example valid configuration file:
 
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;ccConfig tempDirectory=&quot;C:/temp/conflictClient/&quot; refresh=&quot;60&quot;&gt;
-  &lt;project ShortName=&quot;MyFirstProject&quot; Kind=&quot;HG&quot; Clone=&quot;C:/projects/MyLocalFirstProjectRepo/&quot;
-           parent=&quot;MASTER&quot;&gt;
-    &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
-    &lt;source ShortName=&quot;Friend&quot; Clone=&quot;ssh://user@host/path/to/friend/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
+&lt;ccConfig tempDirectory=&quot;/scratch/conflictClient/&quot; refresh=&quot;60&quot;&gt;
+     &lt;!-- First project uses dropbox to share repositories --&gt;
+  &lt;project ShortName=&quot;MyFirstProject&quot; Kind=&quot;HG&quot; Clone=&quot;$HOME/Dropbox/projects/MyLocalFirstProjectRepo/&quot; parent=&quot;MASTER&quot;&gt;
+    &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;$HOME/Dropbox/projects/MASTER/MyLocalFirstProjectRepo/&quot; commonParent=&quot;MASTER&quot; /&gt;
+    &lt;source ShortName=&quot;Friend&quot; Clone=&quot;$HOME/Dropbox/projects/Friend/MyLocalFirstProjectRepo&quot; commonParent=&quot;MASTER&quot; /&gt;
+    &lt;source ShortName=&quot;Enemy&quot; Clone=&quot;$HOME/Dropbox/projects/Enemy/MyLocalFirstProjectRepo&quot; commonParent=&quot;MASTER&quot; /&gt;
   &lt;/project&gt;
-  &lt;project ShortName=&quot;MySecondProject&quot; Kind=&quot;HG&quot; Clone=&quot;C:/projects/MyLocalSecondProjectRepo/&quot;
+     &lt;!-- Second project does not use dropbox to share repositories --&gt;
+  &lt;project ShortName=&quot;MySecondProject&quot; Kind=&quot;HG&quot; Clone=&quot;$HOME/projects/MyLocalSecondProjectRepo/&quot;
            parent=&quot;MASTER&quot; compile=&quot;make&quot; test=&quot;make test&quot;&gt;
-    &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/socond/project/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
+    &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/second/project/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
     &lt;source ShortName=&quot;Friend&quot; Clone=&quot;https://user@host/path/to/friend/second/repo&quot; commonParent=&quot;MASTER&quot; /&gt;
   &lt;/project&gt;
 &lt;/ccConfig&gt;
