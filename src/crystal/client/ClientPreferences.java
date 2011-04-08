@@ -251,8 +251,13 @@ public class ClientPreferences {
             File configFile = new File(CONFIG_PATH);
             if (!configFile.exists()) {
                 configFile.createNewFile();
-
-                InputStream is = ClientPreferences.class.getResourceAsStream("defaultConfig.xml");
+                
+                String defaultXML = null;
+                if (System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") > -1)
+                    defaultXML = "defaultWindowsConfig.xml";
+                else
+                    defaultXML = "defaultOtherConfig.xml";
+                InputStream is = ClientPreferences.class.getResourceAsStream(defaultXML);
                 assert is != null;
 
                 OutputStream os = new FileOutputStream(configFile);
