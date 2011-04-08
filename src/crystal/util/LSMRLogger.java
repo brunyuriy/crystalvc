@@ -14,7 +14,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
-import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.xml.XMLLayout;
 
 /**
