@@ -282,13 +282,13 @@ Here is an example valid configuration file:
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;ccConfig tempDirectory=&quot;/scratch/conflictClient/&quot; refresh=&quot;60&quot;&gt;
-     &lt;!-- First project uses dropbox to share repositories --&gt;
+  &lt;!-- First project uses dropbox to share repositories --&gt;
   &lt;project ShortName=&quot;MyFirstProject&quot; Kind=&quot;HG&quot; Clone=&quot;$HOME/Dropbox/projects/MyLocalFirstProjectRepo/&quot; parent=&quot;MASTER&quot;&gt;
     &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;$HOME/Dropbox/projects/MASTER/MyLocalFirstProjectRepo/&quot; commonParent=&quot;MASTER&quot; /&gt;
     &lt;source ShortName=&quot;Friend&quot; Clone=&quot;$HOME/Dropbox/projects/Friend/MyLocalFirstProjectRepo&quot; commonParent=&quot;MASTER&quot; /&gt;
     &lt;source ShortName=&quot;Enemy&quot; Clone=&quot;$HOME/Dropbox/projects/Enemy/MyLocalFirstProjectRepo&quot; commonParent=&quot;MASTER&quot; /&gt;
   &lt;/project&gt;
-     &lt;!-- Second project does not use dropbox to share repositories --&gt;
+  &lt;!-- Second project does not use dropbox to share repositories --&gt;
   &lt;project ShortName=&quot;MySecondProject&quot; Kind=&quot;HG&quot; Clone=&quot;$HOME/projects/MyLocalSecondProjectRepo/&quot;
            parent=&quot;MASTER&quot; compile=&quot;make&quot; test=&quot;make test&quot;&gt;
     &lt;source ShortName=&quot;MASTER&quot; Clone=&quot;ssh://user@host/path/to/second/project/repo/&quot; commonParent=&quot;MASTER&quot; /&gt;
@@ -320,7 +320,7 @@ the left side on the <a href="#Crystal-window">main window</a>
 </li>
 <li>
 <tt>Clone</tt>:  the path to your local repository.  This may be any
-address that is a valid argument to the <tt>hg clone</tt> command.
+address that is a valid argument to the <tt>hg clone</tt> command.  Typically, this is a local path to a directory that contains a <tt>.hg</tt> directory.
 </li>
 <li>
 <tt>parent</tt>:  the shortName of the repository that is your repository's
