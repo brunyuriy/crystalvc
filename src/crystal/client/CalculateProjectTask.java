@@ -77,11 +77,10 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 		_log.trace("Stating computing local state computed for " + _prefs.getEnvironment().getShortName());
 		LocalStateResult localStateResult = ConflictDaemon.getInstance().calculateLocalState(_prefs);
 		_log.trace("Local state computed for " + _prefs.getEnvironment().getShortName() + ": " + localStateResult);
-
+		
 		// UPDATE: turns out we don't have to do this.
 		// And update the GUI
 		publish(localStateResult);
-
 
 		// Second, do the relationships.
 		// We do this by checking the current local state, updating the GUI (mostly to show the pending icons).

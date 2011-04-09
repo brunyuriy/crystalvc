@@ -110,8 +110,8 @@ public class ConflictDaemon {
 				cl.update();
 			}
 			return result;
-		}  catch (IOException ioe) {
-			_log.error(ioe);
+//		}  catch (IOException ioe) {
+//			_log.error(ioe);
 		} catch (RuntimeException re) {
 			_log.error("Runtime Exception caught while getting state for: " + source + "\n" + re.getMessage());
 			re.printStackTrace();
