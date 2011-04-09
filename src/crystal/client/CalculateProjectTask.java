@@ -120,43 +120,47 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 		// And then calculate the Guidance and update the relationships:
 		_log.trace("Stating computing the guidance for the " + _prefs.getEnvironment().getShortName() + "project");
 		RevisionHistory mine = _prefs.getEnvironment().getHistory();
-		if (mine != null) {
-		    for (DataSource source : _prefs.getDataSources()) {
-		        RevisionHistory yours = source.getHistory();
-		        Relationship ourRelationship = relationships.get(source);
-		        // calculate the relevant Committers
-		        if (yours != null)
-		            ourRelationship.setCommitters(mine.getCommitters(yours));
+		try {
+		    if (mine != null) {
+		        for (DataSource source : _prefs.getDataSources()) {
+		            RevisionHistory yours = source.getHistory();
+		            Relationship ourRelationship = relationships.get(source);
+		            // calculate the relevant Committers
+		            if (yours != null)
+		                ourRelationship.setCommitters(mine.getCommitters(yours));
 
-		        DataSource parentSource = _prefs.getDataSource((_prefs.getEnvironment().getParent()));
-		        // If parent is not set, can't compute action
-		        if (parentSource != null) {
-		            Relationship parentRelationship = relationships.get(parentSource);
-		            ourRelationship.calculateAction(localStateResult.getLocalState(), parentRelationship);
+		            DataSource parentSource = _prefs.getDataSource((_prefs.getEnvironment().getParent()));
+		            // If parent is not set, can't compute action
+		            if (parentSource != null) {
+		                Relationship parentRelationship = relationships.get(parentSource);
+		                ourRelationship.calculateAction(localStateResult.getLocalState(), parentRelationship);
+		            }
+
+		            DataSource commonParentSource = _prefs.getDataSource(source.getParent());
+		            // If commonParent is not set, we can't do guidance
+		            if (commonParentSource != null) {
+		                RevisionHistory parent = commonParentSource.getHistory();
+		                // calculate the When
+		                ourRelationship.setWhen(mine.getWhen(yours, parent, ourRelationship));
+		                // calculate the Consequences
+		                ourRelationship.setConsequences(mine.getConsequences(yours, parent, ourRelationship));
+		                // calculate the Capable
+		                boolean isParent = source.getShortName().equals(_prefs.getEnvironment().getParent());
+		                ourRelationship.setCapable(mine.getCapable(yours, parent, ourRelationship, isParent));
+		                // calculate the Ease
+		                ourRelationship.setEase(mine.getEase());
+		            }
+
+		            _log.trace("Relationship and guidance computed for the " + _prefs.getEnvironment().getShortName() + "project " + 
+		                    source.getShortName() + " repository: " + relationships.get(source));
+		            // And finally, set the relationship to ready and update the GUI:
 		        }
-
-		        DataSource commonParentSource = _prefs.getDataSource(source.getParent());
-		        // If commonParent is not set, we can't do guidance
-		        if (commonParentSource != null) {
-		            RevisionHistory parent = commonParentSource.getHistory();
-		            // calculate the When
-		            ourRelationship.setWhen(mine.getWhen(yours, parent, ourRelationship));
-		            // calculate the Consequences
-		            ourRelationship.setConsequences(mine.getConsequences(yours, parent, ourRelationship));
-		            // calculate the Capable
-		            boolean isParent = source.getShortName().equals(_prefs.getEnvironment().getParent());
-		            ourRelationship.setCapable(mine.getCapable(yours, parent, ourRelationship, isParent));
-		            // calculate the Ease
-		            ourRelationship.setEase(mine.getEase());
-		        }
-
-		        _log.trace("Relationship and guidance computed for the " + _prefs.getEnvironment().getShortName() + "project " + 
-		                source.getShortName() + " repository: " + relationships.get(source));
-		        // And finally, set the relationship to ready and update the GUI:
+		        _log.trace("Finished computing the guidance for the " + _prefs.getEnvironment().getShortName() + "project");
+		    } else {
+		        _log.trace("My repo history couldn't be parsed, so I did not cimpute guidance for the " + _prefs.getEnvironment().getShortName() + "project");
 		    }
-		    _log.trace("Finished computing the guidance for the " + _prefs.getEnvironment().getShortName() + "project");
-		} else {
-		    _log.trace("My repo history couldn't be parsed, so I did not cimpute guidance for the " + _prefs.getEnvironment().getShortName() + "project");
+		} catch (Exception e) {
+		    _log.error("Error while computing the guidance (expected if there is an X error icon).  " + e.getClass().getName() + " with the message \"" + e.getMessage() + "\"");		  
 		}
 		
 		for (DataSource source : _prefs.getDataSources()) {
