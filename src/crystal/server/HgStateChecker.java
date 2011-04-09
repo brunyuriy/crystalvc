@@ -250,7 +250,7 @@ public class HgStateChecker {
 	 * @return the current relationship between my repo in prefs and source
 	 * @throws IOException
 	 */
-	public static String getRelationship(ProjectPreferences prefs, DataSource source, String oldRelationship) throws IOException {
+	public static String getRelationship(ProjectPreferences prefs, DataSource source, String oldRelationship) {
 
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);
@@ -279,11 +279,19 @@ public class HgStateChecker {
 					source.getShortName(), prefs.getEnvironment().getShortName());
 		} catch (HgOperationException e1) {
 			return Relationship.ERROR + " " + e1.getMessage();
+		} catch (IOException e2) {
+		    return Relationship.ERROR + " " + e2.getMessage();
 		}
-		
+
 		// Get your log and set your history
 		String[] logArgs = { "log" };
-		Output logOutput = RunIt.execute(hg, logArgs, yours, false);
+		Output logOutput;
+		try {
+		    logOutput = RunIt.execute(hg, logArgs, yours, false);
+		} catch (IOException e2) {
+            return Relationship.ERROR + " Couldn't get the log: " + e2.getMessage();
+        }
+
 		RevisionHistory yourHistory = new RevisionHistory(logOutput.getOutput());
 		source.setHistory(yourHistory);
 
@@ -317,40 +325,56 @@ public class HgStateChecker {
 		
 		// pull your repo into [a temp clone of] mine
 		String[] myArgs = { "clone", mine, tempMyName };
-		output = RunIt.execute(hg, myArgs, tempWorkPath, false);
+		try {
+		    output = RunIt.execute(hg, myArgs, tempWorkPath, false);
+		} catch (IOException e2) {
+            return Relationship.ERROR + " Couldn't make a temp clone: " + e2.getMessage();
+        }
 		String[] pullArgs = { "pull", yours };
-		output = RunIt.execute(hg, pullArgs, tempWorkPath + tempMyName, false);
-
+		try {
+		    output = RunIt.execute(hg, pullArgs, tempWorkPath + tempMyName, false);
+		} catch (IOException e2) {
+            return Relationship.ERROR + " Couldn't pull into my temp clone: " + e2.getMessage();
+        }
+		
 		if (output.getOutput().indexOf("(run 'hg heads' to see heads, 'hg merge' to merge)") >= 0) {
 			// there are two heads, so let's see if they merge cleanly
 			String[] mergeArgs = { "merge", "--noninteractive" };
-			output = RunIt.execute(hg, mergeArgs, tempWorkPath + tempMyName, false);
+			try {
+			    output = RunIt.execute(hg, mergeArgs, tempWorkPath + tempMyName, false);
+			} catch (IOException e2) {
+	            return Relationship.ERROR + " Couldn't execute merge: " + e2.getMessage();
+	        }
 			// if the merge goes through cleanly, we can try to compile and test
 			if (output.getOutput().indexOf("(branch merge, don't forget to commit)") >= 0) {
 				// try to compile
 				String compileCommand = prefs.getEnvironment().getCompileCommand();
 				//System.out.println(compileCommand);
 				if (compileCommand != null) {
-					Output compileOutput = RunIt.tryCommand(compileCommand, tempWorkPath + tempMyName);
-					if (compileOutput.getStatus() != 0)
-						// if unsuccessful:
-						answer = Relationship.COMPILECONFLICT;
-					else {
-						// if successful try to test
-						String testCommand = prefs.getEnvironment().getTestCommand();
-						if (testCommand != null) {
-							Output testOutput = RunIt.tryCommand(testCommand, tempWorkPath + tempMyName);
-							if (testOutput.getStatus() != 0)
-								// if unsuccessful:
-								answer = Relationship.TESTCONFLICT;
-							else
-								// if successful:
-								answer = Relationship.MERGECLEAN;
-						}
-						else
-							// we don't know how to test
-							answer = Relationship.MERGECLEAN;
-					}
+				    try {
+				        Output compileOutput = RunIt.tryCommand(compileCommand, tempWorkPath + tempMyName);
+				        if (compileOutput.getStatus() != 0)
+				            // if unsuccessful:
+				            answer = Relationship.COMPILECONFLICT;
+				        else {
+				            // if successful try to test
+				            String testCommand = prefs.getEnvironment().getTestCommand();
+				            if (testCommand != null) {
+				                Output testOutput = RunIt.tryCommand(testCommand, tempWorkPath + tempMyName);
+				                if (testOutput.getStatus() != 0)
+				                    // if unsuccessful:
+				                    answer = Relationship.TESTCONFLICT;
+				                else
+				                    // if successful:
+				                    answer = Relationship.MERGECLEAN;
+				            }
+				            else
+				                // we don't know how to test
+				                answer = Relationship.MERGECLEAN;
+				        }
+                    } catch (IOException e2) {
+                        return Relationship.ERROR + " Had and IO error trying to either compile or run tests: " + e2.getMessage();
+                    }
 				}
 				else
 					// we don't know how to compile
