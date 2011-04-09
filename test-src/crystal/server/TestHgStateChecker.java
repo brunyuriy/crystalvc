@@ -22,225 +22,171 @@ import crystal.client.ProjectPreferences;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
 import crystal.model.Relationship;
-import crystal.server.HgStateChecker.HgOperationException;
 import crystal.util.RunIt;
 
 public class TestHgStateChecker {
 
-	private ProjectPreferences _prefs;
+    private ProjectPreferences _prefs;
 
-	public TestHgStateChecker() {
-		ConflictSystemTray.startLogging();
-		generatePreferences();
-	}
+    public TestHgStateChecker() {
+        ConflictSystemTray.startLogging();
+        generatePreferences();
+    }
 
-	public ProjectPreferences getPreferences() {
-		return _prefs;
-	}
+    public ProjectPreferences getPreferences() {
+        return _prefs;
+    }
 
-	/**
-	 * Rebuild the test environment by erasing the old one and extracting a new set of repositories from a zip file.
-	 */
-	@BeforeClass
-	public static void ensureEnvironment() {
-		String projectPath = TestConstants.PROJECT_PATH;
-		Assert.assertNotNull(projectPath);
+    /**
+     * Rebuild the test environment by erasing the old one and extracting a new set of repositories from a zip file.
+     */
+    @BeforeClass
+    public static void ensureEnvironment() {
+        String projectPath = TestConstants.PROJECT_PATH;
+        Assert.assertNotNull(projectPath);
 
-		File pp = new File(projectPath);
-		Assert.assertTrue(pp.exists());
-		Assert.assertTrue(pp.isDirectory());
+        File pp = new File(projectPath);
+        Assert.assertTrue(pp.exists());
+        Assert.assertTrue(pp.isDirectory());
 
-		File[] files = pp.listFiles();
-		Assert.assertNotNull(files);
+        File[] files = pp.listFiles();
+        Assert.assertNotNull(files);
 
-		// make sure the repo zip file exists
-		File repoZipFile = null;
-		for (File f : files) {
-			if (f.getAbsolutePath().endsWith("test-repos.zip"))
-				repoZipFile = f;
-			if (f.getAbsolutePath().endsWith(TestConstants.TEST_REPOS) && f.isDirectory()) {
-				// not sure what the significance of this test is anymore
-			}
+        // make sure the repo zip file exists
+        File repoZipFile = null;
+        for (File f : files) {
+            if (f.getAbsolutePath().endsWith("test-repos.zip"))
+                repoZipFile = f;
+            if (f.getAbsolutePath().endsWith(TestConstants.TEST_REPOS) && f.isDirectory()) {
+                // not sure what the significance of this test is anymore
+            }
 
-		}
-		Assert.assertNotNull(repoZipFile);
+        }
+        Assert.assertNotNull(repoZipFile);
 
-		// clear the output location
-		File repoDir = new File(projectPath + TestConstants.TEST_REPOS);
-		if (repoDir.exists()) {
-			Assert.assertTrue(repoDir.isDirectory());
-			RunIt.deleteDirectory(repoDir);
-			Assert.assertFalse(repoDir.exists());
-		}
+        // clear the output location
+        File repoDir = new File(projectPath + TestConstants.TEST_REPOS);
+        if (repoDir.exists()) {
+            Assert.assertTrue(repoDir.isDirectory());
+            RunIt.deleteDirectory(repoDir);
+            Assert.assertFalse(repoDir.exists());
+        }
 
-		// unzip the repo zip into the directory
-		File zipOutDir = pp;
-		unzipTestRepositories(repoZipFile, zipOutDir);
-		Assert.assertTrue(repoDir.exists());
+        // unzip the repo zip into the directory
+        File zipOutDir = pp;
+        unzipTestRepositories(repoZipFile, zipOutDir);
+        Assert.assertTrue(repoDir.exists());
 
-		// clean the temp space
-		File testTempDir = new File(projectPath + TestConstants.TEST_TEMP);
-		if (testTempDir.exists()) {
-			RunIt.deleteDirectory(testTempDir);
-			Assert.assertFalse(testTempDir.exists());
-		}
-		boolean testTempDirCreated = testTempDir.mkdir();
-		Assert.assertTrue(testTempDirCreated);
-		Assert.assertTrue(testTempDir.exists());
-		Assert.assertTrue(testTempDir.isDirectory());
+        // clean the temp space
+        File testTempDir = new File(projectPath + TestConstants.TEST_TEMP);
+        if (testTempDir.exists()) {
+            RunIt.deleteDirectory(testTempDir);
+            Assert.assertFalse(testTempDir.exists());
+        }
+        boolean testTempDirCreated = testTempDir.mkdir();
+        Assert.assertTrue(testTempDirCreated);
+        Assert.assertTrue(testTempDir.exists());
+        Assert.assertTrue(testTempDir.isDirectory());
 
-	}
+    }
 
-	@SuppressWarnings("unchecked")
-	private static void unzipTestRepositories(File repoZipFile, File zipOutDir) {
-		try {
+    @SuppressWarnings("unchecked")
+    private static void unzipTestRepositories(File repoZipFile, File zipOutDir) {
+        try {
 
-			String outPath = zipOutDir.getAbsolutePath();
-			if (!outPath.endsWith(File.separator))
-				outPath += File.separator;
+            String outPath = zipOutDir.getAbsolutePath();
+            if (!outPath.endsWith(File.separator))
+                outPath += File.separator;
 
-			System.out.println("Unzipping repository to: " + outPath);
+            System.out.println("Unzipping repository to: " + outPath);
 
-			ZipFile zipFile = new ZipFile(repoZipFile);
+            ZipFile zipFile = new ZipFile(repoZipFile);
 
-			Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zipFile.entries();
-			while (entries.hasMoreElements()) {
-				ZipEntry entry = (ZipEntry) entries.nextElement();
+            Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = (ZipEntry) entries.nextElement();
 
-				if (entry.isDirectory()) {
-					File outDir = new File(outPath + entry.getName());
+                if (entry.isDirectory()) {
+                    File outDir = new File(outPath + entry.getName());
 
-					outDir.mkdirs();
-					continue;
-				}
+                    outDir.mkdirs();
+                    continue;
+                }
 
-				copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(outPath + entry.getName())));
-			}
+                copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(outPath + entry.getName())));
+            }
 
-			zipFile.close();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-			Assert.fail(ioe.getMessage());
-		}
-		System.out.println("Unzipping repository complete.");
-	}
+            zipFile.close();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            Assert.fail(ioe.getMessage());
+        }
+        System.out.println("Unzipping repository complete.");
+    }
 
-	private static final void copyInputStream(InputStream in, OutputStream out) throws IOException {
-		byte[] buffer = new byte[1024];
-		int len;
+    private static final void copyInputStream(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int len;
 
-		while ((len = in.read(buffer)) >= 0)
-			out.write(buffer, 0, len);
+        while ((len = in.read(buffer)) >= 0)
+            out.write(buffer, 0, len);
 
-		in.close();
-		out.close();
-	}
+        in.close();
+        out.close();
+    }
 
-	@Before
-	public void generatePreferences() {
-		String path = TestConstants.PROJECT_PATH + TestConstants.TEST_REPOS;
+    @Before
+    public void generatePreferences() {
+        String path = TestConstants.PROJECT_PATH + TestConstants.TEST_REPOS;
 
-		DataSource myEnvironment = new DataSource("myRepository", path + "one", RepoKind.HG, false, null);
-		String tempDirectory = TestConstants.PROJECT_PATH + TestConstants.TEST_TEMP;
+        DataSource myEnvironment = new DataSource("myRepository", path + "one", RepoKind.HG, false, null);
+        String tempDirectory = TestConstants.PROJECT_PATH + TestConstants.TEST_TEMP;
 
-		DataSource twoSource = new DataSource("twoRepository", path + "two", RepoKind.HG, false, null);
-		DataSource threeSource = new DataSource("threeRepository", path + "three", RepoKind.HG, false, null);
-		DataSource fourSource = new DataSource("fourRepository", path + "four", RepoKind.HG, false, null);
-		DataSource fiveSource = new DataSource("fiveRepository", path + "five", RepoKind.HG, false, null);
-		DataSource sixSource = new DataSource("sixRepository", path + "six", RepoKind.HG, false, null);
+        DataSource twoSource = new DataSource("twoRepository", path + "two", RepoKind.HG, false, null);
+        DataSource threeSource = new DataSource("threeRepository", path + "three", RepoKind.HG, false, null);
+        DataSource fourSource = new DataSource("fourRepository", path + "four", RepoKind.HG, false, null);
+        DataSource fiveSource = new DataSource("fiveRepository", path + "five", RepoKind.HG, false, null);
+        DataSource sixSource = new DataSource("sixRepository", path + "six", RepoKind.HG, false, null);
 
-		ClientPreferences prefs = new ClientPreferences(tempDirectory, TestConstants.HG_COMMAND, Constants.DEFAULT_REFRESH);
+        ClientPreferences prefs = new ClientPreferences(tempDirectory, TestConstants.HG_COMMAND, Constants.DEFAULT_REFRESH);
 
-		_prefs = new ProjectPreferences(myEnvironment, prefs);
+        _prefs = new ProjectPreferences(myEnvironment, prefs);
 
-		_prefs.addDataSource(twoSource);
-		_prefs.addDataSource(threeSource);
-		_prefs.addDataSource(fourSource);
-		_prefs.addDataSource(fiveSource);
-		_prefs.addDataSource(sixSource);
-	}
+        _prefs.addDataSource(twoSource);
+        _prefs.addDataSource(threeSource);
+        _prefs.addDataSource(fourSource);
+        _prefs.addDataSource(fiveSource);
+        _prefs.addDataSource(sixSource);
+    }
 
-	@Test
-	public void testBasicMergeConflict() {
-		try {
+    @Test
+    public void testBasicMergeConflict() {
+        String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("twoRepository"),null);
+        Assert.assertEquals(Relationship.MERGECONFLICT, answer);
+    }
 
-			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("twoRepository"),null);
-			Assert.assertEquals(Relationship.MERGECONFLICT, answer);
+    @Test
+    public void testBasicCleanMerge() {
+        String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("sixRepository"), null);
+        Assert.assertEquals(Relationship.MERGECLEAN, answer);
+    }
 
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-			Assert.fail(ioe.getMessage());
-			// } catch (HgOperationException ioe) {
-			// ioe.printStackTrace();
-			// Assert.fail(ioe.getMessage());
-		}
-	}
+    @Test
+    public void testBasicAhead() {
+        String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("threeRepository"), null);
+        Assert.assertEquals(Relationship.AHEAD, answer);
+    }
 
-	@Test
-	public void testBasicCleanMerge() {
-		try {
+    @Test
+    public void testBasicBehind() {
+        String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("fourRepository"), null);
+        Assert.assertEquals(Relationship.BEHIND, answer);
+    }
 
-			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("sixRepository"), null);
-			Assert.assertEquals(Relationship.MERGECLEAN, answer);
-
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-			Assert.fail(ioe.getMessage());
-			// } catch (HgOperationException ioe) {
-			// ioe.printStackTrace();
-			// Assert.fail(ioe.getMessage());
-		}
-	}
-
-	@Test
-	public void testBasicAhead() {
-		try {
-
-			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("threeRepository"), null);
-			Assert.assertEquals(Relationship.AHEAD, answer);
-
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-			Assert.fail(ioe.getMessage());
-			// } catch (HgOperationException ioe) {
-			// ioe.printStackTrace();
-			// Assert.fail(ioe.getMessage());
-		}
-
-	}
-
-	@Test
-	public void testBasicBehind() {
-		try {
-
-			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("fourRepository"), null);
-			Assert.assertEquals(Relationship.BEHIND, answer);
-
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-			Assert.fail(ioe.getMessage());
-			// } catch (HgOperationException ioe) {
-			// ioe.printStackTrace();
-			// Assert.fail(ioe.getMessage());
-		}
-
-	}
-
-	@Test
-	public void testBasicSame() {
-		try {
-
-			String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("fiveRepository"), null);
-			Assert.assertEquals(Relationship.SAME, answer);
-
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-			Assert.fail(ioe.getMessage());
-			// } catch (HgOperationException ioe) {
-			// ioe.printStackTrace();
-			// Assert.fail(ioe.getMessage());
-		}
-
-	}
+    @Test
+    public void testBasicSame() {
+        String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("fiveRepository"), null);
+        Assert.assertEquals(Relationship.SAME, answer);
+    }
 
 }
