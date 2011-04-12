@@ -286,11 +286,12 @@ public class RunIt {
        String output = execute(hg, versionArgs, tempPath, false).getOutput();
        String versionStr = output.substring(output.indexOf("version") + 8, output.indexOf(")"));
        double version = Double.parseDouble(versionStr.substring(0, versionStr.indexOf(".", versionStr.indexOf(".") + 1)));
-       if (minimumVersion < version)
+       boolean answer = (minimumVersion <= version);
+       if (answer)
            _log.info("The version of hg checks out.  (You are running " + versionStr + ", which is newer than the minimum required "+ minimumVersion + ".)");
        else 
            _log.error("You are using an outdated hg.  (You are running " + versionStr + ", which is older than the minimum required "+ minimumVersion + ".)");
            
-       return (minimumVersion < version);
+       return answer;
     }
 }
