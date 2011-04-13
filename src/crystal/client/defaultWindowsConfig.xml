@@ -1,9 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- This is the default Conflict Client configuration file for Windows -->
 <!--                                                                    -->
 <!-- Provided values are for example only.                              -->
 <!--                                                                    -->
 <!-- See http://www.cs.washington.edu/homes/brun/research/crystal/#Configuration_File_Format for full file description -->
-<?xml version="1.0" encoding="UTF-8"?>
 <ccConfig tempDirectory="C:/temp/conflictClient/" refresh="60">
   <!-- First project uses dropbox to share repositories -->
   <project ShortName="MyFirstProject" Kind="HG" Clone="C:/Dropbox/projects/MyLocalFirstProjectRepo/" parent="MASTER">
