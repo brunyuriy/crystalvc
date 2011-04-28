@@ -400,14 +400,16 @@ public class ClientPreferences {
                 if ((compileCommand != null) && (!(compileCommand.trim().isEmpty()))) {
                     String compileCommandExecutable = RunIt.getExecutable(compileCommand);
                     if (compileCommandExecutable == null) {
-                        throw new Error("No executable found for " + compileCommand);
+                        _log.error("Error while looking for a way to execute the build command: " + compileCommand + "\nCrystal will ignore this command.");
+                        // throw new Error("No executable found for " + compileCommand);
                     }
                     myEnvironment.setCompileCommand(compileCommandExecutable);
                 }
                 if ((testCommand != null) && (!(testCommand.trim().isEmpty()))) {
                     String testCommandExecutable = RunIt.getExecutable(testCommand);
                     if (testCommandExecutable == null) {
-                        throw new Error("No executable found for " + testCommand);
+                        _log.error("Error while looking for a way to execute the test command: " + testCommand + "\nCrystal will ignore this command.");
+                        // throw new Error("No executable found for " + testCommand);
                     }
                     myEnvironment.setTestCommand(testCommandExecutable);
                 }
