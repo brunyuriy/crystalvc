@@ -87,35 +87,35 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 		getContentPane().add(new JLabel("Closing this window will save the configuraion settings."));
 
-		JPanel hgPanel = new JPanel();
-		hgPanel.setLayout(new BoxLayout(hgPanel, BoxLayout.X_AXIS));
-		hgPanel.add(new JLabel("Path to hg executable:"));
-		final JTextField hgPath = new JTextField(prefs.getHgPath());
+//		JPanel hgPanel = new JPanel();
+//		hgPanel.setLayout(new BoxLayout(hgPanel, BoxLayout.X_AXIS));
+//		hgPanel.add(new JLabel("Path to hg executable:"));
+//		final JTextField hgPath = new JTextField(prefs.getHgPath());
 		// hgPath.setSize(hgPath.getWidth(), 16);
-		hgPanel.add(hgPath);
-		hgPath.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {
-			}
-
-			public void keyTyped(KeyEvent arg0) {
-			}
-
-			public void keyReleased(KeyEvent arg0) {
-				prefs.setHgPath(hgPath.getText());
-				prefs.setChanged(true);
-				frame.pack();
-			}
-		});
-
-		JButton hgButton = new JButton("find");
-		hgPanel.add(hgButton);
-		hgButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				new MyPathChooser("Path to hg executable", hgPath, JFileChooser.FILES_ONLY);
-				prefs.setChanged(true);
-			}
-		});
-		getContentPane().add(hgPanel);
+//		hgPanel.add(hgPath);
+//		hgPath.addKeyListener(new KeyListener() {
+//			public void keyPressed(KeyEvent arg0) {
+//			}
+//
+//			public void keyTyped(KeyEvent arg0) {
+//			}
+//
+//			public void keyReleased(KeyEvent arg0) {
+//				prefs.setHgPath(hgPath.getText());
+//				prefs.setChanged(true);
+//				frame.pack();
+//			}
+//		});
+//
+//		JButton hgButton = new JButton("find");
+//		hgPanel.add(hgButton);
+//		hgButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				new MyPathChooser("Path to hg executable", hgPath, JFileChooser.FILES_ONLY);
+//				prefs.setChanged(true);
+//			}
+//		});
+//		getContentPane().add(hgPanel);
 
 		JPanel tempPanel = new JPanel();
 		tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
