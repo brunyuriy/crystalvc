@@ -110,7 +110,7 @@ public class HgLogParser {
 		
 		HashMap<String, Checkpoint> answer = new HashMap<String, Checkpoint>();
 		
-		for (String current : log.split("changeset:")) {
+		for (String current : log.split("\nchangeset:")) {
 			
 			if (!(current.trim().isEmpty())) {
 				current = "changeset:" + current;
