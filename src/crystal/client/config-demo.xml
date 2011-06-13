@@ -1,0 +1,47 @@
+<ccConfig tempDirectory="/Users/rtholmes/tmp/hgTmp/">
+	<project myKind="HG" myShortName="tortoise"
+		myClone="/Users/rtholmes/dev/hgRepos/tortoiseHg/">
+		<sources>
+			<source kind="HG" shortName="face" clone="https://bitbucket.org/face/tortoisehgqueue" />
+			<source kind="HG" shortName="pyQt" clone="https://bitbucket.org/tortoisehg/thg" />
+			<source kind="HG" shortName="HEAD" clone="http://bitbucket.org/tortoisehg/stable" />
+		</sources>
+	</project>
+	<!--
+	<project myKind="HG" myShortName="murky"
+		myClone="/Users/rtholmes/dev/hgRepos/murky/">
+		<sources>
+			<source kind="HG" shortName="bordezo" clone="https://bitbucket.org/boredzo/murky" />
+			<source kind="HG" shortName="oscherler" clone="https://bitbucket.org/oscherler/murky" />
+			<source kind="HG" shortName="mazdak" clone="https://bitbucket.org/mazdak/murky-with-sparkle" />
+			<source kind="HG" shortName="HEAD" clone="http://bitbucket.org/snej/murky" />
+		</sources>
+	</project>
+	<project myKind="HG" myShortName="plume-lib"
+		myClone="/Users/rtholmes/dev/hgRepos/plume-lib/">
+		<sources>
+			<source kind="HG" shortName="HEAD" clone=" https://plume-lib.googlecode.com/hg/" />
+		</sources>
+	</project>
+	<project myKind="HG" myShortName="ductile-paper"
+		myClone="/Users/rtholmes/dev/hgRepos/ductile-paper/">
+		<sources>
+			<source kind="HG" shortName="HEAD" clone="ssh://tricycle.cs.washington.edu//projects/swlab1/ductile/paper-2010/" />
+		</sources>
+	</project>
+	<project myKind="HG" myShortName="javarifier"
+		myClone="/Users/rtholmes/dev/hgRepos/javarifier/">
+		<sources>
+			<source kind="HG" shortName="HEAD" clone="https://javarifier.googlecode.com/hg/" />
+		</sources>
+	</project>	
+	-->
+	<!-- Too slow for a good demo.
+	<project myKind="HG" myShortName="checker-framework"
+		myClone="/Users/rtholmes/dev/hgRepos/checker-framework/">
+		<sources>
+			<source kind="HG" shortName="HEAD" clone="https://checker-framework.googlecode.com/hg/" />
+		</sources>
+	</project>
+	-->
+</ccConfig>
