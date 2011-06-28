@@ -271,7 +271,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 	/**
 	 * An execution point used only for testing.  
 	 */
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		ClientPreferences client = new ClientPreferences("temp", "hgPath", Constants.DEFAULT_REFRESH);
 		ProjectPreferences one = new ProjectPreferences(new DataSource("first project", "~brun\\firstrepo", DataSource.RepoKind.HG, false, null), client);
 		DataSource oneOther = new DataSource("Mike's copy", "~mernst\\repo", DataSource.RepoKind.HG, false, null);
@@ -301,6 +301,6 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		// if (i == 0)
 		// System.out.println(mine.getEnvironment().getShortName());
 		// }
-	}
+	}*/
 
 }
