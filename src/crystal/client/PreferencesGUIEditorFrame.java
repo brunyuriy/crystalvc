@@ -271,29 +271,29 @@ public class PreferencesGUIEditorFrame extends JFrame {
 	/**
 	 * An execution point used only for testing.  
 	 */
-	/*public static void main(String[] args) {
-		ClientPreferences client = new ClientPreferences("temp", "hgPath", Constants.DEFAULT_REFRESH);
-		ProjectPreferences one = new ProjectPreferences(new DataSource("first project", "~brun\\firstrepo", DataSource.RepoKind.HG, false, null), client);
-		DataSource oneOther = new DataSource("Mike's copy", "~mernst\\repo", DataSource.RepoKind.HG, false, null);
-		DataSource twoOther = new DataSource("Reid's copy", "~rtholmes\\repo", DataSource.RepoKind.HG, false, null);
-		DataSource threeOther = new DataSource("David's copy", "~notkin\\repo", DataSource.RepoKind.HG, false, null);
-		one.addDataSource(oneOther);
-		one.addDataSource(twoOther);
+	//public static void main(String[] args) {
+	//	ClientPreferences client = new ClientPreferences("temp", "hgPath", Constants.DEFAULT_REFRESH);
+	//	ProjectPreferences one = new ProjectPreferences(new DataSource("first project", "~brun\\firstrepo", DataSource.RepoKind.HG, false, null), client);
+	//	DataSource oneOther = new DataSource("Mike's copy", "~mernst\\repo", DataSource.RepoKind.HG, false, null);
+	//	DataSource twoOther = new DataSource("Reid's copy", "~rtholmes\\repo", DataSource.RepoKind.HG, false, null);
+	//	DataSource threeOther = new DataSource("David's copy", "~notkin\\repo", DataSource.RepoKind.HG, false, null);
+	//	one.addDataSource(oneOther);
+	//	one.addDataSource(twoOther);
 
-		ProjectPreferences two = new ProjectPreferences(new DataSource("second project", "~brun\\secondrepo", DataSource.RepoKind.HG, false, null), client);
-		two.addDataSource(threeOther);
-		two.addDataSource(oneOther);
+	//	ProjectPreferences two = new ProjectPreferences(new DataSource("second project", "~brun\\secondrepo", DataSource.RepoKind.HG, false, null), client);
+	//	two.addDataSource(threeOther);
+	//	two.addDataSource(oneOther);
 
-		try {
-		client.addProjectPreferences(one);
-		client.addProjectPreferences(two);
-		} catch (DuplicateProjectNameException e) {
+	//	try {
+	//	client.addProjectPreferences(one);
+	//	client.addProjectPreferences(two);
+	//	} catch (DuplicateProjectNameException e) {
 			// This should really never happen because we're dealing with an empty set of preferences.
-			throw new RuntimeException("When I was creating some nice fresh preferences with two projects, one and two, I got this error:\n" + 
-					e.getMessage());  
-		}
+	//		throw new RuntimeException("When I was creating some nice fresh preferences with two projects, one and two, I got this error:\n" + 
+	//				e.getMessage());  
+	//	}
 
-		getPreferencesGUIEditorFrame(client);
+	//	getPreferencesGUIEditorFrame(client);
 
 		// int i = 0;
 		// while(true) {
@@ -301,6 +301,6 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		// if (i == 0)
 		// System.out.println(mine.getEnvironment().getShortName());
 		// }
-	}*/
+	//}
 
 }
