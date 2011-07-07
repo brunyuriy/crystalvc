@@ -1,6 +1,7 @@
 This document contains a summary of the design of Crystal and some pointers to where to find various important parts of Crystal in its source code.  
 
-First, the code is in an hg repository in /projects/swlab1/speculation/code/crystal/sourceRepo
+First, the code is in an hg repository in http://crystalvc.googlecode.com/hg (having been moved from
+/projects/swlab1/speculation/code/crystal/sourceRepo in June 2011).
 
 Crystal has two modules: the front end and the back end.  They are intended to be separate.  
 -- The back end deals with the repositories, checks for changes every X minutes, computes relationships, guidance, etc.  The back end reads all the info it needs from a configuration file.  
