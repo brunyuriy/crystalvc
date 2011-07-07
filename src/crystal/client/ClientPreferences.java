@@ -701,7 +701,7 @@ public class ClientPreferences {
     public static class ConfigurationReadingException extends Exception {
         private static final long serialVersionUID = 3577953111265604385L;
 
-        // type differentiates possible reasons for the excception.
+        // type differentiates possible reasons for the exception.
         public static final int HG_PATH_INVALID = 0;
         public static final int TEMP_PATH_INVALID = 1;
         public static final int PATH_INVALID = 2;
