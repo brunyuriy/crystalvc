@@ -22,6 +22,7 @@ import crystal.Constants;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
 import crystal.util.RunIt;
+import crystal.util.ValidInputChecker;
 import crystal.util.XMLTools;
 
 /**
@@ -160,6 +161,11 @@ public class ClientPreferences {
      * @param hgPath
      */
     public ClientPreferences(String tempDirectory, String hgPath, long refresh) {
+    	ValidInputChecker.checkValidStringInput(tempDirectory);
+    	ValidInputChecker.checkValidStringInput(hgPath);
+    	if(refresh < 0){
+    		throw new IllegalArgumentException("Negative number for time");
+    	}
         _tempDirectory = tempDirectory;
         _hgPath = hgPath;
         _refresh = refresh;
