@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import crystal.util.ValidInputChecker;
+
 /**
  * HgLogParser parses the result of an "hg log" command into a mapping of hexes into Checkpoint objects.
  * 
@@ -107,7 +109,7 @@ public class HgLogParser {
 	 * @return a mapping of hexes to Checkpoints in the log.
 	 */
 	public static HashMap<String, Checkpoint> parseLog(String log) {
-		
+		ValidInputChecker.checkValidStringInput(log);
 		HashMap<String, Checkpoint> answer = new HashMap<String, Checkpoint>();
 		
 		for (String current : log.split("\nchangeset:")) {
