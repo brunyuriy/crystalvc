@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Vector;
 
 import crystal.model.DataSource;
+import crystal.util.ValidInputChecker;
 
 /**
  * Stores the preferences for a specific project.
@@ -31,6 +32,8 @@ public class ProjectPreferences {
 	 * @param clientPrefs: the overall configuration
 	 */
 	public ProjectPreferences(DataSource myEnvironment, ClientPreferences clientPrefs) {
+		ValidInputChecker.checkNullInput(myEnvironment);
+		ValidInputChecker.checkNullInput(clientPrefs);
 		_myEnvironment = myEnvironment;
 		_clientPreferences = clientPrefs;
 		_dataSources = new Vector<DataSource>();

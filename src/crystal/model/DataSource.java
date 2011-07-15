@@ -57,7 +57,6 @@ public class DataSource {
 	public DataSource(String shortName, String cloneString, RepoKind repoKind, boolean hide, String parent) {
 		ValidInputChecker.checkValidStringInput(shortName);
 		ValidInputChecker.checkValidStringInput(cloneString);
-		ValidInputChecker.checkValidStringInput(parent);
 		ValidInputChecker.checkNullInput(repoKind);
 		
 		assert shortName != null;
@@ -73,6 +72,22 @@ public class DataSource {
 		setParent(parent);
 		_history = null;
 		_oldHistory = null;
+	}
+	
+	/**
+	 * Compare this object with another object
+	 * @return true if they are the same object; otherwise return false
+	 */
+	public boolean equals(Object o){
+		if (o != null && getClass() == o.getClass()){
+			DataSource other = (DataSource) o;
+			return _enabled == other._enabled && _shortName.equals(other._shortName)
+					&& _cloneString.equals(other._cloneString) && _repoKind.equals(other._repoKind)
+					&& _hide == other._hide && _parent.equals(other._parent)
+					&& _history.equals(other._history) && _oldHistory.equals(_oldHistory);
+		} else {
+			return false;
+		}
 	}
 	
 	/**
