@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.BoxLayout;
@@ -79,6 +81,8 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 	private JMenuItem _refresh = null;
 	private JMenuItem _disableDaemon;
+	/*DECLARE MENU ITEM VARIABLE*/
+	private JMenuItem _clearCache;
 
 	/**
 	 * Creates the UI and brings it to the foreground.
@@ -105,6 +109,8 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_refresh = new JMenuItem("Refresh");
 		JMenuItem editConfiguration = new JMenuItem("Edit Configuration");
 		_disableDaemon = new JMenuItem("Disable Daemon");
+		/*CLEAR CACHE*/
+		_clearCache = new JMenuItem("Clear Cache");
 		JMenuItem exit = new JMenuItem("Exit");
 		JMenuItem about = new JMenuItem("About");
 		JMenuItem blank = new JMenuItem("");
@@ -113,6 +119,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		fileMenu.add(_refresh);
 		fileMenu.add(editConfiguration);
 		fileMenu.add(_disableDaemon);
+		fileMenu.add(_clearCache);
 		fileMenu.add(exit);
 		// aboutMenu.add(about);
 		menuBar.add(about);
@@ -140,7 +147,17 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				ConflictSystemTray.getInstance().performCalculations();
 			}
 		});
-
+		
+		/*CLEAR CACHE METHOD*/
+		_clearCache.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deleteFile("C:\\temp\\conflictClient\\Crystal_Crystal\\");
+				//ConflictSystemTray.getInstance().preferencesAction();
+				System.out.println("Cache has been emptied on your computer.");
+			}
+		});
+		
 		editConfiguration.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -238,6 +255,18 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_frame.setVisible(true);
 		_frame.toFront();
 		_frame.pack();
+	}
+	
+	/*RECURSIVE METHOD THAT DELETES ALL FILES, DIRECTOIRES, AND SUBDIRECTORIES IN THE GIVEN FILE PATH*/
+	private boolean deleteFile (String filePath) {
+		File f = new File(filePath);
+		if(f.isDirectory()){
+			File[] allFiles = f.listFiles();
+			for (File file: allFiles) {
+				deleteFile(file.getAbsolutePath());
+			}
+		}
+		return f.delete();
 	}
 
 	public void setCanUpdate(boolean enable) {
