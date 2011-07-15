@@ -172,6 +172,23 @@ public class ClientPreferences {
         REFRESH = refresh;
         _hasChanged = false;
     }
+    
+    //TODO
+    /**
+     * Compare this object with another object
+     * @param o target object
+     * @return true if they are same object; otherwise return false
+     */
+    public boolean equals(Object o){
+    	if(o != null && getClass() == o.getClass()){
+    		ClientPreferences other = (ClientPreferences) o;
+    		return _tempDirectory.equals(other._tempDirectory) && _hgPath.equals(other._hgPath)
+    				&& _refresh == other._refresh
+    				&& _projectPreferences.equals(other._projectPreferences);
+    	} else {
+    		return false;
+    	}
+    }
 
     /**
      * Adds a project to this ClientPreferences.
