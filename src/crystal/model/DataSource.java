@@ -12,7 +12,16 @@ import crystal.util.ValidInputChecker;
 public class DataSource {
 
 	public enum RepoKind {
-		GIT, HG
+		GIT, HG;
+		
+		/*public boolean euqals(Object o){
+			if(o != null && getClass() == o.getClass()){
+				RepoKind other = (RepoKind) o;
+				
+			}
+			
+			return false;
+		}*/
 	}
 	
 	// whether or not this source is enabled
@@ -76,15 +85,29 @@ public class DataSource {
 	
 	/**
 	 * Compare this object with another object
+	 * @param o other object to be compared with this object
 	 * @return true if they are the same object; otherwise return false
 	 */
 	public boolean equals(Object o){
 		if (o != null && getClass() == o.getClass()){
 			DataSource other = (DataSource) o;
-			return _enabled == other._enabled && _shortName.equals(other._shortName)
-					&& _cloneString.equals(other._cloneString) && _repoKind.equals(other._repoKind)
-					&& _hide == other._hide && _parent.equals(other._parent)
-					&& _history.equals(other._history) && _oldHistory.equals(_oldHistory);
+			if (_history == null){	// assuming old history is also null
+				return _enabled == other._enabled && _shortName.equals(other._shortName)
+				&& _cloneString.equals(other._cloneString) && _repoKind.equals(other._repoKind)
+				&& _hide == other._hide && other._history == null;
+			} else if (_oldHistory == null){	// only old history is null
+				return _enabled == other._enabled && _shortName.equals(other._shortName)
+				&& _cloneString.equals(other._cloneString) && _repoKind.equals(other._repoKind)
+				&& _hide == other._hide 
+				&& _history.equals(other._history) && other._oldHistory == null;
+			} else {	// if both of them are not null
+				return _enabled == other._enabled && _shortName.equals(other._shortName)
+				&& _cloneString.equals(other._cloneString) && _repoKind.equals(other._repoKind)
+				&& _hide == other._hide 
+				&& _history.equals(other._history) && _oldHistory.equals(_oldHistory);
+		
+			}
+
 		} else {
 			return false;
 		}
