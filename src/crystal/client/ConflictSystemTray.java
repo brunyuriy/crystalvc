@@ -112,7 +112,7 @@ public class ConflictSystemTray implements ComputationListener {
 		// Create components for a popup menu components to be used if System Tray is supported.
 		MenuItem aboutItem = new MenuItem("About");
 		MenuItem preferencesItem = new MenuItem("Edit Configuration");
-		daemonEnabledItem = new MenuItem("Disable Daemon");
+		daemonEnabledItem = new MenuItem("Stop Crystal updates");
 		refreshItem = new MenuItem("Refresh");
 		final MenuItem showClientItem = new MenuItem("Show Client");
 		MenuItem exitItem = new MenuItem("Exit");
@@ -151,7 +151,7 @@ public class ConflictSystemTray implements ComputationListener {
 				PreferencesGUIEditorFrame editorFrame = PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
 				JOptionPane.showMessageDialog(editorFrame, "Please remember to restart the client after closing the configuraton editor.");
 				// and disable client
-				daemonEnabledItem.setLabel("Enable Daemon");
+				daemonEnabledItem.setLabel("Start Crystal updates");
 				if (_timer != null) {
 					_timer.stop();
 					_timer = null;
@@ -328,10 +328,10 @@ public class ConflictSystemTray implements ComputationListener {
 	 * A listener for clicking the menu to enable the deamon.
 	 */
 	public void daemonAbleAction() {
-		if (daemonEnabledItem.getLabel().equals("Enable Daemon")) {
+		if (daemonEnabledItem.getLabel().equals("Start Crystal updates")) {
 			// daemon enabled
 			_log.info("ConflictDaemon enabled");
-			daemonEnabledItem.setLabel("Disable Daemon");
+			daemonEnabledItem.setLabel("Stop Crystal updates");
 			_client.setDaemonEnabled(true);
 			if (_timer != null) {
 				// do it
@@ -342,7 +342,7 @@ public class ConflictSystemTray implements ComputationListener {
 		} else {
 			// daemon disabled
 			_log.info("ConflictDaemon disabled");
-			daemonEnabledItem.setLabel("Enable Daemon");
+			daemonEnabledItem.setLabel("Start Crystal updates");
 			_client.setDaemonEnabled(false);
 			if (_timer != null) {
 				_timer.stop();
@@ -379,7 +379,7 @@ public class ConflictSystemTray implements ComputationListener {
 	public void performCalculations() {
 
 		// if the daemon is disabled, don't perform calculations.
-		if (daemonEnabledItem.getLabel().equals("Enable Daemon")) {
+		if (daemonEnabledItem.getLabel().equals("Start Crystal updates")) {
 			return;
 		}
 
