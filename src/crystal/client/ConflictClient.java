@@ -108,7 +108,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		_refresh = new JMenuItem("Refresh");
 		JMenuItem editConfiguration = new JMenuItem("Edit Configuration");
-		_disableDaemon = new JMenuItem("Disable Daemon");
+		_disableDaemon = new JMenuItem("Stop Crystal Updates");
 		/*CLEAR CACHE*/
 		_clearCache = new JMenuItem("Clear Cache");
 		JMenuItem exit = new JMenuItem("Exit");
@@ -281,9 +281,9 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 	public void setDaemonEnabled(boolean enable) {
 		if (enable) {
-			_disableDaemon.setText("Disable Daemon");
+			_disableDaemon.setText("Stop Crystal Updates");
 		} else {
-			_disableDaemon.setText("Enable Daemon");
+			_disableDaemon.setText("Start Crystal Updates");
 		}
 	}
 
