@@ -109,7 +109,7 @@ public class HgLogParser {
 	 * @return a mapping of hexes to Checkpoints in the log.
 	 */
 	public static HashMap<String, Checkpoint> parseLog(String log) {
-		ValidInputChecker.checkValidStringInput(log);
+		//ValidInputChecker.checkValidStringInput(log);
 		HashMap<String, Checkpoint> answer = new HashMap<String, Checkpoint>();
 		
 		for (String current : log.split("\nchangeset:")) {

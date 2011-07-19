@@ -62,12 +62,12 @@ public class LocalStateResult implements Result {
      * contained in the set of actions.
      */
     public LocalStateResult(DataSource source, String name, String lastState, String lastAction, String lastErrorMessage) {
-        ValidInputChecker.checkNullInput(source);
-        ValidInputChecker.checkValidStringInput(name);
-        ValidInputChecker.checkValidStringInput(lastState);
-        ValidInputChecker.checkValidStringInput(lastAction);
-        ValidInputChecker.checkValidStringInput(lastErrorMessage);
-        ValidInputChecker.checkActionNames(name);
+        //ValidInputChecker.checkNullInput(source);
+        //ValidInputChecker.checkValidStringInput(name);
+        //ValidInputChecker.checkValidStringInput(lastState);
+        //ValidInputChecker.checkValidStringInput(lastAction);
+        //ValidInputChecker.checkValidStringInput(lastErrorMessage);
+        //ValidInputChecker.checkActionNames(name);
         
     	if (name.startsWith(ERROR)) {
             _errorMessage = name.substring(ERROR.length());
