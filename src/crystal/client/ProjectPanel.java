@@ -148,6 +148,7 @@ public class ProjectPanel extends JPanel {
 
 				DataSource newGuy = new DataSource("New Repo " + --count, "", DataSource.RepoKind.HG, false, null);
 				pref.addDataSource(newGuy);
+				//TODO
 				add(repoPanel(newGuy, pref, prefs, panel, mainFrame));
 				prefs.setChanged(true);
 				panel.validate();
@@ -162,12 +163,13 @@ public class ProjectPanel extends JPanel {
 		// sourcesPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		GridBagConstraints constraints = new GridBagConstraints();
 
+		constraints.fill = GridBagConstraints.BOTH;
 		constraints.weightx = 1.0;
-		JLabel pShortName = new JLabel("Short Name");
-		JLabel pHide = new JLabel("Hide?");
-		JLabel pParent = new JLabel("Parent");
-		JLabel pClone = new JLabel("Clone Address");
-		JLabel pDelete = new JLabel("");
+		JLabel pShortName = new JLabel("Short Name", JLabel.CENTER);
+		JLabel pHide = new JLabel("Hide?", JLabel.CENTER);
+		JLabel pParent = new JLabel("Parent", JLabel.CENTER);
+		JLabel pClone = new JLabel("Clone Address", JLabel.CENTER);
+		JLabel pDelete = new JLabel("", JLabel.CENTER);
 
 		grid.setConstraints(pShortName, constraints);
 		sourcesPanel.add(pShortName);
@@ -175,17 +177,20 @@ public class ProjectPanel extends JPanel {
 		sourcesPanel.add(pHide);
 		grid.setConstraints(pParent, constraints);
 		sourcesPanel.add(pParent);
+		constraints.gridwidth = GridBagConstraints.RELATIVE;
 		grid.setConstraints(pClone, constraints);
 		sourcesPanel.add(pClone);
 		constraints.gridwidth = GridBagConstraints.REMAINDER;
 		grid.setConstraints(pDelete, constraints);
 		sourcesPanel.add(pDelete);
 
-		constraints.weightx = 0.0;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
 		for (DataSource source : pref.getDataSources()) {
+			//add(repoPanel(source, pref, prefs, panel, mainFrame));
 			JPanel repoPanel = repoPanel(source, pref, prefs, panel, mainFrame);
 			grid.setConstraints(repoPanel, constraints);
 			sourcesPanel.add(repoPanel);
+			
 		}
 		add(sourcesPanel);
 	}
@@ -209,7 +214,12 @@ public class ProjectPanel extends JPanel {
 	private JPanel repoPanel(final DataSource source, final ProjectPreferences pref, final ClientPreferences prefs, final JPanel panel,
 			final JFrame mainFrame) {
 		final JPanel repoPanel = new JPanel();
-		repoPanel.setLayout(new BoxLayout(repoPanel, BoxLayout.X_AXIS));
+		
+		GridBagLayout grid = new GridBagLayout();
+		repoPanel.setLayout(grid);
+		GridBagConstraints constraints = new GridBagConstraints();
+		
+		//repoPanel.setLayout(new BoxLayout(repoPanel, BoxLayout.X_AXIS));
 
 		/*
 		 * repoPanel.add(new JLabel("Repo Type")); final JComboBox type = new JComboBox();
@@ -221,7 +231,9 @@ public class ProjectPanel extends JPanel {
 
 		// repoPanel.add(new JLabel("Short Name"));
 		final JTextField shortName = new JTextField(source.getShortName());
-		repoPanel.add(shortName);
+
+		shortName.setColumns(10);
+		
 		shortName.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {
 			}
@@ -241,7 +253,7 @@ public class ProjectPanel extends JPanel {
 		final JCheckBox hideBox = new JCheckBox();
 		if (source.isHidden())
 			hideBox.setSelected(true);
-		repoPanel.add(hideBox);
+
 		hideBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// hideBox.setSelected(!(hideBox.isSelected()));
@@ -254,7 +266,9 @@ public class ProjectPanel extends JPanel {
 		final JTextField parent = new JTextField(source.getParent());
 		if (parent.getText().equals(""))
 			parent.setText(" ");
-		repoPanel.add(parent);
+		
+		parent.setColumns(10);
+		
 		parent.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {
 			}
@@ -274,7 +288,9 @@ public class ProjectPanel extends JPanel {
 
 		// repoPanel.add(new JLabel("Clone Address"));
 		final JTextField cloneAddress = new JTextField(source.getCloneString());
-		repoPanel.add(cloneAddress);
+		
+		cloneAddress.setColumns(30);
+		
 		cloneAddress.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {
 			}
@@ -299,8 +315,29 @@ public class ProjectPanel extends JPanel {
 				mainFrame.pack();
 			}
 		});
+		
+		constraints.weightx = 1.0;
+		grid.setConstraints(shortName, constraints);
+		repoPanel.add(shortName);
+		grid.setConstraints(hideBox, constraints);
+		repoPanel.add(hideBox);
+		grid.setConstraints(parent, constraints);
+		repoPanel.add(parent);
+		grid.setConstraints(cloneAddress, constraints);
+		repoPanel.add(cloneAddress);
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		grid.setConstraints(deleteRepoButton, constraints);
 		repoPanel.add(deleteRepoButton);
-
+		
+		/*
+		repoPanel.add(shortName);
+		repoPanel.add(hideBox);
+		repoPanel.add(parent);
+		repoPanel.add(cloneAddress);
+		
+		repoPanel.add(deleteRepoButton);
+		*/
+		
 		return repoPanel;
 	}
 }
