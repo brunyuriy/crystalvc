@@ -13,15 +13,6 @@ public class DataSource {
 
 	public enum RepoKind {
 		GIT, HG;
-		
-		/*public boolean euqals(Object o){
-			if(o != null && getClass() == o.getClass()){
-				RepoKind other = (RepoKind) o;
-				
-			}
-			
-			return false;
-		}*/
 	}
 	
 	// whether or not this source is enabled
@@ -64,9 +55,9 @@ public class DataSource {
 	 * @param parent: the name of the parent repository
 	 */
 	public DataSource(String shortName, String cloneString, RepoKind repoKind, boolean hide, String parent) {
-		ValidInputChecker.checkValidStringInput(shortName);
-		ValidInputChecker.checkValidStringInput(cloneString);
-		ValidInputChecker.checkNullInput(repoKind);
+		//ValidInputChecker.checkValidStringInput(shortName);
+		//ValidInputChecker.checkValidStringInput(cloneString);
+		//ValidInputChecker.checkNullInput(repoKind);
 		
 		assert shortName != null;
 		assert cloneString != null;
@@ -118,7 +109,7 @@ public class DataSource {
 	 * @param history: the history 
 	 */
 	public void setHistory(RevisionHistory history) {
-		ValidInputChecker.checkNullInput(history);
+		//ValidInputChecker.checkNullInput(history);
 		_oldHistory = _history;
 		_history = history;
 	}
@@ -144,7 +135,6 @@ public class DataSource {
 	 * @param remoteHg : the remoteHg command
 	 */
 	public void setRemoteHg(String remoteHg) {
-		ValidInputChecker.checkValidStringInput(remoteHg);
 		_remoteHg = remoteHg;
 	}
 	
@@ -160,7 +150,7 @@ public class DataSource {
 	 * @param compileCommand: the compile command
 	 */
 	public void setCompileCommand(String compileCommand) {
-		ValidInputChecker.checkValidStringInput(compileCommand);
+		//ValidInputChecker.checkValidStringInput(compileCommand);
 		_compileCommand = compileCommand;
 	}
 	
@@ -176,7 +166,7 @@ public class DataSource {
 	 * @param testCommand: the test command
 	 */
 	public void setTestCommand(String testCommand) {
-		ValidInputChecker.checkValidStringInput(testCommand);
+		//ValidInputChecker.checkValidStringInput(testCommand);
 		_testCommand = testCommand;
 	}
 	
@@ -264,7 +254,7 @@ public class DataSource {
 	 * @param kind: the kind of this repository
 	 */
 	public void setKind(RepoKind kind) {
-		ValidInputChecker.checkNullInput(kind);
+		//ValidInputChecker.checkNullInput(kind);
 		_repoKind = kind;
 	}
 
@@ -273,7 +263,7 @@ public class DataSource {
 	 * @param name: this repository's name
 	 */
 	public void setShortName(String name) {
-		ValidInputChecker.checkValidStringInput(name);
+		//ValidInputChecker.checkValidStringInput(name);
 		
 		_shortName = name;
 	}
@@ -283,7 +273,7 @@ public class DataSource {
 	 * @param name: this repository's remote path
 	 */
 	public void setCloneString(String name) {
-		ValidInputChecker.checkValidStringInput(name);
+		//ValidInputChecker.checkValidStringInput(name);
 		
 		_cloneString = name;
 	}
