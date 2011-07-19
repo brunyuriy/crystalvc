@@ -1,5 +1,7 @@
 package crystal.model;
 
+import crystal.util.ValidInputChecker;
+
 /**
  * Describes a repository.
  * 
@@ -10,7 +12,7 @@ package crystal.model;
 public class DataSource {
 
 	public enum RepoKind {
-		GIT, HG
+		GIT, HG;
 	}
 	
 	// whether or not this source is enabled
@@ -53,6 +55,10 @@ public class DataSource {
 	 * @param parent: the name of the parent repository
 	 */
 	public DataSource(String shortName, String cloneString, RepoKind repoKind, boolean hide, String parent) {
+		//ValidInputChecker.checkValidStringInput(shortName);
+		//ValidInputChecker.checkValidStringInput(cloneString);
+		//ValidInputChecker.checkNullInput(repoKind);
+		
 		assert shortName != null;
 		assert cloneString != null;
 		// assert localString != null;
@@ -69,10 +75,41 @@ public class DataSource {
 	}
 	
 	/**
+	 * Compare this object with another object
+	 * @param o other object to be compared with this object
+	 * @return true if they are the same object; otherwise return false
+	 */
+	public boolean equals(Object o){
+		if (o != null && getClass() == o.getClass()){
+			DataSource other = (DataSource) o;
+			if (_history == null){	// assuming old history is also null
+				return _enabled == other._enabled && _shortName.equals(other._shortName)
+				&& _cloneString.equals(other._cloneString) && _repoKind.equals(other._repoKind)
+				&& _hide == other._hide && other._history == null;
+			} else if (_oldHistory == null){	// only old history is null
+				return _enabled == other._enabled && _shortName.equals(other._shortName)
+				&& _cloneString.equals(other._cloneString) && _repoKind.equals(other._repoKind)
+				&& _hide == other._hide 
+				&& _history.equals(other._history) && other._oldHistory == null;
+			} else {	// if both of them are not null
+				return _enabled == other._enabled && _shortName.equals(other._shortName)
+				&& _cloneString.equals(other._cloneString) && _repoKind.equals(other._repoKind)
+				&& _hide == other._hide 
+				&& _history.equals(other._history) && _oldHistory.equals(_oldHistory);
+		
+			}
+
+		} else {
+			return false;
+		}
+	}
+	
+	/**
 	 * Sets the history of this repository and moves the old history to _oldHistory
 	 * @param history: the history 
 	 */
 	public void setHistory(RevisionHistory history) {
+		//ValidInputChecker.checkNullInput(history);
 		_oldHistory = _history;
 		_history = history;
 	}
@@ -113,6 +150,7 @@ public class DataSource {
 	 * @param compileCommand: the compile command
 	 */
 	public void setCompileCommand(String compileCommand) {
+		//ValidInputChecker.checkValidStringInput(compileCommand);
 		_compileCommand = compileCommand;
 	}
 	
@@ -128,6 +166,7 @@ public class DataSource {
 	 * @param testCommand: the test command
 	 */
 	public void setTestCommand(String testCommand) {
+		//ValidInputChecker.checkValidStringInput(testCommand);
 		_testCommand = testCommand;
 	}
 	
@@ -215,6 +254,7 @@ public class DataSource {
 	 * @param kind: the kind of this repository
 	 */
 	public void setKind(RepoKind kind) {
+		//ValidInputChecker.checkNullInput(kind);
 		_repoKind = kind;
 	}
 
@@ -223,6 +263,8 @@ public class DataSource {
 	 * @param name: this repository's name
 	 */
 	public void setShortName(String name) {
+		//ValidInputChecker.checkValidStringInput(name);
+		
 		_shortName = name;
 	}
 
@@ -231,6 +273,8 @@ public class DataSource {
 	 * @param name: this repository's remote path
 	 */
 	public void setCloneString(String name) {
+		//ValidInputChecker.checkValidStringInput(name);
+		
 		_cloneString = name;
 	}
 

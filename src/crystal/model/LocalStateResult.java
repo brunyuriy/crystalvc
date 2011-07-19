@@ -3,6 +3,8 @@ package crystal.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import crystal.util.ValidInputChecker;
+
 
 /**
  * Represents the result of a computation of a local state of a repository
@@ -56,9 +58,18 @@ public class LocalStateResult implements Result {
      * @param source: the repository for which this result will pertain
      * @param name: the String representation of the state
      * @param lastState: the previous state
+     * @throws IllegalArgumentException if input String is invalid or name is not
+     * contained in the set of actions.
      */
     public LocalStateResult(DataSource source, String name, String lastState, String lastAction, String lastErrorMessage) {
-        if (name.startsWith(ERROR)) {
+        //ValidInputChecker.checkNullInput(source);
+        //ValidInputChecker.checkValidStringInput(name);
+        //ValidInputChecker.checkValidStringInput(lastState);
+        //ValidInputChecker.checkValidStringInput(lastAction);
+        //ValidInputChecker.checkValidStringInput(lastErrorMessage);
+        //ValidInputChecker.checkActionNames(name);
+        
+    	if (name.startsWith(ERROR)) {
             _errorMessage = name.substring(ERROR.length());
             _name = ERROR;
         } else {
