@@ -1,7 +1,6 @@
 package crystal.client;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -17,6 +16,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.Spring;
+import javax.swing.SpringLayout;
 
 import crystal.model.DataSource;
 
@@ -28,7 +29,10 @@ import crystal.model.DataSource;
 public class ProjectPanel extends JPanel {
 
 	private static final long serialVersionUID = 5244512987255240473L;
-
+	private static final int SOURCES_COLUMNS = 5;
+	private static final int BAR_SIZE = 1;
+	
+	
 	// The name of the project
 	private String _name;
 
@@ -135,6 +139,9 @@ public class ProjectPanel extends JPanel {
 
 		final JButton newRepoButton = new JButton("Add New Repository");
 
+
+		final JPanel sourcesPanel = new JPanel(new SpringLayout());
+		
 		newRepoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -148,8 +155,8 @@ public class ProjectPanel extends JPanel {
 
 				DataSource newGuy = new DataSource("New Repo " + --count, "", DataSource.RepoKind.HG, false, null);
 				pref.addDataSource(newGuy);
-				//TODO
-				add(repoPanel(newGuy, pref, prefs, panel, mainFrame));
+				addRepoPanel(newGuy, pref, prefs, panel, mainFrame, sourcesPanel);
+				formGrid(sourcesPanel, pref.getDataSources().size() + BAR_SIZE);
 				prefs.setChanged(true);
 				panel.validate();
 				mainFrame.pack();
@@ -157,41 +164,25 @@ public class ProjectPanel extends JPanel {
 		});
 		add(newRepoButton);
 
-		JPanel sourcesPanel = new JPanel();
-		GridBagLayout grid = new GridBagLayout();
-		sourcesPanel.setLayout(grid);
-		// sourcesPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-		GridBagConstraints constraints = new GridBagConstraints();
 
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.weightx = 1.0;
 		JLabel pShortName = new JLabel("Short Name", JLabel.CENTER);
 		JLabel pHide = new JLabel("Hide?", JLabel.CENTER);
 		JLabel pParent = new JLabel("Parent", JLabel.CENTER);
 		JLabel pClone = new JLabel("Clone Address", JLabel.CENTER);
 		JLabel pDelete = new JLabel("", JLabel.CENTER);
-
-		grid.setConstraints(pShortName, constraints);
+		
 		sourcesPanel.add(pShortName);
-		grid.setConstraints(pHide, constraints);
 		sourcesPanel.add(pHide);
-		grid.setConstraints(pParent, constraints);
 		sourcesPanel.add(pParent);
-		constraints.gridwidth = GridBagConstraints.RELATIVE;
-		grid.setConstraints(pClone, constraints);
 		sourcesPanel.add(pClone);
-		constraints.gridwidth = GridBagConstraints.REMAINDER;
-		grid.setConstraints(pDelete, constraints);
 		sourcesPanel.add(pDelete);
-
-		constraints.fill = GridBagConstraints.HORIZONTAL;
+		
 		for (DataSource source : pref.getDataSources()) {
-			//add(repoPanel(source, pref, prefs, panel, mainFrame));
-			JPanel repoPanel = repoPanel(source, pref, prefs, panel, mainFrame);
-			grid.setConstraints(repoPanel, constraints);
-			sourcesPanel.add(repoPanel);
-			
+			addRepoPanel(source, pref, prefs, panel, mainFrame, sourcesPanel);
 		}
+
+		formGrid(sourcesPanel, pref.getDataSources().size() + BAR_SIZE);
+		
 		add(sourcesPanel);
 	}
 
@@ -211,13 +202,8 @@ public class ProjectPanel extends JPanel {
 	 * @param mainFrame: the frame in which this panel sits
 	 * @return a panel used to display a single repository of a project.
 	 */
-	private JPanel repoPanel(final DataSource source, final ProjectPreferences pref, final ClientPreferences prefs, final JPanel panel,
-			final JFrame mainFrame) {
-		final JPanel repoPanel = new JPanel();
-		
-		GridBagLayout grid = new GridBagLayout();
-		repoPanel.setLayout(grid);
-		GridBagConstraints constraints = new GridBagConstraints();
+	private void addRepoPanel(final DataSource source, final ProjectPreferences pref, final ClientPreferences prefs, final JPanel panel,
+			final JFrame mainFrame, final JPanel sourcesPanel) {
 		
 		//repoPanel.setLayout(new BoxLayout(repoPanel, BoxLayout.X_AXIS));
 
@@ -231,8 +217,6 @@ public class ProjectPanel extends JPanel {
 
 		// repoPanel.add(new JLabel("Short Name"));
 		final JTextField shortName = new JTextField(source.getShortName());
-
-		shortName.setColumns(10);
 		
 		shortName.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {
@@ -266,9 +250,7 @@ public class ProjectPanel extends JPanel {
 		final JTextField parent = new JTextField(source.getParent());
 		if (parent.getText().equals(""))
 			parent.setText(" ");
-		
-		parent.setColumns(10);
-		
+
 		parent.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {
 			}
@@ -288,9 +270,7 @@ public class ProjectPanel extends JPanel {
 
 		// repoPanel.add(new JLabel("Clone Address"));
 		final JTextField cloneAddress = new JTextField(source.getCloneString());
-		
-		cloneAddress.setColumns(30);
-		
+
 		cloneAddress.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {
 			}
@@ -311,33 +291,74 @@ public class ProjectPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				pref.removeDataSource(source);
 				prefs.setChanged(true);
-				panel.remove(repoPanel);
+				sourcesPanel.remove(shortName);
+				sourcesPanel.remove(hideBox);
+				sourcesPanel.remove(parent);
+				sourcesPanel.remove(cloneAddress);
+				sourcesPanel.remove(deleteRepoButton);
+				formGrid(sourcesPanel, pref.getDataSources().size() + BAR_SIZE);
 				mainFrame.pack();
 			}
 		});
+
+		sourcesPanel.add(shortName);
+		sourcesPanel.add(hideBox);
+		sourcesPanel.add(parent);
+		sourcesPanel.add(cloneAddress);
 		
-		constraints.weightx = 1.0;
-		grid.setConstraints(shortName, constraints);
-		repoPanel.add(shortName);
-		grid.setConstraints(hideBox, constraints);
-		repoPanel.add(hideBox);
-		grid.setConstraints(parent, constraints);
-		repoPanel.add(parent);
-		grid.setConstraints(cloneAddress, constraints);
-		repoPanel.add(cloneAddress);
-		constraints.gridwidth = GridBagConstraints.REMAINDER;
-		grid.setConstraints(deleteRepoButton, constraints);
-		repoPanel.add(deleteRepoButton);
-		
-		/*
-		repoPanel.add(shortName);
-		repoPanel.add(hideBox);
-		repoPanel.add(parent);
-		repoPanel.add(cloneAddress);
-		
-		repoPanel.add(deleteRepoButton);
-		*/
-		
-		return repoPanel;
+		sourcesPanel.add(deleteRepoButton);
+
 	}
+	
+	  /* Used by makeCompactGrid. */
+	  private SpringLayout.Constraints getConstraintsForCell(int row, int col, JPanel parent) {
+	    SpringLayout layout = (SpringLayout) parent.getLayout();
+	    Component c = parent.getComponent(row * SOURCES_COLUMNS + col);
+	    return layout.getConstraints(c);
+	  }
+	
+	  /**
+	   * Form panel of sources to grid.
+	   * 
+	   * @param sourcesPanel panel to reform
+	   * @param rows number of rows in the panel
+	   */
+	  private void formGrid(JPanel sourcesPanel, int rows) {
+		    SpringLayout layout = (SpringLayout) sourcesPanel.getLayout();
+
+		    // Align all cells in each column and make them the same width.
+		    Spring x = Spring.constant(3);
+		    for (int col = 0; col < SOURCES_COLUMNS; col++) {
+		      Spring width = Spring.constant(0);
+		      for (int row = 0; row < rows; row++) {
+		        width = Spring.max(width, getConstraintsForCell(row, col, sourcesPanel).getWidth());
+		      }
+		      for (int row = 0; row < rows; row++) {
+		        SpringLayout.Constraints constraints = getConstraintsForCell(row, col, sourcesPanel);
+		        constraints.setX(x);
+		        constraints.setWidth(width);
+		      }
+		      x = Spring.sum(x, Spring.sum(width, Spring.constant(3)));
+		    }
+
+		    // Align all cells in each row and make them the same height.
+		    Spring y = Spring.constant(3);
+		    for (int row = 0; row < rows; row++) {
+		      Spring height = Spring.constant(0);
+		      for (int col = 0; col < SOURCES_COLUMNS; col++) {
+		        height = Spring.max(height, getConstraintsForCell(row, col, sourcesPanel).getHeight());
+		      }
+		      for (int col = 0; col < SOURCES_COLUMNS; col++) {
+		        SpringLayout.Constraints constraints = getConstraintsForCell(row, col, sourcesPanel);
+		        constraints.setY(y);
+		        constraints.setHeight(height);
+		      }
+		      y = Spring.sum(y, Spring.sum(height, Spring.constant(3)));
+		    }
+
+		    // Set panel's size
+		    SpringLayout.Constraints pCons = layout.getConstraints(sourcesPanel);
+		    pCons.setConstraint(SpringLayout.SOUTH, y);
+		    pCons.setConstraint(SpringLayout.EAST, x);
+		  }
 }
