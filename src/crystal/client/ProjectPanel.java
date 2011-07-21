@@ -215,7 +215,7 @@ public class ProjectPanel extends JPanel {
 							&& !pref.getEnvironment().getTestCommand().trim().equals(""))
 						test.setText(pref.getEnvironment().getTestCommand());
 					else
-						test.setText("lease write test command here.");
+						test.setText("Please write test command here.");
 				}
 				
 			}
