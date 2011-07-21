@@ -25,9 +25,11 @@ public class TestConstants {
 		possiblePaths.add("/Users/rtholmes/Documents/workspaces/_updated/speculation-inconsistency/edu.washington.cse.se.crystal/");
 		possiblePaths.add("/Users/rtholmes/Workspaces/speculation-inconsistency/edu.washington.cse.se.crystal/"); // iMac
 		possiblePaths.add("/Users/rtholmes/Documents/Crystal/"); // MBP
+		possiblePaths.add("/Users/rtholmes/Workspaces/inconsistencyworkspace/crystalvc/"); // MBA
 		possiblePaths.add("/homes/gws/brun/tempCrystal/sourceRepo/");
 		possiblePaths.add("C:\\Users\\Yuriy\\Desktop\\work\\crystalSource");
 		possiblePaths.add("C:\\Users\\brun\\work\\crystalCode");
+		possiblePaths.add(""); 
 
 		for (String possiblePath : possiblePaths) {
 			if (new File(possiblePath).exists()) {
