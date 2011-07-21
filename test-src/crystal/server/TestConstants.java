@@ -20,7 +20,7 @@ public class TestConstants {
 		 * This should contain the path to your workspace project location.
 		 */
 		Vector<String> possiblePaths = new Vector<String>();
-		possiblePaths.add("/var/lib/hudson/jobs/edu.washington.cs.se.crystal/workspace/"); // for ci server
+		possiblePaths.add("/var/lib/hudson/jobs/crystalvc/workspace/"); // for ci server
 		possiblePaths.add("/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/");
 		possiblePaths.add("/Users/rtholmes/Documents/workspaces/_updated/speculation-inconsistency/edu.washington.cse.se.crystal/");
 		possiblePaths.add("/Users/rtholmes/Workspaces/speculation-inconsistency/edu.washington.cse.se.crystal/"); // iMac
