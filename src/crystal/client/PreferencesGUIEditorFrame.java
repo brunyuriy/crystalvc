@@ -14,9 +14,11 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.xml.ws.Action;
 
 import org.junit.Assert;
 
@@ -205,11 +207,29 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		getContentPane().add(projectsTabs);
 		getContentPane().add(deleteProjectButton);
 
+		//TODO
 		addWindowListener(new WindowListener() {
 			public void windowClosing(WindowEvent arg0) {
+				boolean canClose = true;
+				setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);				
 				if (prefs.hasChanged()) {
-					ClientPreferences.savePreferencesToDefaultXML(prefs);
-					prefs.setChanged(false);
+					for(ProjectPreferences pp : prefs.getProjectPreference()){
+						for(DataSource ds : pp.getDataSources()){
+							if(ds.getCloneString().trim().equals("")) {
+								canClose = false;
+							}
+						}
+					}
+
+					if(canClose){
+						ClientPreferences.savePreferencesToDefaultXML(prefs);
+						prefs.setChanged(false);	
+
+					} else {
+						JOptionPane.showMessageDialog(null, "You have invalid input for clone address.", 
+								"Warning", JOptionPane.ERROR_MESSAGE);
+						setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+					}
 				}
 			}
 
@@ -235,6 +255,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		pack();
 		setVisible(true);
 	}
+
 
 	/**
 	 * A file chooser to select paths
@@ -267,6 +288,9 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			});
 		}
 	}
+
+	
+
 
 	/**
 	 * An execution point used only for testing.  

@@ -150,7 +150,7 @@ public class DataSource {
 	 * @param compileCommand: the compile command
 	 */
 	public void setCompileCommand(String compileCommand) {
-		//ValidInputChecker.checkValidStringInput(compileCommand);
+		ValidInputChecker.checkValidStringInput(compileCommand);
 		_compileCommand = compileCommand;
 	}
 	
@@ -166,7 +166,7 @@ public class DataSource {
 	 * @param testCommand: the test command
 	 */
 	public void setTestCommand(String testCommand) {
-		//ValidInputChecker.checkValidStringInput(testCommand);
+		ValidInputChecker.checkValidStringInput(testCommand);
 		_testCommand = testCommand;
 	}
 	
@@ -263,8 +263,7 @@ public class DataSource {
 	 * @param name: this repository's name
 	 */
 	public void setShortName(String name) {
-		//ValidInputChecker.checkValidStringInput(name);
-		
+		ValidInputChecker.checkValidStringInput(name);
 		_shortName = name;
 	}
 
@@ -273,8 +272,7 @@ public class DataSource {
 	 * @param name: this repository's remote path
 	 */
 	public void setCloneString(String name) {
-		//ValidInputChecker.checkValidStringInput(name);
-		
+		ValidInputChecker.checkValidStringInput(name);
 		_cloneString = name;
 	}
 
