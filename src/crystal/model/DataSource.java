@@ -272,7 +272,7 @@ public class DataSource {
 	 * @param name: this repository's remote path
 	 */
 	public void setCloneString(String name) {
-		//ValidInputChecker.checkValidStringInput(name);
+		ValidInputChecker.checkValidStringInput(name);
 		_cloneString = name;
 	}
 
