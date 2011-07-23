@@ -15,6 +15,7 @@ import java.util.Date;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
 
@@ -521,7 +522,8 @@ public class ConflictSystemTray implements ComputationListener {
 	 *            : --version : Prints the version number.
 	 */
 	public static void main(String[] args) {
-
+		//setLookAndFeel();
+		
 		if (args.length > 0) {
 			if (args[0].equals("--version")) {
 				System.out.println("Crystal version: " + VERSION_ID);
@@ -535,6 +537,19 @@ public class ConflictSystemTray implements ComputationListener {
 		ConflictSystemTray cst = ConflictSystemTray.getInstance();
 		cst.createAndShowGUI();
 	}
+	
+	/**
+	 * private: set the window to match the native look and feel of the
+	 * operating system
+	 */
+	private static void setLookAndFeel() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			System.out.println("Unable to load native look and feel");
+		}
+	}
+
 
 	public static void startLogging() {
 		LSMRLogger.startLog4J(Constants.QUIET_CONSOLE, true, Constants.LOG_LEVEL, System.getProperty("user.home"), ".conflictClientLog");
