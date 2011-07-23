@@ -160,7 +160,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		editConfiguration.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ConflictSystemTray.getInstance().preferencesAction();
+ 				ConflictSystemTray.getInstance().preferencesAction();
 			}
 		});
 
