@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.util.HashSet;
 
 import javax.swing.BoxLayout;
@@ -18,7 +19,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.xml.ws.Action;
 
 import org.junit.Assert;
 
@@ -272,17 +272,21 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
 			final JFileChooser chooser = new JFileChooser(path.getText());
+			
 			chooser.setFileSelectionMode(fileSelectionMode);
 			getContentPane().add(chooser);
-
+			chooser.setFileHidingEnabled(true);
 			pack();
 			setVisible(true);
 
 			chooser.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					path.setText(chooser.getSelectedFile().getAbsolutePath());
-					// and pretend like you typed a key:
-					path.getKeyListeners()[0].keyTyped(new KeyEvent(path, 0, 0, 0, 0, ' '));
+					String command = e.getActionCommand();
+					if (command.equals(JFileChooser.APPROVE_SELECTION)) {
+						path.setText(chooser.getSelectedFile().getAbsolutePath());
+						// and pretend like you typed a key:
+						path.getKeyListeners()[0].keyTyped(new KeyEvent(path, 0, 0, 0, 0, ' '));
+					}
 					chooserFrame.setVisible(false);
 				}
 			});
