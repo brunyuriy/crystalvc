@@ -1,0 +1,43 @@
+This document contains a summary of the design of Crystal and some pointers to where to find various important parts of Crystal in its source code.  
+
+First, the code is in an hg repository in http://crystalvc.googlecode.com/hg (having been moved from
+/projects/swlab1/speculation/code/crystal/sourceRepo in June 2011).
+
+Crystal has two modules: the front end and the back end.  They are intended to be separate.  
+-- The back end deals with the repositories, checks for changes every X minutes, computes relationships, guidance, etc.  The back end reads all the info it needs from a configuration file.  
+-- The front end displays most recently computed information to the user and allows the user to force a back-end refresh, change the config file (this part --- PreferencesGUIEditorFrame --- is badly outdated and can only handle parts of the current config file format [though Crystal is backwards compatible]).  
+-- One of the main reasons for this separation was to allow a smooth GUI experience that does not block by the computation happening in the background.  
+
+There are 5 packages in Crystal:
+crystal
+crystal.client
+crystal.server
+crystal.model
+crystal.util
+plus there is crystal.client.images that contains various images that Crystal uses, but no code.  
+
+The crystal package contains only a Constants.java class with various global variables.  
+
+I believe the original intent of the crystal.client package was to contain the front end, though this is heavily not true anymore.  
+I believe the original intent of the crystal.server package was to contain the back end, though this is heavily not true anymore either.  The two ends are spread around these two packages without any meaningful, to me, rhyme or reason for the separation.
+
+The crystal.model package contains classes that describe objects related to repositories, relationships, states, and other information on repositories.  
+
+The crystal.util package contains classes that execute command-line operations, deal with logging, and allow some GUI stuff like multiline tool tips.  
+
+In test-src, there is also a crystal.server package, which has small number of regression tests of the back end.  It tests a few relationships (not the build or test ones), and only very few instances of each relationship (maybe as few as one each).  The testing is woefully underdone.  
+
+The front end:
+The front end consists of two entities: ConflictClient is the "Crystal window" and ConflictSystemTray is the "tray icon" object.  
+The main function is in the ConflictSystemTray class.  It creates a system tray (if possible in the OS) and a ConflictClient window and starts the back end.  
+
+The back end:
+The driver of the back end is the ConflictDaemon object (singleton).  It keeps track of time and starts the state/relationship/action/guidance computations.  The daemon also keeps the most recent computed relationships/states/etc. (And also the relationships/states/etc. history, 1 computation back, which we call the "last" slot.)  The front end only talks to the daemon.  .calculateRelationship and .calculateLocalState compute the new relationships/states/etc.  .getRelationship and .LocalState simply return the most recent computed answer.  
+
+The relationships/states/etc. computation:
+The computation happens in HgStateChecker.  
+1.  For each project, there is 1 "my" repository and a set of n "other" repositories.  For each of these n+1 repositories, Crystal maintain a local clone.  At the start of every computation, Crystal checks if the local clone exists.  If it does not, Crystal clones one.  If it does, Crystal pulls into the local clone.  
+2.  When we start a recompute, we move current relationships/states/etc. into the "last" slot.  The new relationships/states/etc. are marked as "not ready" until they are ready.  The front end ignores new "not ready" results and uses the "last" ones until the new ones are "ready".  
+3.  For each project, we compute the local state of "my" repository (HgStateChecker.getLocalState).  
+4.  For each "other" repository, we compute the relationship between "my" and that repository (HgStateChecker.getRelationship).  We do this by grabbing the history and getting as much info as we can from it (same, behind, ahead).  If both parties have made changes, then we create a temp clone of "my" local clone.  We then pull into it from the "other" repo's local clone and try to merge.  If that merge results in 1 head, we try to build, followed by test.  
+5.  Once we have computed the local states and relationships, we now compute the guidance and action (we need to know relationship with the master before doing this; we could just compute the master, but my simplification is to compute the whole "row" and then go back and do the guidance/action).  Once the action and all guidance is computed, we set the states/relationships ready.  
