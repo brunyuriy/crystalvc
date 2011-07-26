@@ -22,12 +22,12 @@ public class DataSourceTest {
 	public static final int TIMEOUT = 20000;
 	public static DataSource data;
 	
-	
+	/*
 	@Test(expected = IllegalArgumentException.class)
 	public void testIllegalInputConstructor() {
 		new DataSource(null, null, null, false, null);
 	}
-	
+	*/
 	@Test
 	public void testSetField(){
 		String short_name = "Repository";

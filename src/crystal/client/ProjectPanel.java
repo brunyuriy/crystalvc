@@ -275,24 +275,6 @@ public class ProjectPanel extends JPanel {
 	}
 	
 	/**
-	 * Return default message in the text field
-	 * @param s
-	 * @return
-	 */
-	private String getDefaultStatement(String s){
-		return "Please write " + s + " here.";
-	}
-
-	/**
-	 * Check if input string is default statement
-	 * @param s
-	 * @return
-	 */
-	private boolean isDefaultStatement(String s){
-		return s.startsWith("Please write ") && s.endsWith(" here.");
-	}
-	
-	/**
 	 * @return this project's name
 	 */
 	public String getName() {

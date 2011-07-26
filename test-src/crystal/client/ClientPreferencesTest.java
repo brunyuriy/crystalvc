@@ -12,6 +12,13 @@ import crystal.client.ClientPreferences.NonexistentProjectException;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
 
+/**
+ * Class ClientPreferencesTest will test the performance of class 
+ * ClientPreferences
+ * 
+ * @author Haochen
+ *
+ */
 public class ClientPreferencesTest {
 	
 	
@@ -195,26 +202,6 @@ public class ClientPreferencesTest {
 		assertEquals("After removing project preference at index 1 again", 1, cp.getProjectPreference().size());
 		
 		assertNotNull("First added project preference still exist", cp.getProjectPreferences("shortName"));
-	}
-
-	//TODO
-	@Test
-	public void testLoadPreferencesFromXML() {
-		ClientPreferences temp = ClientPreferences.loadPreferencesFromXML();
-		fail("Not yet implemented");
-		
-	}
-
-	//TODO
-	@Test
-	public void testSavePreferencesToDefaultXML() {
-		fail("Not yet implemented");
-	}
-
-	//TODO
-	@Test
-	public void testSavePreferencesToXML() {
-		fail("Not yet implemented");
 	}
 
 }

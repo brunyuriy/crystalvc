@@ -13,6 +13,7 @@ import crystal.model.RevisionHistory.Action;
 import crystal.model.RevisionHistory.Capable;
 import crystal.model.RevisionHistory.Ease;
 import crystal.model.RevisionHistory.When;
+import crystal.util.ValidInputChecker;
 
 /**
  * A Relationship represents the relatiionship between two repositories.  
@@ -99,6 +100,7 @@ public class Relationship implements Result {
 	 * @param image: the image to display (if null then it'll either be set to pending, error (if appropriate), or computed later)
 	 */
 	public Relationship(String name, ImageIcon icon, Image image) {
+	    ValidInputChecker.checkNullInput(name);
 	    
 		if (name.startsWith(ERROR)) {
 		    _errorMessage = name.substring(ERROR.length());
