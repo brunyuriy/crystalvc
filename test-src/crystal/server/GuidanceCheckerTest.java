@@ -7,12 +7,22 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
+import crystal.model.Relationship;
+import crystal.model.RevisionHistory.When;
 import crystal.server.HgLogParser.Checkpoint;
 
+/**
+ * Class GuidanceCheckerTest will test the performance of class
+ * GuidanceChecker
+ * 
+ * @author Haochen
+ *
+ */
 public class GuidanceCheckerTest {
 
 	@Test
@@ -53,9 +63,31 @@ public class GuidanceCheckerTest {
 
 	@Test
 	public void testGetWhen() {
-		fail("Not yet implemented");
+		Set<String> me = new TreeSet<String>();
+		Set<String> you = new TreeSet<String>();
+		Set<String> parent = new TreeSet<String>();
+		
+		Relationship same = new Relationship(Relationship.SAME, null, null);
+		
+		Relationship behind = new Relationship(Relationship.BEHIND, null, null);
+		Relationship ahead = new Relationship(Relationship.AHEAD, null, null);
+		
+		assertTrue("Relationship same", GuidanceChecker.getWhen(me, you, parent, same).equals(When.NOTHING));
+		
+		me.add("a");
+		you.add("a");
+		you.add("b");
+		parent.add("a");
+		parent.add("b");
+		
+		assertTrue("Relationship behind, you have more", GuidanceChecker.getWhen(me, you, parent, behind).equals(When.NOW));
+		
+		me.add("c");
+		assertTrue("Relationship ahead, I have more", GuidanceChecker.getWhen(me, you, parent, ahead).equals(When.NOW));
+		
+		
 	}
-
+	/*
 	@Test
 	public void testGetConsequences() {
 		fail("Not yet implemented");
@@ -65,10 +97,5 @@ public class GuidanceCheckerTest {
 	public void testGetCapable() {
 		fail("Not yet implemented");
 	}
-
-	@Test
-	public void testGetEase() {
-		fail("Not yet implemented");
-	}
-
+	*/
 }

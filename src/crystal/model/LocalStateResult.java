@@ -67,7 +67,7 @@ public class LocalStateResult implements Result {
         //ValidInputChecker.checkValidStringInput(lastState);
         //ValidInputChecker.checkValidStringInput(lastAction);
         //ValidInputChecker.checkValidStringInput(lastErrorMessage);
-        //ValidInputChecker.checkActionNames(name);
+    	ValidInputChecker.checkStringInSet(name, actions.keySet());
         
     	if (name.startsWith(ERROR)) {
             _errorMessage = name.substring(ERROR.length());

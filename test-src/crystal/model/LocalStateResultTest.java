@@ -2,6 +2,7 @@ package crystal.model;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import crystal.model.DataSource.RepoKind;
@@ -18,12 +19,14 @@ public class LocalStateResultTest {
 
 	public static LocalStateResult localState;
 	
+	/*
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullInputConstructor() {
 		new LocalStateResult(null, null, null, null, null);
 	}
+	*/
 	
-	@Test
+	@Before
 	public void testLocalStateResult() {
 		String name = LocalStateResult.TEST;
 		String lastState = "lastState";

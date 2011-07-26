@@ -15,6 +15,8 @@ public class SetOperations {
 	 * @return the intersection of a and b.
 	 */
 	public static Set<String> intersection(Set<String> a, Set<String> b) {
+		ValidInputChecker.checkNullInput(a);
+		ValidInputChecker.checkNullInput(b);
 		Set<String> all = new HashSet<String>();
 		all.addAll(a);
 		all.addAll(b);
@@ -34,6 +36,8 @@ public class SetOperations {
 	 * @return the union of a and b
 	 */
 	public static Set<String> union(Set<String> a, Set<String> b) {
+		ValidInputChecker.checkNullInput(a);
+		ValidInputChecker.checkNullInput(b);
 		Set<String> answer = new HashSet<String>();
 		answer.addAll(a);
 		answer.addAll(b);

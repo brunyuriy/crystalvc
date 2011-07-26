@@ -593,7 +593,7 @@ public class ClientPreferences {
                 else
                     sourceElem.setAttribute(IPrefXML.HIDE[0], "false");
                 if (src.getParent() != null)
-                sourceElem.setAttribute(IPrefXML.PARENT[0], src.getParent());
+                	sourceElem.setAttribute(IPrefXML.PARENT[0], src.getParent());
 
                 projectElem.addContent(sourceElem);
             }
