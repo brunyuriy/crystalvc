@@ -22,6 +22,7 @@ import crystal.Constants;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
 import crystal.util.RunIt;
+import crystal.util.ValidInputChecker;
 import crystal.util.XMLTools;
 
 /**
@@ -160,11 +161,33 @@ public class ClientPreferences {
      * @param hgPath
      */
     public ClientPreferences(String tempDirectory, String hgPath, long refresh) {
+    	ValidInputChecker.checkValidStringInput(tempDirectory);
+    	ValidInputChecker.checkValidStringInput(hgPath);
+    	if(refresh < 0){
+    		throw new IllegalArgumentException("Negative number for time");
+    	}
         _tempDirectory = tempDirectory;
         _hgPath = hgPath;
         _refresh = refresh;
         REFRESH = refresh;
         _hasChanged = false;
+    }
+    
+    //TODO
+    /**
+     * Compare this object with another object
+     * @param o target object
+     * @return true if they are same object; otherwise return false
+     */
+    public boolean equals(Object o){
+    	if(o != null && getClass() == o.getClass()){
+    		ClientPreferences other = (ClientPreferences) o;
+    		return _tempDirectory.equals(other._tempDirectory) && _hgPath.equals(other._hgPath)
+    				&& _refresh == other._refresh
+    				&& _projectPreferences.equals(other._projectPreferences);
+    	} else {
+    		return false;
+    	}
     }
 
     /**
@@ -231,235 +254,248 @@ public class ClientPreferences {
         // could not find the project with shortName
         throw new NonexistentProjectException("Project preferences: " + shortName + " does not exist.");
     }
+    
+    /**
+     * Load preferences from the default config file location.
+     * 
+     * @return the ClientPreferences represented by the default config file. 
+     *   If the config file does not exist, then it returns the default configuration 
+     *   (written in defaultWindowsConfig.xml or defaultOtherConfig.xml, depending on the OS.  
+     * @throws IOException 
+     * @throws IOException from FileIO and 
+     *         various Runtime exceptions from the XML reader and parser.
+     */
+    public static ClientPreferences loadPreferencesFromDefaultXML() throws IOException {
+    	File configFile = new File(CONFIG_PATH);
+    	if (!configFile.exists()) {
+            configFile.createNewFile();
+            
+            String defaultXML = null;
+            if (System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") > -1)
+                defaultXML = "defaultWindowsConfig.xml";
+            else
+                defaultXML = "defaultOtherConfig.xml";
+            InputStream is = ClientPreferences.class.getResourceAsStream(defaultXML);
+            assert is != null;
 
+            OutputStream os = new FileOutputStream(configFile);
+            assert os != null;
+
+            byte[] buffer = new byte[1024];
+            int len;
+
+            while ((len = is.read(buffer)) >= 0)
+                os.write(buffer, 0, len);
+
+            is.close();
+            os.close();
+
+            _log.info("Created new configuration file: " + configFile.getAbsolutePath());
+
+        } else {
+            _log.info("Using existing config file: " + configFile.getAbsolutePath());
+        }
+    	return loadPreferencesFromXML(configFile);
+    }
+    
     /**
      * Load the saved preferences from a config file.
      * 
-     * @return the ClientPreferences represented by the config file. If the config file does not exist, then it reads the defaultConfig.xml file from
-     *         Crystal's build.
-     * @throws various
-     *             Runtime exceptions from the XML reader and parser.
+     * @return the ClientPreferences represented by the configFile. 
+     *   If the config file does not exist, then it returns null.  
+     * @throws various Runtime exceptions from the XML reader and parser.
      */
-    public static ClientPreferences loadPreferencesFromXML() {
+    public static ClientPreferences loadPreferencesFromXML(File configFile) {
         ClientPreferences prefs = null;
         boolean prefsChanged = false;
 
         SAXBuilder builder = new SAXBuilder(false);
         Document doc = null;
 
+        if (!configFile.exists())
+        	return null;
+        
         try {
-            File configFile = new File(CONFIG_PATH);
-            if (!configFile.exists()) {
-                configFile.createNewFile();
-                
-                String defaultXML = null;
-                if (System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") > -1)
-                    defaultXML = "defaultWindowsConfig.xml";
-                else
-                    defaultXML = "defaultOtherConfig.xml";
-                InputStream is = ClientPreferences.class.getResourceAsStream(defaultXML);
-                assert is != null;
+        	// will throw a JDOMExeption if the XML file cannot be parsed
+        	doc = builder.build(configFile.getAbsolutePath());
+        	Element rootElement = doc.getRootElement();
+        	String tempDirectory = getValue(rootElement, IPrefXML.TMP_DIR);
+        	if (tempDirectory.startsWith(Constants.HOME)) {
+        		String firstPart = System.getProperty("user.home");
+        		String lastPart = tempDirectory.substring(Constants.HOME.length());
+        		tempDirectory = firstPart + lastPart;
 
-                OutputStream os = new FileOutputStream(configFile);
-                assert os != null;
-
-                byte[] buffer = new byte[1024];
-                int len;
-
-                while ((len = is.read(buffer)) >= 0)
-                    os.write(buffer, 0, len);
-
-                is.close();
-                os.close();
-
-                _log.info("Created new configuration file: " + configFile.getAbsolutePath());
-
-            } else {
-
-                _log.info("Using existing config file: " + configFile.getAbsolutePath());
-
-            }
-
-            // will throw a JDOMExeption if the XML file cannot be parsed
-            doc = builder.build(CONFIG_PATH);
-            Element rootElement = doc.getRootElement();
-            String tempDirectory = getValue(rootElement, IPrefXML.TMP_DIR);
-            if (tempDirectory.startsWith(Constants.HOME)) {
-                String firstPart = System.getProperty("user.home");
-                String lastPart = tempDirectory.substring(Constants.HOME.length());
-                tempDirectory = firstPart + lastPart;
-
-                _log.trace("$HOME in temporary path: " + (firstPart + lastPart));
-            }
+        		_log.trace("$HOME in temporary path: " + (firstPart + lastPart));
+        	}
 
 
-            if ((!(tempDirectory.endsWith(File.separator))) && (!(tempDirectory.endsWith("/")))) {
-                tempDirectory += File.separator;
-                prefsChanged = true;
-            }
+        	if ((!(tempDirectory.endsWith(File.separator))) && (!(tempDirectory.endsWith("/")))) {
+        		tempDirectory += File.separator;
+        		prefsChanged = true;
+        	}
 
-            String temptempDirectory = tempDirectory.replace('\\', '/');
-            if (!temptempDirectory.equals(tempDirectory)) {
-                prefsChanged = true;
-                tempDirectory = temptempDirectory;
-            }
+        	String temptempDirectory = tempDirectory.replace('\\', '/');
+        	if (!temptempDirectory.equals(tempDirectory)) {
+        		prefsChanged = true;
+        		tempDirectory = temptempDirectory;
+        	}
 
-            boolean happyTempPath = false;
-            while (!happyTempPath) {
-                try {
-                    verifyPath(tempDirectory);
-                    happyTempPath = true;
-                } catch (ConfigurationReadingException e) {
-                    if (e.getType() == ConfigurationReadingException.PATH_INVALID)
-                        if ((new File(tempDirectory)).mkdirs())
-                            happyTempPath = true;
-                        else {
-                            tempDirectory = JOptionPane.showInputDialog("The current temprorary path is invalid.\nPlease select another path.",
-                                    tempDirectory);
-                            prefsChanged = true;
-                        }
-                }
-            }
+        	boolean happyTempPath = false;
+        	while (!happyTempPath) {
+        		try {
+        			verifyPath(tempDirectory);
+        			happyTempPath = true;
+        		} catch (ConfigurationReadingException e) {
+        			if (e.getType() == ConfigurationReadingException.PATH_INVALID)
+        				if ((new File(tempDirectory)).mkdirs())
+        					happyTempPath = true;
+        				else {
+        					tempDirectory = JOptionPane.showInputDialog("The current temprorary path is invalid.\nPlease select another path.",
+        							tempDirectory);
+        					prefsChanged = true;
+        				}
+        		}
+        	}
 
-            long refresh;
-            String refreshStr = getValue(rootElement, IPrefXML.REFRESH);
-            if (refreshStr == null)
-                refresh = Constants.DEFAULT_REFRESH;
-            else
-                refresh = Long.parseLong(refreshStr);
-            if (refresh < 0)
-                refresh = Constants.DEFAULT_REFRESH;
+        	long refresh;
+        	String refreshStr = getValue(rootElement, IPrefXML.REFRESH);
+        	if (refreshStr == null)
+        		refresh = Constants.DEFAULT_REFRESH;
+        	else
+        		refresh = Long.parseLong(refreshStr);
+        	if (refresh < 0)
+        		refresh = Constants.DEFAULT_REFRESH;
 
-            // @deprecated
-            // String hgPath = getValue(rootElement, IPrefXML.HG_PATH);
-            String hgPath = RunIt.getExecutable("hg");
+        	// @deprecated
+        	// String hgPath = getValue(rootElement, IPrefXML.HG_PATH);
+        	String hgPath = RunIt.getExecutable("hg");
 
-            boolean happyHgPath = false;
-            while (!happyHgPath) {
-                try {
-                    verifyFile(hgPath);
-                    happyHgPath = true;
-                } catch (ConfigurationReadingException e) {
-                    // if the exception type is either ConfigurationReadingException.PATH_INVALID or
-                    // ConfigurationReadingException.PATH_IS_DIRECTORY
-                    // (only two possibilities))
-                    hgPath = JOptionPane.showInputDialog("The current path to hg is invalid.\nPlease select a proper path.", hgPath);
-                    prefsChanged = true;
-                }
-            }
+        	boolean happyHgPath = false;
+        	while (!happyHgPath) {
+        		try {
+        			verifyFile(hgPath);
+        			happyHgPath = true;
+        		} catch (ConfigurationReadingException e) {
+        			// if the exception type is either ConfigurationReadingException.PATH_INVALID or
+        			// ConfigurationReadingException.PATH_IS_DIRECTORY
+        			// (only two possibilities))
+        			hgPath = JOptionPane.showInputDialog("The current path to hg is invalid.\nPlease select a proper path.", hgPath);
+        			prefsChanged = true;
+        		}
+        	}
 
-            prefs = new ClientPreferences(tempDirectory, hgPath, refresh);
-            prefs.setChanged(prefsChanged);
+        	prefs = new ClientPreferences(tempDirectory, hgPath, refresh);
+        	prefs.setChanged(prefsChanged);
 
-            // read the attributes.
-            // make sure to check for old versions with the RETRO_PREFIX prefix.
-            List<Element> projectElements = getChildren(rootElement, IPrefXML.PROJECT);
-            for (Element projectElement : projectElements) {
-                String projectKind = getValue(projectElement, IPrefXML.KIND);
-                String projectLabel = getValue(projectElement, IPrefXML.LABEL);
-                String projectClone = getValue(projectElement, IPrefXML.CLONE);
-                String projectRemoteHg = getValue(projectElement, IPrefXML.REMOTE_HG);
-                String projectParent = getValue(projectElement, IPrefXML.PARENT);
-                String compileCommand = getValue(projectElement, IPrefXML.COMPILE);
-                String testCommand = getValue(projectElement, IPrefXML.TEST);
+        	// read the attributes.
+        	// make sure to check for old versions with the RETRO_PREFIX prefix.
+        	List<Element> projectElements = getChildren(rootElement, IPrefXML.PROJECT);
+        	for (Element projectElement : projectElements) {
+        		String projectKind = getValue(projectElement, IPrefXML.KIND);
+        		String projectLabel = getValue(projectElement, IPrefXML.LABEL);
+        		String projectClone = getValue(projectElement, IPrefXML.CLONE);
+        		String projectRemoteHg = getValue(projectElement, IPrefXML.REMOTE_HG);
+        		String projectParent = getValue(projectElement, IPrefXML.PARENT);
+        		String compileCommand = getValue(projectElement, IPrefXML.COMPILE);
+        		String testCommand = getValue(projectElement, IPrefXML.TEST);
 
 
-                if (projectKind == null) {
-                    throw new RuntimeException("Kind attribute must be set for project element.");
-                }
-                if (projectLabel == null) {
-                    throw new RuntimeException("ShortName attribute must be set for project element.");
-                }
-                if (projectClone == null) {
-                    throw new RuntimeException("Clone attribute must be set for project element.");
-                }
+        		if (projectKind == null) {
+        			throw new RuntimeException("Kind attribute must be set for project element.");
+        		}
+        		if (projectLabel == null) {
+        			throw new RuntimeException("ShortName attribute must be set for project element.");
+        		}
+        		if (projectClone == null) {
+        			throw new RuntimeException("Clone attribute must be set for project element.");
+        		}
 
-                if (projectClone.startsWith(Constants.HOME)) {
-                    String firstPart = System.getProperty("user.home");
-                    String lastPart = projectClone.substring(Constants.HOME.length());
-                    projectClone = firstPart + lastPart;
+        		if (projectClone.startsWith(Constants.HOME)) {
+        			String firstPart = System.getProperty("user.home");
+        			String lastPart = projectClone.substring(Constants.HOME.length());
+        			projectClone = firstPart + lastPart;
 
-                    _log.trace("$HOME in project path: " + (firstPart + lastPart));
-                }
+        			_log.trace("$HOME in project path: " + (firstPart + lastPart));
+        		}
 
-                RepoKind kind = RepoKind.valueOf(projectKind);
+        		RepoKind kind = RepoKind.valueOf(projectKind);
 
-                // The project need not be a local path!
-                // verifyPath(projectClone);
+        		// The project need not be a local path!
+        		// verifyPath(projectClone);
 
-                if (kind == null || !kind.equals(RepoKind.HG)) {
-                    throw new RuntimeException("ClientPreferences - Kind not valid. (currently only HG is supported).");
-                }
+        		if (kind == null || !kind.equals(RepoKind.HG)) {
+        			throw new RuntimeException("ClientPreferences - Kind not valid. (currently only HG is supported).");
+        		}
 
-                if (projectLabel == null || projectLabel.equals("")) {
-                    throw new RuntimeException("ClientPreferences - project shortName must be specified.");
-                }
+        		if (projectLabel == null || projectLabel.equals("")) {
+        			throw new RuntimeException("ClientPreferences - project shortName must be specified.");
+        		}
 
-                DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind, false, projectParent);
-                myEnvironment.setRemoteHg(projectRemoteHg);
-                if ((compileCommand != null) && (!(compileCommand.trim().isEmpty()))) {
-                    String compileCommandExecutable = RunIt.getExecutable(compileCommand);
-                    if (compileCommandExecutable == null) {
-                        _log.error("Error while looking for a way to execute the build command: " + compileCommand + "\nCrystal will ignore this command.");
-                        // throw new Error("No executable found for " + compileCommand);
-                    }
-                    myEnvironment.setCompileCommand(compileCommandExecutable);
-                }
-                if ((testCommand != null) && (!(testCommand.trim().isEmpty()))) {
-                    String testCommandExecutable = RunIt.getExecutable(testCommand);
-                    if (testCommandExecutable == null) {
-                        _log.error("Error while looking for a way to execute the test command: " + testCommand + "\nCrystal will ignore this command.");
-                        // throw new Error("No executable found for " + testCommand);
-                    }
-                    myEnvironment.setTestCommand(testCommandExecutable);
-                }
+        		DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind, false, projectParent);
+        		myEnvironment.setRemoteHg(projectRemoteHg);
+        		if ((compileCommand != null) && (!(compileCommand.trim().isEmpty()))) {
+        			String compileCommandExecutable = RunIt.getExecutable(compileCommand);
+        			if (compileCommandExecutable == null) {
+        				_log.error("Error while looking for a way to execute the build command: " + compileCommand + "\nCrystal will ignore this command.");
+        				// throw new Error("No executable found for " + compileCommand);
+        			}
+        			myEnvironment.setCompileCommand(compileCommandExecutable);
+        		}
+        		if ((testCommand != null) && (!(testCommand.trim().isEmpty()))) {
+        			String testCommandExecutable = RunIt.getExecutable(testCommand);
+        			if (testCommandExecutable == null) {
+        				_log.error("Error while looking for a way to execute the test command: " + testCommand + "\nCrystal will ignore this command.");
+        				// throw new Error("No executable found for " + testCommand);
+        			}
+        			myEnvironment.setTestCommand(testCommandExecutable);
+        		}
 
-                _log.trace("Loaded project: " + myEnvironment);
+        		_log.trace("Loaded project: " + myEnvironment);
 
-                ProjectPreferences projectPreferences = new ProjectPreferences(myEnvironment, prefs);
-                prefs.addProjectPreferences(projectPreferences);
+        		ProjectPreferences projectPreferences = new ProjectPreferences(myEnvironment, prefs);
+        		prefs.addProjectPreferences(projectPreferences);
 
-                if (getChild(projectElement, IPrefXML.SOURCE) != null) {
-                    List<Element> sourceElements = getChildren(projectElement, IPrefXML.SOURCE);
-                    for (Element sourceElement : sourceElements) {
-                        String sourceLabel = getValue(sourceElement, IPrefXML.LABEL);
-                        String sourceClone = getValue(sourceElement, IPrefXML.CLONE);
-                        String sourceRemoteHg = getValue(sourceElement, IPrefXML.REMOTE_HG);
-                        String sourceHidden = getValue(sourceElement, IPrefXML.HIDE);
-                        boolean sourceHide = ((sourceHidden != null) && (sourceHidden.toLowerCase().trim().equals("true"))) ? true : false;
-                        String sourceParent = getValue(sourceElement, IPrefXML.PARENT);
+        		if (getChild(projectElement, IPrefXML.SOURCE) != null) {
+        			List<Element> sourceElements = getChildren(projectElement, IPrefXML.SOURCE);
+        			for (Element sourceElement : sourceElements) {
+        				String sourceLabel = getValue(sourceElement, IPrefXML.LABEL);
+        				String sourceClone = getValue(sourceElement, IPrefXML.CLONE);
+        				String sourceRemoteHg = getValue(sourceElement, IPrefXML.REMOTE_HG);
+        				String sourceHidden = getValue(sourceElement, IPrefXML.HIDE);
+        				boolean sourceHide = ((sourceHidden != null) && (sourceHidden.toLowerCase().trim().equals("true"))) ? true : false;
+        				String sourceParent = getValue(sourceElement, IPrefXML.PARENT);
 
-                        if (sourceLabel == null || sourceLabel.equals("")) {
-                            throw new RuntimeException("Label attribute must be set for source element.");
-                        }
+        				if (sourceLabel == null || sourceLabel.equals("")) {
+        					throw new RuntimeException("Label attribute must be set for source element.");
+        				}
 
-                        if (sourceClone == null || sourceClone.equals("")) {
-                            throw new RuntimeException("Clone attribute must be set for source element.");
-                        }
+        				if (sourceClone == null || sourceClone.equals("")) {
+        					throw new RuntimeException("Clone attribute must be set for source element.");
+        				}
 
-                        if (sourceClone.startsWith(Constants.HOME)) {
-                            String firstPart = System.getProperty("user.home");
-                            String lastPart = sourceClone.substring(Constants.HOME.length());
-                            sourceClone = firstPart + lastPart;
+        				if (sourceClone.startsWith(Constants.HOME)) {
+        					String firstPart = System.getProperty("user.home");
+        					String lastPart = sourceClone.substring(Constants.HOME.length());
+        					sourceClone = firstPart + lastPart;
 
-                            _log.trace("$HOME in project path: " + (firstPart + lastPart));
-                        }
+        					_log.trace("$HOME in project path: " + (firstPart + lastPart));
+        				}
 
-                        DataSource source = new DataSource(sourceLabel, sourceClone, kind, sourceHide, sourceParent);
-                        source.setRemoteHg(sourceRemoteHg);
-                        _log.trace("Loaded data source: " + source);
+        				DataSource source = new DataSource(sourceLabel, sourceClone, kind, sourceHide, sourceParent);
+        				source.setRemoteHg(sourceRemoteHg);
+        				_log.trace("Loaded data source: " + source);
 
-                        projectPreferences.addDataSource(source);
-                    }
-                }
-            }
+        				projectPreferences.addDataSource(source);
+        			}
+        		}
+        	}
         } catch (JDOMException jdome) {
-            _log.error("Error parsing configuration file.", jdome);
+        	_log.error("Error parsing configuration file.", jdome);
         } catch (IOException ioe) {
-            throw new RuntimeException("Error reading configuration file; " + ioe.getMessage(), ioe);
+        	throw new RuntimeException("Error reading configuration file; " + ioe.getMessage(), ioe);
         } catch (Exception e) {
-            // e.printStackTrace();
-            throw new RuntimeException("Error parsing configuration file; " + e.getMessage(), e);
+        	// e.printStackTrace();
+        	throw new RuntimeException("Error parsing configuration file; " + e.getMessage(), e);
         }
 
         return prefs;

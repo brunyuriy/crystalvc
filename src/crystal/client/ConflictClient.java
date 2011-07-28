@@ -1,14 +1,11 @@
 package crystal.client;
 
-import java.awt.ComponentOrientation;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
@@ -24,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolTip;
+import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
@@ -34,6 +32,7 @@ import crystal.model.LocalStateResult;
 import crystal.model.Relationship;
 import crystal.util.JMultiLineToolTip;
 import crystal.util.RunIt;
+import crystal.util.SpringLayoutUtility;
 
 /**
  * Conflict Client UI; displays the view showing the state of the repositories contained in the preferences.
@@ -175,7 +174,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		editConfiguration.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ConflictSystemTray.getInstance().preferencesAction();
+ 				ConflictSystemTray.getInstance().preferencesAction();
 			}
 		});
 
@@ -204,8 +203,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				maxSources = projPref.getNumOfVisibleSources();
 		}
 
-		JPanel grid = new JPanel(new GridLayout(prefs.getProjectPreference().size(), 0, 0, 0)); 
-		grid.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		JPanel grid = new JPanel(new SpringLayout()); 
 
 		// Create the iconMap and populate it with icons.
 		// Also create the layout of the GUI.
@@ -319,9 +317,14 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			for (int i = projPref.getNumOfVisibleSources(); i < maxSources; i++)
 				grid.add(new JLabel());
 
-			_frame.getContentPane().add(grid);
+
 		}
 
+		SpringLayoutUtility.formGrid(grid, prefs.getProjectPreference().size(), 
+				grid.getComponents().length / prefs.getProjectPreference().size());
+		
+		_frame.getContentPane().add(grid);
+		
 		/*
 		 * Reid's old code: // set all cells to pending on initial load // NOTE: caching might be a good idea here in
 		 * the future. for (ProjectPreferences projPref : prefs.getProjectPreference()) { for (DataSource source :

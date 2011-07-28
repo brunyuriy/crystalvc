@@ -118,7 +118,7 @@ public class ConflictSystemTray implements ComputationListener {
 		MenuItem exitItem = new MenuItem("Exit");
 
 		try {
-			_prefs = ClientPreferences.loadPreferencesFromXML();
+			_prefs = ClientPreferences.loadPreferencesFromDefaultXML();
 
 			if (_prefs != null) {
 				_log.info("Preferences loaded successfully.");
@@ -415,6 +415,9 @@ public class ConflictSystemTray implements ComputationListener {
 	 * Either creates a new one (if one did not exist) or displays the existing GUI configuration editor.
 	 */
 	public void preferencesAction() {
+	    // stop the daemon if it's running
+	    if (daemonEnabledItem.getLabel().equals("Stop Crystal updates"))
+            ConflictSystemTray.getInstance().daemonAbleAction();
 		PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
 	}
 
