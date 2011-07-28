@@ -5,9 +5,13 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -16,7 +20,9 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JToolTip;
 import javax.swing.SwingConstants;
 
@@ -27,6 +33,7 @@ import crystal.model.DataSource;
 import crystal.model.LocalStateResult;
 import crystal.model.Relationship;
 import crystal.util.JMultiLineToolTip;
+import crystal.util.RunIt;
 
 /**
  * Conflict Client UI; displays the view showing the state of the repositories contained in the preferences.
@@ -81,8 +88,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 	private JMenuItem _refresh = null;
 	private JMenuItem _disableDaemon;
-	/*DECLARE MENU ITEM VARIABLE*/
-	private JMenuItem _clearCache;
+
 
 	/**
 	 * Creates the UI and brings it to the foreground.
@@ -90,7 +96,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 	 * @param prefs
 	 *            Preferences used to populate the UI with.
 	 */
-	public void createAndShowGUI(ClientPreferences prefs) {
+	public void createAndShowGUI(final ClientPreferences prefs) {
 		_preferences = prefs;
 
 		// Create and set up the window.
@@ -109,8 +115,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_refresh = new JMenuItem("Refresh");
 		JMenuItem editConfiguration = new JMenuItem("Edit Configuration");
 		_disableDaemon = new JMenuItem("Stop Crystal updates");
-		/*CLEAR CACHE*/
-		_clearCache = new JMenuItem("Clear Cache");
+		JMenuItem clearcache = new JMenuItem("Clear Cache");
 		JMenuItem exit = new JMenuItem("Exit");
 		JMenuItem about = new JMenuItem("About");
 		JMenuItem blank = new JMenuItem("");
@@ -119,7 +124,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		fileMenu.add(_refresh);
 		fileMenu.add(editConfiguration);
 		fileMenu.add(_disableDaemon);
-		fileMenu.add(_clearCache);
+		fileMenu.add(clearcache);
 		fileMenu.add(exit);
 		// aboutMenu.add(about);
 		menuBar.add(about);
@@ -148,13 +153,22 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			}
 		});
 		
-		/*CLEAR CACHE METHOD*/
-		_clearCache.addActionListener(new ActionListener() {
+		//TODO
+		clearcache.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				deleteFile("C:\\temp\\conflictClient\\Crystal_Crystal\\");
-				//ConflictSystemTray.getInstance().preferencesAction();
+				System.out.println(_preferences.getTempDirectory());
+				RunIt.deleteDirectory(new File(_preferences.getTempDirectory()));
 				System.out.println("Cache has been emptied on your computer.");
+				try {
+					  String newDirectoy = _preferences.getTempDirectory();
+					  boolean success = (new File(newDirectoy)).mkdir();
+					  if (success) {
+						  System.out.println("An empty cache directory has been created at " + newDirectoy);
+					  }
+				}catch (Exception exception){ //Catch exception if any
+					  System.err.println("Error: " + exception.getMessage());
+				}
 			}
 		});
 		
@@ -196,11 +210,78 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		// Create the iconMap and populate it with icons.
 		// Also create the layout of the GUI.
 		_iconMap = new HashMap<DataSource, JLabel>();
-		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
+		//TODO
+		for (final ProjectPreferences projPref : prefs.getProjectPreference()) {
 			// name of project on the left, with an empty JLabel for the Action
 			JPanel name = new JPanel();
 			name.setLayout(new BoxLayout(name, BoxLayout.Y_AXIS));
-			name.add(new JLabel(projPref.getEnvironment().getShortName()));
+			
+			JLabel projectName = new JLabel(projPref.getEnvironment().getShortName());
+			final JPopupMenu menu = new JPopupMenu("Clear cache menu");
+			JMenuItem item = new JMenuItem("Clear cache");
+			item.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent action) {
+					int option = JOptionPane.showConfirmDialog(null, "Empty cache for the " + projPref.getEnvironment().getShortName() + " project?", 
+							"Warning", JOptionPane.YES_NO_OPTION);
+					if(option == JOptionPane.YES_OPTION) {
+						Set<String> target = new TreeSet<String>();
+						
+						/*
+						for(ProjectPreferences pp : prefs.getProjectPreference()){
+							System.out.println(pp.getEnvironment().getShortName());
+							for(DataSource ds : pp.getDataSources()){
+								System.out.println(ds.getShortName());
+							}
+						}
+						
+						for(String file : files){
+							System.out.println(file);
+						}
+						*/
+						target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + projPref.getEnvironment().getShortName());
+						for(DataSource ds : projPref.getDataSources()){
+							
+							target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + ds.getShortName());
+							//System.out.println(projPref.getEnvironment().getShortName() + "_" + ds.getShortName());
+						}
+						
+						for(String paths : target){
+							RunIt.deleteDirectory(new File(paths));
+							System.out.println(paths);
+						}
+						
+						System.out.println("Cache has been emptied on your computer.");
+						
+						System.out.println("Path: " + _preferences.getTempDirectory() + " projectPref: " + projPref.getEnvironment().getShortName());
+						System.out.println("Cache has been cleared for the " + projPref.getEnvironment().getShortName() + " project.");
+					}
+				}
+			});
+			
+			menu.add(item);
+			
+			projectName.addMouseListener(new MouseAdapter() {
+				
+				public void mousePressed(MouseEvent e) {
+			        if (e.isPopupTrigger()) {
+			        	menu.show(e.getComponent(), e.getX(), e.getY());
+			        	
+			        }
+				}
+				
+				public void mouseReleased(MouseEvent e) {
+			        if (e.isPopupTrigger()) {
+			        	menu.show(e.getComponent(), e.getX(), e.getY());
+			        }
+				}
+				
+				public void mouseClicked(MouseEvent e) {
+			    }
+			});
+			
+			name.add(projectName);
+			
 //				name.add(new JLabel(" "));
 			JLabel action = new JLabel("") {
                 private static final long serialVersionUID = 1L;
@@ -257,17 +338,6 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_frame.pack();
 	}
 	
-	/*RECURSIVE METHOD THAT DELETES ALL FILES, DIRECTOIRES, AND SUBDIRECTORIES IN THE GIVEN FILE PATH*/
-	private boolean deleteFile (String filePath) {
-		File f = new File(filePath);
-		if(f.isDirectory()){
-			File[] allFiles = f.listFiles();
-			for (File file: allFiles) {
-				deleteFile(file.getAbsolutePath());
-			}
-		}
-		return f.delete();
-	}
 
 	public void setCanUpdate(boolean enable) {
 		if (enable) {
