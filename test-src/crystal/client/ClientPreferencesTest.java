@@ -2,6 +2,7 @@ package crystal.client;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.Vector;
 
 import org.junit.Test;
@@ -199,8 +200,8 @@ public class ClientPreferencesTest {
 
 	//TODO
 	@Test
-	public void testLoadPreferencesFromXML() {
-		ClientPreferences temp = ClientPreferences.loadPreferencesFromXML();
+	public void testLoadPreferencesFromXML() throws IOException {
+		ClientPreferences temp = ClientPreferences.loadPreferencesFromDefaultXML();
 		fail("Not yet implemented");
 		
 	}

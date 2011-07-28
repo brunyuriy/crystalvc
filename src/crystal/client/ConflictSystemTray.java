@@ -118,7 +118,7 @@ public class ConflictSystemTray implements ComputationListener {
 		MenuItem exitItem = new MenuItem("Exit");
 
 		try {
-			_prefs = ClientPreferences.loadPreferencesFromXML();
+			_prefs = ClientPreferences.loadPreferencesFromDefaultXML();
 
 			if (_prefs != null) {
 				_log.info("Preferences loaded successfully.");
