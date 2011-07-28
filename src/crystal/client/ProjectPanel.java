@@ -1,9 +1,9 @@
 package crystal.client;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
@@ -14,11 +14,15 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.Spring;
+import javax.swing.SpringLayout;
 
 import crystal.model.DataSource;
+import crystal.util.SpringLayoutUtility;
 
 /**
  * A panel used for the configuration editor (PreferencesGUIEditorFrame) to display a single project. 
@@ -28,7 +32,11 @@ import crystal.model.DataSource;
 public class ProjectPanel extends JPanel {
 
 	private static final long serialVersionUID = 5244512987255240473L;
-
+	private static final int SOURCES_COLUMNS = 5;
+	private static final int ENVIRON_COLUMNS = 2;
+	private static final int BAR_SIZE = 1;
+	
+	
 	// The name of the project
 	private String _name;
 
@@ -39,7 +47,8 @@ public class ProjectPanel extends JPanel {
 	 * @param mainFrame: the frame that will keep this panel
 	 * @param tabbedPane: the pane on the mainFrame that will keep this panel
 	 */
-	public ProjectPanel(final ProjectPreferences pref, final ClientPreferences prefs, final JFrame mainFrame, final JTabbedPane tabbedPane) {
+	public ProjectPanel(final ProjectPreferences pref, final ClientPreferences prefs, 
+			final JFrame mainFrame, final JTabbedPane tabbedPane) {
 		super();
 
 		final JPanel panel = this;
@@ -47,37 +56,43 @@ public class ProjectPanel extends JPanel {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		_name = pref.getEnvironment().getShortName();
+		
+		JPanel prefEnvironmentPanel = new JPanel(new SpringLayout());
 
-		JPanel namePanel = new JPanel();
-		namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
-		namePanel.add(new JLabel("Project Name: "));
+		prefEnvironmentPanel.add(new JLabel("Project Name: "));
 		final JTextField shortName = new JTextField(pref.getEnvironment().getShortName());
-		namePanel.add(shortName);
-		shortName.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {
+		prefEnvironmentPanel.add(shortName);
+		shortName.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
 			}
 
-			public void keyTyped(KeyEvent arg0) {
-			}
-
-			public void keyReleased(KeyEvent arg0) {
-				pref.getEnvironment().setShortName(shortName.getText());
-				prefs.setChanged(true);
-				_name = shortName.getText();
-				tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), _name);
-				panel.validate();
-				mainFrame.pack();
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				try {
+					pref.getEnvironment().setShortName(shortName.getText());
+					prefs.setChanged(true);
+					_name = shortName.getText();
+					tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), _name);
+					panel.validate();
+					mainFrame.pack();
+				} catch (Exception e){
+					JOptionPane.showMessageDialog(null, "Invalid input for project name.", 
+							"Warning", JOptionPane.ERROR_MESSAGE);
+					shortName.setText(pref.getEnvironment().getShortName());
+				}
+				
 			}
 		});
-		add(namePanel);
 
-		JPanel parentPanel = new JPanel();
-		parentPanel.setLayout(new BoxLayout(parentPanel, BoxLayout.X_AXIS));
-		parentPanel.add(new JLabel("Parent Name (optional): "));
+		prefEnvironmentPanel.add(new JLabel("Parent Name (optional): "));
 		final JTextField parentName = new JTextField(pref.getEnvironment().getParent());
 		if (parentName.getText().equals(""))
 			parentName.setText(" ");
-		parentPanel.add(parentName);
+		prefEnvironmentPanel.add(parentName);
 		parentName.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {
 			}
@@ -94,47 +109,127 @@ public class ProjectPanel extends JPanel {
 				mainFrame.pack();
 			}
 		});
-		add(parentPanel);
 
-		JPanel typePanel = new JPanel();
-		typePanel.setLayout(new BoxLayout(typePanel, BoxLayout.X_AXIS));
-		typePanel.add(new JLabel("Repo Type: "));
+
+		prefEnvironmentPanel.add(new JLabel("Repo Type: "));
 		final JComboBox type = new JComboBox();
 		type.addItem(DataSource.RepoKind.HG);
 		// type.addItem(DataSource.RepoKind.GIT);
 		type.setSelectedItem(pref.getEnvironment().getKind());
-		typePanel.add(type);
+		prefEnvironmentPanel.add(type);
 		type.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pref.getEnvironment().setKind((DataSource.RepoKind) type.getSelectedItem());
 				prefs.setChanged(true);
 			}
 		});
-		add(typePanel);
 
-		JPanel addressPanel = new JPanel();
-		addressPanel.setLayout(new BoxLayout(addressPanel, BoxLayout.X_AXIS));
-		addressPanel.add(new JLabel("Clone Address: "));
+		prefEnvironmentPanel.add(new JLabel("Clone Address: "));
 		final JTextField address = new JTextField(pref.getEnvironment().getCloneString());
-		addressPanel.add(address);
-		address.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {
+		prefEnvironmentPanel.add(address);
+		address.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
 			}
 
-			public void keyTyped(KeyEvent arg0) {
-			}
-
-			public void keyReleased(KeyEvent arg0) {
-				pref.getEnvironment().setCloneString(address.getText());
-				prefs.setChanged(true);
-				panel.validate();
-				mainFrame.pack();
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				try {
+					pref.getEnvironment().setCloneString(address.getText());
+					prefs.setChanged(true);
+					panel.validate();
+					mainFrame.pack();
+				} catch (Exception e){
+					JOptionPane.showMessageDialog(null, "Invalid input for clone address.", 
+							"Warning", JOptionPane.ERROR_MESSAGE);
+					address.setText(pref.getEnvironment().getCloneString());
+				}
+				
 			}
 		});
-		add(addressPanel);
+		
+		prefEnvironmentPanel.add(new JLabel("Compile Command: "));
+		String compileCommand = pref.getEnvironment().getCompileCommand();
+		if(compileCommand == null || compileCommand.trim().equals("")){
+			compileCommand = "Please write compile command here.";
+		}
+		final JTextField compile = new JTextField(compileCommand);
+		prefEnvironmentPanel.add(compile);
+		compile.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				try {
+					pref.getEnvironment().setCompileCommand(compile.getText());
+					prefs.setChanged(true);
+					panel.validate();
+					mainFrame.pack();
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Invalid input for compile command.", 
+							"Warning", JOptionPane.ERROR_MESSAGE);
+					if (pref.getEnvironment().getCompileCommand() != null 
+							&& !pref.getEnvironment().getCompileCommand().trim().equals(""))
+						compile.setText(pref.getEnvironment().getCompileCommand());
+					else
+						compile.setText("Please write compile command here.");
+				}
+				
+			}
+		});
+		
+		prefEnvironmentPanel.add(new JLabel("Test Command: "));
+		String testCommand = pref.getEnvironment().getTestCommand();
+		if(testCommand == null || testCommand.trim().equals("")){
+			testCommand = "Please write test command here.";
+		}
+		final JTextField test = new JTextField(testCommand);
+		prefEnvironmentPanel.add(test);
+		test.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				try {
+					pref.getEnvironment().setTestCommand(test.getText());
+					prefs.setChanged(true);
+					panel.validate();
+					mainFrame.pack();
+				} catch (Exception e){
+					JOptionPane.showMessageDialog(null, "Invalid input for test command.", 
+							"Warning", JOptionPane.ERROR_MESSAGE);
+					if (pref.getEnvironment().getTestCommand() != null 
+							&& !pref.getEnvironment().getTestCommand().trim().equals(""))
+						test.setText(pref.getEnvironment().getTestCommand());
+					else
+						test.setText("Please write test command here.");
+				}
+				
+			}
+		});
+
+		SpringLayoutUtility.formGrid(prefEnvironmentPanel, 
+				prefEnvironmentPanel.getComponents().length / ENVIRON_COLUMNS, ENVIRON_COLUMNS);
+		
+		panel.add(prefEnvironmentPanel);
 
 		final JButton newRepoButton = new JButton("Add New Repository");
 
+		final JPanel sourcesPanel = new JPanel(new SpringLayout());
+		
 		newRepoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -146,9 +241,11 @@ public class ProjectPanel extends JPanel {
 				while (shortNameLookup.contains("New Repo " + count++))
 					;
 
-				DataSource newGuy = new DataSource("New Repo " + --count, "", DataSource.RepoKind.HG, false, null);
+				DataSource newGuy = new DataSource("New Repo " + --count, "", 
+						DataSource.RepoKind.HG, false, null);
 				pref.addDataSource(newGuy);
-				add(repoPanel(newGuy, pref, prefs, panel, mainFrame));
+				addRepoPanel(newGuy, pref, prefs, panel, mainFrame, sourcesPanel);
+				SpringLayoutUtility.formGrid(sourcesPanel, pref.getDataSources().size() + BAR_SIZE, SOURCES_COLUMNS);
 				prefs.setChanged(true);
 				panel.validate();
 				mainFrame.pack();
@@ -156,40 +253,46 @@ public class ProjectPanel extends JPanel {
 		});
 		add(newRepoButton);
 
-		JPanel sourcesPanel = new JPanel();
-		GridBagLayout grid = new GridBagLayout();
-		sourcesPanel.setLayout(grid);
-		// sourcesPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-		GridBagConstraints constraints = new GridBagConstraints();
 
-		constraints.weightx = 1.0;
-		JLabel pShortName = new JLabel("Short Name");
-		JLabel pHide = new JLabel("Hide?");
-		JLabel pParent = new JLabel("Parent");
-		JLabel pClone = new JLabel("Clone Address");
-		JLabel pDelete = new JLabel("");
-
-		grid.setConstraints(pShortName, constraints);
+		JLabel pShortName = new JLabel("Short Name", JLabel.CENTER);
+		JLabel pHide = new JLabel("Hide?", JLabel.CENTER);
+		JLabel pParent = new JLabel("Parent", JLabel.CENTER);
+		JLabel pClone = new JLabel("Clone Address", JLabel.CENTER);
+		JLabel pDelete = new JLabel("", JLabel.CENTER);
+		
 		sourcesPanel.add(pShortName);
-		grid.setConstraints(pHide, constraints);
 		sourcesPanel.add(pHide);
-		grid.setConstraints(pParent, constraints);
 		sourcesPanel.add(pParent);
-		grid.setConstraints(pClone, constraints);
 		sourcesPanel.add(pClone);
-		constraints.gridwidth = GridBagConstraints.REMAINDER;
-		grid.setConstraints(pDelete, constraints);
 		sourcesPanel.add(pDelete);
-
-		constraints.weightx = 0.0;
+		
 		for (DataSource source : pref.getDataSources()) {
-			JPanel repoPanel = repoPanel(source, pref, prefs, panel, mainFrame);
-			grid.setConstraints(repoPanel, constraints);
-			sourcesPanel.add(repoPanel);
+			addRepoPanel(source, pref, prefs, panel, mainFrame, sourcesPanel);
 		}
+
+		SpringLayoutUtility.formGrid(sourcesPanel, pref.getDataSources().size() + BAR_SIZE, SOURCES_COLUMNS);
+		
 		add(sourcesPanel);
 	}
+	
+	/**
+	 * Return default message in the text field
+	 * @param s
+	 * @return
+	 */
+	private String getDefaultStatement(String s){
+		return "Please write " + s + " here.";
+	}
 
+	/**
+	 * Check if input string is default statement
+	 * @param s
+	 * @return
+	 */
+	private boolean isDefaultStatement(String s){
+		return s.startsWith("Please write ") && s.endsWith(" here.");
+	}
+	
 	/**
 	 * @return this project's name
 	 */
@@ -206,10 +309,11 @@ public class ProjectPanel extends JPanel {
 	 * @param mainFrame: the frame in which this panel sits
 	 * @return a panel used to display a single repository of a project.
 	 */
-	private JPanel repoPanel(final DataSource source, final ProjectPreferences pref, final ClientPreferences prefs, final JPanel panel,
-			final JFrame mainFrame) {
-		final JPanel repoPanel = new JPanel();
-		repoPanel.setLayout(new BoxLayout(repoPanel, BoxLayout.X_AXIS));
+	private void addRepoPanel(final DataSource source, final ProjectPreferences pref, 
+			final ClientPreferences prefs, final JPanel panel,
+			final JFrame mainFrame, final JPanel sourcesPanel) {
+		
+		//repoPanel.setLayout(new BoxLayout(repoPanel, BoxLayout.X_AXIS));
 
 		/*
 		 * repoPanel.add(new JLabel("Repo Type")); final JComboBox type = new JComboBox();
@@ -221,19 +325,27 @@ public class ProjectPanel extends JPanel {
 
 		// repoPanel.add(new JLabel("Short Name"));
 		final JTextField shortName = new JTextField(source.getShortName());
-		repoPanel.add(shortName);
-		shortName.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {
+		
+		shortName.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
 			}
 
-			public void keyTyped(KeyEvent arg0) {
-			}
-
-			public void keyReleased(KeyEvent arg0) {
-				source.setShortName(shortName.getText());
-				prefs.setChanged(true);
-				panel.validate();
-				mainFrame.pack();
+			@Override
+			public void focusLost(FocusEvent arg) {
+				try {
+					source.setShortName(shortName.getText());
+					prefs.setChanged(true);
+					panel.validate();
+					mainFrame.pack();
+				} catch (Exception e){
+					JOptionPane.showMessageDialog(null, "Invalid input for short name.", 
+							"Warning", JOptionPane.ERROR_MESSAGE);
+					shortName.setText(source.getShortName());
+				}
+				
 			}
 		});
 
@@ -241,7 +353,7 @@ public class ProjectPanel extends JPanel {
 		final JCheckBox hideBox = new JCheckBox();
 		if (source.isHidden())
 			hideBox.setSelected(true);
-		repoPanel.add(hideBox);
+
 		hideBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// hideBox.setSelected(!(hideBox.isSelected()));
@@ -254,7 +366,7 @@ public class ProjectPanel extends JPanel {
 		final JTextField parent = new JTextField(source.getParent());
 		if (parent.getText().equals(""))
 			parent.setText(" ");
-		repoPanel.add(parent);
+
 		parent.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {
 			}
@@ -274,33 +386,58 @@ public class ProjectPanel extends JPanel {
 
 		// repoPanel.add(new JLabel("Clone Address"));
 		final JTextField cloneAddress = new JTextField(source.getCloneString());
-		repoPanel.add(cloneAddress);
-		cloneAddress.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {
+
+		cloneAddress.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
 			}
 
-			public void keyTyped(KeyEvent arg0) {
-			}
-
-			public void keyReleased(KeyEvent arg0) {
-				source.setCloneString(cloneAddress.getText());
-				prefs.setChanged(true);
-				panel.validate();
-				mainFrame.pack();
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				try{
+					source.setCloneString(cloneAddress.getText());	
+					prefs.setChanged(true);
+					panel.validate();
+					mainFrame.pack();
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Invalid path for clone address.", 
+							"Warning", JOptionPane.ERROR_MESSAGE);
+					cloneAddress.setText(source.getCloneString());
+				}
+				
 			}
 		});
 
 		final JButton deleteRepoButton = new JButton("Delete");
 		deleteRepoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				pref.removeDataSource(source);
-				prefs.setChanged(true);
-				panel.remove(repoPanel);
-				mainFrame.pack();
+				int n = JOptionPane.showConfirmDialog(null, 
+						"Delete " + source.getShortName() + "'s repository?");
+				if(n == JOptionPane.YES_OPTION){
+					pref.removeDataSource(source);
+					prefs.setChanged(true);
+					sourcesPanel.remove(shortName);
+					sourcesPanel.remove(hideBox);
+					sourcesPanel.remove(parent);
+					sourcesPanel.remove(cloneAddress);
+					sourcesPanel.remove(deleteRepoButton);
+					SpringLayoutUtility.formGrid(sourcesPanel, pref.getDataSources().size() + BAR_SIZE, 
+							SOURCES_COLUMNS);
+					mainFrame.pack();
+				}
 			}
 		});
-		repoPanel.add(deleteRepoButton);
 
-		return repoPanel;
+		sourcesPanel.add(shortName);
+		sourcesPanel.add(hideBox);
+		sourcesPanel.add(parent);
+		sourcesPanel.add(cloneAddress);
+		
+		sourcesPanel.add(deleteRepoButton);
+
 	}
+
 }

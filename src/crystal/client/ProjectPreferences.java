@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Vector;
 
 import crystal.model.DataSource;
+import crystal.util.ValidInputChecker;
 
 /**
  * Stores the preferences for a specific project.
@@ -31,11 +32,30 @@ public class ProjectPreferences {
 	 * @param clientPrefs: the overall configuration
 	 */
 	public ProjectPreferences(DataSource myEnvironment, ClientPreferences clientPrefs) {
+		ValidInputChecker.checkNullInput(myEnvironment);
+		ValidInputChecker.checkNullInput(clientPrefs);
 		_myEnvironment = myEnvironment;
 		_clientPreferences = clientPrefs;
 		_dataSources = new Vector<DataSource>();
 	}
 
+	//TODO
+    /**
+     * Compare this object with another object
+     * @param o target object
+     * @return true if they are same object; otherwise return false
+     */
+	public boolean equals(Object o){
+		if(o != null && getClass() == o.getClass()){
+			ProjectPreferences other = (ProjectPreferences) o;
+			return _myEnvironment.equals(other._myEnvironment) 
+					&& _clientPreferences.equals(other._clientPreferences)
+					&& _dataSources.equals(other._dataSources);
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 * Adds a new data source.
 	 * 
