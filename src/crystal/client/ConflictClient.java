@@ -152,10 +152,14 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			}
 		});
 		
-		//TODO
 		clearCache.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+			    boolean hadToDisable =_disableDaemon.getText().equals("Stop Crystal updates");
+			     if (hadToDisable)
+			         ConflictSystemTray.getInstance().daemonAbleAction();
+			     // TODO wait for disabling to finish
+			     
 				System.out.println(_preferences.getTempDirectory());
 				RunIt.deleteDirectory(new File(_preferences.getTempDirectory()));
 				System.out.println("Cache has been emptied on your computer.");
@@ -168,6 +172,8 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				}catch (Exception exception){ //Catch exception if any
 					  System.err.println("Error: " + exception.getMessage());
 				}
+				if (hadToDisable) 
+                    ConflictSystemTray.getInstance().daemonAbleAction();
 			}
 		});
 		
@@ -208,7 +214,6 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		// Create the iconMap and populate it with icons.
 		// Also create the layout of the GUI.
 		_iconMap = new HashMap<DataSource, JLabel>();
-		//TODO
 		for (final ProjectPreferences projPref : prefs.getProjectPreference()) {
 			// name of project on the left, with an empty JLabel for the Action
 			JPanel name = new JPanel();
