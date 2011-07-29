@@ -221,11 +221,11 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			
 			JLabel projectName = new JLabel(projPref.getEnvironment().getShortName());
 			final JPopupMenu projectMenu = new JPopupMenu("Project menu");
-			JMenuItem clearProjectCacheMenu = new JMenuItem("Clear projPref.getEnvironment().getShortName() project cache");
+			JMenuItem clearProjectCacheMenu = new JMenuItem("Clear " + projPref.getEnvironment().getShortName() + " project cache");
 			clearProjectCacheMenu.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent action) {
-					int option = JOptionPane.showConfirmDialog(null, "Do you want to empty the " + projPref.getEnvironment().getShortName() + " cache", 
+					int option = JOptionPane.showConfirmDialog(null, "Do you want to empty the " + projPref.getEnvironment().getShortName() + " cache?", 
 							"Warning", JOptionPane.YES_NO_OPTION);
 					// TODO wait for the current refresh to finish or kill it
 					if(option == JOptionPane.YES_OPTION) {
