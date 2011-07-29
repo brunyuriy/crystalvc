@@ -95,8 +95,7 @@ public class ConflictSystemTray implements ComputationListener {
 	 * A listener on the about menu item. When the user clicks on "about", a dialog pops up with some info on Crystal.
 	 */
 	public void aboutAction() {
-		JOptionPane
-				.showMessageDialog(
+		JOptionPane.showMessageDialog(
 						null,
 						"Crystal version: "
 								+ VERSION_ID
