@@ -114,7 +114,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_refresh = new JMenuItem("Refresh");
 		JMenuItem editConfiguration = new JMenuItem("Edit Configuration");
 		_disableDaemon = new JMenuItem("Stop Crystal updates");
-		JMenuItem clearcache = new JMenuItem("Clear Cache");
+		JMenuItem clearCache = new JMenuItem("Clear Cache");
 		JMenuItem exit = new JMenuItem("Exit");
 		JMenuItem about = new JMenuItem("About");
 		JMenuItem blank = new JMenuItem("");
@@ -123,7 +123,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		fileMenu.add(_refresh);
 		fileMenu.add(editConfiguration);
 		fileMenu.add(_disableDaemon);
-		fileMenu.add(clearcache);
+		fileMenu.add(clearCache);
 		fileMenu.add(exit);
 		// aboutMenu.add(about);
 		menuBar.add(about);
@@ -153,7 +153,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		});
 		
 		//TODO
-		clearcache.addActionListener(new ActionListener() {
+		clearCache.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println(_preferences.getTempDirectory());
