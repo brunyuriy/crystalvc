@@ -220,28 +220,21 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			name.setLayout(new BoxLayout(name, BoxLayout.Y_AXIS));
 			
 			JLabel projectName = new JLabel(projPref.getEnvironment().getShortName());
-			final JPopupMenu menu = new JPopupMenu("Clear cache menu");
-			JMenuItem item = new JMenuItem("Clear cache");
-			item.addActionListener(new ActionListener() {
+			final JPopupMenu projectMenu = new JPopupMenu("Project menu");
+			JMenuItem clearProjectCacheMenu = new JMenuItem("Clear projPref.getEnvironment().getShortName() project cache");
+			clearProjectCacheMenu.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent action) {
-					int option = JOptionPane.showConfirmDialog(null, "Empty cache for the " + projPref.getEnvironment().getShortName() + " project?", 
+					int option = JOptionPane.showConfirmDialog(null, "Do you want to empty the " + projPref.getEnvironment().getShortName() + " cache", 
 							"Warning", JOptionPane.YES_NO_OPTION);
+					// TODO wait for the current refresh to finish or kill it
 					if(option == JOptionPane.YES_OPTION) {
+					    boolean hadToDisable =_disableDaemon.getText().equals("Stop Crystal updates");
+					    if (hadToDisable)
+					        ConflictSystemTray.getInstance().daemonAbleAction();
+
 						Set<String> target = new TreeSet<String>();
 						
-						/*
-						for(ProjectPreferences pp : prefs.getProjectPreference()){
-							System.out.println(pp.getEnvironment().getShortName());
-							for(DataSource ds : pp.getDataSources()){
-								System.out.println(ds.getShortName());
-							}
-						}
-						
-						for(String file : files){
-							System.out.println(file);
-						}
-						*/
 						target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + projPref.getEnvironment().getShortName());
 						for(DataSource ds : projPref.getDataSources()){
 							
@@ -258,24 +251,25 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 						
 						System.out.println("Path: " + _preferences.getTempDirectory() + " projectPref: " + projPref.getEnvironment().getShortName());
 						System.out.println("Cache has been cleared for the " + projPref.getEnvironment().getShortName() + " project.");
+						if (hadToDisable)
+						    ConflictSystemTray.getInstance().daemonAbleAction();
 					}
 				}
 			});
 			
-			menu.add(item);
+			projectMenu.add(clearProjectCacheMenu);
 			
 			projectName.addMouseListener(new MouseAdapter() {
 				
 				public void mousePressed(MouseEvent e) {
 			        if (e.isPopupTrigger()) {
-			        	menu.show(e.getComponent(), e.getX(), e.getY());
-			        	
+			            projectMenu.show(e.getComponent(), e.getX(), e.getY());
 			        }
 				}
 				
 				public void mouseReleased(MouseEvent e) {
 			        if (e.isPopupTrigger()) {
-			        	menu.show(e.getComponent(), e.getX(), e.getY());
+			            projectMenu.show(e.getComponent(), e.getX(), e.getY());
 			        }
 				}
 				
