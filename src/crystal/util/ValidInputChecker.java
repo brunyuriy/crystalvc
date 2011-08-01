@@ -1,28 +1,20 @@
 package crystal.util;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
 public class ValidInputChecker {
 	
-	public static Set<String> actionNames = new HashSet<String>();
-	static {
-		actionNames.add("UNCHECKPOINTED");
-		actionNames.add("MUST RESOLVE");
-		actionNames.add("ALL CLEAR");
-		actionNames.add("PENDING");
-		actionNames.add("ERROR");
-		actionNames.add("BUILD");
-		actionNames.add("TEST");
-		
-	}
-	
-	public static void checkActionNames(String s){
-		if(s == null || !actionNames.contains(s.toUpperCase())){
-			throw new IllegalArgumentException("Illegal action names.");
+	/**
+	 * Check if given String is contained in given set
+	 * @param s
+	 * @param set
+	 */
+	public static void checkStringInSet(String s, Collection<String> set){
+		if(s == null || !set.contains(s)){
+			throw new IllegalArgumentException("Input: " + s + " is not contained in the set.");
 		}
 	}
-	
+
 	public static void checkNullInput(Object o){
 		if(o == null){
 			throw new IllegalArgumentException("Null input");

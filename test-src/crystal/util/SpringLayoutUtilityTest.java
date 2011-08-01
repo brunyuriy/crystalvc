@@ -28,7 +28,7 @@ public class SpringLayoutUtilityTest {
 	@Test
 	public void testFormGrid() {
 		JPanel temp = new JPanel(new SpringLayout());
-		SpringLayoutUtility.formGrid(temp, 2, 2);
+		//SpringLayoutUtility.formGrid(temp, 2, 2);
 		//TODO
 	}
 

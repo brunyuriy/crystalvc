@@ -10,6 +10,7 @@ import crystal.model.RevisionHistory.When;
 import crystal.model.Relationship;
 import crystal.server.HgLogParser.Checkpoint;
 import crystal.util.SetOperations;
+import crystal.util.ValidInputChecker;
 
 /**
  * The GuidanceChecker calculates guidance information
@@ -24,6 +25,7 @@ public class GuidanceChecker {
 	 * @return a pretty printed String listing all the commiitters
 	 */
 	public static String getCommitters (Set<Checkpoint> committers) {
+		ValidInputChecker.checkNullInput(committers);
 		Set<String> committerNames = new HashSet<String>();
 		
 		for (Checkpoint current : committers)
@@ -63,6 +65,8 @@ public class GuidanceChecker {
 	// NOW if parent has your things I do not
 	// LATER otherwise
 	public static When getWhen(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
+		ValidInputChecker.checkNullInput(r);
+		
 		if ((r.getName().equals(Relationship.SAME)) || (r.getName().equals(Relationship.MERGECLEAN)) || (r.getName().equals(Relationship.MERGECONFLICT)))
 			return When.NOTHING;
 		if (r.getName().equals(Relationship.BEHIND))
@@ -90,6 +94,8 @@ public class GuidanceChecker {
 	 * In particular, if you and parent are the same, these are wrong.
 	 */
 	public static Relationship getConsequences(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
+		ValidInputChecker.checkNullInput(r);
+		
 		Action a = r.getAction();
 		if (a == null) 
 			return null;

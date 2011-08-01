@@ -18,7 +18,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.Spring;
 import javax.swing.SpringLayout;
 
 import crystal.model.DataSource;
@@ -273,24 +272,6 @@ public class ProjectPanel extends JPanel {
 		SpringLayoutUtility.formGrid(sourcesPanel, pref.getDataSources().size() + BAR_SIZE, SOURCES_COLUMNS);
 		
 		add(sourcesPanel);
-	}
-	
-	/**
-	 * Return default message in the text field
-	 * @param s
-	 * @return
-	 */
-	private String getDefaultStatement(String s){
-		return "Please write " + s + " here.";
-	}
-
-	/**
-	 * Check if input string is default statement
-	 * @param s
-	 * @return
-	 */
-	private boolean isDefaultStatement(String s){
-		return s.startsWith("Please write ") && s.endsWith(" here.");
 	}
 	
 	/**
