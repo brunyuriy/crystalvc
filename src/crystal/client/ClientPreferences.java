@@ -45,7 +45,7 @@ public class ClientPreferences {
          * Each constant consists of an array of logically equivalent elements. For example, either the element "ccConfig" or "ccconfig", in an XML
          * file, will be considered the root element. When writing XML, the [0]th element in the array will be used.
          */
-
+//TODO
         // the name of the root element
         static final String[] ROOT = { "ccConfig", "ccconfig", "CcConfig", "CCConfig" };
 
@@ -568,7 +568,7 @@ public class ClientPreferences {
         rootElem.setAttribute(IPrefXML.REFRESH[0], Long.toString(prefs.getRefresh()));
         doc.setRootElement(rootElem);
 
-
+//TODO
         for (ProjectPreferences pp : prefs.getProjectPreference()) {
             Element projectElem = new Element(IPrefXML.PROJECT[0]);
             projectElem.setAttribute(IPrefXML.KIND[0], pp.getEnvironment().getKind().name());

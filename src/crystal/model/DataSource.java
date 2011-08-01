@@ -77,27 +77,12 @@ public class DataSource {
 	/**
 	 * Compare this object with another object
 	 * @param o other object to be compared with this object
-	 * @return true if they are the same object; otherwise return false
+	 * @return true if they have same short name; otherwise return false
 	 */
 	public boolean equals(Object o){
 		if (o != null && getClass() == o.getClass()){
 			DataSource other = (DataSource) o;
-			if (_history == null){	// assuming old history is also null
-				return _enabled == other._enabled && _shortName.equals(other._shortName)
-				&& _cloneString.equals(other._cloneString) && _repoKind.equals(other._repoKind)
-				&& _hide == other._hide && other._history == null;
-			} else if (_oldHistory == null){	// only old history is null
-				return _enabled == other._enabled && _shortName.equals(other._shortName)
-				&& _cloneString.equals(other._cloneString) && _repoKind.equals(other._repoKind)
-				&& _hide == other._hide 
-				&& _history.equals(other._history) && other._oldHistory == null;
-			} else {	// if both of them are not null
-				return _enabled == other._enabled && _shortName.equals(other._shortName)
-				&& _cloneString.equals(other._cloneString) && _repoKind.equals(other._repoKind)
-				&& _hide == other._hide 
-				&& _history.equals(other._history) && _oldHistory.equals(_oldHistory);
-		
-			}
+			return this._shortName == null && other._shortName == null || this._shortName.equals(other._shortName);
 
 		} else {
 			return false;
