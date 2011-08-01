@@ -100,7 +100,7 @@ public class ConflictSystemTray implements ComputationListener {
 						null,
 						"Crystal version: "
 								+ VERSION_ID
-								+ "\nBuilt by Reid Holmes and Yuriy Brun.  Contact brun@cs.washington.edu.\nhttp://www.cs.washington.edu/homes/brun/research/crystal",
+								+ "\nBuilt by Yuriy Brun and Reid Holmes.  Contact crystalvc@googlegroups.com.\nhttp://crystalvc.googlecode.com",
 						"Crystal: Proactive Conflict Detector for Distributed Version Control", JOptionPane.PLAIN_MESSAGE, new ImageIcon(
 								Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.png")));
 	}
