@@ -67,7 +67,7 @@ public class LocalStateResult implements Result {
         //ValidInputChecker.checkValidStringInput(lastState);
         //ValidInputChecker.checkValidStringInput(lastAction);
         //ValidInputChecker.checkValidStringInput(lastErrorMessage);
-        //ValidInputChecker.checkActionNames(name);
+    	//ValidInputChecker.checkStringInSet(name, actions.keySet());
         
     	if (name.startsWith(ERROR)) {
             _errorMessage = name.substring(ERROR.length());
@@ -81,6 +81,23 @@ public class LocalStateResult implements Result {
         _lastState = lastState;
         _lastAction = lastAction;
         _lastErrorMessage = lastErrorMessage;
+    }
+
+    
+	/**
+	 * Compare this object with another object
+	 * @param o other object to be compared with this object
+	 * @return true if they are same; otherwise return false
+	 */
+    public boolean equals(Object o){
+		if (o != null && getClass() == o.getClass()){
+			LocalStateResult other = (LocalStateResult) o;
+			return this._source.equals(other._source) && 
+			(this._name == null && other._name == null || this._name.equals(other._name));
+
+		} else {
+			return false;
+		}
     }
 
     /**

@@ -80,7 +80,7 @@ public class RevisionHistory {
 	 * @returns true iff this history is a superset of r
 	 */
 	public boolean superHistory(RevisionHistory r) {
-		//ValidInputChecker.checkNullInput(r);
+		ValidInputChecker.checkNullInput(r);
 		Set<String> you = r._changesets.keySet();
 		Set<String> me = _changesets.keySet();
 		
@@ -91,7 +91,7 @@ public class RevisionHistory {
 	 * @returns true iff this history is a subset of r
 	 */
 	public boolean subHistory(RevisionHistory r) {
-		//ValidInputChecker.checkNullInput(r);
+		ValidInputChecker.checkNullInput(r);
 		return r.superHistory(this);
 	}
 	
@@ -102,7 +102,7 @@ public class RevisionHistory {
 	 * @return the relevant committers to the differences between this and you histories
 	 */
 	public String getCommitters (RevisionHistory you) {
-		//ValidInputChecker.checkNullInput(you);
+		ValidInputChecker.checkNullInput(you);
 		Set<String> changes = new HashSet<String>();
 		changes = SetOperations.xor(_changesets.keySet(), you._changesets.keySet());
 		
@@ -125,8 +125,8 @@ public class RevisionHistory {
 	 * @return the WHEN guidance
 	 */
 	public When getWhen(RevisionHistory you, RevisionHistory parent, Relationship r) {
-		//ValidInputChecker.checkNullInput(you);
-		//ValidInputChecker.checkNullInput(parent);
+		ValidInputChecker.checkNullInput(you);
+		ValidInputChecker.checkNullInput(parent);
 		//ValidInputChecker.checkNullInput(r);
 		return GuidanceChecker.getWhen(_changesets.keySet(), you._changesets.keySet(), parent._changesets.keySet(), r);		
 	}
@@ -139,8 +139,8 @@ public class RevisionHistory {
 	 * @return the CONSEQUENCES guidance
 	 */
 	public Relationship getConsequences(RevisionHistory you, RevisionHistory parent, Relationship r) {
-		//ValidInputChecker.checkNullInput(you);
-		//ValidInputChecker.checkNullInput(parent);
+		ValidInputChecker.checkNullInput(you);
+		ValidInputChecker.checkNullInput(parent);
 		//ValidInputChecker.checkNullInput(r);
 		return GuidanceChecker.getConsequences(_changesets.keySet(), you._changesets.keySet(), parent._changesets.keySet(), r);		
 	}
@@ -154,8 +154,8 @@ public class RevisionHistory {
 	 * @return the CAPABLE guidance
 	 */
 	public Capable getCapable(RevisionHistory you, RevisionHistory parent, Relationship r, boolean isParent) {
-		//ValidInputChecker.checkNullInput(you);
-		//ValidInputChecker.checkNullInput(parent);
+		ValidInputChecker.checkNullInput(you);
+		ValidInputChecker.checkNullInput(parent);
 		//ValidInputChecker.checkNullInput(r);
 		return GuidanceChecker.getCapable(_changesets.keySet(), you._changesets.keySet(), parent._changesets.keySet(), r, isParent);
 	}
