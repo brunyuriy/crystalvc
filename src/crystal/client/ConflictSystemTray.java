@@ -413,12 +413,14 @@ public class ConflictSystemTray implements ComputationListener {
 
 	/**
 	 * Either creates a new one (if one did not exist) or displays the existing GUI configuration editor.
+	 * @throws IOException 
 	 */
-	public void preferencesAction() {
+	public void preferencesAction(){
 	    // stop the daemon if it's running
 	    if (daemonEnabledItem.getLabel().equals("Stop Crystal updates"))
             ConflictSystemTray.getInstance().daemonAbleAction();
 		PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
+
 	}
 
 	/**
