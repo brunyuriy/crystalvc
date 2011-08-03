@@ -708,7 +708,7 @@ public class ClientPreferences {
      * @param refresh
      *            : the new refresh rate
      */
-    public void setHgPath(long refresh) {
+    public void setRefresh(long refresh) {
         _refresh = refresh;
     }
 

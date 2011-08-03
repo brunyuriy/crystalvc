@@ -246,13 +246,23 @@ public class ClientPreferencesTest {
 		
 		File testXml3 = new File("testDataFile\\testLoadXml3.xml");
 		
-		ClientPreferences cp3 = ClientPreferences.loadPreferencesFromXML(testXml3);
-		assertEquals("ClientPreferences should remove the duplicate project names", 1, cp3.getProjectPreference().size());
-
+		try{
+			ClientPreferences cp3 = ClientPreferences.loadPreferencesFromXML(testXml3);
+			assertEquals("ClientPreferences should remove the duplicate project names", 1, cp3.getProjectPreference().size());
+			fail("Did not throw exception");
+		} catch (Exception e){
+		}
+		
 		File testXml4 = new File("testDataFile\\testLoadXml4.xml");
-		ClientPreferences cp4 = ClientPreferences.loadPreferencesFromXML(testXml4);
-		assertEquals("ClientPreferences should remove the data sources with same names", 
-				4, cp4.getProjectPreferences("Crystal").getDataSources().size());
+		
+		try {
+			ClientPreferences cp4 = ClientPreferences.loadPreferencesFromXML(testXml4);
+			assertEquals("ClientPreferences should remove the data sources with same names", 
+					4, cp4.getProjectPreferences("Crystal").getDataSources().size());
+			fail("Did not throw Exception");
+		} catch (Exception e){
+		}
+
 		
 		
 	}

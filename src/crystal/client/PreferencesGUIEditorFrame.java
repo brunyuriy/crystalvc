@@ -1,5 +1,6 @@
 package crystal.client;
 
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -120,7 +121,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 		JPanel tempPanel = new JPanel();
 		tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-		tempPanel.add(new JLabel("Path to scratch space:"));
+		tempPanel.add(new JLabel("Path to scratch space: "));
 		final JTextField tempPath = new JTextField(prefs.getTempDirectory());
 		tempPanel.add(tempPath);
 		tempPath.addKeyListener(new KeyListener() {
@@ -146,6 +147,27 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		});
 		getContentPane().add(tempPanel);
 
+		JPanel refreshPanel = new JPanel();
+		refreshPanel.setLayout(new BoxLayout(refreshPanel, BoxLayout.X_AXIS));
+		refreshPanel.add(new JLabel("Refresh rate: "));
+		
+		final JTextField refreshRate = new JTextField(String.valueOf(prefs.getRefresh()));
+		refreshPanel.add(refreshRate);
+		refreshRate.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent arg0) {
+			}
+
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			public void keyReleased(KeyEvent arg0) {
+				prefs.setRefresh(Long.valueOf(refreshRate.getText()));
+				prefs.setChanged(true);
+				frame.pack();
+			}
+		});
+		getContentPane().add(refreshPanel);
+		
 		final JTabbedPane projectsTabs = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 		/*
 		 * projectsTabs.addChangeListener(new ChangeListener() {
@@ -206,11 +228,17 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		getContentPane().add(projectsTabs);
 		getContentPane().add(deleteProjectButton);
 
-		//TODO
-		addWindowListener(new WindowListener() {
-			public void windowClosing(WindowEvent arg0) {
-				boolean canClose = true;
-				setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);				
+		JPanel savePanel = new JPanel();
+		savePanel.setLayout(new FlowLayout());
+		final JButton saveButton = new JButton("Save");
+		final JButton cancelButton = new JButton("Cancel");
+		savePanel.add(saveButton);
+		savePanel.add(cancelButton);
+		getContentPane().add(savePanel);
+		
+		saveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boolean canClose = true;			
 				if (prefs.hasChanged()) {
 					for(ProjectPreferences pp : prefs.getProjectPreference()){
 						for(DataSource ds : pp.getDataSources()){
@@ -222,12 +250,59 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 					if(canClose){
 						ClientPreferences.savePreferencesToDefaultXML(prefs);
+						//TODO
 						prefs.setChanged(false);	
-
+						frame.setVisible(false);
 					} else {
 						JOptionPane.showMessageDialog(null, "You have invalid input for clone address.", 
 								"Warning", JOptionPane.ERROR_MESSAGE);
+					}
+				} else {
+					frame.setVisible(false);
+				} 
+			}
+			
+		});
+		
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+			}
+			
+		});
+		
+		addWindowListener(new WindowListener() {
+			public void windowClosing(WindowEvent arg0) {
+
+				setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);	
+				if (prefs.hasChanged()) {
+					
+					int n = JOptionPane.showConfirmDialog(null, "Do you want to save your data?", 
+							"Closing data", JOptionPane.YES_NO_CANCEL_OPTION);
+					
+					if (n == JOptionPane.YES_OPTION) {
+						boolean canClose = true;
+						for(ProjectPreferences pp : prefs.getProjectPreference()){
+							for(DataSource ds : pp.getDataSources()){
+								if(ds.getCloneString().trim().equals("")) {
+									canClose = false;
+								}
+							}
+						}
+	
+						if(canClose){
+							ClientPreferences.savePreferencesToDefaultXML(prefs);
+							//TODO
+							prefs.setChanged(false);	
+						} else {
+							JOptionPane.showMessageDialog(null, "You have invalid input for clone address.", 
+									"Warning", JOptionPane.ERROR_MESSAGE);
+							setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+						}
+					} else if(n == JOptionPane.CANCEL_OPTION) {
 						setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+					} else {
+						prefs.setChanged(false);
 					}
 				}
 			}
