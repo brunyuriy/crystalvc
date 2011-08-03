@@ -1,5 +1,6 @@
 package crystal.client;
 
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -120,7 +121,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 		JPanel tempPanel = new JPanel();
 		tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-		tempPanel.add(new JLabel("Path to scratch space:"));
+		tempPanel.add(new JLabel("Path to scratch space: "));
 		final JTextField tempPath = new JTextField(prefs.getTempDirectory());
 		tempPanel.add(tempPath);
 		tempPath.addKeyListener(new KeyListener() {
@@ -146,6 +147,26 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		});
 		getContentPane().add(tempPanel);
 
+		JPanel refreshPanel = new JPanel();
+		refreshPanel.setLayout(new BoxLayout(refreshPanel, BoxLayout.X_AXIS));
+		refreshPanel.add(new JLabel("Refresh rate: "));
+		
+		final JTextField refreshRate = new JTextField(String.valueOf(prefs.getRefresh()));
+		refreshPanel.add(refreshRate);
+		refreshRate.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent arg0) {
+			}
+
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			public void keyReleased(KeyEvent arg0) {
+				prefs.setChanged(true);
+				frame.pack();
+			}
+		});
+		getContentPane().add(refreshPanel);
+		
 		final JTabbedPane projectsTabs = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 		/*
 		 * projectsTabs.addChangeListener(new ChangeListener() {
@@ -206,6 +227,28 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		getContentPane().add(projectsTabs);
 		getContentPane().add(deleteProjectButton);
 
+		JPanel savePanel = new JPanel();
+		savePanel.setLayout(new FlowLayout());
+		final JButton saveButton = new JButton("Save");
+		final JButton cancelButton = new JButton("Cancel");
+		savePanel.add(saveButton);
+		savePanel.add(cancelButton);
+		getContentPane().add(savePanel);
+		
+		saveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+			}
+			
+		});
+		
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+			}
+			
+		});
+		
 		//TODO
 		addWindowListener(new WindowListener() {
 			public void windowClosing(WindowEvent arg0) {
