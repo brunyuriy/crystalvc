@@ -48,9 +48,7 @@ public class ProjectPreferences {
 	public boolean equals(Object o){
 		if(o != null && getClass() == o.getClass()){
 			ProjectPreferences other = (ProjectPreferences) o;
-			return _myEnvironment.equals(other._myEnvironment) 
-					&& _clientPreferences.equals(other._clientPreferences)
-					&& _dataSources.equals(other._dataSources);
+			return _myEnvironment.equals(other._myEnvironment);
 		} else {
 			return false;
 		}

@@ -257,7 +257,18 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				}
 			});
 			
+			JMenuItem addRepo = new JMenuItem("Add new repository");
+			addRepo.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					new DataSourceGuiEditorFrame(prefs, projPref);
+				}
+				
+			});
+			
+			
 			projectMenu.add(clearProjectCacheMenu);
+			projectMenu.add(addRepo);
 			
 			projectName.addMouseListener(new MouseAdapter() {
 				
