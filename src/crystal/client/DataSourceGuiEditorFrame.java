@@ -56,6 +56,10 @@ public class DataSourceGuiEditorFrame extends JFrame {
 	 */
 	public DataSourceGuiEditorFrame(final ClientPreferences prefs, final ProjectPreferences pref, String sourceName){
 		ValidInputChecker.checkNullInput(prefs);
+		if(prefs.getProjectPreference().contains(pref)){
+			throw new IllegalArgumentException("Input project preference is not contained in the " +
+					"client preferences.");
+		}
 		final boolean isAddRepo = sourceName == null;
 		final DataSource _source;
 		
@@ -302,6 +306,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 		setVisible(true);
 		setSize(500, 180);
 	}
+	
 	
 	/**
 	 * A directory chooser to select paths
