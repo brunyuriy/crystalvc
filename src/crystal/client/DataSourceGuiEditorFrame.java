@@ -55,11 +55,12 @@ public class DataSourceGuiEditorFrame extends JFrame {
 	 * @param sourceName data source name to edit: create new data source if it is null
 	 */
 	public DataSourceGuiEditorFrame(final ClientPreferences prefs, final ProjectPreferences pref, String sourceName){
-		ValidInputChecker.checkNullInput(prefs);
-		if(prefs.getProjectPreference().contains(pref)){
+		//ValidInputChecker.checkNullInput(prefs);
+		/*if(prefs.getProjectPreference().contains(pref)){
 			throw new IllegalArgumentException("Input project preference is not contained in the " +
 					"client preferences.");
 		}
+		*/
 		final boolean isAddRepo = sourceName == null;
 		final DataSource _source;
 		
@@ -105,9 +106,8 @@ public class DataSourceGuiEditorFrame extends JFrame {
 			
 		});
 		
-		
 		sourcePanel.add(new JLabel("Clone address: "));
-		JPanel findAddressPanel = new JPanel(new SpringLayout());
+		final JPanel findAddressPanel = new JPanel(new SpringLayout());
 		final JTextField cloneString = new JTextField(_source.getCloneString());
 		findAddressPanel.add(cloneString);
 
@@ -125,9 +125,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 					cloneString.setText(_source.getCloneString());
 					*/
 				}
-				
 			}
-			
 		});
 		
 		JButton findButton = new JButton("Find");
@@ -136,9 +134,8 @@ public class DataSourceGuiEditorFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				new DirectoryChooser(cloneString);
+				new DirectoryChooser(cloneString, _source);
 				prefs.setChanged(true);
-				pack();
 			}
 			
 		});
@@ -165,6 +162,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 		sourcePanel.add(parent);
 		parent.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent e) {
+				
 			}
 
 			public void focusLost(FocusEvent arg0) {
@@ -177,11 +175,8 @@ public class DataSourceGuiEditorFrame extends JFrame {
 					parent.setText(_source.getParent());
 					*/
 				}
-				
 			}
-			
 		});
-		
 		
 		SpringLayoutUtility.formGrid(sourcePanel, 
 				sourcePanel.getComponents().length / SOURCE_COLUMNS, SOURCE_COLUMNS);
@@ -201,6 +196,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 					try {
 						ValidInputChecker.checkValidStringInput(_source.getShortName());
 						pref.addDataSource(_source);
+						System.out.println(_source.getCloneString());
 						//TODO save to xml file
 						prefs.setChanged(false);
 						ClientPreferences.savePreferencesToDefaultXML(prefs);
@@ -301,12 +297,13 @@ public class DataSourceGuiEditorFrame extends JFrame {
 			}
 		});
 		
-		
+
 		
 		setVisible(true);
 		setSize(500, 180);
 	}
 	
+
 	
 	/**
 	 * A directory chooser to select paths
@@ -319,7 +316,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 		 */
 		private static final long serialVersionUID = 8710734018181001535L;
 
-		DirectoryChooser(final JTextField path){
+		DirectoryChooser(final JTextField path, final DataSource source){
 			super("Search path to clone repository");
 			
 			final JFrame chooserFrame = this;
@@ -337,7 +334,8 @@ public class DataSourceGuiEditorFrame extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					String command = e.getActionCommand();
 					if (command.equals(JFileChooser.APPROVE_SELECTION)) {
-						path.setText(chooser.getSelectedFile().getAbsolutePath());
+						path.setText(chooser.getSelectedFile().getAbsolutePath().replace('\\', '/'));			
+						source.setCloneString(path.getText());
 					}
 					chooserFrame.setVisible(false);
 				}
