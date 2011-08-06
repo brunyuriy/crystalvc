@@ -21,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolTip;
+import javax.swing.MenuElement;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.ToolTipManager;
@@ -271,6 +272,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			projectMenu.add(clearProjectCacheMenu);
 			projectMenu.add(addRepo);
 			
+			
 			projectName.addMouseListener(new MouseAdapter() {
 				
 				public void mousePressed(MouseEvent e) {
@@ -311,8 +313,10 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			dismissDelay = Integer.MAX_VALUE;
 			ToolTipManager.sharedInstance().setDismissDelay(dismissDelay);
 			
-			for (DataSource source : projPref.getDataSources()) {
+			
+			for (final DataSource source : projPref.getDataSources()) {
 				if (!(source.isHidden())) {
+					
 					ImageIcon image = new ImageIcon();
 					JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER) {
 						private static final long serialVersionUID = 1L;
@@ -321,6 +325,50 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 							return new JMultiLineToolTip();
 						}
 					};
+					
+					
+					final JPopupMenu repoMenu = new JPopupMenu("Repository");
+					JMenuItem deleteRepo = new JMenuItem("Delete this repository");
+					repoMenu.add(deleteRepo);
+					for(MenuElement element : projectMenu.getSubElements()){
+						repoMenu.add((JMenuItem) element);
+					}
+
+					
+					deleteRepo.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							int option = JOptionPane.showConfirmDialog(null, "Do you want to delete the " + source.getShortName() + "'s repository?", 
+									"Delete repository?", JOptionPane.YES_NO_OPTION);
+
+							if(option == JOptionPane.YES_OPTION) {
+								projPref.getDataSources().remove(source);
+								ClientPreferences.savePreferencesToDefaultXML(prefs);
+							}
+							
+
+						}
+						
+					});
+					
+					imageLabel.addMouseListener(new MouseAdapter() {
+						
+						public void mousePressed(MouseEvent e) {
+					        if (e.isPopupTrigger()) {
+					            repoMenu.show(e.getComponent(), e.getX(), e.getY());
+					        }
+						}
+						
+						public void mouseReleased(MouseEvent e) {
+					        if (e.isPopupTrigger()) {
+					            repoMenu.show(e.getComponent(), e.getX(), e.getY());
+					        }
+						}
+						
+						public void mouseClicked(MouseEvent e) {
+					    }
+					});
+					
 					_iconMap.put(source, imageLabel);
 					ConflictDaemon.getInstance().getRelationship(source);
 					imageLabel.setVerticalTextPosition(JLabel.TOP);
@@ -329,7 +377,10 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 //					imageLabel.setToolTipText("Action: hg fetch\nConsequences: new relationship will be AHEAD \nCommiters: David and Yuriy");
 				}
 			}
+			
 
+			
+			
 			// Fill in the rest of the grid row with blanks
 			for (int i = projPref.getNumOfVisibleSources(); i < maxSources; i++)
 				grid.add(new JLabel());
