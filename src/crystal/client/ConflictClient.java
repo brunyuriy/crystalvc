@@ -23,6 +23,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToolTip;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
+import javax.swing.ToolTipManager;
 
 import org.apache.log4j.Logger;
 
@@ -303,6 +304,12 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			ConflictDaemon.getInstance().getLocalState(projPref.getEnvironment());
 			name.add(action);
 			grid.add(name);
+			
+			// making tool tips remain visible
+			int dismissDelay = ToolTipManager.sharedInstance().getDismissDelay();
+			
+			dismissDelay = Integer.MAX_VALUE;
+			ToolTipManager.sharedInstance().setDismissDelay(dismissDelay);
 			
 			for (DataSource source : projPref.getDataSources()) {
 				if (!(source.isHidden())) {

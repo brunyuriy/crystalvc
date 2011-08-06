@@ -82,8 +82,8 @@ public class DataSource {
 	public boolean equals(Object o){
 		if (o != null && getClass() == o.getClass()){
 			DataSource other = (DataSource) o;
-			return this._shortName == null && other._shortName == null || this._shortName.equals(other._shortName);
-
+			return this._shortName == null && other._shortName == null 
+			|| this._shortName.equals(other._shortName);
 		} else {
 			return false;
 		}
