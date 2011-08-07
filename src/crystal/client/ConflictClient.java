@@ -21,7 +21,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolTip;
-import javax.swing.MenuElement;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.ToolTipManager;
@@ -211,7 +210,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				maxSources = projPref.getNumOfVisibleSources();
 		}
 
-		JPanel grid = new JPanel(new SpringLayout()); 
+		final JPanel grid = new JPanel(new SpringLayout()); 
 
 		// Create the iconMap and populate it with icons.
 		// Also create the layout of the GUI.
@@ -223,54 +222,9 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			
 			JLabel projectName = new JLabel(projPref.getEnvironment().getShortName());
 			final JPopupMenu projectMenu = new JPopupMenu("Project menu");
-			JMenuItem clearProjectCacheMenu = new JMenuItem("Clear " + projPref.getEnvironment().getShortName() + " project cache");
-			clearProjectCacheMenu.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent action) {
-					int option = JOptionPane.showConfirmDialog(null, "Do you want to empty the " + projPref.getEnvironment().getShortName() + " cache?", 
-							"Warning", JOptionPane.YES_NO_OPTION);
-					// TODO wait for the current refresh to finish or kill it
-					if(option == JOptionPane.YES_OPTION) {
-					    boolean hadToDisable =_disableDaemon.getText().equals("Stop Crystal updates");
-					    if (hadToDisable)
-					        ConflictSystemTray.getInstance().daemonAbleAction();
-
-						Set<String> target = new TreeSet<String>();
-						
-						target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + projPref.getEnvironment().getShortName());
-						for(DataSource ds : projPref.getDataSources()){
-							
-							target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + ds.getShortName());
-							//System.out.println(projPref.getEnvironment().getShortName() + "_" + ds.getShortName());
-						}
-						
-						for(String paths : target){
-							RunIt.deleteDirectory(new File(paths));
-							System.out.println(paths);
-						}
-						
-						System.out.println("Cache has been emptied on your computer.");
-						
-						System.out.println("Path: " + _preferences.getTempDirectory() + " projectPref: " + projPref.getEnvironment().getShortName());
-						System.out.println("Cache has been cleared for the " + projPref.getEnvironment().getShortName() + " project.");
-						if (hadToDisable)
-						    ConflictSystemTray.getInstance().daemonAbleAction();
-					}
-				}
-			});
-			
-			JMenuItem addRepo = new JMenuItem("Add new repository");
-			addRepo.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					new DataSourceGuiEditorFrame(prefs, projPref);
-				}
-				
-			});
-			
-			
-			projectMenu.add(clearProjectCacheMenu);
-			projectMenu.add(addRepo);
+		
+			projectMenu.add(getClearCacheItem(projPref));
+			projectMenu.add(getAddRepoItem(projPref, prefs));
 			
 			
 			projectName.addMouseListener(new MouseAdapter() {
@@ -318,7 +272,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				if (!(source.isHidden())) {
 					
 					ImageIcon image = new ImageIcon();
-					JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER) {
+					final JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER) {
 						private static final long serialVersionUID = 1L;
 
 						public JToolTip createToolTip() {
@@ -329,10 +283,10 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 					
 					final JPopupMenu repoMenu = new JPopupMenu("Repository");
 					JMenuItem deleteRepo = new JMenuItem("Delete this repository");
+					
+					repoMenu.add(getAddRepoItem(projPref, prefs));
 					repoMenu.add(deleteRepo);
-					for(MenuElement element : projectMenu.getSubElements()){
-						repoMenu.add((JMenuItem) element);
-					}
+					repoMenu.add(getClearCacheItem(projPref));
 
 					
 					deleteRepo.addActionListener(new ActionListener() {
@@ -343,6 +297,8 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 							if(option == JOptionPane.YES_OPTION) {
 								projPref.getDataSources().remove(source);
+								_iconMap.remove(source);
+								grid.remove(imageLabel);
 								ClientPreferences.savePreferencesToDefaultXML(prefs);
 							}
 							
@@ -407,6 +363,69 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_frame.setVisible(true);
 		_frame.toFront();
 		_frame.pack();
+	}
+	
+	/**
+	 * Get JMenuItem to add repository for given project
+	 * @param projPref
+	 * @param prefs
+	 * @return
+	 */
+	private JMenuItem getAddRepoItem(final ProjectPreferences projPref, final ClientPreferences prefs){
+		JMenuItem addRepo = new JMenuItem("Add new repository");
+		addRepo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new DataSourceGuiEditorFrame(prefs, projPref);
+			}
+			
+		});
+		return addRepo;
+	}
+	
+	/**
+	 * Get JMenuItem to clear cache for the given project
+	 * @param projPref
+	 * @return
+	 */
+	private JMenuItem getClearCacheItem(final ProjectPreferences projPref){
+		JMenuItem clearProjectCacheMenu = new JMenuItem("Clear " + projPref.getEnvironment().getShortName() + " project cache");
+		clearProjectCacheMenu.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent action) {
+				int option = JOptionPane.showConfirmDialog(null, "Do you want to empty the " + projPref.getEnvironment().getShortName() + " cache?", 
+						"Warning", JOptionPane.YES_NO_OPTION);
+				// TODO wait for the current refresh to finish or kill it
+				if(option == JOptionPane.YES_OPTION) {
+				    boolean hadToDisable =_disableDaemon.getText().equals("Stop Crystal updates");
+				    if (hadToDisable)
+				        ConflictSystemTray.getInstance().daemonAbleAction();
+
+					Set<String> target = new TreeSet<String>();
+					
+					target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + projPref.getEnvironment().getShortName());
+					for(DataSource ds : projPref.getDataSources()){
+						
+						target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + ds.getShortName());
+						//System.out.println(projPref.getEnvironment().getShortName() + "_" + ds.getShortName());
+					}
+					
+					for(String paths : target){
+						RunIt.deleteDirectory(new File(paths));
+						System.out.println(paths);
+					}
+					
+					System.out.println("Cache has been emptied on your computer.");
+					
+					System.out.println("Path: " + _preferences.getTempDirectory() + " projectPref: " + projPref.getEnvironment().getShortName());
+					System.out.println("Cache has been cleared for the " + projPref.getEnvironment().getShortName() + " project.");
+					if (hadToDisable)
+					    ConflictSystemTray.getInstance().daemonAbleAction();
+				}
+			}
+		});
+		
+		return clearProjectCacheMenu;
 	}
 	
 
