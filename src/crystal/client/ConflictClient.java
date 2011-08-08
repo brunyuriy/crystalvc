@@ -23,7 +23,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToolTip;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
-import javax.swing.ToolTipManager;
 
 import org.apache.log4j.Logger;
 
@@ -44,7 +43,7 @@ import crystal.util.SpringLayoutUtility;
 public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 	private Logger _log = Logger.getLogger(this.getClass());
-
+	
 	/**
 	 * UI frame.
 	 */
@@ -160,18 +159,17 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			     if (hadToDisable)
 			         ConflictSystemTray.getInstance().daemonAbleAction();
 			     // TODO wait for disabling to finish
-			     
-				System.out.println(_preferences.getTempDirectory());
+
 				RunIt.deleteDirectory(new File(_preferences.getTempDirectory()));
-				System.out.println("Cache has been emptied on your computer.");
+				_log.info("User selected Clear Cache from the menu. All cache has been emptied at " + _preferences.getTempDirectory());
 				try {
 					  String newDirectoy = _preferences.getTempDirectory();
 					  boolean success = (new File(newDirectoy)).mkdir();
 					  if (success) {
-						  System.out.println("An empty cache directory has been created at " + newDirectoy);
+						  _log.info("An empty cache directory has been created at " + newDirectoy);
 					  }
 				}catch (Exception exception){ //Catch exception if any
-					  System.err.println("Error: " + exception.getMessage());
+					  _log.error("Error: " + exception.getMessage());
 				}
 				if (hadToDisable) 
                     ConflictSystemTray.getInstance().daemonAbleAction();
@@ -210,7 +208,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				maxSources = projPref.getNumOfVisibleSources();
 		}
 
-		final JPanel grid = new JPanel(new SpringLayout()); 
+		JPanel grid = new JPanel(new SpringLayout()); 
 
 		// Create the iconMap and populate it with icons.
 		// Also create the layout of the GUI.
@@ -222,10 +220,48 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			
 			JLabel projectName = new JLabel(projPref.getEnvironment().getShortName());
 			final JPopupMenu projectMenu = new JPopupMenu("Project menu");
-		
-			projectMenu.add(getClearCacheItem(projPref));
-			projectMenu.add(getAddRepoItem(projPref, prefs));
+			JMenuItem clearProjectCacheMenu = new JMenuItem("Clear " + projPref.getEnvironment().getShortName() + " project cache");
+			clearProjectCacheMenu.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent action) {
+					int option = JOptionPane.showConfirmDialog(null, "Do you want to empty the " + projPref.getEnvironment().getShortName() + " cache?", 
+							"Warning", JOptionPane.YES_NO_OPTION);
+					// TODO wait for the current refresh to finish or kill it
+					if(option == JOptionPane.YES_OPTION) {
+					    _log.info("User selected \"Clear the " + projPref.getEnvironment().getShortName() + "project cache\" from the menu");
+						boolean hadToDisable =_disableDaemon.getText().equals("Stop Crystal updates");
+					    if (hadToDisable)
+					        ConflictSystemTray.getInstance().daemonAbleAction();
+
+						Set<String> target = new TreeSet<String>();
+						
+						target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + projPref.getEnvironment().getShortName());
+						for(DataSource ds : projPref.getDataSources()){		
+							target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + ds.getShortName());
+						}
+				
+						for(String paths : target){
+							RunIt.deleteDirectory(new File(paths));
+						}
+						_log.info(_preferences.getTempDirectory() + " directory has been deleted to empty the cache for the " + projPref.getEnvironment().getShortName() + " project.");
+						if (hadToDisable)
+						    ConflictSystemTray.getInstance().daemonAbleAction();
+					}
+				}
+			});
 			
+			JMenuItem addRepo = new JMenuItem("Add new repository");
+			addRepo.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					//new DataSourceGuiEditorFrame(prefs, projPref);
+				}
+				
+			});
+			
+			
+			projectMenu.add(clearProjectCacheMenu);
+			projectMenu.add(addRepo);
 			
 			projectName.addMouseListener(new MouseAdapter() {
 				
@@ -261,70 +297,16 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			name.add(action);
 			grid.add(name);
 			
-			// making tool tips remain visible
-			int dismissDelay = ToolTipManager.sharedInstance().getDismissDelay();
-			
-			dismissDelay = Integer.MAX_VALUE;
-			ToolTipManager.sharedInstance().setDismissDelay(dismissDelay);
-			
-			
-			for (final DataSource source : projPref.getDataSources()) {
+			for (DataSource source : projPref.getDataSources()) {
 				if (!(source.isHidden())) {
-					
 					ImageIcon image = new ImageIcon();
-					final JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER) {
+					JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER) {
 						private static final long serialVersionUID = 1L;
 
 						public JToolTip createToolTip() {
 							return new JMultiLineToolTip();
 						}
 					};
-					
-					
-					final JPopupMenu repoMenu = new JPopupMenu("Repository");
-					JMenuItem deleteRepo = new JMenuItem("Delete this repository");
-					
-					repoMenu.add(getAddRepoItem(projPref, prefs));
-					repoMenu.add(deleteRepo);
-					repoMenu.add(getClearCacheItem(projPref));
-
-					
-					deleteRepo.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-							int option = JOptionPane.showConfirmDialog(null, "Do you want to delete the " + source.getShortName() + "'s repository?", 
-									"Delete repository?", JOptionPane.YES_NO_OPTION);
-
-							if(option == JOptionPane.YES_OPTION) {
-								projPref.getDataSources().remove(source);
-								_iconMap.remove(source);
-								grid.remove(imageLabel);
-								ClientPreferences.savePreferencesToDefaultXML(prefs);
-							}
-							
-
-						}
-						
-					});
-					
-					imageLabel.addMouseListener(new MouseAdapter() {
-						
-						public void mousePressed(MouseEvent e) {
-					        if (e.isPopupTrigger()) {
-					            repoMenu.show(e.getComponent(), e.getX(), e.getY());
-					        }
-						}
-						
-						public void mouseReleased(MouseEvent e) {
-					        if (e.isPopupTrigger()) {
-					            repoMenu.show(e.getComponent(), e.getX(), e.getY());
-					        }
-						}
-						
-						public void mouseClicked(MouseEvent e) {
-					    }
-					});
-					
 					_iconMap.put(source, imageLabel);
 					ConflictDaemon.getInstance().getRelationship(source);
 					imageLabel.setVerticalTextPosition(JLabel.TOP);
@@ -333,10 +315,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 //					imageLabel.setToolTipText("Action: hg fetch\nConsequences: new relationship will be AHEAD \nCommiters: David and Yuriy");
 				}
 			}
-			
 
-			
-			
 			// Fill in the rest of the grid row with blanks
 			for (int i = projPref.getNumOfVisibleSources(); i < maxSources; i++)
 				grid.add(new JLabel());
@@ -363,69 +342,6 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_frame.setVisible(true);
 		_frame.toFront();
 		_frame.pack();
-	}
-	
-	/**
-	 * Get JMenuItem to add repository for given project
-	 * @param projPref
-	 * @param prefs
-	 * @return
-	 */
-	private JMenuItem getAddRepoItem(final ProjectPreferences projPref, final ClientPreferences prefs){
-		JMenuItem addRepo = new JMenuItem("Add new repository");
-		addRepo.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				new DataSourceGuiEditorFrame(prefs, projPref);
-			}
-			
-		});
-		return addRepo;
-	}
-	
-	/**
-	 * Get JMenuItem to clear cache for the given project
-	 * @param projPref
-	 * @return
-	 */
-	private JMenuItem getClearCacheItem(final ProjectPreferences projPref){
-		JMenuItem clearProjectCacheMenu = new JMenuItem("Clear " + projPref.getEnvironment().getShortName() + " project cache");
-		clearProjectCacheMenu.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent action) {
-				int option = JOptionPane.showConfirmDialog(null, "Do you want to empty the " + projPref.getEnvironment().getShortName() + " cache?", 
-						"Warning", JOptionPane.YES_NO_OPTION);
-				// TODO wait for the current refresh to finish or kill it
-				if(option == JOptionPane.YES_OPTION) {
-				    boolean hadToDisable =_disableDaemon.getText().equals("Stop Crystal updates");
-				    if (hadToDisable)
-				        ConflictSystemTray.getInstance().daemonAbleAction();
-
-					Set<String> target = new TreeSet<String>();
-					
-					target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + projPref.getEnvironment().getShortName());
-					for(DataSource ds : projPref.getDataSources()){
-						
-						target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + ds.getShortName());
-						//System.out.println(projPref.getEnvironment().getShortName() + "_" + ds.getShortName());
-					}
-					
-					for(String paths : target){
-						RunIt.deleteDirectory(new File(paths));
-						System.out.println(paths);
-					}
-					
-					System.out.println("Cache has been emptied on your computer.");
-					
-					System.out.println("Path: " + _preferences.getTempDirectory() + " projectPref: " + projPref.getEnvironment().getShortName());
-					System.out.println("Cache has been cleared for the " + projPref.getEnvironment().getShortName() + " project.");
-					if (hadToDisable)
-					    ConflictSystemTray.getInstance().daemonAbleAction();
-				}
-			}
-		});
-		
-		return clearProjectCacheMenu;
 	}
 	
 
