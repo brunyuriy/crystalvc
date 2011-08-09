@@ -161,17 +161,16 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			         ConflictSystemTray.getInstance().daemonAbleAction();
 			     // TODO wait for disabling to finish
 			     
-				System.out.println(_preferences.getTempDirectory());
 				RunIt.deleteDirectory(new File(_preferences.getTempDirectory()));
-				System.out.println("Cache has been emptied on your computer.");
+				_log.info("User selected Clear Cache from the menu. All cache has been emptied at " + _preferences.getTempDirectory());
 				try {
 					  String newDirectoy = _preferences.getTempDirectory();
-					  boolean success = (new File(newDirectoy)).mkdir();
-					  if (success) {
-						  System.out.println("An empty cache directory has been created at " + newDirectoy);
-					  }
-				}catch (Exception exception){ //Catch exception if any
-					  System.err.println("Error: " + exception.getMessage());
+					  if ((new File(newDirectoy)).mkdir())
+					      _log.info("An empty cache directory has been created at " + newDirectoy);
+					  else
+					      _log.error("Failed to clear an empty cache directory at " + newDirectoy);
+				} catch (IOException e) { 
+				    _log.error("Failed to clear an empty cache directory at " + newDirectoy + "\n" + e.getMessage());
 				}
 				if (hadToDisable) 
                     ConflictSystemTray.getInstance().daemonAbleAction();
@@ -407,18 +406,14 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 					for(DataSource ds : projPref.getDataSources()){
 						
 						target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + ds.getShortName());
-						//System.out.println(projPref.getEnvironment().getShortName() + "_" + ds.getShortName());
+      					}
+					
+					for(String path : target){
+						RunIt.deleteDirectory(new File(path));
+						_log.info("Deleting " + path);
 					}
-					
-					for(String paths : target){
-						RunIt.deleteDirectory(new File(paths));
-						System.out.println(paths);
-					}
-					
-					System.out.println("Cache has been emptied on your computer.");
-					
-					System.out.println("Path: " + _preferences.getTempDirectory() + " projectPref: " + projPref.getEnvironment().getShortName());
-					System.out.println("Cache has been cleared for the " + projPref.getEnvironment().getShortName() + " project.");
+
+					_log.info("Cleared the " + projPref.getEnvironment().getShortName() + " project's cache.");
 					if (hadToDisable)
 					    ConflictSystemTray.getInstance().daemonAbleAction();
 				}
