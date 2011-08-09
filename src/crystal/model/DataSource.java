@@ -131,6 +131,14 @@ public class DataSource {
 	}
 	
 	/**
+	 * 
+	 * @return
+	 */
+	public String getRemoteGit() {
+		throw new IllegalArgumentException("getRemoteGit has not been implemented yet.");
+	}
+	
+	/**
 	 * Sets the command to compile the code in this repository
 	 * @param compileCommand: the compile command
 	 */
