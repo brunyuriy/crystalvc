@@ -163,15 +163,11 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			     
 				RunIt.deleteDirectory(new File(_preferences.getTempDirectory()));
 				_log.info("User selected Clear Cache from the menu. All cache has been emptied at " + _preferences.getTempDirectory());
-				try {
-					  String newDirectoy = _preferences.getTempDirectory();
-					  if ((new File(newDirectoy)).mkdir())
-					      _log.info("An empty cache directory has been created at " + newDirectoy);
-					  else
-					      _log.error("Failed to clear an empty cache directory at " + newDirectoy);
-				} catch (IOException e) { 
-				    _log.error("Failed to clear an empty cache directory at " + newDirectoy + "\n" + e.getMessage());
-				}
+				String newDirectoy = _preferences.getTempDirectory();
+				if ((new File(newDirectoy)).mkdir())
+					_log.info("An empty cache directory has been created at " + newDirectoy);
+				else
+					_log.error("Failed to clear an empty cache directory at " + newDirectoy);
 				if (hadToDisable) 
                     ConflictSystemTray.getInstance().daemonAbleAction();
 			}
