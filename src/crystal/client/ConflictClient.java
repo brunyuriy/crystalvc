@@ -307,6 +307,16 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 						
 					});
 					
+					JMenuItem editRepo = new JMenuItem("Edit Repository");
+					
+					editRepo.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							new DataSourceGuiEditorFrame(prefs, projPref, source.getShortName());
+						}
+						
+					});
+					
 					imageLabel.addMouseListener(new MouseAdapter() {
 						
 						public void mousePressed(MouseEvent e) {

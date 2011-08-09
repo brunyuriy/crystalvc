@@ -679,6 +679,11 @@ public class ClientPreferences {
     public void setHgPath(String hgPath) {
         _hgPath = hgPath;
     }
+    
+    // will not be used now
+    public String getGitPath(){
+    	throw new IllegalArgumentException("getGitPath has not been implemented yet.");
+    }
 
     /**
      * @return path to the user's scratch space
