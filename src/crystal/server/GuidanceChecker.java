@@ -8,7 +8,7 @@ import crystal.model.RevisionHistory.Capable;
 import crystal.model.RevisionHistory.Ease;
 import crystal.model.RevisionHistory.When;
 import crystal.model.Relationship;
-import crystal.server.HgLogParser.Checkpoint;
+import crystal.server.AbstractLogParser.Checkpoint;
 import crystal.util.SetOperations;
 import crystal.util.ValidInputChecker;
 
