@@ -11,7 +11,7 @@ import java.util.Scanner;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import crystal.server.HgLogParser.Checkpoint;
+import crystal.server.AbstractLogParser.Checkpoint;
 
 /**
  * Class HgLogParserTest will test the performance of class HgLogParser
