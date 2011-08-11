@@ -12,6 +12,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -125,13 +126,17 @@ public class ProjectPanel extends JPanel {
 
 		prefEnvironmentPanel.add(new JLabel("Clone Address: "));
 		final JTextField address = new JTextField(pref.getEnvironment().getCloneString());
-		prefEnvironmentPanel.add(address);
+		final JPanel addressPanel = new JPanel();
+		addressPanel.add(address);
+		JButton addressButton = new JButton("find");
+		addressPanel.add(addressButton);
+		addressPanel.setLayout(new BoxLayout(addressPanel, BoxLayout.X_AXIS));
+		
+		prefEnvironmentPanel.add(addressPanel);
 		address.addFocusListener(new FocusListener() {
 
 			@Override
 			public void focusGained(FocusEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 
 			@Override
@@ -148,6 +153,16 @@ public class ProjectPanel extends JPanel {
 				}
 				
 			}
+		});
+		
+		addressButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new DirectoryChooser(address, pref.getEnvironment());
+				prefs.setChanged(true);
+			}
+			
 		});
 		
 		prefEnvironmentPanel.add(new JLabel("Compile Command: "));
@@ -196,8 +211,6 @@ public class ProjectPanel extends JPanel {
 
 			@Override
 			public void focusGained(FocusEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 
 			@Override
@@ -310,8 +323,6 @@ public class ProjectPanel extends JPanel {
 		shortName.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 
 			@Override
@@ -345,8 +356,6 @@ public class ProjectPanel extends JPanel {
 
 		// repoPanel.add(new JLabel("Parent"));
 		final JTextField parent = new JTextField(source.getParent());
-		if (parent.getText().equals(""))
-			parent.setText(" ");
 
 		parent.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {
@@ -358,8 +367,6 @@ public class ProjectPanel extends JPanel {
 			public void keyReleased(KeyEvent arg0) {
 				source.setParent(parent.getText());
 				prefs.setChanged(true);
-				if (parent.getText().equals(""))
-					parent.setText(" ");
 				panel.validate();
 				mainFrame.pack();
 			}
@@ -367,13 +374,15 @@ public class ProjectPanel extends JPanel {
 
 		// repoPanel.add(new JLabel("Clone Address"));
 		final JTextField cloneAddress = new JTextField(source.getCloneString());
-
+		final JPanel cloneAddressPanel = new JPanel();
+		cloneAddressPanel.setLayout(new BoxLayout(cloneAddressPanel, BoxLayout.X_AXIS));
+		cloneAddressPanel.add(cloneAddress);
+		JButton findButton = new JButton("find");
+		cloneAddressPanel.add(findButton);
+		
 		cloneAddress.addFocusListener(new FocusListener() {
-
 			@Override
 			public void focusGained(FocusEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 
 			@Override
@@ -391,6 +400,16 @@ public class ProjectPanel extends JPanel {
 				
 			}
 		});
+		
+		findButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new DirectoryChooser(cloneAddress, source);
+				prefs.setChanged(true);
+			}
+			
+		});
 
 		final JButton deleteRepoButton = new JButton("Delete");
 		deleteRepoButton.addActionListener(new ActionListener() {
@@ -403,7 +422,7 @@ public class ProjectPanel extends JPanel {
 					sourcesPanel.remove(shortName);
 					sourcesPanel.remove(hideBox);
 					sourcesPanel.remove(parent);
-					sourcesPanel.remove(cloneAddress);
+					sourcesPanel.remove(cloneAddressPanel);
 					sourcesPanel.remove(deleteRepoButton);
 					SpringLayoutUtility.formGrid(sourcesPanel, pref.getDataSources().size() + BAR_SIZE, 
 							SOURCES_COLUMNS);
@@ -415,10 +434,49 @@ public class ProjectPanel extends JPanel {
 		sourcesPanel.add(shortName);
 		sourcesPanel.add(hideBox);
 		sourcesPanel.add(parent);
-		sourcesPanel.add(cloneAddress);
+		sourcesPanel.add(cloneAddressPanel);
 		
 		sourcesPanel.add(deleteRepoButton);
 
 	}
 
+	/**
+	 * A directory chooser to select paths
+	 * @author Haochen
+	 *
+	 */
+	private class DirectoryChooser extends JFrame{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 8710734018181001535L;
+
+		DirectoryChooser(final JTextField path, final DataSource source){
+			super("Search path to clone repository");
+			
+			final JFrame chooserFrame = this;
+			
+			setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+			
+			final JFileChooser chooser = new JFileChooser(path.getText());
+			
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			getContentPane().add(chooser);
+			chooser.setFileHidingEnabled(true);
+			pack();
+			setVisible(true);
+			chooser.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					String command = e.getActionCommand();
+					if (command.equals(JFileChooser.APPROVE_SELECTION)) {
+						path.setText(chooser.getSelectedFile().getAbsolutePath().replace('\\', '/'));			
+						source.setCloneString(path.getText());
+					}
+					chooserFrame.setVisible(false);
+				}
+			});
+			
+		}
+		
+	}
 }

@@ -7,7 +7,7 @@ import java.util.Set;
 import crystal.model.Relationship;
 import crystal.server.GuidanceChecker;
 import crystal.server.HgLogParser;
-import crystal.server.HgLogParser.Checkpoint;
+import crystal.server.AbstractLogParser.Checkpoint;
 import crystal.util.SetOperations;
 import crystal.util.ValidInputChecker;
 

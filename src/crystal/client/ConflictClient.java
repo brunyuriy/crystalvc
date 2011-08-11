@@ -112,6 +112,13 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		menuBar.add(fileMenu);
 		// menuBar.add(aboutMenu);
 
+		
+		// making tool tips remain visible
+		int dismissDelay = ToolTipManager.sharedInstance().getDismissDelay();
+		
+		dismissDelay = Integer.MAX_VALUE;
+		ToolTipManager.sharedInstance().setDismissDelay(dismissDelay);
+		
 		_refresh = new JMenuItem("Refresh");
 		JMenuItem editConfiguration = new JMenuItem("Edit Configuration");
 		_disableDaemon = new JMenuItem("Stop Crystal updates");
@@ -255,12 +262,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			ConflictDaemon.getInstance().getLocalState(projPref.getEnvironment());
 			name.add(action);
 			grid.add(name);
-			
-			// making tool tips remain visible
-			int dismissDelay = ToolTipManager.sharedInstance().getDismissDelay();
-			
-			dismissDelay = Integer.MAX_VALUE;
-			ToolTipManager.sharedInstance().setDismissDelay(dismissDelay);
+
 			
 			
 			for (final DataSource source : projPref.getDataSources()) {
@@ -279,9 +281,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 					final JPopupMenu repoMenu = new JPopupMenu("Repository");
 					JMenuItem deleteRepo = new JMenuItem("Delete this repository");
 					
-					repoMenu.add(getAddRepoItem(projPref, prefs));
-					repoMenu.add(deleteRepo);
-					repoMenu.add(getClearCacheItem(projPref));
+
 
 					
 					deleteRepo.addActionListener(new ActionListener() {
@@ -301,6 +301,21 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 						}
 						
 					});
+					
+					JMenuItem editRepo = new JMenuItem("Edit Repository");
+					
+					editRepo.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							new DataSourceGuiEditorFrame(prefs, projPref, source.getShortName());
+						}
+						
+					});
+					
+					repoMenu.add(getAddRepoItem(projPref, prefs));
+					repoMenu.add(getClearCacheItem(projPref));
+					repoMenu.add(editRepo);
+					repoMenu.add(deleteRepo);
 					
 					imageLabel.addMouseListener(new MouseAdapter() {
 						
