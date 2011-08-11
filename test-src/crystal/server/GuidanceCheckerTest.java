@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import crystal.model.Relationship;
 import crystal.model.RevisionHistory.When;
-import crystal.server.HgLogParser.Checkpoint;
+import crystal.server.AbstractLogParser.Checkpoint;
 
 /**
  * Class GuidanceCheckerTest will test the performance of class
