@@ -119,23 +119,15 @@ public class DataSource {
 	 * Sets the remoteHg command for this repository
 	 * @param remoteHg : the remoteHg command
 	 */
-	public void setRemoteHg(String remoteHg) {
-		_remoteHg = remoteHg;
+	public void setRemoteCmd(String remoteCmd) {
+		_remoteHg = remoteCmd;
 	}
 	
 	/**
 	 * @return the remoteHg command
 	 */
-	public String getRemoteHg() {
+	public String getRemoteCmd() {
 		return _remoteHg;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public String getRemoteGit() {
-		throw new IllegalArgumentException("getRemoteGit has not been implemented yet.");
 	}
 	
 	/**

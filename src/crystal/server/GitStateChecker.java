@@ -7,21 +7,21 @@ import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
 
 /**
- * Performs hg operations to compute the states of hg repositories.  
- * Acts as the hg back end for Crystal.
+ * Performs git operations to compute the states of git repositories.  
+ * Acts as the git back end for Crystal.
  * 
- * @author brun 
+ * @author haochen 
  */
-public class HgStateChecker extends AbstractStateChecker {
+public class GitStateChecker extends AbstractStateChecker{
 
 	/**
-	 * @param String pathToHg: the path to the hg executable
+	 * @param String pathToGit: the path to the git executable
 	 * @param String pathToRepo: the full path to the remote repo
 	 * @param String tempWorkPath: path to a temp directory
-	 * @return: Whether or not the pathToRepo is a valid hg repository
+	 * @return: Whether or not the pathToRepo is a valid git repository
 	 */
-	public static boolean isHgRepository(String pathToHg, String pathToRepo, String tempWorkPath) throws IOException {
-		return isCorrectRepository(pathToHg, pathToRepo, tempWorkPath, RepoKind.HG);
+	public static boolean isGitRepository(String pathToGit, String pathToRepo, String tempWorkPath) throws IOException {
+		return isCorrectRepository(pathToGit, pathToRepo, tempWorkPath, RepoKind.GIT);
 	}
 
 	/**
@@ -30,7 +30,7 @@ public class HgStateChecker extends AbstractStateChecker {
 	 * @throws IOException
 	 */
 	public static String getLocalState(ProjectPreferences prefs) throws IOException {
-		return getLocalState(prefs, HgLogParser.hgCheckpoint);
+		return getLocalState(prefs, GitLogParser.gitCheckpoint);
 	}
 
 	/**
@@ -42,7 +42,7 @@ public class HgStateChecker extends AbstractStateChecker {
 	 * @throws IOException
 	 */
 	public static String getRelationship(ProjectPreferences prefs, DataSource source, String oldRelationship) {
-		return getRelationship(prefs, source, oldRelationship, RepoKind.HG);
+		return getRelationship(prefs, source, oldRelationship, RepoKind.GIT);
 	}
 }
 

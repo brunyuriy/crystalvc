@@ -45,7 +45,7 @@ public class ClientPreferences {
          * Each constant consists of an array of logically equivalent elements. For example, either the element "ccConfig" or "ccconfig", in an XML
          * file, will be considered the root element. When writing XML, the [0]th element in the array will be used.
          */
-//TODO
+
         // the name of the root element
         static final String[] ROOT = { "ccConfig", "ccconfig", "CcConfig", "CCConfig" };
 
@@ -432,7 +432,7 @@ public class ClientPreferences {
         		}
 
         		DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind, false, projectParent);
-        		myEnvironment.setRemoteHg(projectRemoteHg);
+        		myEnvironment.setRemoteCmd(projectRemoteHg);
         		if ((compileCommand != null) && (!(compileCommand.trim().isEmpty()))) {
         			String compileCommandExecutable = RunIt.getExecutable(compileCommand);
         			if (compileCommandExecutable == null) {
@@ -482,7 +482,7 @@ public class ClientPreferences {
         				}
 
         				DataSource source = new DataSource(sourceLabel, sourceClone, kind, sourceHide, sourceParent);
-        				source.setRemoteHg(sourceRemoteHg);
+        				source.setRemoteCmd(sourceRemoteHg);
         				_log.trace("Loaded data source: " + source);
 
         				projectPreferences.addDataSource(source);
@@ -667,7 +667,7 @@ public class ClientPreferences {
     /**
      * @return path to the user's hg binary
      */
-    public String getHgPath() {
+    public String getPath() {
         return _hgPath;
     }
 
@@ -676,7 +676,7 @@ public class ClientPreferences {
      * @param hgPath
      *            : the path to hg
      */
-    public void setHgPath(String hgPath) {
+    public void setPath(String hgPath) {
         _hgPath = hgPath;
     }
     
