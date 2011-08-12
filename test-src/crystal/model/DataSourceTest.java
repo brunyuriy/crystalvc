@@ -75,10 +75,10 @@ public class DataSourceTest {
 	}
 
 	@Test
-	public void testSetRemoteHg() {
-		assertNull("Get default remote hg", data.getRemoteHg());
-		data.setRemoteHg("remoteHg");
-		assertTrue("Set remote hg", data.getRemoteHg().equals("remoteHg"));
+	public void testSetRemoteCmd() {
+		assertNull("Get default remote hg", data.getRemoteCmd());
+		data.setRemoteCmd("remoteHg");
+		assertTrue("Set remote hg", data.getRemoteCmd().equals("remoteHg"));
 	}
 
 	@Test

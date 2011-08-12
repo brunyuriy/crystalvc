@@ -52,7 +52,7 @@ public class ClientPreferencesTest {
         
         assertTrue("Default project preferences", cpd.getProjectPreference().equals(temp));
 		assertEquals("Default refresh number", ClientPreferences.REFRESH, cpd.getRefresh());
-		assertTrue("Default hg path", cpd.getHgPath().equals("/path/to/hg"));
+		assertTrue("Default hg path", cpd.getPath().equals("/path/to/hg"));
 		assertTrue("Default temp directory", cpd.getTempDirectory().equals("/tmp/conflictClient/"));
 		
 	}
@@ -270,7 +270,7 @@ public class ClientPreferencesTest {
 	@Test
 	public void testSavePreferencesToXML() throws NonexistentProjectException{
 		ClientPreferences cp = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
-		((List<DataSource>) cp.getProjectPreferences("myProject").getDataSources()).get(0).setRemoteHg("setRemoteHg");
+		((List<DataSource>) cp.getProjectPreferences("myProject").getDataSources()).get(0).setRemoteCmd("setRemoteHg");
 		
 		String path = "testDataFile\\testSave.xml";
 		File f = new File(path);
@@ -310,7 +310,7 @@ public class ClientPreferencesTest {
 		assertTrue("Compare short name", source1.getAttributeValue("ShortName").equals(data1.getShortName()));
 		assertNull("Clone doesn't exist", source1.getAttributeValue("clone"));
 		assertTrue("Compare common parent", source1.getAttributeValue("commonParent").equals(data1.getParent()));
-		assertTrue("Check remote hg" + data1.getRemoteHg(), data1.getRemoteHg().equals(source1.getAttributeValue("RemoteHG")));
+		assertTrue("Check remote hg" + data1.getRemoteCmd(), data1.getRemoteCmd().equals(source1.getAttributeValue("RemoteHG")));
 		assertTrue("hide", source1.getAttributeValue("Hidden").equals(String.valueOf(data1.isHidden())));
 
 	}
