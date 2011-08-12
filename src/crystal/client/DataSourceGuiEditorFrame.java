@@ -1,5 +1,6 @@
 package crystal.client;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -145,9 +146,12 @@ public class DataSourceGuiEditorFrame extends JFrame {
 		sourcePanel.add(findAddressPanel);
 		
 		sourcePanel.add(new JLabel("Hidden? "));
+		JPanel boxBar = new JPanel(new BorderLayout());
 		final JCheckBox hideBox = new JCheckBox();
+		boxBar.add(hideBox, BorderLayout.WEST);
 		hideBox.setSelected(_source.isHidden());
-		sourcePanel.add(hideBox);
+		
+		sourcePanel.add(boxBar);
 		
 		hideBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -158,7 +162,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 		
 		
 		sourcePanel.add(new JLabel("Parent: "));
-		final JTextField parent = new JTextField();
+		final JTextField parent = new JTextField(_source.getParent());
 		sourcePanel.add(parent);
 		parent.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent e) {
