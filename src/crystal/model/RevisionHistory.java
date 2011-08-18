@@ -16,7 +16,7 @@ import crystal.util.ValidInputChecker;
  * 
  * @author brun
  */
-public class RevisionHistory {
+public class RevisionHistory implements Cloneable{
 	
 	// represents a WHEN guidance
 	public enum When {
@@ -48,6 +48,20 @@ public class RevisionHistory {
 	 */
 	public RevisionHistory(String log) {
 		_changesets = HgLogParser.parseLog(log);
+	}
+	
+	/**
+	 * Return clone of this object.
+	 */
+	public RevisionHistory clone() {
+		try {
+			RevisionHistory clone = (RevisionHistory) super.clone();
+			clone._changesets = new HashMap<String, Checkpoint>(_changesets);
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
+		
 	}
 	
 	/**

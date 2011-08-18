@@ -1,6 +1,8 @@
 package crystal.client;
 
+import java.awt.BorderLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -163,20 +165,25 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		clearCache.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-			    boolean hadToDisable =_disableDaemon.getText().equals("Stop Crystal updates");
-			     if (hadToDisable)
-			         ConflictSystemTray.getInstance().daemonAbleAction();
-			     // TODO wait for disabling to finish
-			     
-				RunIt.deleteDirectory(new File(_preferences.getTempDirectory()));
-				_log.info("User selected Clear Cache from the menu. All cache has been emptied at " + _preferences.getTempDirectory());
-				String newDirectoy = _preferences.getTempDirectory();
-				if ((new File(newDirectoy)).mkdir())
-					_log.info("An empty cache directory has been created at " + newDirectoy);
-				else
-					_log.error("Failed to clear an empty cache directory at " + newDirectoy);
-				if (hadToDisable) 
-                    ConflictSystemTray.getInstance().daemonAbleAction();
+				int option = JOptionPane.showConfirmDialog(null, "Do you want to empty cache?", 
+						"Empty cache", JOptionPane.YES_NO_OPTION);
+				// TODO wait for the current refresh to finish or kill it
+				if(option == JOptionPane.YES_OPTION) {
+				    boolean hadToDisable =_disableDaemon.getText().equals("Stop Crystal updates");
+				     if (hadToDisable)
+				         ConflictSystemTray.getInstance().daemonAbleAction();
+				     // TODO wait for disabling to finish
+				     
+					RunIt.deleteDirectory(new File(_preferences.getTempDirectory()));
+					_log.info("User selected Clear Cache from the menu. All cache has been emptied at " + _preferences.getTempDirectory());
+					String newDirectoy = _preferences.getTempDirectory();
+					if ((new File(newDirectoy)).mkdir())
+						_log.info("An empty cache directory has been created at " + newDirectoy);
+					else
+						_log.error("Failed to clear an empty cache directory at " + newDirectoy);
+					if (hadToDisable) 
+	                    ConflictSystemTray.getInstance().daemonAbleAction();
+				}
 			}
 		});
 		
@@ -198,7 +205,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		// Now set up the rest of the frame
 		_frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(), BoxLayout.Y_AXIS));
-
+		
 		// Create a notification that quitting saves.
 		// _frame.getContentPane().add(new JLabel("Quitting Crystal saves your configuration.   ",
 		// SwingConstants.CENTER));
@@ -250,20 +257,23 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			name.add(projectName);
 			
 //				name.add(new JLabel(" "));
-			JLabel action = new JLabel("") {
+			/*JLabel action = new JLabel("") {
                 private static final long serialVersionUID = 1L;
 
                 public JToolTip createToolTip() {
                     return new JMultiLineToolTip();
                 }
-            };
+            };*/
+            JLabel action = new JLabel();
 			action.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 15));
 			_iconMap.put(projPref.getEnvironment(), action);
 			ConflictDaemon.getInstance().getLocalState(projPref.getEnvironment());
 			name.add(action);
 			grid.add(name);
 
-			
+			JPanel iconPanel = new JPanel(new BorderLayout());
+			final JPanel iconGrid = new JPanel(new GridLayout(1, 0, 3, 3));
+			iconPanel.add(iconGrid, BorderLayout.NORTH);
 			
 			for (final DataSource source : projPref.getDataSources()) {
 				if (!(source.isHidden())) {
@@ -293,7 +303,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 							if(option == JOptionPane.YES_OPTION) {
 								projPref.getDataSources().remove(source);
 								_iconMap.remove(source);
-								grid.remove(imageLabel);
+								iconGrid.remove(imageLabel);
 								ClientPreferences.savePreferencesToDefaultXML(prefs);
 							}
 							
@@ -339,7 +349,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 					ConflictDaemon.getInstance().getRelationship(source);
 					imageLabel.setVerticalTextPosition(JLabel.TOP);
 					imageLabel.setHorizontalTextPosition(JLabel.CENTER);
-					grid.add(imageLabel);
+					iconGrid.add(imageLabel);
 //					imageLabel.setToolTipText("Action: hg fetch\nConsequences: new relationship will be AHEAD \nCommiters: David and Yuriy");
 				}
 			}
@@ -349,13 +359,14 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			
 			// Fill in the rest of the grid row with blanks
 			for (int i = projPref.getNumOfVisibleSources(); i < maxSources; i++)
-				grid.add(new JLabel());
+				iconGrid.add(new JLabel());
 
-
+			
+			
+			grid.add(iconPanel);
 		}
 
-		SpringLayoutUtility.formGrid(grid, prefs.getProjectPreference().size(), 
-				grid.getComponents().length / prefs.getProjectPreference().size());
+		SpringLayoutUtility.formGridInColumn(grid, prefs.getProjectPreference().size(), 2);
 		
 		_frame.getContentPane().add(grid);
 		
@@ -465,7 +476,6 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			
 			DataSource projectSource = projPref.getEnvironment();
 			LocalStateResult actionResult = ConflictDaemon.getInstance().getLocalState(projectSource);
-			
 			// if it's pending, show whatever value it had last time
 			if (actionResult.getLocalState().equals(LocalStateResult.PENDING) && actionResult.getLastLocalState() != null) {
 				action.setText(actionResult.getLastAction());
@@ -473,7 +483,12 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				
 				
 			} else  { // otherwise, show fresh value
-				action.setText(actionResult.getAction());
+				if (actionResult.getAction().length() < "hg commit".length()) {
+					System.out.println(actionResult.getAction());
+					action.setText(new String(new char["hg commit".length() - actionResult.getAction().length()]).replace('\0', ' ')
+							+ actionResult.getAction());
+				} else
+					action.setText(actionResult.getAction());
                 String tip = actionResult.getErrorMessage();
                 if ((tip == null) || (tip.trim().equals("")))
                     action.setToolTipText(null);

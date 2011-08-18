@@ -14,7 +14,7 @@ import crystal.util.ValidInputChecker;
  * @author brun
  * 
  */
-public class ProjectPreferences {
+public class ProjectPreferences implements Cloneable {
 
 	// A vector of configurations of repositories.
 	private Vector<DataSource> _dataSources;
@@ -37,6 +37,18 @@ public class ProjectPreferences {
 		_myEnvironment = myEnvironment;
 		_clientPreferences = clientPrefs;
 		_dataSources = new Vector<DataSource>();
+	}
+	
+	public ProjectPreferences clone() {
+		try {
+			ProjectPreferences clone = (ProjectPreferences) super.clone();
+			clone._dataSources = new Vector<DataSource>(_dataSources);
+			clone._myEnvironment = _myEnvironment.clone();
+			clone._clientPreferences = _clientPreferences.clone();
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
 	}
 
 	//TODO

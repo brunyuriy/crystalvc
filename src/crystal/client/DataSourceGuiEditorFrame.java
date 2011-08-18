@@ -95,7 +95,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 			public void focusLost(FocusEvent arg0) {
 				try {
 					_source.setShortName(shortName.getText());
-					prefs.setChanged(true);
+					//prefs.setChanged(true);
 				} catch (Exception e){
 					/*JOptionPane.showMessageDialog(null, "Invalid input for project name.", 
 							"Warning", JOptionPane.ERROR_MESSAGE);
@@ -119,7 +119,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 			public void focusLost(FocusEvent arg0) {
 				try {
 					_source.setCloneString(cloneString.getText());
-					prefs.setChanged(true);
+					//prefs.setChanged(true);
 				} catch (Exception e){
 					/*JOptionPane.showMessageDialog(null, "Invalid input for clone address.", 
 							"Warning", JOptionPane.ERROR_MESSAGE);
@@ -136,12 +136,12 @@ public class DataSourceGuiEditorFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				new DirectoryChooser(cloneString, _source);
-				prefs.setChanged(true);
+				//prefs.setChanged(true);
 			}
 			
 		});
 		findAddressPanel.add(findButton);
-		SpringLayoutUtility.formGrid(findAddressPanel, 1, 2);
+		SpringLayoutUtility.formGridInColumn(findAddressPanel, 1, 2);
 
 		sourcePanel.add(findAddressPanel);
 		
@@ -156,7 +156,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 		hideBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_source.hide(hideBox.isSelected());
-				prefs.setChanged(true);
+				//prefs.setChanged(true);
 			}
 		});
 		
@@ -172,7 +172,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 			public void focusLost(FocusEvent arg0) {
 				try {
 					_source.setParent(parent.getText());
-					prefs.setChanged(true);
+					//prefs.setChanged(true);
 				} catch (Exception e){
 					/*JOptionPane.showMessageDialog(null, "Invalid input for parent.", 
 							"Warning", JOptionPane.ERROR_MESSAGE);
@@ -182,7 +182,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 			}
 		});
 		
-		SpringLayoutUtility.formGrid(sourcePanel, 
+		SpringLayoutUtility.formGridInColumn(sourcePanel, 
 				sourcePanel.getComponents().length / SOURCE_COLUMNS, SOURCE_COLUMNS);
 		
 		add(sourcePanel);
@@ -202,7 +202,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 						pref.addDataSource(_source);
 						System.out.println(_source.getCloneString());
 						//TODO save to xml file
-						prefs.setChanged(false);
+						//prefs.setChanged(false);
 						ClientPreferences.savePreferencesToDefaultXML(prefs);
 						setVisible(false);
 					} catch (Exception e){
@@ -227,7 +227,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 								"Warning", JOptionPane.ERROR_MESSAGE);
 					} else {
 						//TODO save to xml file.
-						prefs.setChanged(false);
+						//prefs.setChanged(false);
 						ClientPreferences.savePreferencesToDefaultXML(prefs);
 						setVisible(false);
 					}
@@ -241,7 +241,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 		cancelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				prefs.setChanged(false);
+				//prefs.setChanged(false);
 				setVisible(false);
 			}
 			
@@ -271,13 +271,13 @@ public class DataSourceGuiEditorFrame extends JFrame {
 							setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 						} else {
 							//TODO save to xml file.
-							prefs.setChanged(false);
+							//prefs.setChanged(false);
 							ClientPreferences.savePreferencesToDefaultXML(prefs);
 						}
 					} else if(n == JOptionPane.CANCEL_OPTION) {
 						setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 					} else {	// option is no
-						prefs.setChanged(false);
+						//prefs.setChanged(false);
 					}
 				}
 			}

@@ -21,7 +21,7 @@ public class SpringLayoutUtilityTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testInvalidPanelParameter(){
 		JPanel temp = new JPanel(new BorderLayout());
-		SpringLayoutUtility.formGrid(temp, 2, 2);
+		SpringLayoutUtility.formGridInColumn(temp, 2, 2);
 	}
 
 	

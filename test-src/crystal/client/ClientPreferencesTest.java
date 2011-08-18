@@ -314,4 +314,14 @@ public class ClientPreferencesTest {
 		assertTrue("hide", source1.getAttributeValue("Hidden").equals(String.valueOf(data1.isHidden())));
 
 	}
+	
+	@Test
+	public void testClone() {
+		ClientPreferences cp = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
+		assertTrue("Clone method return cllientPreferences with same content", cp.equals(cp.clone()));
+		ClientPreferences copy = cp.clone();
+		copy.getProjectPreference().clear();
+		assertTrue("After removing all component", copy.getProjectPreference().isEmpty());
+		assertFalse("Original object with original content", cp.getProjectPreference().isEmpty());
+	}
 }

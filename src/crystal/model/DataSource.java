@@ -9,7 +9,7 @@ import crystal.util.ValidInputChecker;
  * @author brun
  * 
  */
-public class DataSource {
+public class DataSource implements Cloneable{
 
 	public enum RepoKind {
 		GIT, HG;
@@ -75,6 +75,20 @@ public class DataSource {
 	}
 	
 	/**
+	 * Return clone of this object.
+	 */
+	public DataSource clone() {
+		try {  
+			DataSource clone = (DataSource) super.clone();
+			clone._history = _history.clone();
+			clone._oldHistory = _oldHistory;
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
+	}
+	
+	/**
 	 * Compare this object with another object
 	 * @param o other object to be compared with this object
 	 * @return true if they have same short name; otherwise return false
@@ -135,7 +149,6 @@ public class DataSource {
 	 * @param compileCommand: the compile command
 	 */
 	public void setCompileCommand(String compileCommand) {
-		//ValidInputChecker.checkValidStringInput(compileCommand);
 		_compileCommand = compileCommand;
 	}
 	
@@ -151,7 +164,6 @@ public class DataSource {
 	 * @param testCommand: the test command
 	 */
 	public void setTestCommand(String testCommand) {
-		//ValidInputChecker.checkValidStringInput(testCommand);
 		_testCommand = testCommand;
 	}
 	
