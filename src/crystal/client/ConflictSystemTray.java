@@ -526,7 +526,7 @@ public class ConflictSystemTray implements ComputationListener {
 	 *            : --version : Prints the version number.
 	 */
 	public static void main(String[] args) {
-		//setLookAndFeel();
+		setLookAndFeel();
 		
 		if (args.length > 0) {
 			if (args[0].equals("--version")) {
