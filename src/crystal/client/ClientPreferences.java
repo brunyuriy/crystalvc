@@ -32,7 +32,7 @@ import crystal.util.XMLTools;
  * @author rtholmes
  * 
  */
-public class ClientPreferences {
+public class ClientPreferences implements Cloneable {
 
     static {
         ConflictSystemTray.startLogging();
@@ -154,6 +154,8 @@ public class ClientPreferences {
         // disabled
     }
 
+
+    
     /**
      * Default constructor. Creates a new ClientPreferences with the tempDirectory and hgPath set and 0 projects.
      * 
@@ -172,6 +174,8 @@ public class ClientPreferences {
         REFRESH = refresh;
         _hasChanged = false;
     }
+    
+
     
     //TODO
     /**
@@ -731,6 +735,19 @@ public class ClientPreferences {
      */
     public void setChanged(boolean status) {
         _hasChanged = status;
+    }
+    
+    /**
+     * Return clone of this object
+     */
+    public ClientPreferences clone() {
+    	try {
+			ClientPreferences clone = (ClientPreferences) super.clone();
+			clone._projectPreferences = new Vector<ProjectPreferences>(_projectPreferences);
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
     }
 
     /**

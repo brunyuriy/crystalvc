@@ -30,7 +30,7 @@ public class SpringLayoutUtility {
 	 * @param rows number of rows in the panel
 	 * @param cols number of columns in the panel
 	 */
-	public static void formGrid(JPanel panel, int rows, int cols) {
+	public static void formGridInColumn(JPanel panel, int rows, int cols) {
 		if(panel == null || panel.getLayout().getClass() != SpringLayout.class ){
 			throw new IllegalArgumentException("Invalid input for panel.");
 		}
