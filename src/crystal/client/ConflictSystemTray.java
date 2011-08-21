@@ -104,6 +104,79 @@ public class ConflictSystemTray implements ComputationListener {
 						"Crystal: Proactive Conflict Detector for Distributed Version Control", JOptionPane.PLAIN_MESSAGE, new ImageIcon(
 								Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.png")));
 	}
+	
+	/**
+	 * Loads the Crystal preferences and creates the appropriate views
+	 */
+	private void loadPreferences() {
+        try {
+            _prefs = ClientPreferences.loadPreferencesFromDefaultXML();
+
+            if (_prefs != null) {
+                _log.info("Preferences loaded successfully.");
+            } else {
+                String msg = "Error loading preferences.";
+
+                System.err.println(msg);
+                _log.error(msg);
+            }
+        } catch (Exception e) {
+            // e.printStackTrace();
+            String msg = "Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )";
+            System.err.println(msg);
+            _log.error(msg);
+
+            System.err.println(e.getMessage());
+            _log.error(e.getMessage());
+
+            String dialogMessage = "The preferences file ( "
+                    + ClientPreferences.CONFIG_PATH
+                    + " ) is invalid and could not be loaded:\n > > > "
+                    + e.getMessage()
+                    + "\n"
+                    + "Do you want to edit it using the GUI?  This may overwrite your previous configuration file.  Your alternative is to edit the .xml file directly.";
+            int answer = JOptionPane.showConfirmDialog(null, dialogMessage, "Invalid configuration file", JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
+            if (answer == JOptionPane.YES_OPTION) {
+                _prefs = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
+                PreferencesGUIEditorFrame editorFrame = PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
+                JOptionPane.showMessageDialog(editorFrame, "Please remember to restart the client after closing the configuraton editor.");
+                // and disable client
+                daemonEnabledItem.setLabel("Start Crystal updates");
+                if (_timer != null) {
+                    _timer.stop();
+                    _timer = null;
+                }
+
+                // for (CalculateTask ct : tasks) {
+                // _log.info("disabling ct of state: " + ct.getState());
+                // ct.cancel(true);
+                // }
+
+            } else { // answer == JOptionPane.NO_OPTION
+                System.out.println("User decided to edit the configuration file by hand");
+                _log.trace("User decided to edit the configuration file by hand");
+                quit(0);
+            }
+        }
+        
+        try {
+            if (_prefs.hasChanged()) {
+                ClientPreferences.savePreferencesToDefaultXML(_prefs);
+                _prefs.setChanged(false);
+            }
+        } catch (Exception e) {
+            //TODO make the fail not have errors
+            _log.error("Could not write to the configuration file: " + e.getMessage());
+        }
+        
+        // Destroy current client window
+        if (_client != null) {
+            _client.close();
+            _client = null;
+        }
+	}
 
 	/**
 	 * Creates the Crystal system tray icon and installs in the tray.
@@ -116,67 +189,8 @@ public class ConflictSystemTray implements ComputationListener {
 		refreshItem = new MenuItem("Refresh");
 		final MenuItem showClientItem = new MenuItem("Show Client");
 		MenuItem exitItem = new MenuItem("Exit");
-
-		try {
-			_prefs = ClientPreferences.loadPreferencesFromDefaultXML();
-
-			if (_prefs != null) {
-				_log.info("Preferences loaded successfully.");
-			} else {
-				String msg = "Error loading preferences.";
-
-				System.err.println(msg);
-				_log.error(msg);
-			}
-		} catch (Exception e) {
-			// e.printStackTrace();
-			String msg = "Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )";
-			System.err.println(msg);
-			_log.error(msg);
-
-			System.err.println(e.getMessage());
-			_log.error(e.getMessage());
-
-			String dialogMessage = "The preferences file ( "
-					+ ClientPreferences.CONFIG_PATH
-					+ " ) is invalid and could not be loaded:\n > > > "
-					+ e.getMessage()
-					+ "\n"
-					+ "Do you want to edit it using the GUI?  This may overwrite your previous configuration file.  Your alternative is to edit the .xml file directly.";
-			int answer = JOptionPane.showConfirmDialog(null, dialogMessage, "Invalid configuration file", JOptionPane.YES_NO_OPTION,
-					JOptionPane.WARNING_MESSAGE);
-
-			if (answer == JOptionPane.YES_OPTION) {
-				_prefs = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
-				PreferencesGUIEditorFrame editorFrame = PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
-				JOptionPane.showMessageDialog(editorFrame, "Please remember to restart the client after closing the configuraton editor.");
-				// and disable client
-				daemonEnabledItem.setLabel("Start Crystal updates");
-				if (_timer != null) {
-					_timer.stop();
-					_timer = null;
-				}
-
-				// for (CalculateTask ct : tasks) {
-				// _log.info("disabling ct of state: " + ct.getState());
-				// ct.cancel(true);
-				// }
-
-			} else { // answer == JOptionPane.NO_OPTION
-				System.out.println("User decided to edit the configuration file by hand");
-				_log.trace("User decided to edit the configuration file by hand");
-				quit(0);
-			}
-		}
-		try {
-		    if (_prefs.hasChanged()) {
-		        ClientPreferences.savePreferencesToDefaultXML(_prefs);
-		        _prefs.setChanged(false);
-		    }
-		} catch (Exception e) {
-		    _log.error("Could not write to the configuration file: " + e.getMessage());
-		}
-
+		
+		loadPreferences();
 
 		// Check that we have a recent-enough version of hg
 		try {
@@ -191,7 +205,6 @@ public class ConflictSystemTray implements ComputationListener {
                     "Error checking hg version", JOptionPane.ERROR_MESSAGE);
             quit(1);
 		}
-		
 		
 		// Start out with the client showing.
 		showClient();
