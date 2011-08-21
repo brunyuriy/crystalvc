@@ -8,6 +8,7 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -167,8 +168,10 @@ public class ConflictSystemTray implements ComputationListener {
                 _prefs.setChanged(false);
             }
         } catch (Exception e) {
-            //TODO make the fail not have errors
-            _log.error("Could not write to the configuration file: " + e.getMessage());
+            if (e.getMessage().indexOf("Access is denied") >= 0)
+                _log.info("XML file cannot be written to: " + e);
+            else
+                _log.error("Could not write to the configuration file: " + e.getMessage());
         }
         
         // Destroy current client window

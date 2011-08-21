@@ -47,7 +47,10 @@ public class XMLTools {
 				}
 				_log.trace("Document written to " + fName + " in: " + TimeUtility.msToHumanReadableDelta(start));
 			} catch (FileNotFoundException fnfe) {
-				_log.error(fnfe);
+			    if (fnfe.getMessage().indexOf("Access is denied") >= 0)
+			        _log.info("XML file cannot be written to: " + fnfe);
+			    else
+			        _log.error(fnfe);
 			}
 		}
 		return false;
