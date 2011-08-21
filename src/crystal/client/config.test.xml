@@ -1,0 +1,32 @@
+<ccConfig
+	tempDirectory="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-tmp/">
+	<project myKind="HG" myShortName="testProject"
+		myClone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/one/">
+		<sources>
+			<source kind="HG" shortName="Marge" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/two/" />
+			<source kind="HG" shortName="Lisa" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/three/" />
+			<source kind="HG" shortName="Maggie" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/four/" />
+			<source kind="HG" shortName="Homer" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/five/" />
+		</sources>
+	</project>
+	<project myKind="HG" myShortName="2_testProject"
+		myClone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/one/">
+		<sources>
+			<source kind="HG" shortName="Marge" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/two/" />
+			<source kind="HG" shortName="Lisa" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/three/" />
+			<source kind="HG" shortName="Maggie" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/four/" />
+<!--		<source kind="HG" shortName="five" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/five/" />-->
+		</sources>
+	</project>
+	<project myKind="HG" myShortName="3_testProject"
+		myClone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/one/">
+		<sources>
+			<source kind="HG" shortName="Marge" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/two/" />
+			<source kind="HG" shortName="Lisa" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/three/" />
+			<source kind="HG" shortName="Maggie" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/four/" />
+			<source kind="HG" shortName="Maggie2" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/four/" />
+			<source kind="HG" shortName="Homer" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/five/" />
+			<source kind="HG" shortName="Homer2" clone="/Users/rtholmes/Documents/workspaces/workspace_longitudinal/conflictClient/test-repos/five/" />
+		</sources>
+	</project>	
+</ccConfig>

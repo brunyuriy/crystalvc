@@ -1,0 +1,4 @@
+changeset:   0:79fafafe8370
+user:        georg.brandl
+date:        Mon Jul 23 08:56:48 2007 +0000
+summary:     Make trunk, branches, tags directories.

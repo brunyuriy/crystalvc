@@ -1,0 +1,46 @@
+Making junit tests Report
+
+Model:
+	DataSource:
+		constructor: what do you expect if some of the inputs are null or empty string?
+		RepoKind: add a equal method to compare
+		setHistory: what will we expect if the input was null
+		hasHistoryChanged: return true just after constructing the object?
+		what do you expect if input for the "set..." method is null in stead of String
+		for some get methods: they may be called before set value for them
+		
+		
+	LocalStateResult:
+		constructor: what do you expect if some of the inputs are null or empty string?
+		and what do you expect if input name is not contained in actoins?
+		
+		getName, getLocalState: both methods return _name. do you need two methods to do same thing?
+		getAction: if name.startsWith(ERROR) what do you want to return?
+		
+	Relationship:
+		constructor: same as above
+		and I'm not sure what "Constants.class.getResource" this part means in the constructor
+		(I guess you are getting the path to an image, but I'm not sure why cannot you just use the path)
+		
+	
+	RevisionHistory
+		constructor: checked in HgLogParser class
+		sub/superHistory: if both classes have same history, it would say both of them are super/sub history
+		of each other.
+		
+		getCommitters: why don't you want to return set of strings representing committers?
+		And the problem for this method is:
+		when two RevisionHistorys have same committer name appear more than once in different changesets,
+		but if the name shows up more in one RevisionHistory than the other RevisionHistory, this method
+		will return the name. And no matter how much difference they have, it will return its name only once.
+		
+
+		
+		
+Server:
+	HgLogParser:
+		parseLog: I didn't know how did you use "current".
+		You used changeset and parents representation in different forms
+		You didn't include changesets with only one parent
+		Some user names will be a little wired when you store them.
+		

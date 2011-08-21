@@ -1,0 +1,16 @@
+changeset:   3001:ae6decc968d5
+user:        Robert Lehmann <mail@robertlehmann.de>
+date:        Sat Nov 13 12:59:12 2010 +0100
+summary:     Tested section grouping for translations.
+
+changeset:   2721:face29593d75
+parent:      2719:78fb4719bcd5
+user:        DasIch <dasdasich@gmail.com>
+date:        Sun Aug 15 20:48:19 2010 +0200
+summary:     Use uuid as a requirement in the setup.py and mention it in the documentation for Python 2.4
+
+changeset:   0:79fafafe8370
+user:        georg.brandl
+date:        Mon Jul 23 08:56:48 2007 +0000
+summary:     Make trunk, branches, tags directories.
+
