@@ -109,7 +109,7 @@ public class ConflictSystemTray implements ComputationListener {
 	/**
 	 * Loads the Crystal preferences and creates the appropriate views
 	 */
-	private void loadPreferences() {
+	public void loadPreferences() {
         try {
             _prefs = ClientPreferences.loadPreferencesFromDefaultXML();
 
@@ -179,6 +179,9 @@ public class ConflictSystemTray implements ComputationListener {
             _client.close();
             _client = null;
         }
+        
+        // Start out with the client showing.
+        showClient();
 	}
 
 	/**
@@ -209,8 +212,6 @@ public class ConflictSystemTray implements ComputationListener {
             quit(1);
 		}
 		
-		// Start out with the client showing.
-		showClient();
 
 		if (TRAY_SUPPORTED) {
 			final PopupMenu trayMenu = new PopupMenu();

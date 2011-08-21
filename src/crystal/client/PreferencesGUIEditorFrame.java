@@ -105,10 +105,10 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		}
 
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-
+		
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
-		getContentPane().add(new JLabel("Closing this window will save the configuraion settings."));
+//		getContentPane().add(new JLabel("Closing this window will save the configuraion settings."));
 
 //		JPanel hgPanel = new JPanel();
 //		hgPanel.setLayout(new BoxLayout(hgPanel, BoxLayout.X_AXIS));
@@ -423,6 +423,8 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			}
 
 			public void windowDeactivated(WindowEvent arg0) {
+                //Reload the preferences
+			    ConflictSystemTray.getInstance().loadPreferences();
 			}
 
 			public void windowDeiconified(WindowEvent arg0) {
