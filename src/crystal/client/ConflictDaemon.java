@@ -62,6 +62,13 @@ public class ConflictDaemon {
 			_listeners.add(listener);
 		}
 	}
+	
+	/**
+	 * Removes all listeners
+	 */
+	public void removeAllListeners() {
+	    _listeners.removeAllElements();
+	}
 
 	/**
 	 * Computes the relationship between my repo and one given other repo.
