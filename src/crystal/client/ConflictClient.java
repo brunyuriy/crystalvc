@@ -122,16 +122,19 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		ToolTipManager.sharedInstance().setDismissDelay(dismissDelay);
 		
 		_refresh = new JMenuItem("Refresh");
-		JMenuItem editConfiguration = new JMenuItem("Edit Configuration");
+		JMenuItem editConfiguration = new JMenuItem("Edit configuration");
 		_disableDaemon = new JMenuItem("Stop Crystal updates");
-		JMenuItem clearCache = new JMenuItem("Clear Cache");
+		JMenuItem clearCache = new JMenuItem("Clear cache");
 		JMenuItem exit = new JMenuItem("Exit");
 		JMenuItem about = new JMenuItem("About");
+		JMenuItem reload = new JMenuItem("Reload configuration");
 		JMenuItem blank = new JMenuItem("");
+                
 		blank.setArmed(false);
 
 		fileMenu.add(_refresh);
 		fileMenu.add(editConfiguration);
+		fileMenu.add(reload);
 		fileMenu.add(_disableDaemon);
 		fileMenu.add(clearCache);
 		fileMenu.add(exit);
@@ -152,6 +155,15 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				ConflictSystemTray.getInstance().exitAction();
 			}
 		});
+		
+		reload.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                _log.info("Reloading configuration requested by user.");
+                setCanUpdate(false);
+                ConflictSystemTray.getInstance().loadPreferences();
+            }
+        });
 
 		_refresh.addActionListener(new ActionListener() {
 			@Override
