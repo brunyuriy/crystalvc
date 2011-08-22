@@ -180,8 +180,11 @@ public class ConflictSystemTray implements ComputationListener {
             _client = null;
         }
         
+        
         // Start out with the client showing.
         showClient();
+        
+        performCalculations();
 	}
 
 	/**
@@ -286,8 +289,9 @@ public class ConflictSystemTray implements ComputationListener {
 				}
 			});
 
-			ConflictDaemon.getInstance().addListener(this);
 		}
+
+        ConflictDaemon.getInstance().addListener(this);
 
 		performCalculations();
 	}
