@@ -216,180 +216,8 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_frame.setJMenuBar(menuBar);
 
 		// Now set up the rest of the frame
-		_frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(), BoxLayout.Y_AXIS));
-		
-		// Create a notification that quitting saves.
-		// _frame.getContentPane().add(new JLabel("Quitting Crystal saves your configuration.   ",
-		// SwingConstants.CENTER));
-		// or do it in the menu; looks nicer.
-//		menuBar.add(new JMenuItem("Quitting Crystal saves your configuration."));
+	    reloadWindowBody(_preferences);
 
-		// Create a grid to hold the conflict results
-		int maxSources = 0;
-		for (ProjectPreferences projPref : prefs.getProjectPreference()) {
-			if (projPref.getNumOfVisibleSources() > maxSources)
-				maxSources = projPref.getNumOfVisibleSources();
-		}
-
-		final JPanel grid = new JPanel(new SpringLayout()); 
-
-		// Create the iconMap and populate it with icons.
-		// Also create the layout of the GUI.
-		_iconMap = new HashMap<DataSource, JLabel>();
-		for (final ProjectPreferences projPref : prefs.getProjectPreference()) {
-			// name of project on the left, with an empty JLabel for the Action
-			JPanel name = new JPanel();
-			name.setLayout(new BoxLayout(name, BoxLayout.Y_AXIS));
-			
-			JLabel projectName = new JLabel(projPref.getEnvironment().getShortName());
-			final JPopupMenu projectMenu = new JPopupMenu("Project menu");
-		
-			projectMenu.add(getClearCacheItem(projPref));
-			projectMenu.add(getAddRepoItem(projPref, prefs));
-			
-			
-			projectName.addMouseListener(new MouseAdapter() {
-				
-				public void mousePressed(MouseEvent e) {
-			        if (e.isPopupTrigger()) {
-			            projectMenu.show(e.getComponent(), e.getX(), e.getY());
-			        }
-				}
-				
-				public void mouseReleased(MouseEvent e) {
-			        if (e.isPopupTrigger()) {
-			            projectMenu.show(e.getComponent(), e.getX(), e.getY());
-			        }
-				}
-				
-				public void mouseClicked(MouseEvent e) {
-			    }
-			});
-			
-			name.add(projectName);
-			
-//				name.add(new JLabel(" "));
-			/*JLabel action = new JLabel("") {
-                private static final long serialVersionUID = 1L;
-
-                public JToolTip createToolTip() {
-                    return new JMultiLineToolTip();
-                }
-            };*/
-            JLabel action = new JLabel();
-			action.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 15));
-			_iconMap.put(projPref.getEnvironment(), action);
-			ConflictDaemon.getInstance().getLocalState(projPref.getEnvironment());
-			name.add(action);
-			grid.add(name);
-
-			JPanel iconPanel = new JPanel(new BorderLayout());
-			final JPanel iconGrid = new JPanel(new GridLayout(1, 0, 3, 3));
-			iconPanel.add(iconGrid, BorderLayout.NORTH);
-			
-			for (final DataSource source : projPref.getDataSources()) {
-				if (!(source.isHidden())) {
-					
-					ImageIcon image = new ImageIcon();
-					final JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER) {
-						private static final long serialVersionUID = 1L;
-
-						public JToolTip createToolTip() {
-							return new JMultiLineToolTip();
-						}
-					};
-					
-					
-					final JPopupMenu repoMenu = new JPopupMenu("Repository");
-					JMenuItem deleteRepo = new JMenuItem("Delete this repository");
-					
-
-
-					
-					deleteRepo.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-							int option = JOptionPane.showConfirmDialog(null, "Do you want to delete the " + source.getShortName() + "'s repository?", 
-									"Delete repository?", JOptionPane.YES_NO_OPTION);
-
-							if(option == JOptionPane.YES_OPTION) {
-								projPref.getDataSources().remove(source);
-								_iconMap.remove(source);
-								iconGrid.remove(imageLabel);
-								ClientPreferences.savePreferencesToDefaultXML(prefs);
-							}
-							
-
-						}
-						
-					});
-					
-					JMenuItem editRepo = new JMenuItem("Edit Repository");
-					
-					editRepo.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-							new DataSourceGuiEditorFrame(prefs, projPref, source.getShortName());
-						}
-						
-					});
-					
-					repoMenu.add(getAddRepoItem(projPref, prefs));
-					repoMenu.add(getClearCacheItem(projPref));
-					repoMenu.add(editRepo);
-					repoMenu.add(deleteRepo);
-					
-					imageLabel.addMouseListener(new MouseAdapter() {
-						
-						public void mousePressed(MouseEvent e) {
-					        if (e.isPopupTrigger()) {
-					            repoMenu.show(e.getComponent(), e.getX(), e.getY());
-					        }
-						}
-						
-						public void mouseReleased(MouseEvent e) {
-					        if (e.isPopupTrigger()) {
-					            repoMenu.show(e.getComponent(), e.getX(), e.getY());
-					        }
-						}
-						
-						public void mouseClicked(MouseEvent e) {
-					    }
-					});
-					
-					_iconMap.put(source, imageLabel);
-					ConflictDaemon.getInstance().getRelationship(source);
-					imageLabel.setVerticalTextPosition(JLabel.TOP);
-					imageLabel.setHorizontalTextPosition(JLabel.CENTER);
-					iconGrid.add(imageLabel);
-//					imageLabel.setToolTipText("Action: hg fetch\nConsequences: new relationship will be AHEAD \nCommiters: David and Yuriy");
-				}
-			}
-			
-
-			
-			
-			// Fill in the rest of the grid row with blanks
-			for (int i = projPref.getNumOfVisibleSources(); i < maxSources; i++)
-				iconGrid.add(new JLabel());
-
-			
-			
-			grid.add(iconPanel);
-		}
-
-		SpringLayoutUtility.formGridInColumn(grid, prefs.getProjectPreference().size(), 2);
-		
-		_frame.getContentPane().add(grid);
-		
-		/*
-		 * Reid's old code: // set all cells to pending on initial load // NOTE: caching might be a good idea here in
-		 * the future. for (ProjectPreferences projPref : prefs.getProjectPreference()) { for (DataSource source :
-		 * projPref.getDataSources()) {
-		 * 
-		 * // XXX: should set pending status for new requests // ConflictDaemon.getInstance().calculateConflicts(source,
-		 * projPref); // resultMap.put(source, new ConflictResult(source, ResultStatus.PENDING)); } }
-		 */
 
 		refresh();
 
@@ -397,6 +225,177 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 		_frame.toFront();
 		_frame.pack();
 	}
+	
+    public void reloadWindowBody(final ClientPreferences prefs) {
+        _preferences = prefs;
+        _frame.getContentPane().removeAll();
+        _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(), BoxLayout.Y_AXIS));
+
+        // Create a notification that quitting saves.
+        // _frame.getContentPane().add(new JLabel("Quitting Crystal saves your configuration.   ",
+        // SwingConstants.CENTER));
+        // or do it in the menu; looks nicer.
+        //  menuBar.add(new JMenuItem("Quitting Crystal saves your configuration."));
+
+        // Create a grid to hold the conflict results
+        int maxSources = 0;
+        for (ProjectPreferences projPref : prefs.getProjectPreference()) {
+            if (projPref.getNumOfVisibleSources() > maxSources)
+                maxSources = projPref.getNumOfVisibleSources();
+        }
+
+        final JPanel grid = new JPanel(new SpringLayout()); 
+
+        // Create the iconMap and populate it with icons.
+        // Also create the layout of the GUI.
+        _iconMap = new HashMap<DataSource, JLabel>();
+        for (final ProjectPreferences projPref : prefs.getProjectPreference()) {
+            // name of project on the left, with an empty JLabel for the Action
+            JPanel name = new JPanel();
+            name.setLayout(new BoxLayout(name, BoxLayout.Y_AXIS));
+
+            JLabel projectName = new JLabel(projPref.getEnvironment().getShortName() + " ");
+            final JPopupMenu projectMenu = new JPopupMenu("Project menu");
+
+            projectMenu.add(getClearCacheItem(projPref));
+            projectMenu.add(getAddRepoItem(projPref, prefs));
+
+
+            projectName.addMouseListener(new MouseAdapter() {
+
+                public void mousePressed(MouseEvent e) {
+                    if (e.isPopupTrigger()) {
+                        projectMenu.show(e.getComponent(), e.getX(), e.getY());
+                    }
+                }
+
+                public void mouseReleased(MouseEvent e) {
+                    if (e.isPopupTrigger()) {
+                        projectMenu.show(e.getComponent(), e.getX(), e.getY());
+                    }
+                }
+
+                public void mouseClicked(MouseEvent e) {
+                }
+            });
+
+            name.add(projectName);
+
+            //          name.add(new JLabel(" "));
+            /*JLabel action = new JLabel("") {
+            private static final long serialVersionUID = 1L;
+
+            public JToolTip createToolTip() {
+                return new JMultiLineToolTip();
+            }
+        };*/
+            JLabel action = new JLabel();
+            action.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 15));
+            _iconMap.put(projPref.getEnvironment(), action);
+            ConflictDaemon.getInstance().getLocalState(projPref.getEnvironment());
+            name.add(action);
+            grid.add(name);
+
+            JPanel iconPanel = new JPanel(new BorderLayout());
+            final JPanel iconGrid = new JPanel(new GridLayout(1, 0, 3, 3));
+            iconPanel.add(iconGrid, BorderLayout.NORTH);
+
+            for (final DataSource source : projPref.getDataSources()) {
+                if (!(source.isHidden())) {
+
+                    ImageIcon image = new ImageIcon();
+                    final JLabel imageLabel = new JLabel(source.getShortName(), image, SwingConstants.CENTER) {
+                        private static final long serialVersionUID = 1L;
+
+                        public JToolTip createToolTip() {
+                            return new JMultiLineToolTip();
+                        }
+                    };
+
+
+                    final JPopupMenu repoMenu = new JPopupMenu("Repository");
+                    JMenuItem deleteRepo = new JMenuItem("Delete this repository");
+
+
+
+
+                    deleteRepo.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent arg0) {
+                            int option = JOptionPane.showConfirmDialog(null, "Do you want to delete the " + source.getShortName() + "'s repository?", 
+                                    "Delete repository?", JOptionPane.YES_NO_OPTION);
+
+                            if(option == JOptionPane.YES_OPTION) {
+                                projPref.getDataSources().remove(source);
+                                _iconMap.remove(source);
+                                iconGrid.remove(imageLabel);
+                                ClientPreferences.savePreferencesToDefaultXML(prefs);
+                            }
+
+
+                        }
+
+                    });
+
+                    JMenuItem editRepo = new JMenuItem("Edit Repository");
+
+                    editRepo.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent arg0) {
+                            new DataSourceGuiEditorFrame(prefs, projPref, source.getShortName());
+                        }
+
+                    });
+
+                    repoMenu.add(getAddRepoItem(projPref, prefs));
+                    repoMenu.add(getClearCacheItem(projPref));
+                    repoMenu.add(editRepo);
+                    repoMenu.add(deleteRepo);
+
+                    imageLabel.addMouseListener(new MouseAdapter() {
+
+                        public void mousePressed(MouseEvent e) {
+                            if (e.isPopupTrigger()) {
+                                repoMenu.show(e.getComponent(), e.getX(), e.getY());
+                            }
+                        }
+
+                        public void mouseReleased(MouseEvent e) {
+                            if (e.isPopupTrigger()) {
+                                repoMenu.show(e.getComponent(), e.getX(), e.getY());
+                            }
+                        }
+
+                        public void mouseClicked(MouseEvent e) {
+                        }
+                    });
+
+                    _iconMap.put(source, imageLabel);
+                    ConflictDaemon.getInstance().getRelationship(source);
+                    imageLabel.setVerticalTextPosition(JLabel.TOP);
+                    imageLabel.setHorizontalTextPosition(JLabel.CENTER);
+                    iconGrid.add(imageLabel);
+                    //              imageLabel.setToolTipText("Action: hg fetch\nConsequences: new relationship will be AHEAD \nCommiters: David and Yuriy");
+                }
+            }
+
+
+
+
+            // Fill in the rest of the grid row with blanks
+            for (int i = projPref.getNumOfVisibleSources(); i < maxSources; i++)
+                iconGrid.add(new JLabel());
+
+
+
+            grid.add(iconPanel);
+        }
+
+        SpringLayoutUtility.formGridInColumn(grid, prefs.getProjectPreference().size(), 2);
+
+        _frame.getContentPane().add(grid);
+    }    
+
 	
 	/**
 	 * Get JMenuItem to add repository for given project
