@@ -175,14 +175,16 @@ public class ConflictSystemTray implements ComputationListener {
         }
         
         // Destroy current client window
-        if (_client != null) {
-            _client.close();
-            _client = null;
-        }
+        showClient();
+        _client.reloadWindowBody(_prefs);
+//        if (_client != null) {
+//            _client.close();
+//            _client = null;
+//        }
         
         
         // Start out with the client showing.
-        showClient();
+
         
         performCalculations();
 	}
@@ -200,7 +202,7 @@ public class ConflictSystemTray implements ComputationListener {
 		MenuItem exitItem = new MenuItem("Exit");
 		
 		loadPreferences();
-
+		
 		// Check that we have a recent-enough version of hg
 		try {
 		    if (!(RunIt.validHG(Constants.MIN_HG_VERSION, _prefs.getPath(), _prefs.getTempDirectory()))) {
