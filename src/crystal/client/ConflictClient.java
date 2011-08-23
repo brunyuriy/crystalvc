@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
@@ -231,12 +232,6 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
         _frame.getContentPane().removeAll();
         _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(), BoxLayout.Y_AXIS));
 
-        // Create a notification that quitting saves.
-        // _frame.getContentPane().add(new JLabel("Quitting Crystal saves your configuration.   ",
-        // SwingConstants.CENTER));
-        // or do it in the menu; looks nicer.
-        //  menuBar.add(new JMenuItem("Quitting Crystal saves your configuration."));
-
         // Create a grid to hold the conflict results
         int maxSources = 0;
         for (ProjectPreferences projPref : prefs.getProjectPreference()) {
@@ -329,7 +324,11 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
                                 projPref.getDataSources().remove(source);
                                 _iconMap.remove(source);
                                 iconGrid.remove(imageLabel);
-                                ClientPreferences.savePreferencesToDefaultXML(prefs);
+                                try {
+                                    ClientPreferences.savePreferencesToDefaultXML(prefs);
+                                } catch (FileNotFoundException fnfe) {
+                                    _log.error("Could not write to the configuration file. " + fnfe);
+                                }
                             }
 
 

@@ -14,6 +14,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,6 +34,7 @@ import javax.swing.JTextField;
 import javax.swing.JToolTip;
 import javax.swing.SpringLayout;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 
 import crystal.Constants;
@@ -54,6 +56,8 @@ import crystal.util.ValidInputChecker;
 public class PreferencesGUIEditorFrame extends JFrame {
 	
 	private static final long serialVersionUID = 4574346360968958312L;
+	
+	private Logger _log = Logger.getLogger(this.getClass());
 
 	// The singleton instance of this frame.
 	private static PreferencesGUIEditorFrame editorFrame;
@@ -358,7 +362,11 @@ public class PreferencesGUIEditorFrame extends JFrame {
 				if (copyPrefs.hasChanged() || changedComponents.values().contains(true)) {
 
 					if(!validText.values().contains(false)){
-						ClientPreferences.savePreferencesToDefaultXML(copyPrefs);
+						try {
+                            ClientPreferences.savePreferencesToDefaultXML(copyPrefs);
+						} catch (FileNotFoundException fnfe) {
+                            _log.error("Could not write to the configuration file. " + fnfe);
+                        }
 						//TODO
 						copyPrefs.setChanged(false);	
 						frame.setVisible(false);
@@ -399,7 +407,11 @@ public class PreferencesGUIEditorFrame extends JFrame {
 						}*/
 						
 						if(!validText.values().contains(false)){
-							ClientPreferences.savePreferencesToDefaultXML(copyPrefs);
+							try {
+                                ClientPreferences.savePreferencesToDefaultXML(copyPrefs);
+		                    } catch (FileNotFoundException fnfe) {
+	                            _log.error("Could not write to the configuration file. " + fnfe);
+	                        }
 							//TODO
 							copyPrefs.setChanged(false);	
 						} else {

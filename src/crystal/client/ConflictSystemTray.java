@@ -47,7 +47,7 @@ public class ConflictSystemTray implements ComputationListener {
 	public static boolean TRAY_SUPPORTED = SystemTray.isSupported();
 
 	// The current Crystal version number.
-	public static String VERSION_ID = "0.2.20110729";
+	public static String VERSION_ID = "0.2.20110822";
 
 	// A pointer to the Crystal window UI.
 	private ConflictClient _client;
@@ -122,9 +122,8 @@ public class ConflictSystemTray implements ComputationListener {
                 System.err.println(msg);
                 _log.error(msg);
             }
-        } catch (Exception e) {
-            // e.printStackTrace();
-            String msg = "Error initializing ConflictClient. Please update your preference file ( " + ClientPreferences.CONFIG_PATH + " )";
+	} catch (IOException e) {
+            String msg = "Error reading the configuration file ( " + ClientPreferences.CONFIG_PATH + " )";
             System.err.println(msg);
             _log.error(msg);
 
@@ -162,31 +161,25 @@ public class ConflictSystemTray implements ComputationListener {
                 quit(0);
             }
         }
-        
-        try {
-            if (_prefs.hasChanged()) {
+
+        if (_prefs.hasChanged()) {
+            try {
                 ClientPreferences.savePreferencesToDefaultXML(_prefs);
-                _prefs.setChanged(false);
+            } catch (FileNotFoundException fnfe) {
+                if (fnfe.getMessage().indexOf("Access is denied") >= 0)
+                    _log.info("XML file cannot be written to: " + fnfe);
+                else
+                    _log.error(fnfe);
+
             }
-        } catch (Exception e) {
-            if (e.getMessage().indexOf("Access is denied") >= 0)
-                _log.info("XML file cannot be written to: " + e);
-            else
-                _log.error("Could not write to the configuration file: " + e.getMessage());
+            _prefs.setChanged(false);
         }
         
-        // Destroy current client window
+        // clear and reload the main window
         showClient();
         _client.reloadWindowBody(_prefs);
-//        if (_client != null) {
-//            _client.close();
-//            _client = null;
-//        }
-        
-        
-        // Start out with the client showing.
 
-        
+        // refresh the window
         performCalculations();
 	}
 

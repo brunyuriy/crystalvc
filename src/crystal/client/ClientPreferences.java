@@ -1,6 +1,7 @@
 package crystal.client;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -544,10 +545,11 @@ public class ClientPreferences implements Cloneable {
 
     /**
      * Save preferences to the default filename
+     * @throws FileNotFoundException 
      * 
      * @effect saves preferences to the default filename
      */
-    public static void savePreferencesToDefaultXML(ClientPreferences prefs) {
+    public static void savePreferencesToDefaultXML(ClientPreferences prefs) throws FileNotFoundException {
         savePreferencesToXML(prefs, CONFIG_PATH);
     }
 
@@ -556,9 +558,10 @@ public class ClientPreferences implements Cloneable {
      * 
      * @param fName
      *            : the name of the file
+     * @throws FileNotFoundException 
      * @effect saves preferences to a file fName
      */
-    public static void savePreferencesToXML(ClientPreferences prefs, String fName) {
+    public static void savePreferencesToXML(ClientPreferences prefs, String fName) throws FileNotFoundException {
         Document doc = XMLTools.newXMLDocument();
 
         Element rootElem = new Element(IPrefXML.ROOT[0]);

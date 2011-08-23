@@ -8,6 +8,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.FileNotFoundException;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -20,6 +21,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+
+import org.apache.log4j.Logger;
 
 import crystal.Constants;
 import crystal.model.DataSource;
@@ -34,10 +37,10 @@ import crystal.util.ValidInputChecker;
 public class DataSourceGuiEditorFrame extends JFrame {
 	
 	private static int SOURCE_COLUMNS = 2;
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 7756018720377051986L;
+
+	private Logger _log = Logger.getLogger(this.getClass());
 
 	
 	/**
@@ -226,9 +229,11 @@ public class DataSourceGuiEditorFrame extends JFrame {
 								"Short name already exists in the project repository.", 
 								"Warning", JOptionPane.ERROR_MESSAGE);
 					} else {
-						//TODO save to xml file.
-						//prefs.setChanged(false);
-						ClientPreferences.savePreferencesToDefaultXML(prefs);
+						try {
+                            ClientPreferences.savePreferencesToDefaultXML(prefs);
+                        } catch (FileNotFoundException fnfe) {
+                            _log.error("Could not write to the configuration file. " + fnfe);
+                        }
 						setVisible(false);
 					}
 				}
@@ -272,7 +277,11 @@ public class DataSourceGuiEditorFrame extends JFrame {
 						} else {
 							//TODO save to xml file.
 							//prefs.setChanged(false);
-							ClientPreferences.savePreferencesToDefaultXML(prefs);
+							try {
+                                ClientPreferences.savePreferencesToDefaultXML(prefs);
+	                        } catch (FileNotFoundException fnfe) {
+	                            _log.error("Could not write to the configuration file. " + fnfe);
+	                        }
 						}
 					} else if(n == JOptionPane.CANCEL_OPTION) {
 						setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
