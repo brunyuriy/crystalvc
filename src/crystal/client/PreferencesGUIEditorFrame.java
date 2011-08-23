@@ -160,10 +160,10 @@ public class PreferencesGUIEditorFrame extends JFrame {
 								|| ValidInputChecker.checkUrl(tempPath.getText());
 		if (pathValid) {
 			tempPathState.setText("  valid");
-			tempPathState.setForeground(Color.GREEN);
+			tempPathState.setForeground(Color.GREEN.darker());
 		} else {
 			tempPathState.setText("invalid");
-			tempPathState.setForeground(Color.RED);
+			tempPathState.setForeground(Color.RED.darker());
 		}
 		validText.put(tempPath, pathValid);
 		
@@ -184,10 +184,10 @@ public class PreferencesGUIEditorFrame extends JFrame {
 				validText.put(tempPath, pathValid);
 				if (pathValid) {
 					tempPathState.setText("  valid");
-					tempPathState.setForeground(Color.GREEN);
+					tempPathState.setForeground(Color.GREEN.darker());
 				} else {
 					tempPathState.setText("invalid");
-					tempPathState.setForeground(Color.RED);
+					tempPathState.setForeground(Color.RED.darker());
 				}
 				//copyPrefs.setChanged(true);
 				frame.pack();
@@ -223,7 +223,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		
 		final JTextField refreshRate = new JTextField(String.valueOf(copyPrefs.getRefresh()));
 		final JLabel rateState = new JLabel("  valid");
-		rateState.setForeground(Color.GREEN);
+		rateState.setForeground(Color.GREEN.darker());
 		topPanel.add(refreshRate);
 		topPanel.add(rateState);
 		changedComponents.put(refreshRate, false);
@@ -249,10 +249,10 @@ public class PreferencesGUIEditorFrame extends JFrame {
 				
 				if (valid) {
 					rateState.setText("  valid");
-					rateState.setForeground(Color.GREEN);
+					rateState.setForeground(Color.GREEN.darker());
 				} else {
 					rateState.setText("invalid");
-					rateState.setForeground(Color.RED);
+					rateState.setForeground(Color.RED.darker());
 				}
 				//copyPrefs.setChanged(true);	
 			}
@@ -629,7 +629,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 					if (command.equals(JFileChooser.APPROVE_SELECTION)) {
 						path.setText(chooser.getSelectedFile().getAbsolutePath().replace('\\', '/'));
 						// and pretend like you typed a key:
-						path.getKeyListeners()[0].keyTyped(new KeyEvent(path, 0, 0, 0, 0, ' '));
+						path.getKeyListeners()[0].keyReleased(new KeyEvent(path, 0, 0, 0, 0, ' '));
 					}
 					chooserFrame.setVisible(false);
 				}
