@@ -495,13 +495,16 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				
 				
 			} else  { // otherwise, show fresh value
-				if (actionResult.getAction().length() < "hg commit".length()) {
-					System.out.println(actionResult.getAction());
-					action.setText(new String(new char["hg commit".length() - actionResult.getAction().length()]).replace('\0', ' ')
-							+ actionResult.getAction());
-				} else
-					action.setText(actionResult.getAction());
-                String tip = actionResult.getErrorMessage();
+				if ((actionResult == null) || (actionResult.getAction() == null))
+				    action.setText(new String(new char["hg commit".length()]).replace('\0', ' '));
+				else { 
+				    if (actionResult.getAction().length() < "hg commit".length()) {
+				        action.setText(new String(new char["hg commit".length() - actionResult.getAction().length()]).replace('\0', ' ')
+				                + actionResult.getAction());
+				    } else
+				        action.setText(actionResult.getAction());
+				}
+				String tip = actionResult.getErrorMessage();
                 if ((tip == null) || (tip.trim().equals("")))
                     action.setToolTipText(null);
                 else {
