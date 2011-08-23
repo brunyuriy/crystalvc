@@ -40,77 +40,77 @@ import crystal.util.TimeUtility;
  */
 public class ConflictSystemTray implements ComputationListener {
 
-	// The singleton instance.
-	private static ConflictSystemTray _instance;
+    // The singleton instance.
+    private static ConflictSystemTray _instance;
 
-	// The boolean that tells us if the OS supports the system tray.
-	public static boolean TRAY_SUPPORTED = SystemTray.isSupported();
+    // The boolean that tells us if the OS supports the system tray.
+    public static boolean TRAY_SUPPORTED = SystemTray.isSupported();
 
-	// The current Crystal version number.
-	public static String VERSION_ID = "0.2.20110822";
+    // The current Crystal version number.
+    public static String VERSION_ID = "0.2.20110822";
 
-	// A pointer to the Crystal window UI.
-	private ConflictClient _client;
+    // A pointer to the Crystal window UI.
+    private ConflictClient _client;
 
-	// The logger.
-	private Logger _log = Logger.getLogger(this.getClass());
+    // The logger.
+    private Logger _log = Logger.getLogger(this.getClass());
 
-	// The current configuration.
-	private ClientPreferences _prefs;
+    // The current configuration.
+    private ClientPreferences _prefs;
 
-	// A timer that we use to refresh the results.
-	private Timer _timer;
+    // A timer that we use to refresh the results.
+    private Timer _timer;
 
-	// A placekeeper to remember when we start each calculation.
-	long startCalculations = 0L;
+    // A placekeeper to remember when we start each calculation.
+    long startCalculations = 0L;
 
-	// A handle on the actual system tray.
-	final private SystemTray _tray;
+    // A handle on the actual system tray.
+    final private SystemTray _tray;
 
-	// The Crystal tray icon.
-	final private TrayIcon _trayIcon;
+    // The Crystal tray icon.
+    final private TrayIcon _trayIcon;
 
-	// A menu element that dictates whether Crystal ConflictDeamon is running (refreshing).
-	private MenuItem daemonEnabledItem;
+    // A menu element that dictates whether Crystal ConflictDeamon is running (refreshing).
+    private MenuItem _daemonEnabledItem;
 
-	// A menu element that allows the user to start a new refresh right now.
-	private MenuItem refreshItem;
+    // A menu element that allows the user to start a new refresh right now.
+    private MenuItem _refreshItem;
 
-	// The other menu elements are not referenced from listeners, so they are declared only locally.
+    // The other menu elements are not referenced from listeners, so they are declared only locally.
 
-	/**
-	 * Constructs a brand new Crystal system tray icon, if the OS allows it. If the OS does not allow it, creates an empty tray icon object holding
-	 * some nulls.
-	 */
-	private ConflictSystemTray() {
-		_log.info("ConflictSystemTray - started at: " + TimeUtility.getCurrentLSMRDateString());
-		if (TRAY_SUPPORTED) {
-			_tray = SystemTray.getSystemTray();
-			// _trayIcon = new TrayIcon((new ImageIcon(Constants.class.getResource("/crystal/client/images/bulb.gif"))).getImage());
-			_trayIcon = new TrayIcon((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_32.png"))).getImage());
-		} else {
-			_tray = null;
-			_trayIcon = null;
-		}
-	}
+    /**
+     * Constructs a brand new Crystal system tray icon, if the OS allows it. If the OS does not allow it, creates an empty tray icon object holding
+     * some nulls.
+     */
+    private ConflictSystemTray() {
+        _log.info("ConflictSystemTray - started at: " + TimeUtility.getCurrentLSMRDateString());
+        if (TRAY_SUPPORTED) {
+            _tray = SystemTray.getSystemTray();
+            // _trayIcon = new TrayIcon((new ImageIcon(Constants.class.getResource("/crystal/client/images/bulb.gif"))).getImage());
+            _trayIcon = new TrayIcon((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_32.png"))).getImage());
+        } else {
+            _tray = null;
+            _trayIcon = null;
+        }
+    }
 
-	/**
-	 * A listener on the about menu item. When the user clicks on "about", a dialog pops up with some info on Crystal.
-	 */
-	public void aboutAction() {
-		JOptionPane.showMessageDialog(
-						null,
-						"Crystal version: "
-								+ VERSION_ID
-								+ "\nBuilt by Yuriy Brun and Reid Holmes.  Contact crystalvc@googlegroups.com.\nhttp://crystalvc.googlecode.com",
-						"Crystal: Proactive Conflict Detector for Distributed Version Control", JOptionPane.PLAIN_MESSAGE, new ImageIcon(
-								Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.png")));
-	}
-	
-	/**
-	 * Loads the Crystal preferences and creates the appropriate views
-	 */
-	public void loadPreferences() {
+    /**
+     * A listener on the about menu item. When the user clicks on "about", a dialog pops up with some info on Crystal.
+     */
+    public void aboutAction() {
+        JOptionPane.showMessageDialog(
+                null,
+                "Crystal version: "
+                        + VERSION_ID
+                        + "\nBuilt by Yuriy Brun and Reid Holmes.  Contact crystalvc@googlegroups.com.\nhttp://crystalvc.googlecode.com",
+                        "Crystal: Proactive Conflict Detector for Distributed Version Control", JOptionPane.PLAIN_MESSAGE, new ImageIcon(
+                                Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.png")));
+    }
+
+    /**
+     * Loads the Crystal preferences and creates the appropriate views
+     */
+    public void loadPreferences() {
         try {
             _prefs = ClientPreferences.loadPreferencesFromDefaultXML();
 
@@ -122,7 +122,7 @@ public class ConflictSystemTray implements ComputationListener {
                 System.err.println(msg);
                 _log.error(msg);
             }
-	} catch (IOException e) {
+        } catch (IOException e) {
             String msg = "Error reading the configuration file ( " + ClientPreferences.CONFIG_PATH + " )";
             System.err.println(msg);
             _log.error(msg);
@@ -144,7 +144,7 @@ public class ConflictSystemTray implements ComputationListener {
                 PreferencesGUIEditorFrame editorFrame = PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
                 JOptionPane.showMessageDialog(editorFrame, "Please remember to restart the client after closing the configuraton editor.");
                 // and disable client
-                daemonEnabledItem.setLabel("Start Crystal updates");
+                _daemonEnabledItem.setLabel("Start Crystal updates");
                 if (_timer != null) {
                     _timer.stop();
                     _timer = null;
@@ -174,397 +174,405 @@ public class ConflictSystemTray implements ComputationListener {
             }
             _prefs.setChanged(false);
         }
-        
+
         // clear and reload the main window
         showClient();
         _client.reloadWindowBody(_prefs);
+        
+        if (!ConflictDaemon.getInstance().isEnabled()) 
+            _client.setDaemonEnabled(true);
 
         // refresh the window
         performCalculations();
-	}
+    }
 
-	/**
-	 * Creates the Crystal system tray icon and installs in the tray.
-	 */
-	private void createAndShowGUI() {
-		// Create components for a popup menu components to be used if System Tray is supported.
-		MenuItem aboutItem = new MenuItem("About");
-		MenuItem preferencesItem = new MenuItem("Edit Configuration");
-		daemonEnabledItem = new MenuItem("Stop Crystal updates");
-		refreshItem = new MenuItem("Refresh");
-		final MenuItem showClientItem = new MenuItem("Show Client");
-		MenuItem exitItem = new MenuItem("Exit");
-		
-		loadPreferences();
-		
-		// Check that we have a recent-enough version of hg
-		try {
-		    if (!(RunIt.validHG(Constants.MIN_HG_VERSION, _prefs.getPath(), _prefs.getTempDirectory()))) {
-		        JOptionPane.showMessageDialog(null, 
-		                "Your computer is running an outdated version of hg.\nThe must be running at least version " + Constants.MIN_HG_VERSION, 
-		                "outdated hg", JOptionPane.ERROR_MESSAGE);
-		        quit(1);
-		    }
-		} catch (IOException e) {
-		    JOptionPane.showMessageDialog(null, "Encountered an exception while checking hg version", 
+    /**
+     * Creates the Crystal system tray icon and installs in the tray.
+     */
+    private void createAndShowGUI() {
+        // Create components for a popup menu components to be used if System Tray is supported.
+        MenuItem aboutItem = new MenuItem("About");
+        MenuItem preferencesItem = new MenuItem("Edit Configuration");
+        _daemonEnabledItem = new MenuItem("Stop Crystal updates");
+        _refreshItem = new MenuItem("Refresh");
+        final MenuItem showClientItem = new MenuItem("Show Client");
+        MenuItem exitItem = new MenuItem("Exit");
+
+        loadPreferences();
+
+        // Check that we have a recent-enough version of hg
+        try {
+            if (!(RunIt.validHG(Constants.MIN_HG_VERSION, _prefs.getPath(), _prefs.getTempDirectory()))) {
+                JOptionPane.showMessageDialog(null, 
+                        "Your computer is running an outdated version of hg.\nThe must be running at least version " + Constants.MIN_HG_VERSION, 
+                        "outdated hg", JOptionPane.ERROR_MESSAGE);
+                quit(1);
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Encountered an exception while checking hg version", 
                     "Error checking hg version", JOptionPane.ERROR_MESSAGE);
             quit(1);
-		}
-		
+        }
 
-		if (TRAY_SUPPORTED) {
-			final PopupMenu trayMenu = new PopupMenu();
-			_trayIcon.setImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/16X16/must/clock.png"))).getImage());
 
-			_trayIcon.setToolTip("Crystal");
+        if (TRAY_SUPPORTED) {
+            final PopupMenu trayMenu = new PopupMenu();
+            _trayIcon.setImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/16X16/must/clock.png"))).getImage());
 
-			// Add components to the popup menu
-			trayMenu.add(aboutItem);
-			trayMenu.addSeparator();
-			trayMenu.add(preferencesItem);
-			trayMenu.add(daemonEnabledItem);
-			trayMenu.addSeparator();
-			trayMenu.add(refreshItem);
-			trayMenu.addSeparator();
-			trayMenu.add(showClientItem);
-			trayMenu.addSeparator();
-			trayMenu.add(exitItem);
+            _trayIcon.setToolTip("Crystal");
 
-			_trayIcon.setPopupMenu(trayMenu);
+            // Add components to the popup menu
+            trayMenu.add(aboutItem);
+            trayMenu.addSeparator();
+            trayMenu.add(preferencesItem);
+            trayMenu.add(_daemonEnabledItem);
+            trayMenu.addSeparator();
+            trayMenu.add(_refreshItem);
+            trayMenu.addSeparator();
+            trayMenu.add(showClientItem);
+            trayMenu.addSeparator();
+            trayMenu.add(exitItem);
 
-			try {
-				_tray.add(_trayIcon);
-			} catch (AWTException e) {
-				_log.error("TrayIcon could not be added.");
-				return;
-			}
+            _trayIcon.setPopupMenu(trayMenu);
 
-			_trayIcon.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent ae) {
-					_log.trace("Tray icon ActionEvent: " + ae.getActionCommand());
-					// doesn't work on OS X; it doesn't register double clicks on the tray
-					showClient();
-				}
-			});
+            try {
+                _tray.add(_trayIcon);
+            } catch (AWTException e) {
+                _log.error("TrayIcon could not be added.");
+                return;
+            }
 
-			aboutItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					aboutAction();
-				}
-			});
+            _trayIcon.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent ae) {
+                    _log.trace("Tray icon ActionEvent: " + ae.getActionCommand());
+                    // doesn't work on OS X; it doesn't register double clicks on the tray
+                    showClient();
+                }
+            });
 
-			refreshItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					_log.info("Refresh manually selected.");
-					performCalculations();
-				}
-			});
+            aboutItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    aboutAction();
+                }
+            });
 
-			preferencesItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					preferencesAction();
-				}
-			});
+            _refreshItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    _log.info("Refresh manually selected.");
+                    performCalculations();
+                }
+            });
 
-			showClientItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					showClient();
-				}
-			});
+            preferencesItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    preferencesAction();
+                }
+            });
 
-			daemonEnabledItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					daemonAbleAction();
-				}
-			});
+            showClientItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    showClient();
+                }
+            });
 
-			exitItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					exitAction();
-				}
-			});
+            _daemonEnabledItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    daemonAbleAction();
+                }
+            });
 
-		}
+            exitItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    exitAction();
+                }
+            });
+
+        }
 
         ConflictDaemon.getInstance().addListener(this);
 
-		performCalculations();
-	}
+        performCalculations();
+    }
 
-	/**
-	 * Creates and starts a new timer (throws away the old one). The timer fires an update every refresh seconds, unless there is a pending task.
-	 */
-	private void createTimer() {
+    /**
+     * Creates and starts a new timer (throws away the old one). The timer fires an update every refresh seconds, unless there is a pending task.
+     */
+    private void createTimer() {
 
-		// note that the timer works in milliseconds and the argument is in seconds
+        // note that the timer works in milliseconds and the argument is in seconds
 
-		boolean pTask = false;
+        boolean pTask = false;
 
-		// check if anything is PENDING (first local states then relationships
-		for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()) {
-			if (localState.getLocalState().equals(LocalStateResult.PENDING)) {
-				pTask = true;
-			}
-		}
-		for (Relationship relationship : ConflictDaemon.getInstance().getRelationships()) {
-			if (!(relationship.isReady())) {
-				pTask = true;
-			}
-		}
+        // check if anything is PENDING (first local states then relationships
+        for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()) {
+            if (localState.getLocalState().equals(LocalStateResult.PENDING)) {
+                pTask = true;
+            }
+        }
+        for (Relationship relationship : ConflictDaemon.getInstance().getRelationships()) {
+            if (!(relationship.isReady())) {
+                pTask = true;
+            }
+        }
 
-		final boolean pendingTask = pTask;
+        final boolean pendingTask = pTask;
 
-		if (_timer != null) {
-			_timer.stop();
-			_timer = null;
-		}
+        if (_timer != null) {
+            _timer.stop();
+            _timer = null;
+        }
 
-		_timer = new Timer((int) ClientPreferences.REFRESH * 1000, new ActionListener() {
+        _timer = new Timer((int) ClientPreferences.REFRESH * 1000, new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				_log.info("Timer fired at: " + TimeUtility.getCurrentLSMRDateString());
-				if (!pendingTask) {
-					// if tasks are pending don't start the calculations again
-					performCalculations();
-				}
-			}
-		});
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                _log.info("Timer fired at: " + TimeUtility.getCurrentLSMRDateString());
+                if (!pendingTask) {
+                    // if tasks are pending don't start the calculations again
+                    performCalculations();
+                }
+            }
+        });
 
-		_timer.setInitialDelay((int) ClientPreferences.REFRESH * 1000);
-		_timer.start();
+        _timer.setInitialDelay((int) ClientPreferences.REFRESH * 1000);
+        _timer.start();
 
-		long nextFire = System.currentTimeMillis() + _timer.getDelay();
+        long nextFire = System.currentTimeMillis() + _timer.getDelay();
 
-		_log.info("Timer created - will fire in: " + TimeUtility.msToHumanReadable(_timer.getInitialDelay()) + " (@ "
-				+ new SimpleDateFormat("HH:mm:ss").format(new Date(nextFire)) + ")");
-	}
+        _log.info("Timer created - will fire in: " + TimeUtility.msToHumanReadable(_timer.getInitialDelay()) + " (@ "
+                + new SimpleDateFormat("HH:mm:ss").format(new Date(nextFire)) + ")");
+    }
 
-	/**
-	 * A listener for clicking the menu to enable the deamon.
-	 */
-	public void daemonAbleAction() {
-		if (daemonEnabledItem.getLabel().equals("Start Crystal updates")) {
-			// daemon enabled
-			_log.info("ConflictDaemon enabled");
-			daemonEnabledItem.setLabel("Stop Crystal updates");
-			_client.setDaemonEnabled(true);
-			if (_timer != null) {
-				// do it
-				_timer.start();
-			} else {
-				createTimer();
-			}
-		} else {
-			// daemon disabled
-			_log.info("ConflictDaemon disabled");
-			daemonEnabledItem.setLabel("Start Crystal updates");
-			_client.setDaemonEnabled(false);
-			if (_timer != null) {
-				_timer.stop();
-				_timer = null;
-			}
+    /**
+     * A listener for clicking the menu to enable the deamon.
+     */
+    public void daemonAbleAction() {
+        if (!ConflictDaemon.getInstance().isEnabled()) {
+            // daemon currently disabled
+            _log.info("Enabling ConflictDaemon");
+            _daemonEnabledItem.setLabel("Stop Crystal updates");
+            _refreshItem.setEnabled(true);
+            _client.setDaemonEnabled(true);
+            if (_timer != null) {
+                // do it
+                _timer.start();
+            } else {
+                createTimer();
+            }
+        } else {
+            // daemon currently enabled
+            _log.info("Disabling ConflictDaemon");
+            _daemonEnabledItem.setLabel("Start Crystal updates");
+            _refreshItem.setEnabled(false);
+            _client.setDaemonEnabled(false);
+            if (_timer != null) {
+                _timer.stop();
+                _timer = null;
+            }
 
-			// for (CalculateTask ct : tasks) {
-			// _log.info("disabling ct of state: " + ct.getState());
-			// ct.cancel(true);
-			// }
+            // for (CalculateTask ct : tasks) {
+            // _log.info("disabling ct of state: " + ct.getState());
+            // ct.cancel(true);
+            // }
 
-			update();
-		}
-	}
+            update();
+        }
+    }
 
-	/**
-	 * A listener for clicking the menu to exit.
-	 */
-	public void exitAction() {
-		if (TRAY_SUPPORTED)
-			_tray.remove(_trayIcon);
+    /**
+     * A listener for clicking the menu to exit.
+     */
+    public void exitAction() {
+        if (TRAY_SUPPORTED)
+            _tray.remove(_trayIcon);
 
-		String msg = "ConflictClient exited successfully.";
-		System.out.println(msg);
-		_log.trace("Exit action selected");
+        String msg = "ConflictClient exited successfully.";
+        System.out.println(msg);
+        _log.trace("Exit action selected");
 
-		quit(0);
-	}
+        quit(0);
+    }
 
-	/**
-	 * If the deamon is not running, does nothing. If the deamon is running, creates a new executor and performs the calculations on all repos of all
-	 * projects of the current configuration.
-	 */
-	public void performCalculations() {
+    /**
+     * If the deamon is not running, does nothing. If the deamon is running, creates a new executor and performs the calculations on all repos of all
+     * projects of the current configuration.
+     */
+    public void performCalculations() {
 
-		// if the daemon is disabled, don't perform calculations.
-		if (daemonEnabledItem.getLabel().equals("Start Crystal updates")) {
-			return;
-		}
+        // if the daemon is disabled, don't perform calculations.
+        if (!ConflictDaemon.getInstance().isEnabled()) {
+            _log.error("Tried to perform calculations on a disabled daemon.");
+            return;
+        }
 
-		// if the deamon is enabled.
-		// # lines marked with //# are removed to simplify the execution process
-		// # Executor ex = new SerialExecutor();
+        // if the deamon is enabled.
+        // # lines marked with //# are removed to simplify the execution process
+        // # Executor ex = new SerialExecutor();
 
-		refreshItem.setLabel("Refreshing...");
-		_log.trace("refresh text: " + refreshItem.getLabel());
-		refreshItem.setEnabled(false);
-		_client.setCanUpdate(false);
+        _refreshItem.setLabel("Refreshing...");
+        _log.trace("refresh text: " + _refreshItem.getLabel());
+        _refreshItem.setEnabled(false);
+        _client.setCanUpdate(false);
 
-		startCalculations = System.currentTimeMillis();
+        startCalculations = System.currentTimeMillis();
 
-		// for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
-		// final CalculateLocalStateTask clst = new CalculateLocalStateTask(projPref, this, _client);
-		// ex.execute(clst);
-		//
-		// for (final DataSource source : projPref.getDataSources()) {
-		// final CalculateRelationshipTask crt = new CalculateRelationshipTask(source, projPref, this, _client);
-		// ex.execute(crt);
-		// }
-		// }
+        // for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
+        // final CalculateLocalStateTask clst = new CalculateLocalStateTask(projPref, this, _client);
+        // ex.execute(clst);
+        //
+        // for (final DataSource source : projPref.getDataSources()) {
+        // final CalculateRelationshipTask crt = new CalculateRelationshipTask(source, projPref, this, _client);
+        // ex.execute(crt);
+        // }
+        // }
 
-		for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
-			final CalculateProjectTask cpt = new CalculateProjectTask(projPref, this, _client);
-			// # ex.execute(cpt);
-			cpt.execute();
-		}
-	}
+        for (ProjectPreferences projPref : _prefs.getProjectPreference()) {
+            final CalculateProjectTask cpt = new CalculateProjectTask(projPref, this, _client);
+            // # ex.execute(cpt);
+            cpt.execute();
+        }
+    }
 
-	/**
-	 * Either creates a new one (if one did not exist) or displays the existing GUI configuration editor.
-	 * @throws IOException 
-	 */
-	public void preferencesAction(){
-	    // stop the daemon if it's running
-	    if (daemonEnabledItem.getLabel().equals("Stop Crystal updates"))
-            ConflictSystemTray.getInstance().daemonAbleAction();
-		PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
+    /**
+     * Either creates a new one (if one did not exist) or displays the existing GUI configuration editor.
+     * @throws IOException 
+     */
+    public void preferencesAction(){
+        // stop the daemon if it's running
+        if (ConflictDaemon.getInstance().isEnabled())
+            daemonAbleAction();
+        PreferencesGUIEditorFrame.getPreferencesGUIEditorFrame(_prefs);
+    }
 
-	}
+    /**
+     * Quit Crystal with a status.
+     * 
+     * @param status
+     *            : the exit status (0 means normal).
+     */
+    private void quit(int status) {
+        _log.info("ConflictSystemTray exited - code: " + status + " at: " + TimeUtility.getCurrentLSMRDateString());
 
-	/**
-	 * Quit Crystal with a status.
-	 * 
-	 * @param status
-	 *            : the exit status (0 means normal).
-	 */
-	private void quit(int status) {
-		_log.info("ConflictSystemTray exited - code: " + status + " at: " + TimeUtility.getCurrentLSMRDateString());
+        System.exit(status);
+    }
 
-		System.exit(status);
-	}
+    /**
+     * Show the client and set up the timer.
+     */
+    private void showClient() {
+        _log.info("Show client requested");
+        if (_client != null) {
+            _client.show();
+        } else {
+            _client = new ConflictClient();
+            _client.createAndShowGUI(_prefs);
+        }
+    }
 
-	/**
-	 * Show the client and set up the timer.
-	 */
-	private void showClient() {
-		_log.info("Show client requested");
-		if (_client != null) {
-			_client.show();
-		} else {
-			_client = new ConflictClient();
-			_client.createAndShowGUI(_prefs);
-		}
-	}
+    /**
+     * Updates the images and tool tips of all the projects and all the repositories within the current configuration.
+     */
+    @Override
+    public void update() {
+        _log.trace("ConflictSystemTray::update()");
 
-	/**
-	 * Updates the images and tool tips of all the projects and all the repositories within the current configuration.
-	 */
-	@Override
-	public void update() {
-		_log.trace("ConflictSystemTray::update()");
+        // _log.trace("Task size in update: " + tasks.size());
+        
+        if (!ConflictDaemon.getInstance().isEnabled())
+            return;
+            
+        // check if anything is PENDING (first local states then relationships
+        boolean pendingTask = false;
+        for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()) {
+            if (localState.getLocalState().equals(LocalStateResult.PENDING)) {
+                pendingTask = true;
+            }
+        }
+        for (Relationship relationship : ConflictDaemon.getInstance().getRelationships()) {
+            if (relationship.getName().equals(Relationship.PENDING)) {
+                pendingTask = true;
+            }
+        }
 
-		// _log.trace("Task size in update: " + tasks.size());
+        if (pendingTask) {
+            _log.trace("Update called with tasks still pending.");
 
-		// check if anything is PENDING (first local states then relationships
-		boolean pendingTask = false;
-		for (LocalStateResult localState : ConflictDaemon.getInstance().getLocalStates()) {
-			if (localState.getLocalState().equals(LocalStateResult.PENDING)) {
-				pendingTask = true;
-			}
-		}
-		for (Relationship relationship : ConflictDaemon.getInstance().getRelationships()) {
-			if (relationship.getName().equals(Relationship.PENDING)) {
-				pendingTask = true;
-			}
-		}
+            // keep the UI in updating mode
+            _refreshItem.setLabel("Refreshing...");
+            _refreshItem.setEnabled(false);
+            _client.setCanUpdate(false);
+        } else {
+            _log.trace("Update called with no tasks pending.");
 
-		if (pendingTask) {
-			_log.trace("Update called with tasks still pending.");
+            createTimer();
+            _refreshItem.setLabel("Refresh");
+            _refreshItem.setEnabled(true);
+            _client.setCanUpdate(true);
+        }
 
-			// keep the UI in updating mode
-			refreshItem.setLabel("Refreshing...");
-			refreshItem.setEnabled(false);
-			_client.setCanUpdate(false);
-		} else {
-			_log.trace("Update called with no tasks pending.");
+        if (TRAY_SUPPORTED)
+            updateTrayIcon();
 
-			createTimer();
-			refreshItem.setLabel("Refresh");
-			refreshItem.setEnabled(true);
-			_client.setCanUpdate(true);
-		}
+        if (_client != null) {
+            _client.update();
+        }
+    }
 
-		if (TRAY_SUPPORTED)
-			updateTrayIcon();
+    /**
+     * Updates the tray icon image to the harshest relationship in the current configuration.
+     */
+    private void updateTrayIcon() {
 
-		if (_client != null) {
-			_client.update();
-		}
-	}
+        if (!TRAY_SUPPORTED)
+            return;
 
-	/**
-	 * Updates the tray icon image to the harshest relationship in the current configuration.
-	 */
-	private void updateTrayIcon() {
+        _trayIcon.getImage().flush();
 
-		if (!TRAY_SUPPORTED)
-			return;
+        Image icon = Relationship.getDominant(ConflictDaemon.getInstance().getRelationships());
 
-		_trayIcon.getImage().flush();
+        _trayIcon.setImage(icon);
+    }
 
-		Image icon = Relationship.getDominant(ConflictDaemon.getInstance().getRelationships());
+    /**
+     * @return the single instance of ConflictSystemTray
+     */
+    public static ConflictSystemTray getInstance() {
+        if (_instance == null) {
+            _instance = new ConflictSystemTray();
+        }
+        return _instance;
+    }
 
-		_trayIcon.setImage(icon);
-	}
+    /**
+     * Main execution point that starts Crystal.
+     * 
+     * @param args
+     *            : --version : Prints the version number.
+     */
+    public static void main(String[] args) {
+        setLookAndFeel();
 
-	/**
-	 * @return the single instance of ConflictSystemTray
-	 */
-	public static ConflictSystemTray getInstance() {
-		if (_instance == null) {
-			_instance = new ConflictSystemTray();
-		}
-		return _instance;
-	}
+        if (args.length > 0) {
+            if (args[0].equals("--version")) {
+                System.out.println("Crystal version: " + VERSION_ID);
+                System.exit(0);
+            }
+        }
 
-	/**
-	 * Main execution point that starts Crystal.
-	 * 
-	 * @param args
-	 *            : --version : Prints the version number.
-	 */
-	public static void main(String[] args) {
-		setLookAndFeel();
-		
-		if (args.length > 0) {
-			if (args[0].equals("--version")) {
-				System.out.println("Crystal version: " + VERSION_ID);
-				System.exit(0);
-			}
-		}
+        ConflictSystemTray.startLogging();
+        // UIManager.put("swing.boldMetal", Boolean.FALSE);
 
-		ConflictSystemTray.startLogging();
-		// UIManager.put("swing.boldMetal", Boolean.FALSE);
+        ConflictSystemTray cst = ConflictSystemTray.getInstance();
+        cst.createAndShowGUI();
+    }
 
-		ConflictSystemTray cst = ConflictSystemTray.getInstance();
-		cst.createAndShowGUI();
-	}
-	
-	/**
-	 * private: set the window to match the native look and feel of the
-	 * operating system
-	 */
-	private static void setLookAndFeel() {
-	    try {
+    /**
+     * private: set the window to match the native look and feel of the
+     * operating system
+     */
+    private static void setLookAndFeel() {
+        try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (UnsupportedLookAndFeelException e) {
             // do nothing
@@ -575,10 +583,10 @@ public class ConflictSystemTray implements ComputationListener {
         } catch (IllegalAccessException e) {
             // do nothing
         }
-	}
+    }
 
 
-	public static void startLogging() {
-		LSMRLogger.startLog4J(Constants.QUIET_CONSOLE, true, Constants.LOG_LEVEL, System.getProperty("user.home"), ".conflictClientLog");
-	}
+    public static void startLogging() {
+        LSMRLogger.startLog4J(Constants.QUIET_CONSOLE, true, Constants.LOG_LEVEL, System.getProperty("user.home"), ".conflictClientLog");
+    }
 }

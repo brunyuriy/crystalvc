@@ -23,8 +23,10 @@ import crystal.util.TimeUtility;
  * @author brun
  */
 public class ConflictDaemon {
-
+    
 	private Logger _log = Logger.getLogger(this.getClass());
+	
+    private boolean _enabled;
 
 	/**
 	 *  A set of listeners for this ConflictDaemon.    
@@ -51,6 +53,22 @@ public class ConflictDaemon {
 
 	// disable constructor	
 	private ConflictDaemon() {
+	    _enabled = true;
+	}
+	
+	/**
+	 * Enables or disables the daemon
+	 * @param enable
+	 */
+	public void enable(boolean enable) {
+	    _enabled = enable;
+	}
+	
+	/**
+	 * @return true iff the daemon is enabled
+	 */
+	public boolean isEnabled() {
+	    return _enabled;
 	}
 
 	/**
@@ -78,6 +96,9 @@ public class ConflictDaemon {
 	 * @return the relationship between the given data source and the developer's environment.
 	 */
 	public Relationship calculateRelationship(DataSource source, ProjectPreferences prefs) {
+	    if(!_enabled)
+	        return null;
+	    
 		String relationship = null;
 		long start = System.currentTimeMillis();
 
@@ -135,6 +156,10 @@ public class ConflictDaemon {
 	 * @return the local state of the developer's environment.
 	 */
 	public LocalStateResult calculateLocalState(ProjectPreferences prefs) {
+	    
+	    if (!_enabled)
+	        return null;
+	    
 		String localState = null;
 		long start = System.currentTimeMillis();
 
@@ -252,6 +277,9 @@ public class ConflictDaemon {
 	 * @param prefs: the configuration over which to do the computations
 	 */
 	public void prePerformCalculations(ClientPreferences prefs) {
+	    
+	    if(!_enabled)
+	        return;
 
 		// for each project
 		for (ProjectPreferences pp : prefs.getProjectPreference()) {
