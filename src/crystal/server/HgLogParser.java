@@ -32,14 +32,4 @@ public class HgLogParser extends AbstractLogParser{
 	public static HashMap<String, Checkpoint> parseLog(String log) {
 		return abstractParseLog(log, hgCheckpoint);
 	}
-	
-//	public static void main(String[] args) throws IOException {
-//		String[] hgArgs = { "log" };
-//		String log = RunIt.execute("c:/Program Files (x86)/TortoiseHg/hg.exe", hgArgs, "C:/Users/Yuriy/Desktop/work/Crystal/crystalSource").getOutput();
-//
-//		System.out.println(parseLog(log).keySet().size());
-////		System.out.println(log);
-//		
-//	}
-
 }

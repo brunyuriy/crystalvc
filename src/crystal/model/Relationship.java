@@ -16,7 +16,7 @@ import crystal.model.RevisionHistory.When;
 import crystal.util.ValidInputChecker;
 
 /**
- * A Relationship represents the relatiionship between two repositories.  
+ * A Relationship represents the relationship between two repositories.  
  * 
  * @author brun
  */
@@ -258,9 +258,6 @@ public class Relationship implements Result {
 	 * @return computes and returns the image to display for this relationship
 	 */
 	private Image computeImage() {
-		//			String imageAddress = PATH + SIZE16 + ICON_ADDRESSES.get(_name);
-		//			System.out.println(imageAddress);
-		//			return (new ImageIcon(Constants.class.getResource(imageAddress)).getImage());
 
 		String iconAddress = PATH + SIZE16;
 
@@ -277,8 +274,6 @@ public class Relationship implements Result {
 			iconAddress += ICON_ADDRESSES.get(_name);
 		else 
 			iconAddress += ICON_ADDRESSES.get(PENDING);
-
-		//			System.out.println(iconAddress);
 
 		return (new ImageIcon(Constants.class.getResource(iconAddress)).getImage());
 	}
