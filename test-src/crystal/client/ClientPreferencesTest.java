@@ -3,6 +3,7 @@ package crystal.client;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Vector;
 
@@ -268,7 +269,7 @@ public class ClientPreferencesTest {
 	}
 	
 	@Test
-	public void testSavePreferencesToXML() throws NonexistentProjectException{
+	public void testSavePreferencesToXML() throws NonexistentProjectException, FileNotFoundException{
 		ClientPreferences cp = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
 		((List<DataSource>) cp.getProjectPreferences("myProject").getDataSources()).get(0).setRemoteCmd("setRemoteHg");
 		
