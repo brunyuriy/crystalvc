@@ -161,7 +161,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 _log.info("Reloading configuration requested by user.");
-                setCanUpdate(false);
+                setDaemonEnabled(true);
                 ConflictSystemTray.getInstance().loadPreferences();
             }
         });
@@ -170,7 +170,6 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				_log.info("Refresh manually selected.");
-				setCanUpdate(false);
 				ConflictSystemTray.getInstance().performCalculations();
 			}
 		});
@@ -469,11 +468,14 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 	public void setDaemonEnabled(boolean enable) {
 		if (enable) {
 			_disableDaemon.setText("Stop Crystal updates");
+			_refresh.setEnabled(true);
 		} else {
 			_disableDaemon.setText("Start Crystal updates");
+			_refresh.setEnabled(false);
 		}
+		ConflictDaemon.getInstance().enable(enable);
 	}
-
+	
 	/**
 	 * Refreshes the UI.
 	 */
