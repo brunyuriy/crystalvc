@@ -94,8 +94,6 @@ public class RunIt {
      * @throws IOException
      */
     public static Output execute(String command, String[] args, String path, boolean getStatus) throws IOException {
-        // System.out.println("\t" + TimeUtility.getCurrentLSMRDateString() + ": RunIt::execute(..) - : " + command +
-        // " ...");
 
         long start = System.currentTimeMillis();
 

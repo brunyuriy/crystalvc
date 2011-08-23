@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.apache.log4j.Logger;
 
@@ -570,11 +571,17 @@ public class ConflictSystemTray implements ComputationListener {
 	 * operating system
 	 */
 	private static void setLookAndFeel() {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			System.out.println("Unable to load native look and feel");
-		}
+	    try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException e) {
+            // do nothing
+        } catch (ClassNotFoundException e) {
+            // do nothing
+        } catch (InstantiationException e) {
+            // do nothing
+        } catch (IllegalAccessException e) {
+            // do nothing
+        }
 	}
 
 

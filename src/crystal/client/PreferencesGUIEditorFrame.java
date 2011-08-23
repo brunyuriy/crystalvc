@@ -452,23 +452,16 @@ public class PreferencesGUIEditorFrame extends JFrame {
 	private boolean isAllValid(ClientPreferences prefs, String refresh) {
 		ClientPreferences clonePrefs = prefs.clone();
 		// check rate
-		try {
-			Long.valueOf(refresh);
-		} catch (Exception e) {
-			System.out.println("refresh");
-			return false;
-		}
+		Long.valueOf(refresh);
 		
 		// check temp path
 		if (!new File(clonePrefs.getTempDirectory()).exists()
 				|| !new File(clonePrefs.getTempDirectory()).isDirectory()) {
-			System.out.println("temp path");
 			return false;
 		}
 		
 		for (ProjectPreferences pref : clonePrefs.getProjectPreference()) {
-			System.out.println(pref.getEnvironment().getShortName() + " " + pref.getDataSources().isEmpty());
-			
+		
 			ProjectPreferences pp = null;
 			try {
 				pp = clonePrefs.getProjectPreferences(pref.getEnvironment().getShortName());
@@ -477,7 +470,6 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 			// check project name duplicate
 			if (clonePrefs.getProjectPreference().contains(pp)) {
-				System.out.println("env name");
 				return false;
 			}
 			
@@ -485,7 +477,6 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			if (!new File(pp.getEnvironment().getCloneString()).exists()
 					|| !new File(pp.getEnvironment().getCloneString()).isDirectory()) { 
 			
-				System.out.println("clone address");
 				return false;
 			}
 			// check compile command
@@ -493,7 +484,6 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			
 			if (compileCommand != null && !compileCommand.trim().isEmpty() 
 					&& RunIt.getExecutable(compileCommand) == null) {
-				System.out.println("comp cmd");
 				
 				return false;
 			}
@@ -502,11 +492,9 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			
 			if (testCommand != null && !testCommand.trim().isEmpty() 
 					&& RunIt.getExecutable(testCommand) == null) {
-				System.out.println("test cmd");
 				return false;
 			}
 			
-			System.out.println(pp.getEnvironment().getShortName() + " " + pp.getDataSources().isEmpty());
 			// test each data sources
 			if (!pp.getDataSources().isEmpty()) {
 
@@ -516,13 +504,11 @@ public class PreferencesGUIEditorFrame extends JFrame {
 					
 					// check source name duplicate
 					if (pp.getDataSources().contains(ds)) {
-						System.out.println("source name");
 						return false;
 					}
 					// check address
 					if (!new File(ds.getCloneString()).exists()
 							|| !new File(ds.getCloneString()).isDirectory()) { 
-						System.out.println("source address");
 						return false;
 					}
 				}
@@ -638,41 +624,4 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			});
 		}
 	}
-
-
-	/**
-	 * An execution point used only for testing.  
-	 */
-	//public static void main(String[] args) {
-	//	ClientPreferences client = new ClientPreferences("temp", "hgPath", Constants.DEFAULT_REFRESH);
-	//	ProjectPreferences one = new ProjectPreferences(new DataSource("first project", "~brun\\firstrepo", DataSource.RepoKind.HG, false, null), client);
-	//	DataSource oneOther = new DataSource("Mike's copy", "~mernst\\repo", DataSource.RepoKind.HG, false, null);
-	//	DataSource twoOther = new DataSource("Reid's copy", "~rtholmes\\repo", DataSource.RepoKind.HG, false, null);
-	//	DataSource threeOther = new DataSource("David's copy", "~notkin\\repo", DataSource.RepoKind.HG, false, null);
-	//	one.addDataSource(oneOther);
-	//	one.addDataSource(twoOther);
-
-	//	ProjectPreferences two = new ProjectPreferences(new DataSource("second project", "~brun\\secondrepo", DataSource.RepoKind.HG, false, null), client);
-	//	two.addDataSource(threeOther);
-	//	two.addDataSource(oneOther);
-
-	//	try {
-	//	client.addProjectPreferences(one);
-	//	client.addProjectPreferences(two);
-	//	} catch (DuplicateProjectNameException e) {
-			// This should really never happen because we're dealing with an empty set of preferences.
-	//		throw new RuntimeException("When I was creating some nice fresh preferences with two projects, one and two, I got this error:\n" + 
-	//				e.getMessage());  
-	//	}
-
-	//	getPreferencesGUIEditorFrame(client);
-
-		// int i = 0;
-		// while(true) {
-		// i = (i + 1) % 1000000;
-		// if (i == 0)
-		// System.out.println(mine.getEnvironment().getShortName());
-		// }
-	//}
-
 }
