@@ -29,29 +29,22 @@ public class XMLTools {
 
 	public static String STANDARD_DATE_FORMAT = "yyyy-MM-dd_HH-mm-ss";
 
-	public static boolean writeXMLDocument(Document doc, String fName) {
+	public static boolean writeXMLDocument(Document doc, String fName) throws FileNotFoundException {
 		// Assert.assertNotNull(doc);
 		if (doc == null)
-			_log.error("null document");
+		    _log.error("null document");
 		else {
-			try {
-				final long start = System.currentTimeMillis();
-				FileOutputStream fos = new FileOutputStream(fName);
-				try {
-					XMLOutputter outputter = new XMLOutputter();
-					outputter.setFormat(Format.getPrettyFormat());
-					outputter.output(doc, fos);
-					return true;
-				} catch (IOException ioe) {
-					_log.error(ioe);
-				}
-				_log.trace("Document written to " + fName + " in: " + TimeUtility.msToHumanReadableDelta(start));
-			} catch (FileNotFoundException fnfe) {
-			    if (fnfe.getMessage().indexOf("Access is denied") >= 0)
-			        _log.info("XML file cannot be written to: " + fnfe);
-			    else
-			        _log.error(fnfe);
-			}
+		    final long start = System.currentTimeMillis();
+		    FileOutputStream fos = new FileOutputStream(fName);
+		    try {
+		        XMLOutputter outputter = new XMLOutputter();
+		        outputter.setFormat(Format.getPrettyFormat());
+		        outputter.output(doc, fos);
+		        return true;
+		    } catch (IOException ioe) {
+		        _log.error(ioe);
+		    }
+		    _log.trace("Document written to " + fName + " in: " + TimeUtility.msToHumanReadableDelta(start));
 		}
 		return false;
 	}

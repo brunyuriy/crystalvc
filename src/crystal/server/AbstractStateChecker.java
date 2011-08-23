@@ -211,7 +211,6 @@ public abstract class AbstractStateChecker {
 			StringTokenizer tokens = new StringTokenizer(output.getOutput().trim(), "\n");
 			while (tokens.hasMoreTokens()) {
 				String nextToken = tokens.nextToken();
-				//System.out.println(prefs.getEnvironment().getCloneString() + "#" + nextToken + "#");
 				if (!(nextToken.startsWith("?")))
 					return LocalStateResult.UNCHECKPOINTED;
 			}
@@ -348,7 +347,6 @@ public abstract class AbstractStateChecker {
 			if (output.getOutput().indexOf("(branch merge, don't forget to commit)") >= 0) {
 				// try to compile
 				String compileCommand = prefs.getEnvironment().getCompileCommand();
-				//System.out.println(compileCommand);
 				if (compileCommand != null) {
 				    try {
 				        Output compileOutput = RunIt.tryCommand(compileCommand, tempWorkPath + tempMyName);
