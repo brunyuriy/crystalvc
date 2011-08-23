@@ -70,7 +70,7 @@ public class ProjectPanel extends JPanel {
 		prefEnvironmentPanel.add(new JLabel("Project Name: "));
 		final JTextField shortName = new JTextField(copyPref.getEnvironment().getShortName());
 		final JLabel nameState = new JLabel("  valid");
-		nameState.setForeground(Color.GREEN);
+		nameState.setForeground(Color.GREEN.darker());
 		changedComponents.put(shortName, false);
 		validText.put(shortName, true);
 		
@@ -97,10 +97,10 @@ public class ProjectPanel extends JPanel {
 				validText.put(shortName, valid);
 				if (valid) {
 					nameState.setText("  valid");
-					nameState.setForeground(Color.GREEN);
+					nameState.setForeground(Color.GREEN.darker());
 				} else {
 					nameState.setText("invalid");
-					nameState.setForeground(Color.RED);
+					nameState.setForeground(Color.RED.darker());
 				}
 				//prefs.setChanged(true);
 			}
@@ -183,10 +183,10 @@ public class ProjectPanel extends JPanel {
 		
 		if (addressValid) {
 			addressState.setText("  valid");
-			addressState.setForeground(Color.GREEN);
+			addressState.setForeground(Color.GREEN.darker());
 		} else {
 			addressState.setText("invalid");
-			addressState.setForeground(Color.RED);
+			addressState.setForeground(Color.RED.darker());
 		}
 		address.addKeyListener(new KeyListener() {
 
@@ -205,10 +205,10 @@ public class ProjectPanel extends JPanel {
 				validText.put(address, valid);
 				if (valid) {
 					addressState.setText("  valid");
-					addressState.setForeground(Color.GREEN);
+					addressState.setForeground(Color.GREEN.darker());
 				} else {
 					addressState.setText("invalid");
-					addressState.setForeground(Color.RED);
+					addressState.setForeground(Color.RED.darker());
 				}
 			}
 
@@ -236,7 +236,7 @@ public class ProjectPanel extends JPanel {
 		}
 		final JTextField compile = new JTextField(compileCommand);
 		final JLabel compileState = new JLabel("  valid");
-		compileState.setForeground(Color.GREEN);
+		compileState.setForeground(Color.GREEN.darker());
 		
 		prefEnvironmentPanel.add(compile);
 		prefEnvironmentPanel.add(compileState);
@@ -246,13 +246,8 @@ public class ProjectPanel extends JPanel {
 		boolean compileValid = ValidInputChecker.checkCommand(compile.getText());
 		validText.put(compile, compileValid);
 		
-		if (compileValid) {
-			compileState.setText("  valid");
-			compileState.setForeground(Color.GREEN);
-		} else {
-			compileState.setText("invalid");
-			compileState.setForeground(Color.RED);
-		}
+		setState(compileState, compileValid);
+
 		compile.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
@@ -268,13 +263,8 @@ public class ProjectPanel extends JPanel {
 				}
 				boolean compileValid = ValidInputChecker.checkCommand(compile.getText());
 				validText.put(compile, compileValid);
-				if (compileValid) {
-					compileState.setText("  valid");
-					compileState.setForeground(Color.GREEN);
-				} else {
-					compileState.setText("invalid");
-					compileState.setForeground(Color.RED);
-				}
+				
+				setState(compileState, compileValid);
 			}
 
 			@Override
@@ -298,14 +288,8 @@ public class ProjectPanel extends JPanel {
 		
 		boolean testValid = ValidInputChecker.checkCommand(test.getText());
 		validText.put(compile, testValid);
-		
-		if (testValid) {
-			testState.setText("  valid");
-			testState.setForeground(Color.GREEN);
-		} else {
-			testState.setText("invalid");
-			testState.setForeground(Color.RED);
-		}
+
+		setState(testState, testValid);
 		test.addKeyListener(new KeyListener() {
 
 			@Override
@@ -322,13 +306,7 @@ public class ProjectPanel extends JPanel {
 				boolean testValid = ValidInputChecker.checkCommand(test.getText());
 				validText.put(compile, testValid);
 				
-				if (testValid) {
-					testState.setText("  valid");
-					testState.setForeground(Color.GREEN);
-				} else {
-					testState.setText("invalid");
-					testState.setForeground(Color.RED);
-				}
+				setState(testState, testValid);
 			}
 
 			@Override
@@ -455,9 +433,9 @@ public class ProjectPanel extends JPanel {
 				states[0] = valid;
 				validState.setText(getState(states));
 				if (getState(states).equals("valid"))
-					validState.setForeground(Color.GREEN);
+					validState.setForeground(Color.GREEN.darker());
 				else
-					validState.setForeground(Color.RED);
+					validState.setForeground(Color.RED.darker());
 			}
 
 			@Override
@@ -540,9 +518,9 @@ public class ProjectPanel extends JPanel {
 				states[2] = valid;
 				validState.setText(getState(states));
 				if (getState(states).equals("valid"))
-					validState.setForeground(Color.GREEN);
+					validState.setForeground(Color.GREEN.darker());
 				else
-					validState.setForeground(Color.RED);
+					validState.setForeground(Color.RED.darker());
 				//prefs.setChanged(true);
 				panel.validate();
 				mainFrame.pack();
@@ -595,12 +573,32 @@ public class ProjectPanel extends JPanel {
 		
 		validState.setText(getState(states));
 		if (getState(states).equals("valid"))
-			validState.setForeground(Color.GREEN);
+			validState.setForeground(Color.GREEN.darker());
 		else
-			validState.setForeground(Color.RED);
+			validState.setForeground(Color.RED.darker());
 		sourcesPanel.add(validState);
 	}
 
+	/**
+	 * Set correct state representation for input label
+	 * @param label
+	 * @param valid
+	 */
+	private void setState(JLabel label, boolean valid) {
+		if (valid) {
+			label.setText("  valid");
+			label.setForeground(Color.GREEN.darker());
+		} else {
+			label.setText("invalid");
+			label.setForeground(Color.RED.darker());
+		}
+	}
+	
+	/**
+	 * Make a state representation from given boolean array
+	 * @param states
+	 * @return
+	 */
 	private String getState(boolean[] states) {
 		String s = "";
 		if (!states[0])
