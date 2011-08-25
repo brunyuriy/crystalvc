@@ -141,4 +141,14 @@ public class DataSourceTest {
 		
 	}
 
+	@Test
+	public void testClone() {
+		DataSource ds = new DataSource("shortname", "cloneString"
+				, RepoKind.HG, false, "parent");
+		
+		DataSource copy = ds.clone();
+		copy.setShortName("a");
+		assertFalse("changed short name", copy.getShortName().equals(ds.getShortName()));
+		
+	}
 }

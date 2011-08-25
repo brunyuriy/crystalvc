@@ -746,7 +746,15 @@ public class ClientPreferences implements Cloneable {
     public ClientPreferences clone() {
     	try {
 			ClientPreferences clone = (ClientPreferences) super.clone();
-			clone._projectPreferences = new Vector<ProjectPreferences>(_projectPreferences);
+			
+			Vector<ProjectPreferences> temp = new Vector<ProjectPreferences>();
+			
+			
+			for (ProjectPreferences pref : this._projectPreferences) {
+				temp.add(pref.clone());
+			}
+			
+			clone._projectPreferences = temp;
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			return null;

@@ -3,7 +3,6 @@ package crystal.client;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Vector;
 
@@ -269,7 +268,7 @@ public class ClientPreferencesTest {
 	}
 	
 	@Test
-	public void testSavePreferencesToXML() throws NonexistentProjectException, FileNotFoundException{
+	public void testSavePreferencesToXML() throws NonexistentProjectException{
 		ClientPreferences cp = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
 		((List<DataSource>) cp.getProjectPreferences("myProject").getDataSources()).get(0).setRemoteCmd("setRemoteHg");
 		
@@ -279,7 +278,12 @@ public class ClientPreferencesTest {
 			f.delete();
 		}
 		assertFalse("File does not exist before", f.exists());
-		ClientPreferences.savePreferencesToXML(cp, path);
+		try {
+			ClientPreferences.savePreferencesToXML(cp, path);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		assertTrue("File exist after saving it", f.exists());
 		
 		Document doc = XMLTools.readXMLDocument(path);
@@ -321,6 +325,38 @@ public class ClientPreferencesTest {
 		ClientPreferences cp = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
 		assertTrue("Clone method return cllientPreferences with same content", cp.equals(cp.clone()));
 		ClientPreferences copy = cp.clone();
+		for (ProjectPreferences pref : cp.getProjectPreference()) {
+			System.out.println(pref.getEnvironment().getShortName());
+		}
+		for (ProjectPreferences pref : copy.getProjectPreference()) {
+			pref.getEnvironment().setShortName("a");
+		}
+		
+		for (ProjectPreferences pref : cp.getProjectPreference()) {
+			System.out.println(pref.getEnvironment().getShortName());
+		}
+		try {
+			assertFalse("Changed short name for project preferences", 
+					copy.getProjectPreferences("a").getEnvironment().getShortName().equals(cp.getProjectPreferences("myProject").getEnvironment().getShortName()));
+		} catch (NonexistentProjectException e) {
+			
+			try {
+				copy.getProjectPreferences("a");
+				System.out.println("myProject does not exist");
+			} catch (NonexistentProjectException e1) {
+				System.out.println("a does not exist");
+			}
+			
+			try {
+				cp.getProjectPreferences("a");
+				System.out.println("that is a");
+			} catch (Exception e1) {
+				System.out.println("that's not a either");
+			}
+			
+			System.out.println("exception");
+		}
+		
 		copy.getProjectPreference().clear();
 		assertTrue("After removing all component", copy.getProjectPreference().isEmpty());
 		assertFalse("Original object with original content", cp.getProjectPreference().isEmpty());
