@@ -153,4 +153,38 @@ public class ProjectPreferencesTest {
 		
 	}
 
+	@Test
+	public void testClone() {
+		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
+		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		
+		ProjectPreferences pp = new ProjectPreferences(
+				data_1,	cp_1);
+		
+		pp.addDataSource(new DataSource("sn1", "cs1", RepoKind.HG, false, "p1"));
+		
+		
+		ProjectPreferences copy = pp.clone();
+		
+		DataSource copyEnv = copy.getEnvironment();
+		copyEnv.setShortName("a");
+		assertFalse("Changed short name of clone environment", 
+				copyEnv.getShortName().equals(pp.getEnvironment().getShortName()));
+		
+		for(DataSource source : copy.getDataSources()) {
+			source.setShortName("a");
+		}
+		
+		try {
+			pp.getDataSource("sn1");
+			copy.getDataSource("a");
+		} catch (Exception e) {
+			fail("fail");
+		}
+		
+		assertNull("not exist source name", pp.getDataSource("a"));
+		assertNull("not existing source name", copy.getDataSource("sn1"));
+
+		
+	}
 }

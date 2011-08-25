@@ -32,8 +32,6 @@ public class ProjectPreferences implements Cloneable {
 	 * @param clientPrefs: the overall configuration
 	 */
 	public ProjectPreferences(DataSource myEnvironment, ClientPreferences clientPrefs) {
-		ValidInputChecker.checkNullInput(myEnvironment);
-		ValidInputChecker.checkNullInput(clientPrefs);
 		_myEnvironment = myEnvironment;
 		_clientPreferences = clientPrefs;
 		_dataSources = new Vector<DataSource>();
@@ -42,9 +40,16 @@ public class ProjectPreferences implements Cloneable {
 	public ProjectPreferences clone() {
 		try {
 			ProjectPreferences clone = (ProjectPreferences) super.clone();
-			clone._dataSources = new Vector<DataSource>(_dataSources);
+			
+			Vector<DataSource> temp = new Vector<DataSource>();
+			
+			for (DataSource ds : this._dataSources) {
+				temp.add(ds.clone());
+			}
+			clone._dataSources = temp;
+			
 			clone._myEnvironment = _myEnvironment.clone();
-			clone._clientPreferences = _clientPreferences.clone();
+			clone._clientPreferences = _clientPreferences;
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			return null;

@@ -279,7 +279,7 @@ public class ProjectPanel extends JPanel {
 		}
 		final JTextField test = new JTextField(testCommand);
 		final JLabel testState = new JLabel("  valid");
-		testState.setForeground(Color.GREEN);
+		testState.setForeground(Color.GREEN.darker());
 		
 		prefEnvironmentPanel.add(test);
 		prefEnvironmentPanel.add(testState);

@@ -80,8 +80,12 @@ public class DataSource implements Cloneable{
 	public DataSource clone() {
 		try {  
 			DataSource clone = (DataSource) super.clone();
-			clone._history = _history.clone();
-			clone._oldHistory = _oldHistory;
+			
+			if (_history != null)
+				clone._history = _history.clone();
+			if (_oldHistory != null)
+				clone._oldHistory = _oldHistory.clone();
+			
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			return null;
