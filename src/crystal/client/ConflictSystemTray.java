@@ -527,7 +527,7 @@ public class ConflictSystemTray implements ComputationListener {
         if (!TRAY_SUPPORTED)
             return;
 
-        _trayIcon.getImage().flush();
+//        _trayIcon.getImage().flush();
 
         Image icon = Relationship.getDominant(ConflictDaemon.getInstance().getRelationships());
 
