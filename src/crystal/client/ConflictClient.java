@@ -1,6 +1,7 @@
 package crystal.client;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -239,15 +241,17 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
         }
 
         final JPanel grid = new JPanel(new SpringLayout()); 
-
+        
         // Create the iconMap and populate it with icons.
         // Also create the layout of the GUI.
         _iconMap = new HashMap<DataSource, JLabel>();
         for (final ProjectPreferences projPref : prefs.getProjectPreference()) {
+            JPanel projectPanel = new JPanel(new SpringLayout());
+            
             // name of project on the left, with an empty JLabel for the Action
             JPanel name = new JPanel();
             name.setLayout(new BoxLayout(name, BoxLayout.Y_AXIS));
-
+                        
             JLabel projectName = new JLabel(projPref.getEnvironment().getShortName() + " ");
             final JPopupMenu projectMenu = new JPopupMenu("Project menu");
 
@@ -288,7 +292,8 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
             _iconMap.put(projPref.getEnvironment(), action);
             ConflictDaemon.getInstance().getLocalState(projPref.getEnvironment());
             name.add(action);
-            grid.add(name);
+            projectPanel.add(name);
+
 
             JPanel iconPanel = new JPanel(new BorderLayout());
             final JPanel iconGrid = new JPanel(new GridLayout(1, 0, 3, 3));
@@ -385,11 +390,15 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
                 iconGrid.add(new JLabel());
 
 
+            projectPanel.add(iconPanel);
+            SpringLayoutUtility.formGridInColumn(projectPanel, 1, 2);
 
-            grid.add(iconPanel);
+            projectPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+
+            grid.add(projectPanel);
         }
 
-        SpringLayoutUtility.formGridInColumn(grid, prefs.getProjectPreference().size(), 2);
+        SpringLayoutUtility.formGridInColumn(grid, prefs.getProjectPreference().size(), 1);
 
         _frame.getContentPane().add(grid);
     }    
