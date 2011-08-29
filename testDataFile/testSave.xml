@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configuration file for Crystal conflict client. See documentation at -->
+<!-- http://www.cs.washington.edu/homes/brun/research/crystal/ . -->
+<!-- Example:
+<?xml version="1.0" encoding="UTF-8"?>
+<ccConfig tempDirectory="C:/temp/conflictClient/" refresh="60">
+  <project Kind="HG" ShortName="MyFirstProject" Clone="C:/projects/myLocalFirstProjectRepo/">
+    <source ShortName="MASTER" Clone="ssh://user@host/path/to/repo/" />
+    <source ShortName="Friend" Clone="ssh://user@host/path/to/friend/repo/" />
+  </project>
+  <project Kind="HG" ShortName="MySecondProject" Clone="C:/projects/myLocalSecondProjectRepo/">
+    <source ShortName="MASTER" Clone="ssh://user@host/path/to/socond/project/repo/" />
+    <source ShortName="Friend" Clone="https://user@host/path/to/friend/second/repo/" />
+  </project>
+</ccConfig>
+-->
+<ccConfig tempDirectory="/tmp/conflictClient/" refresh="600">
+  <project Kind="HG" ShortName="myProject" Clone="$HOME/dev/myProject/" commonParent="MASTER">
+    <source ShortName="jim" Clone="https://path/to/repo" Hidden="false" commonParent="MASTER" />
+    <source ShortName="MASTER" Clone="http://path/to/repo" Hidden="false" commonParent="" />
+  </project>
+</ccConfig>
+
