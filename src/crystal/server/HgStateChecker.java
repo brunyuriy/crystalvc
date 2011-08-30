@@ -30,7 +30,7 @@ public class HgStateChecker extends AbstractStateChecker {
 	 * @throws IOException
 	 */
 	public static String getLocalState(ProjectPreferences prefs) throws IOException {
-		return getLocalState(prefs, HgLogParser.hgCheckpoint);
+		return AbstractStateChecker.getLocalState(prefs);
 	}
 
 	/**
@@ -39,6 +39,7 @@ public class HgStateChecker extends AbstractStateChecker {
 	 * @param source: the repo to compare to.
 	 * @param oldRelationship: the old Relationship, in String form.
 	 * @return the current relationship between my repo in prefs and source
+	 * @throws Exception 
 	 * @throws IOException
 	 */
 	public static String getRelationship(ProjectPreferences prefs, DataSource source, String oldRelationship) {

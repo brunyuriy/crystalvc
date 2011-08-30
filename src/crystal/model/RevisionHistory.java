@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import crystal.model.DataSource.RepoKind;
 import crystal.model.Relationship;
+import crystal.server.GitLogParser;
 import crystal.server.GuidanceChecker;
 import crystal.server.HgLogParser;
 import crystal.server.AbstractLogParser.Checkpoint;
@@ -46,8 +48,13 @@ public class RevisionHistory implements Cloneable{
 	 * @param log: the log
 	 * Current only works for HG
 	 */
-	public RevisionHistory(String log) {
-		_changesets = HgLogParser.parseLog(log);
+	public RevisionHistory(String log, RepoKind kind) {
+		if (kind.equals(RepoKind.HG))
+			_changesets = HgLogParser.parseLog(log);
+		else if (kind.equals(RepoKind.GIT))
+			_changesets = GitLogParser.parseLog(log);
+		else
+			throw new IllegalArgumentException("That repo kind is not implemented yet.");
 	}
 	
 	/**

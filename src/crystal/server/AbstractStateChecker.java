@@ -119,9 +119,11 @@ public abstract class AbstractStateChecker {
 
 //		String[] myArgs = { "pull", "-u" };
 		Output output = RunIt.execute(pathExecutable, myArgsList.toArray(new String[0]), pathToLocalRepo, false);
-
-		if ((output.getOutput().indexOf("files updated") < 0) && (output.getOutput().indexOf("no changes found") < 0))
+		
+		//TODO only for hg
+		if (pathExecutable.contains("hg") && (output.getOutput().indexOf("files updated") < 0) && (output.getOutput().indexOf("no changes found") < 0)) {
 			throw new OperationException(command, pathToLocalRepo, output.toString());
+		}
 	}
 	
 	/**
@@ -162,14 +164,21 @@ public abstract class AbstractStateChecker {
 	 * @return the local state of my repo of the prefs project
 	 * @throws IOException
 	 */
-	protected static String getLocalState(ProjectPreferences prefs, Map<CheckpointLabels, String> logLabels) throws IOException {
-		
+	public static String getLocalState(ProjectPreferences prefs) throws IOException {
 		Assert.assertNotNull(prefs);
 		
 		// if source are disabled, return null.
 		if (!prefs.getEnvironment().isEnabled())
 			return null;
 		
+		Map<CheckpointLabels, String> logLabels = null;
+		RepoKind kind = prefs.getEnvironment().getKind();
+		if (kind.equals(RepoKind.HG))
+			logLabels = HgLogParser.hgCheckpoint;
+		else if (kind.equals(RepoKind.GIT))
+			logLabels = GitLogParser.gitCheckpoint;
+		else
+			return null;
 		/*
 		 * We are going to:
 		 * 1.  update the local clone
@@ -178,7 +187,14 @@ public abstract class AbstractStateChecker {
 		 * 4.  check for MUST_RESOLVE or ALL_CLEAR and return
 		 */
 		
-		String path = prefs.getClientPreferences().getPath();
+		String executablePath = null;
+		if (kind.equals(RepoKind.HG))
+			executablePath = prefs.getClientPreferences().getHgPath();
+		else if (kind.equals(RepoKind.GIT))
+			executablePath = prefs.getClientPreferences().getGitPath();
+		else 
+			return null;
+		
 		String tempWorkPath = prefs.getClientPreferences().getTempDirectory();
 		String mine = prefs.getProjectCheckoutLocation(prefs.getEnvironment());
 
@@ -186,7 +202,7 @@ public abstract class AbstractStateChecker {
 		// Step 1. Update the local clone.  If cloning fails, return ERROR state
 		// TODO: The errors on the local state are not reported as toottips yet (need to make LocalState not interned)
 		try {
-			updateLocalRepositoryAndCheckCacheError(prefs.getEnvironment(), path, mine, tempWorkPath, prefs.getEnvironment().getRemoteCmd(), 
+			updateLocalRepositoryAndCheckCacheError(prefs.getEnvironment(), executablePath, mine, tempWorkPath, prefs.getEnvironment().getRemoteCmd(), 
 					"your own", prefs.getEnvironment().getShortName());
 		} catch (OperationException e) {
 			return LocalStateResult.ERROR + " " + e.getMessage();
@@ -196,8 +212,8 @@ public abstract class AbstractStateChecker {
 		
 		// Step 2. Get the log from the local clone and set the history
 		String[] logArgs = { "log" };
-		Output output = RunIt.execute(path, logArgs, mine, false);
-		prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput()));
+		Output output = RunIt.execute(executablePath, logArgs, mine, false);
+		prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput(), kind));
 		
 		// TODO Step 2.5.  If the history has changed, find out if build or test fails.
 		
@@ -206,13 +222,20 @@ public abstract class AbstractStateChecker {
 			 * Check if repo status has non-empty response.  If it does, return UNCHECKPOINTED
 			 */
 			String[] statusArgs = { "status" };
-			output = RunIt.execute(path, statusArgs , prefs.getEnvironment().getCloneString(), false);
+			output = RunIt.execute(executablePath, statusArgs , prefs.getEnvironment().getCloneString(), false);
 			// check if any of the lines in the output don't start with "?"
 			StringTokenizer tokens = new StringTokenizer(output.getOutput().trim(), "\n");
 			while (tokens.hasMoreTokens()) {
 				String nextToken = tokens.nextToken();
-				if (!(nextToken.startsWith("?")))
-					return LocalStateResult.UNCHECKPOINTED;
+				if (!(nextToken.startsWith("?"))) {
+					if (kind.equals(RepoKind.HG))
+						return LocalStateResult.HG_UNCHECKPOINTED;
+					else if (kind.equals(RepoKind.GIT))
+						return LocalStateResult.GIT_UNCHECKPOINTED;
+					else 
+						return null;
+				}
+
 			}
 		}
 		
@@ -222,9 +245,13 @@ public abstract class AbstractStateChecker {
 		 * Check if mine is two headed.  If it is, return MUST_RESOLVE
 		 */
 		String[] headArgs = { "heads" };
-		output = RunIt.execute(path, headArgs, mine, false);	
-		if (hasTwoHeads(output, logLabels))
-			return LocalStateResult.MUST_RESOLVE;
+		output = RunIt.execute(executablePath, headArgs, mine, false);	
+		if (hasTwoHeads(output, logLabels)) {
+			if (kind.equals(RepoKind.HG))
+				return LocalStateResult.HG_MUST_RESOLVE;
+			else if (kind.equals(RepoKind.GIT))
+				return LocalStateResult.GIT_MUST_RESOLVE;
+		}
 		return LocalStateResult.ALL_CLEAR;
 	}
 	
@@ -245,10 +272,10 @@ public abstract class AbstractStateChecker {
 	 * @param source: the repo to compare to.
 	 * @param oldRelationship: the old Relationship, in String form.
 	 * @return the current relationship between my repo in prefs and source
+	 * @throws Exception 
 	 * @throws IOException
 	 */
 	public static String getRelationship(ProjectPreferences prefs, DataSource source, String oldRelationship, RepoKind kind) {
-
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);
 
@@ -261,8 +288,13 @@ public abstract class AbstractStateChecker {
 		String mine = prefs.getProjectCheckoutLocation(prefs.getEnvironment());
 		String yours = prefs.getProjectCheckoutLocation(source);
 
-		String path = prefs.getClientPreferences().getPath();
-
+		String executablePath = null;
+		if (kind.equals(RepoKind.HG)) 
+			executablePath = prefs.getClientPreferences().getHgPath();
+		else if (kind.equals(RepoKind.GIT))
+			executablePath = prefs.getClientPreferences().getGitPath();
+		else
+			return null;
 		String tempWorkPath = prefs.getClientPreferences().getTempDirectory();
 		// tempWorkPath + tempMyName used to store a local copy of my repo
 		String tempMyName = "tempMine_" + TimeUtility.getCurrentLSMRDateString();
@@ -272,7 +304,7 @@ public abstract class AbstractStateChecker {
 		// My local copy has already been updated when we checked the local status
 		// So we are just going to update yours
 		try {
-			updateLocalRepositoryAndCheckCacheError(source, path, yours, tempWorkPath, source.getRemoteCmd(), 
+			updateLocalRepositoryAndCheckCacheError(source, executablePath, yours, tempWorkPath, source.getRemoteCmd(), 
 					source.getShortName(), prefs.getEnvironment().getShortName());
 		} catch (OperationException e1) {
 			return Relationship.ERROR + " " + e1.getMessage();
@@ -284,12 +316,12 @@ public abstract class AbstractStateChecker {
 		String[] logArgs = { "log" };
 		Output logOutput;
 		try {
-		    logOutput = RunIt.execute(path, logArgs, yours, false);
+		    logOutput = RunIt.execute(executablePath, logArgs, yours, false);
 		} catch (IOException e2) {
             return Relationship.ERROR + " Couldn't get the log: " + e2.getMessage();
         }
 
-		RevisionHistory yourHistory = new RevisionHistory(logOutput.getOutput());
+		RevisionHistory yourHistory = new RevisionHistory(logOutput.getOutput(), kind);
 		source.setHistory(yourHistory);
 
 		RevisionHistory myHistory = prefs.getEnvironment().getHistory();
@@ -323,13 +355,13 @@ public abstract class AbstractStateChecker {
 		// pull your repo into [a temp clone of] mine
 		String[] myArgs = { "clone", mine, tempMyName };
 		try {
-		    output = RunIt.execute(path, myArgs, tempWorkPath, false);
+		    output = RunIt.execute(executablePath, myArgs, tempWorkPath, false);
 		} catch (IOException e2) {
             return Relationship.ERROR + " Couldn't make a temp clone: " + e2.getMessage();
         }
 		String[] pullArgs = { "pull", yours };
 		try {
-		    output = RunIt.execute(path, pullArgs, tempWorkPath + tempMyName, false);
+		    output = RunIt.execute(executablePath, pullArgs, tempWorkPath + tempMyName, false);
 		} catch (IOException e2) {
             return Relationship.ERROR + " Couldn't pull into my temp clone: " + e2.getMessage();
         }
@@ -339,7 +371,7 @@ public abstract class AbstractStateChecker {
 			// there are two heads, so let's see if they merge cleanly
 			String[] mergeArgs = { "merge", "--noninteractive" };
 			try {
-			    output = RunIt.execute(path, mergeArgs, tempWorkPath + tempMyName, false);
+			    output = RunIt.execute(executablePath, mergeArgs, tempWorkPath + tempMyName, false);
 			} catch (IOException e2) {
 	            return Relationship.ERROR + " Couldn't execute merge: " + e2.getMessage();
 	        }

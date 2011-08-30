@@ -264,6 +264,11 @@ public class RunIt {
                     token += File.separator;    
                 return token + File.separator + execPart + ".exe" + arguments;
             }
+            if ((new File(token + File.separator + execPart + ".cmd")).exists()) {
+                if (!(token.endsWith(File.separator)))
+                    token += File.separator;    
+                return token + File.separator + execPart + ".cmd" + arguments;
+            }
         }
         // Could not find any executable
         return null;
@@ -291,5 +296,10 @@ public class RunIt {
            _log.error("You are using an outdated hg.  (You are running " + versionStr + ", which is older than the minimum required "+ minimumVersion + ".)");
            
        return answer;
+    }
+    
+    //TODO implement this method
+    public static boolean validGit(double minimumVersion, String git, String tempPath) throws Exception {
+    	throw new Exception("not implemented yet");
     }
 }

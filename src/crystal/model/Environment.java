@@ -3,7 +3,7 @@ package crystal.model;
 
 public class Environment extends DataSource{
 	
-	private RepoKind kind;
+//	private RepoKind kind;
 
 	
 	public Environment(String shortName, String cloneString, RepoKind repoKind,

@@ -25,7 +25,7 @@ public class ProjectPreferencesTest {
 	@Test
 	public void testProjectPreferences() {
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
-		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", "gitPaht", Constants.DEFAULT_REFRESH);
 		
 		ProjectPreferences pp = new ProjectPreferences(
 				data_1,	cp_1);
@@ -37,7 +37,7 @@ public class ProjectPreferencesTest {
 	@Test(expected = RuntimeException.class)
 	public void testDuplicateAddDataSource(){
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
-		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		
 		ProjectPreferences pp = new ProjectPreferences(
 				data_1,	cp_1);
@@ -50,7 +50,7 @@ public class ProjectPreferencesTest {
 	@Test
 	public void testAddDataSource() {
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
-		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		
 		ProjectPreferences pp = new ProjectPreferences(
 				data_1,	cp_1);
@@ -84,7 +84,7 @@ public class ProjectPreferencesTest {
 	@Test
 	public void testGetNumOfVisibleSources() {
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
-		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		
 		ProjectPreferences pp = new ProjectPreferences(
 				data_1,	cp_1);
@@ -109,7 +109,7 @@ public class ProjectPreferencesTest {
 	@Test
 	public void testRemoveDataSource() {
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
-		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		
 		ProjectPreferences pp = new ProjectPreferences(
 				data_1,	cp_1);
@@ -142,7 +142,7 @@ public class ProjectPreferencesTest {
 	@Test
 	public void testGetProjectCheckoutLocation() {
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
-		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		
 		ProjectPreferences pp = new ProjectPreferences(
 				data_1,	cp_1);
@@ -156,7 +156,7 @@ public class ProjectPreferencesTest {
 	@Test
 	public void testClone() {
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
-		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		
 		ProjectPreferences pp = new ProjectPreferences(
 				data_1,	cp_1);
