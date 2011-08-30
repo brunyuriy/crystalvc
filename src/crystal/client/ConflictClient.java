@@ -106,7 +106,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 		// Create and set up the window.
 		_frame = new JFrame("Crystal");
-		_frame.setIconImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.jpg"))).getImage());
+		_frame.setIconImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.png"))).getImage());
 
 		// Set up the menu:
 		JMenuBar menuBar = new JMenuBar();
