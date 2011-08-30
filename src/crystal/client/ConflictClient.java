@@ -282,6 +282,8 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
             JLabel action = new JLabel();
             action.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 15));
             _iconMap.put(projPref.getEnvironment(), action);
+            action.setText(new String(new char["git commit".length()]).replace('\0', ' '));
+            
             ConflictDaemon.getInstance().getLocalState(projPref.getEnvironment());
             name.add(action);
             projectPanel.add(name);
@@ -497,11 +499,11 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 				
 			} else  { // otherwise, show fresh value
 				if ((actionResult == null) || (actionResult.getAction() == null))
-				    action.setText(new String(new char["hg commit".length()]).replace('\0', ' '));
+				    action.setText(new String(new char["git commit".length()]).replace('\0', ' '));
 				else { 
-				    if (actionResult.getAction().length() < "hg commit".length()) {
-				        action.setText(new String(new char["hg commit".length() - actionResult.getAction().length()]).replace('\0', ' ')
-				                + actionResult.getAction());
+				    if (actionResult.getAction().length() < "git commit".length()) {
+				        action.setText(actionResult.getAction() 
+				        		+ new String(new char["git commit".length() - actionResult.getAction().length()]).replace('\0', ' '));
 				    } else
 				        action.setText(actionResult.getAction());
 				}
@@ -511,7 +513,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
                 else {
                     action.setToolTipText(tip);
                     if ((action.getText() == null) || (action.getText().isEmpty()))
-                        action.setText("   ");
+                    	action.setText(new String(new char["git commit".length()]).replace('\0', ' '));
                 }
 			}
 			// second, set the Relationships
