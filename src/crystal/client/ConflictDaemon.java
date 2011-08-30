@@ -11,6 +11,7 @@ import crystal.model.LocalStateResult;
 import crystal.model.DataSource;
 import crystal.model.Relationship;
 import crystal.model.DataSource.RepoKind;
+import crystal.server.GitStateChecker;
 import crystal.server.HgStateChecker;
 import crystal.util.TimeUtility;
 
@@ -115,8 +116,16 @@ public class ConflictDaemon {
 				_log.info("Relationship calculated::" + source + "::" + relationship);
 
 			} else if (source.getKind().equals(RepoKind.GIT)) {
-				// Git isn't implemented yet
-				_log.error("ConflictDaemon::caluclateRelationship(..) - Cannot handle RepoKind: " + source.getKind());
+				
+				_log.trace("ConflictDaemon::calculateRelationship( " + source + ", ... )");
+
+				String oldRelationship = _relationshipMap.get(source).getName();
+				relationship = GitStateChecker.getRelationship(prefs, source, oldRelationship);
+				if (relationship == null) 
+					relationship = Relationship.ERROR;
+
+				_log.info("Relationship calculated::" + source + "::" + relationship);
+				
 
 			} else {
 				_log.error("ConflictDaemon::caluclateRelationship(..) - Cannot handle RepoKind: " + source.getKind());
@@ -177,8 +186,15 @@ public class ConflictDaemon {
 				_log.info("Local State calculated::" + source + "::" + localState);
 
 			} else if (source.getKind().equals(RepoKind.GIT)) {
-				// Git isn't implemented yet
-				_log.error("ConflictDaemon::calculateLocalState(..)- Cannot handle RepoKind: " + source.getKind());
+				
+				_log.trace("ConflictDaemon::calculateLocalState( " + source + ", ...)");
+
+				localState = GitStateChecker.getLocalState(prefs);
+				if (localState == null)
+					localState = LocalStateResult.ERROR;
+
+				_log.info("Local State calculated::" + source + "::" + localState);
+
 			} else {
 				_log.error("ConflictDaemon::calculateLocalState(..)- Cannot handle RepoKind: " + source.getKind());
 			}

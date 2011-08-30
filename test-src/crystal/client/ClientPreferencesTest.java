@@ -29,12 +29,12 @@ public class ClientPreferencesTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullInputConstructor(){
-		new ClientPreferences(null, null, -1);
+		new ClientPreferences(null, null, null, -1);
 	}
 	
 	@Test
 	public void testClientPreferences() {
-		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		assertEquals("First project preferences size", 0, cp.getProjectPreference().size());
 		
 	}
@@ -52,14 +52,14 @@ public class ClientPreferencesTest {
         
         assertTrue("Default project preferences", cpd.getProjectPreference().equals(temp));
 		assertEquals("Default refresh number", ClientPreferences.REFRESH, cpd.getRefresh());
-		assertTrue("Default hg path", cpd.getPath().equals("/path/to/hg"));
+		assertTrue("Default hg path", cpd.getHgPath().equals("/path/to/hg"));
 		assertTrue("Default temp directory", cpd.getTempDirectory().equals("/tmp/conflictClient/"));
 		
 	}
 
 	@Test(expected = DuplicateProjectNameException.class)
 	public void testDuplicateAddProjectPreferences() throws DuplicateProjectNameException {
-		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		assertEquals("Before adding project preferences ", 0, cp.getProjectPreference().size());
 		
 		DataSource data = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
@@ -73,7 +73,7 @@ public class ClientPreferencesTest {
 	
 	@Test
 	public void testAddProjectPreferences() throws DuplicateProjectNameException, NonexistentProjectException{
-		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		assertEquals("Before adding project preferences ", 0, cp.getProjectPreference().size());
 		
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
@@ -94,7 +94,7 @@ public class ClientPreferencesTest {
 	
 	@Test
 	public void testDuplicateProject() throws DuplicateProjectNameException, NonexistentProjectException{
-		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		assertEquals("Before adding project preferences ", 0, cp.getProjectPreference().size());
 		
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
@@ -123,7 +123,7 @@ public class ClientPreferencesTest {
 
 	@Test
 	public void testRemoveProjectPreferences() throws DuplicateProjectNameException, NonexistentProjectException {
-		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		assertEquals("Before adding project preferences ", 0, cp.getProjectPreference().size());
 		
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
@@ -171,7 +171,7 @@ public class ClientPreferencesTest {
 
 	@Test
 	public void testRemoveProjectPreferencesAtIndex() throws DuplicateProjectNameException, NonexistentProjectException {
-		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		assertEquals("Before adding project preferences ", 0, cp.getProjectPreference().size());
 		
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 

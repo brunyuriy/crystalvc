@@ -125,7 +125,6 @@ public abstract class AbstractLogParser {
 	protected static HashMap<String, Checkpoint> abstractParseLog(String log, Map<CheckpointLabels, String> checkpointLabel) {
 		ValidInputChecker.checkNullInput(log);
 		HashMap<String, Checkpoint> answer = new HashMap<String, Checkpoint>();
-		
 		for (String current : log.split("\n" + checkpointLabel.get(CheckpointLabels.CHANGESET))) {
 			
 			if (!(current.trim().isEmpty())) {

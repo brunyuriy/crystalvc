@@ -67,6 +67,11 @@ public class ProjectPanel extends JPanel {
 		
 		JPanel prefEnvironmentPanel = new JPanel(new SpringLayout());
 
+		for (int i = 0 ; i < 2; i++) {
+			prefEnvironmentPanel.add(new JLabel());
+		}
+		prefEnvironmentPanel.add(new JLabel("Valid?"));
+		
 		prefEnvironmentPanel.add(new JLabel("Project Name: "));
 		final JTextField shortName = new JTextField(copyPref.getEnvironment().getShortName());
 		final JLabel nameState = new JLabel("  valid");
@@ -95,13 +100,7 @@ public class ProjectPanel extends JPanel {
 				}
 				boolean valid = ValidInputChecker.checkProjectPreferencesNameDuplicate(copyPrefs, copyPref);
 				validText.put(shortName, valid);
-				if (valid) {
-					nameState.setText("  valid");
-					nameState.setForeground(Color.GREEN.darker());
-				} else {
-					nameState.setText("invalid");
-					nameState.setForeground(Color.RED.darker());
-				}
+				setState(nameState, valid);
 				//prefs.setChanged(true);
 			}
 
@@ -144,8 +143,9 @@ public class ProjectPanel extends JPanel {
 		final JComboBox type = new JComboBox();
 		final JLabel typeState = new JLabel();
 		
+		//TODO added git
 		type.addItem(DataSource.RepoKind.HG);
-		// type.addItem(DataSource.RepoKind.GIT);
+		type.addItem(DataSource.RepoKind.GIT);
 		type.setSelectedItem(copyPref.getEnvironment().getKind());
 		prefEnvironmentPanel.add(type);
 		prefEnvironmentPanel.add(typeState);
@@ -159,7 +159,6 @@ public class ProjectPanel extends JPanel {
 					changedComponents.put(type, 
 							!((RepoKind)type.getSelectedItem()).equals(pref.getEnvironment().getKind()));
 				}
-				//prefs.setChanged(true);
 			}
 		});
 
@@ -180,14 +179,8 @@ public class ProjectPanel extends JPanel {
 
 		boolean addressValid = ValidInputChecker.checkDirectoryPath(address.getText());
 		validText.put(address, addressValid);
-		
-		if (addressValid) {
-			addressState.setText("  valid");
-			addressState.setForeground(Color.GREEN.darker());
-		} else {
-			addressState.setText("invalid");
-			addressState.setForeground(Color.RED.darker());
-		}
+		setState(addressState, addressValid);
+
 		address.addKeyListener(new KeyListener() {
 
 			@Override
@@ -203,13 +196,7 @@ public class ProjectPanel extends JPanel {
 				}
 				boolean valid = ValidInputChecker.checkDirectoryPath(address.getText());
 				validText.put(address, valid);
-				if (valid) {
-					addressState.setText("  valid");
-					addressState.setForeground(Color.GREEN.darker());
-				} else {
-					addressState.setText("invalid");
-					addressState.setForeground(Color.RED.darker());
-				}
+				setState(addressState, valid);
 			}
 
 			@Override

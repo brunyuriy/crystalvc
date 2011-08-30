@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,7 +41,6 @@ import crystal.client.ClientPreferences.DuplicateProjectNameException;
 import crystal.client.ClientPreferences.NonexistentProjectException;
 import crystal.model.DataSource;
 import crystal.util.JMultiLineToolTip;
-import crystal.util.RunIt;
 import crystal.util.SpringLayoutUtility;
 import crystal.util.ValidInputChecker;
 
@@ -146,6 +144,12 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new SpringLayout());
+		
+		for (int i = 0; i < 2; i++) {
+			topPanel.add(new JLabel());
+		}
+		
+		topPanel.add(new JLabel("Valid?"));
 		
 		JPanel tempPanel = new JPanel();
 		tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
@@ -258,7 +262,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			}
 		});
 		
-		SpringLayoutUtility.formGridInColumn(topPanel, 2, 3);
+		SpringLayoutUtility.formGridInColumn(topPanel, 3, 3);
 		getContentPane().add(topPanel);
 		
 		final JTabbedPane projectsTabs = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -452,85 +456,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		pack();
 		//setVisible(true);
 	}
-	
-	
-	
-	/**
-	 * Check if all the values are valid
-	 * @param prefs
-	 * @param refresh
-	 * @return
-	 */
-	private boolean isAllValid(ClientPreferences prefs, String refresh) {
-		ClientPreferences clonePrefs = prefs.clone();
-		// check rate
-		Long.valueOf(refresh);
-		
-		// check temp path
-		if (!new File(clonePrefs.getTempDirectory()).exists()
-				|| !new File(clonePrefs.getTempDirectory()).isDirectory()) {
-			return false;
-		}
-		
-		for (ProjectPreferences pref : clonePrefs.getProjectPreference()) {
-		
-			ProjectPreferences pp = null;
-			try {
-				pp = clonePrefs.getProjectPreferences(pref.getEnvironment().getShortName());
-				clonePrefs.removeProjectPreferences(pp);
-			} catch (NonexistentProjectException e) {}
 
-			// check project name duplicate
-			if (clonePrefs.getProjectPreference().contains(pp)) {
-				return false;
-			}
-			
-			// check clone address
-			if (!new File(pp.getEnvironment().getCloneString()).exists()
-					|| !new File(pp.getEnvironment().getCloneString()).isDirectory()) { 
-			
-				return false;
-			}
-			// check compile command
-			String compileCommand = pp.getEnvironment().getCompileCommand();
-			
-			if (compileCommand != null && !compileCommand.trim().isEmpty() 
-					&& RunIt.getExecutable(compileCommand) == null) {
-				
-				return false;
-			}
-			// check test command
-			String testCommand = pp.getEnvironment().getTestCommand();
-			
-			if (testCommand != null && !testCommand.trim().isEmpty() 
-					&& RunIt.getExecutable(testCommand) == null) {
-				return false;
-			}
-			
-			// test each data sources
-			if (!pp.getDataSources().isEmpty()) {
-
-				for (DataSource source : pp.getDataSources()) {
-					DataSource ds = pp.getDataSource(source.getShortName());
-					pp.removeDataSource(ds);
-					
-					// check source name duplicate
-					if (pp.getDataSources().contains(ds)) {
-						return false;
-					}
-					// check address
-					if (!new File(ds.getCloneString()).exists()
-							|| !new File(ds.getCloneString()).isDirectory()) { 
-						return false;
-					}
-				}
-			}
-			
-			
-		}
-		
-		return true;
-	}
 
 	private class DeleteProjectButton extends JButton {
 		private static final long serialVersionUID = 1L;
