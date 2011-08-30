@@ -82,8 +82,11 @@ public class ClientPreferences implements Cloneable {
         static final String[] PARENT = { "commonParent", "parent", "CommonParent", "COMMONPARENT", "myParent", "Parent" };
 
         // the path to the remote HG
-        static final String[] REMOTE_HG = { "RemoteHG", "remoteHG", "REMOTEHG", "Remotehg", "RemoteHg" };
+        //static final String[] REMOTE_HG = { "RemoteHG", "remoteHG", "REMOTEHG", "Remotehg", "RemoteHg" };
 
+        // the path to the remote command
+        static final String[] REMOTE_CMD = { "RemoteCMD", "remoteCMD", "REMOTECMD", "Remotecmd", "RemoteCmd" };
+        
         // the command to compile
         static final String[] COMPILE = { "compile", "Compile", "COMPILE" };
 
@@ -108,7 +111,7 @@ public class ClientPreferences implements Cloneable {
 
         CONFIG_PATH = path + ".conflictClient.xml";
 
-        DEFAULT_CLIENT_PREFERENCES = new ClientPreferences("/tmp/conflictClient/", "/path/to/hg", Constants.DEFAULT_REFRESH);
+        DEFAULT_CLIENT_PREFERENCES = new ClientPreferences("/tmp/conflictClient/", "/path/to/hg", "/path/to/git", Constants.DEFAULT_REFRESH);
         ProjectPreferences pp = new ProjectPreferences(new DataSource("myProject", "$HOME/dev/myProject/", DataSource.RepoKind.HG, false, "MASTER"),
                 DEFAULT_CLIENT_PREFERENCES);
         pp.addDataSource(new DataSource("jim", "https://path/to/repo", DataSource.RepoKind.HG, false, "MASTER"));
@@ -136,6 +139,11 @@ public class ClientPreferences implements Cloneable {
      * Points to the user's hg path.
      */
     private String _hgPath;
+    
+    /**
+     * Points to the user's git path
+     */
+    private String _gitPath;
 
     /**
      * The number of seconds between refreshes.
@@ -163,7 +171,7 @@ public class ClientPreferences implements Cloneable {
      * @param tempDirectory
      * @param hgPath
      */
-    public ClientPreferences(String tempDirectory, String hgPath, long refresh) {
+    public ClientPreferences(String tempDirectory, String hgPath, String gitPath, long refresh) {
     	ValidInputChecker.checkValidStringInput(tempDirectory);
     	ValidInputChecker.checkValidStringInput(hgPath);
     	if(refresh < 0){
@@ -171,14 +179,13 @@ public class ClientPreferences implements Cloneable {
     	}
         _tempDirectory = tempDirectory;
         _hgPath = hgPath;
+        _gitPath = gitPath;
         _refresh = refresh;
         REFRESH = refresh;
         _hasChanged = false;
     }
     
 
-    
-    //TODO
     /**
      * Compare this object with another object
      * @param o target object
@@ -374,7 +381,9 @@ public class ClientPreferences implements Cloneable {
         	// @deprecated
         	// String hgPath = getValue(rootElement, IPrefXML.HG_PATH);
         	String hgPath = RunIt.getExecutable("hg");
-
+        	String gitPath = RunIt.getExecutable("git");
+        	
+        	// check hg path
         	boolean happyHgPath = false;
         	while (!happyHgPath) {
         		try {
@@ -384,12 +393,50 @@ public class ClientPreferences implements Cloneable {
         			// if the exception type is either ConfigurationReadingException.PATH_INVALID or
         			// ConfigurationReadingException.PATH_IS_DIRECTORY
         			// (only two possibilities))
-        			hgPath = JOptionPane.showInputDialog("The current path to hg is invalid.\nPlease select a proper path.", hgPath);
-        			prefsChanged = true;
+        			
+        			// check if projectPreferences contains hg repo
+        			boolean need = false;
+        			for (Element projectElement : getChildren(rootElement, IPrefXML.PROJECT)) {
+        				String projectKind = getValue(projectElement, IPrefXML.KIND);
+        				if (projectKind.equals("HG")) {
+        					need = true;
+        				}
+        			}
+        			
+        			if (need) {
+        				hgPath = JOptionPane.showInputDialog("The current path to hg is invalid.\nPlease select a proper path.", hgPath);
+        				prefsChanged = true;
+        			}
+        		}
+        	}
+        	
+        	// check git path
+        	boolean happyGitPath = false;
+        	while (!happyGitPath) {
+        		try {
+        			verifyFile(gitPath);
+        			happyGitPath = true;
+        		} catch (ConfigurationReadingException e) {
+        			// if the exception type is either ConfigurationReadingException.PATH_INVALID or
+        			// ConfigurationReadingException.PATH_IS_DIRECTORY
+        			// (only two possibilities))
+        			
+        			// check if projectPreferences contains git repo
+        			boolean need = false;
+        			for (Element projectElement : getChildren(rootElement, IPrefXML.PROJECT)) {
+        				String projectKind = getValue(projectElement, IPrefXML.KIND);
+        				if (projectKind.equals("GIT")) {
+        					need = true;
+        				}
+        			}
+        			if (need) {
+        				gitPath = JOptionPane.showInputDialog("The current path to git is invalid.\nPlease select a proper path.", gitPath);
+        				prefsChanged = true;
+        			}
         		}
         	}
 
-        	prefs = new ClientPreferences(tempDirectory, hgPath, refresh);
+        	prefs = new ClientPreferences(tempDirectory, hgPath, gitPath, refresh);
         	prefs.setChanged(prefsChanged);
 
         	// read the attributes.
@@ -399,7 +446,7 @@ public class ClientPreferences implements Cloneable {
         		String projectKind = getValue(projectElement, IPrefXML.KIND);
         		String projectLabel = getValue(projectElement, IPrefXML.LABEL);
         		String projectClone = getValue(projectElement, IPrefXML.CLONE);
-        		String projectRemoteHg = getValue(projectElement, IPrefXML.REMOTE_HG);
+        		String projectRemoteCmd = getValue(projectElement, IPrefXML.REMOTE_CMD);
         		String projectParent = getValue(projectElement, IPrefXML.PARENT);
         		String compileCommand = getValue(projectElement, IPrefXML.COMPILE);
         		String testCommand = getValue(projectElement, IPrefXML.TEST);
@@ -428,8 +475,9 @@ public class ClientPreferences implements Cloneable {
         		// The project need not be a local path!
         		// verifyPath(projectClone);
 
-        		if (kind == null || !kind.equals(RepoKind.HG)) {
-        			throw new RuntimeException("ClientPreferences - Kind not valid. (currently only HG is supported).");
+        		
+        		if (kind == null || (!kind.equals(RepoKind.HG) && !kind.equals(RepoKind.GIT))) {
+        			throw new RuntimeException("ClientPreferences - Kind not valid. (currently only HG and GIT are supported).");
         		}
 
         		if (projectLabel == null || projectLabel.equals("")) {
@@ -437,7 +485,7 @@ public class ClientPreferences implements Cloneable {
         		}
 
         		DataSource myEnvironment = new DataSource(projectLabel, projectClone, kind, false, projectParent);
-        		myEnvironment.setRemoteCmd(projectRemoteHg);
+        		myEnvironment.setRemoteCmd(projectRemoteCmd);
         		if ((compileCommand != null) && (!(compileCommand.trim().isEmpty()))) {
         			String compileCommandExecutable = RunIt.getExecutable(compileCommand);
         			if (compileCommandExecutable == null) {
@@ -465,7 +513,7 @@ public class ClientPreferences implements Cloneable {
         			for (Element sourceElement : sourceElements) {
         				String sourceLabel = getValue(sourceElement, IPrefXML.LABEL);
         				String sourceClone = getValue(sourceElement, IPrefXML.CLONE);
-        				String sourceRemoteHg = getValue(sourceElement, IPrefXML.REMOTE_HG);
+        				String sourceRemoteCmd = getValue(sourceElement, IPrefXML.REMOTE_CMD);
         				String sourceHidden = getValue(sourceElement, IPrefXML.HIDE);
         				boolean sourceHide = ((sourceHidden != null) && (sourceHidden.toLowerCase().trim().equals("true"))) ? true : false;
         				String sourceParent = getValue(sourceElement, IPrefXML.PARENT);
@@ -487,7 +535,7 @@ public class ClientPreferences implements Cloneable {
         				}
 
         				DataSource source = new DataSource(sourceLabel, sourceClone, kind, sourceHide, sourceParent);
-        				source.setRemoteCmd(sourceRemoteHg);
+        				source.setRemoteCmd(sourceRemoteCmd);
         				_log.trace("Loaded data source: " + source);
 
         				projectPreferences.addDataSource(source);
@@ -674,7 +722,7 @@ public class ClientPreferences implements Cloneable {
     /**
      * @return path to the user's hg binary
      */
-    public String getPath() {
+    public String getHgPath() {
         return _hgPath;
     }
 
@@ -683,13 +731,24 @@ public class ClientPreferences implements Cloneable {
      * @param hgPath
      *            : the path to hg
      */
-    public void setPath(String hgPath) {
+    public void setHgPath(String hgPath) {
         _hgPath = hgPath;
     }
     
-    // will not be used now
-    public String getGitPath(){
-    	throw new IllegalArgumentException("getGitPath has not been implemented yet.");
+    /**
+     * Get git path
+     * @return path to the user's git binary
+     */
+    public String getGitPath() {
+    	return _gitPath;
+    }
+
+    /**
+     * @effect set the path to the user's git binary
+     * @param gitPath the path to git
+     */
+    public void setGitPath(String gitPath) {
+    	_gitPath = gitPath;
     }
 
     /**
@@ -742,6 +801,7 @@ public class ClientPreferences implements Cloneable {
     
     /**
      * Return clone of this object
+     * @return deep clone of this project
      */
     public ClientPreferences clone() {
     	try {

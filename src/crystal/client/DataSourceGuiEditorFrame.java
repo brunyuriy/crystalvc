@@ -203,7 +203,7 @@ public class DataSourceGuiEditorFrame extends JFrame {
 					try {
 						ValidInputChecker.checkValidStringInput(_source.getShortName());
 						pref.addDataSource(_source);
-						System.out.println(_source.getCloneString());
+						//System.out.println(_source.getCloneString());
 						//TODO save to xml file
 						//prefs.setChanged(false);
 						ClientPreferences.savePreferencesToDefaultXML(prefs);

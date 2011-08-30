@@ -179,7 +179,7 @@ public class TestHgStateChecker {
 		DataSource fiveSource = new DataSource("fiveRepository", path + "five", RepoKind.HG, false, null);
 		DataSource sixSource = new DataSource("sixRepository", path + "six", RepoKind.HG, false, null);
 
-		ClientPreferences prefs = new ClientPreferences(tempDirectory, TestConstants.HG_COMMAND, Constants.DEFAULT_REFRESH);
+		ClientPreferences prefs = new ClientPreferences(tempDirectory, TestConstants.HG_COMMAND, "gitPath", Constants.DEFAULT_REFRESH);
 
 		_prefs = new ProjectPreferences(myEnvironment, prefs);
 

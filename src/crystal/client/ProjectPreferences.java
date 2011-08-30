@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Vector;
 
 import crystal.model.DataSource;
-import crystal.util.ValidInputChecker;
 
 /**
  * Stores the preferences for a specific project.
