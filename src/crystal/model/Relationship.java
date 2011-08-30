@@ -13,7 +13,7 @@ import crystal.model.RevisionHistory.Action;
 import crystal.model.RevisionHistory.Capable;
 import crystal.model.RevisionHistory.Ease;
 import crystal.model.RevisionHistory.When;
-import crystal.util.ValidInputChecker;
+
 
 /**
  * A Relationship represents the relationship between two repositories.  
@@ -100,8 +100,7 @@ public class Relationship implements Result {
 	 * @param image: the image to display (if null then it'll either be set to pending, error (if appropriate), or computed later)
 	 */
 	public Relationship(String name, ImageIcon icon, Image image) {
-	    ValidInputChecker.checkNullInput(name);
-	    
+
 		if (name.startsWith(ERROR)) {
 		    _errorMessage = name.substring(ERROR.length());
 		    _name = ERROR;
@@ -377,9 +376,11 @@ public class Relationship implements Result {
 			_action = Action.UNKNOWN;
 		else if (parent.getName().equals(Relationship.SAME))
 			_action = Action.NOTHING;
-		else if (localState.equals(LocalStateResult.MUST_RESOLVE))
+		else if (localState.equals(LocalStateResult.HG_MUST_RESOLVE) 
+				|| localState.equals(LocalStateResult.GIT_MUST_RESOLVE))
 			_action = Action.RESOLVE;
-		else if (localState.equals(LocalStateResult.UNCHECKPOINTED))
+		else if (localState.equals(LocalStateResult.HG_UNCHECKPOINTED)
+				|| localState.equals(LocalStateResult.GIT_UNCHECKPOINTED))
 			_action = Action.CHECKPOINT;
 		else if (parent.getName().equals(Relationship.AHEAD))
 			_action = Action.PUBLISH;
@@ -418,7 +419,22 @@ public class Relationship implements Result {
 				return "not computed";
 			else 
 				return "cannot compute hg action";
-		} else 
+		} else if (rk == RepoKind.GIT) {
+			if (_action == Action.RESOLVE)
+				return "git merge";
+			else if (_action == Action.CHECKPOINT)
+				return "git commit";
+			else if (_action == Action.PUBLISH)
+				return "git push";
+			else if (_action == Action.SYNC)
+				return "git fetch";
+			else if (_action == Action.NOTHING)
+				return null;
+			else if (_action == Action.UNKNOWN)
+				return "not computed";
+			else 
+				return "cannot compute git action";			
+		} else
 			return "unsupported repository kind";
 	}
 

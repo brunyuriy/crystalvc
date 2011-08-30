@@ -3,8 +3,6 @@ package crystal.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import crystal.util.ValidInputChecker;
-
 
 /**
  * Represents the result of a computation of a local state of a repository
@@ -14,8 +12,11 @@ import crystal.util.ValidInputChecker;
  */
 public class LocalStateResult implements Result {
 
-    public static String UNCHECKPOINTED = "UNCHECKPOINTED";
-    public static String MUST_RESOLVE = "MUST RESOLVE";
+    public static String HG_UNCHECKPOINTED = "HG_UNCHECKPOINTED";
+    public static String HG_MUST_RESOLVE = "HG_MUST_RESOLVE";
+    public static String GIT_UNCHECKPOINTED = "GIT_UNCHECKPOINTED";
+    public static String GIT_MUST_RESOLVE = "GIT_MUST_RESOLVE";
+    
     public static String ALL_CLEAR = "ALL CLEAR";
     public static String PENDING = "PENDING";
     public static String ERROR = "ERROR";
@@ -24,8 +25,10 @@ public class LocalStateResult implements Result {
     
     private static Map<String, String> actions = new HashMap<String, String>();
     static {
-        actions.put(UNCHECKPOINTED, "hg commit");
-        actions.put(MUST_RESOLVE, "hg merge");
+        actions.put(HG_UNCHECKPOINTED, "hg commit");
+        actions.put(HG_MUST_RESOLVE, "hg merge");
+        actions.put(GIT_UNCHECKPOINTED, "git commit");
+        actions.put(GIT_MUST_RESOLVE, "git merge");
         actions.put(ALL_CLEAR, "");
         actions.put(PENDING, "");
         actions.put(ERROR, "");

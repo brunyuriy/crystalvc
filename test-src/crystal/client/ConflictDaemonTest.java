@@ -49,7 +49,7 @@ public class ConflictDaemonTest {
 		assertEquals("After calculating a local state", 1, instance.getLocalStates().size());
 		
 		DataSource data_1 = new DataSource("shortName_2", "cloneString_2", RepoKind.HG, false, "parent_2"); 
-		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		
 		ProjectPreferences pp = new ProjectPreferences(data_1,	cp_1);
 		
@@ -75,7 +75,7 @@ public class ConflictDaemonTest {
 		
 		
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
-		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", Constants.DEFAULT_REFRESH);
+		ClientPreferences cp_1 = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
 		
 		ProjectPreferences pp = new ProjectPreferences(data_1,	cp_1);
 

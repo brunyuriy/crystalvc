@@ -279,14 +279,6 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
             name.add(projectName);
 
-            //          name.add(new JLabel(" "));
-            /*JLabel action = new JLabel("") {
-            private static final long serialVersionUID = 1L;
-
-            public JToolTip createToolTip() {
-                return new JMultiLineToolTip();
-            }
-        };*/
             JLabel action = new JLabel();
             action.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 15));
             _iconMap.put(projPref.getEnvironment(), action);

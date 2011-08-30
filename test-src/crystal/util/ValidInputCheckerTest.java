@@ -7,6 +7,13 @@ import org.junit.Test;
 public class ValidInputCheckerTest {
 
 	@Test
+	public void testCheckUrl() {
+		assertFalse("Check invalid url", ValidInputChecker.checkUrl("http://hahaha"));
+		assertFalse("Check invalid url", ValidInputChecker.checkUrl("http://code.google.com/hg/hahaha"));
+		
+	}
+	
+	@Test
 	public void testCheckValidFilePath() {
 		String path = "hi";
 		try {
