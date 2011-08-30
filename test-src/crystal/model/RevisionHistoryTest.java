@@ -8,6 +8,8 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+
+import crystal.model.DataSource.RepoKind;
 /**
  * Class RevisionHistoryTest will test the performance of class RevisionHistory
  * 
@@ -30,7 +32,7 @@ public class RevisionHistoryTest {
 			System.err.println("File not found");
 		}
 		
-		history = new RevisionHistory(log);
+		history = new RevisionHistory(log, RepoKind.HG);
 		assertNotNull(history);
 	}
 
@@ -48,8 +50,8 @@ public class RevisionHistoryTest {
 		} catch (IOException e) {
 			System.err.println("File not found");
 		}
-		RevisionHistory history_1 = new RevisionHistory(log_1);
-		RevisionHistory history_2 = new RevisionHistory(log_2);
+		RevisionHistory history_1 = new RevisionHistory(log_1, RepoKind.HG);
+		RevisionHistory history_2 = new RevisionHistory(log_2, RepoKind.HG);
 		assertTrue("Same log text", history.equals(history_1));
 		assertFalse("Different log files", history_2.equals(history_1));
 		assertFalse("Different log files", history_1.equals(history_2));
@@ -71,8 +73,8 @@ public class RevisionHistoryTest {
 			System.err.println("File not found");
 		}
 		
-		RevisionHistory history_1 = new RevisionHistory(log_1);
-		RevisionHistory history_2 = new RevisionHistory(log_2);
+		RevisionHistory history_1 = new RevisionHistory(log_1, RepoKind.HG);
+		RevisionHistory history_2 = new RevisionHistory(log_2, RepoKind.HG);
 		
 		
 		
@@ -93,7 +95,7 @@ public class RevisionHistoryTest {
 		} catch (IOException e) {
 			System.err.println("File not found");
 		}
-		RevisionHistory history_3 = new RevisionHistory(log_3);
+		RevisionHistory history_3 = new RevisionHistory(log_3, RepoKind.HG);
 		System.out.println(history.getCommitters(history_3));
 		assertTrue("One different name"
 				, history.getCommitters(history_3).equals("Kenneth Reitz <me@kennethreitz.com>"));

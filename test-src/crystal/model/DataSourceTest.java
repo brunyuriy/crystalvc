@@ -59,8 +59,8 @@ public class DataSourceTest {
 			System.err.println("File not found");
 		}
 		
-		RevisionHistory history1 = new RevisionHistory(log_version1);
-		RevisionHistory history2 = new RevisionHistory(log_version2);
+		RevisionHistory history1 = new RevisionHistory(log_version1, RepoKind.HG);
+		RevisionHistory history2 = new RevisionHistory(log_version2, RepoKind.GIT);
 
 		assertTrue("Not change history", data.hasHistoryChanged());
 		data.setHistory(history1);

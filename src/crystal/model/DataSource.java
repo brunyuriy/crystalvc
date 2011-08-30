@@ -34,7 +34,7 @@ public class DataSource implements Cloneable{
 	private RepoKind _repoKind;
 	
 	// optional argument to pass to hg for --remotecmd in case the remote hg path is not just "hg"
-	private String _remoteHg = null;
+	private String _remoteCmd = null;
 
 	// optional command for compiling a project
 	private String _compileCommand = null;
@@ -138,14 +138,14 @@ public class DataSource implements Cloneable{
 	 * @param remoteHg : the remoteHg command
 	 */
 	public void setRemoteCmd(String remoteCmd) {
-		_remoteHg = remoteCmd;
+		_remoteCmd = remoteCmd;
 	}
 	
 	/**
 	 * @return the remoteHg command
 	 */
 	public String getRemoteCmd() {
-		return _remoteHg;
+		return _remoteCmd;
 	}
 	
 	/**
