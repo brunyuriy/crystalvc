@@ -143,9 +143,10 @@ public class ProjectPanel extends JPanel {
 		final JComboBox type = new JComboBox();
 		final JLabel typeState = new JLabel();
 		
-		//TODO added git
+		//TODO change HG and GIT to hg and git.
 		type.addItem(DataSource.RepoKind.HG);
-		type.addItem(DataSource.RepoKind.GIT);
+		// Don't allow users to select GIT until it is ready
+//		type.addItem(DataSource.RepoKind.GIT);
 		type.setSelectedItem(copyPref.getEnvironment().getKind());
 		prefEnvironmentPanel.add(type);
 		prefEnvironmentPanel.add(typeState);
