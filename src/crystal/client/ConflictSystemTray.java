@@ -47,7 +47,7 @@ public class ConflictSystemTray implements ComputationListener {
     public static boolean TRAY_SUPPORTED = SystemTray.isSupported();
 
     // The current Crystal version number.
-    public static String VERSION_ID = "0.2.20110822";
+    public static String VERSION_ID = "1.0.20110904";
 
     // A pointer to the Crystal window UI.
     private ConflictClient _client;
