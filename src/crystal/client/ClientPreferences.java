@@ -387,6 +387,8 @@ public class ClientPreferences implements Cloneable {
         	boolean happyHgPath = false;
         	while (!happyHgPath) {
         		try {
+                    if (hgPath==null) 
+                        throw new ConfigurationReadingException(ConfigurationReadingException.HG_PATH_INVALID);
         			verifyFile(hgPath);
         			happyHgPath = true;
         		} catch (ConfigurationReadingException e) {
@@ -406,7 +408,8 @@ public class ClientPreferences implements Cloneable {
         			if (need) {
         				hgPath = JOptionPane.showInputDialog("The current path to hg is invalid.\nPlease select a proper path.", hgPath);
         				prefsChanged = true;
-        			}
+        			} else
+                        happyHgPath = true;
         		}
         	}
         	
@@ -414,6 +417,8 @@ public class ClientPreferences implements Cloneable {
         	boolean happyGitPath = false;
         	while (!happyGitPath) {
         		try {
+        		    if (gitPath==null) 
+        		        throw new ConfigurationReadingException(ConfigurationReadingException.GIT_PATH_INVALID);
         			verifyFile(gitPath);
         			happyGitPath = true;
         		} catch (ConfigurationReadingException e) {
@@ -432,7 +437,8 @@ public class ClientPreferences implements Cloneable {
         			if (need) {
         				gitPath = JOptionPane.showInputDialog("The current path to git is invalid.\nPlease select a proper path.", gitPath);
         				prefsChanged = true;
-        			}
+        			} else
+                        happyGitPath = true;        			    
         		}
         	}
 
@@ -543,11 +549,13 @@ public class ClientPreferences implements Cloneable {
         		}
         	}
         } catch (JDOMException jdome) {
-        	_log.error("Error parsing configuration file.", jdome);
+        	_log.error("Error parsing configuration file: " + jdome.getMessage(), jdome);
         } catch (IOException ioe) {
-        	throw new RuntimeException("Error reading configuration file; " + ioe.getMessage(), ioe);
+            _log.error("IO Error parsing configuration file.", ioe);
+        	throw new RuntimeException("Error reading configuration file: " + ioe.getMessage(), ioe);
         } catch (Exception e) {
-        	// e.printStackTrace();
+        	_log.error("Unexpected error while parsing the configuration file: "+ e.getMessage(), e);
+        	//e.printStackTrace();
         	throw new RuntimeException("Error parsing configuration file; " + e.getMessage(), e);
         }
 
@@ -835,6 +843,7 @@ public class ClientPreferences implements Cloneable {
         public static final int PATH_INVALID = 2;
         public static final int PATH_NOT_DIRECTORY = 3;
         public static final int PATH_IS_DIRECTORY = 4;
+        public static final int GIT_PATH_INVALID = 5;
 
         private int _type;
 
