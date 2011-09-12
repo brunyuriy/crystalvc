@@ -67,7 +67,11 @@ public class GuidanceChecker {
 	public static When getWhen(Set<String> me, Set<String> you, Set<String> parent, Relationship r) {
 		ValidInputChecker.checkNullInput(r);
 		
-		if ((r.getName().equals(Relationship.SAME)) || (r.getName().equals(Relationship.MERGECLEAN)) || (r.getName().equals(Relationship.MERGECONFLICT)))
+		if ((r.getName().equals(Relationship.SAME)) 
+		        || (r.getName().equals(Relationship.MERGECLEAN)) 
+		        || (r.getName().equals(Relationship.MERGECONFLICT))
+		        || (r.getName().equals(Relationship.COMPILECONFLICT))
+		        || (r.getName().equals(Relationship.TESTCONFLICT)))
 			return When.NOTHING;
 		if (r.getName().equals(Relationship.BEHIND))
 			// NOW if parent has something of yours that I do not
@@ -163,9 +167,12 @@ public class GuidanceChecker {
 		if ((r.getName().equals(Relationship.SAME)) || (r.getName().equals(Relationship.AHEAD)) || (r.getName().equals(Relationship.BEHIND))) 
 			return Capable.NOTHING;
 
-		if ((r.getName().equals(Relationship.MERGECLEAN)) || (r.getName().equals(Relationship.MERGECONFLICT)))
-			// if parent has something of yours i don't, then MUST
-			// if parent has something of mine you don't, then CANNOT
+		if ((r.getName().equals(Relationship.MERGECLEAN)) 
+		        || (r.getName().equals(Relationship.MERGECONFLICT))
+		        || (r.getName().equals(Relationship.COMPILECONFLICT))
+		        || (r.getName().equals(Relationship.TESTCONFLICT)))
+		    // if parent has something of yours i don't, then MUST
+		    // if parent has something of mine you don't, then CANNOT
 			if (!(SetOperations.intersection(you, SetOperations.setDifference(parent, me)).isEmpty()))
 				return Capable.MUST;
 			else if (!(SetOperations.intersection(me, SetOperations.setDifference(parent, you)).isEmpty()))
