@@ -384,7 +384,11 @@ public class Relationship implements Result {
 			_action = Action.CHECKPOINT;
 		else if (parent.getName().equals(Relationship.AHEAD))
 			_action = Action.PUBLISH;
-		else if ((parent.getName().equals(Relationship.BEHIND)) || (parent.getName().equals(Relationship.MERGECLEAN)) || (parent.getName().equals(Relationship.MERGECONFLICT)))
+		else if ((parent.getName().equals(Relationship.BEHIND)) 
+		        || (parent.getName().equals(Relationship.MERGECLEAN)) 
+		        || (parent.getName().equals(Relationship.MERGECONFLICT))
+		        || (parent.getName().equals(Relationship.COMPILECONFLICT))
+		    || (parent.getName().equals(Relationship.TESTCONFLICT)))
 			_action = Action.SYNC;
 		else
 			_action = null;
