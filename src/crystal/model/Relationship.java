@@ -458,65 +458,6 @@ public class Relationship implements Result {
 			answer += "Committers: " + _committers + "\n";
 		return answer.trim();
 	}
-
-	/*
-	 * Depricated because only images are now compared 
-	@Override
-	public int compareTo(Relationship other) {
-		// handle comparison to null 
-		if (other == null) return 1;
-
-		// handle one or both items not being ready
-		if (_ready && !other._ready)
-			return 1;
-		else if (!_ready && other._ready)
-			return -1;
-		if (!_ready && !other._ready)
-			return 0;
-
-//					// this is code for all hollow < all unsaturated < all solid
-//			if (getIconFill() > other.getIconFill()) 
-//				return 1;
-//			else if (getIconFill() < other.getIconFill())
-//				return -1;
-//			else
-//				return (getIconShape() - other.getIconShape());
-		 
-		// this is code for using the getIntRepresentation for ordering icons
-		return getIntRepresentation() - other.getIntRepresentation();
-	}
-	*/
-
-	/*
-	 * Nothing to do: PENDING < SAME < ERROR
-	 * Action will succeed:   AHEAD < BEHIND < MERGECLEAN
-	 * Action will fail:  TESTCONFLICT < COMPILECONLFICT < MERGECONFLICT.
-		The latter two categories have solid/unsaturated/hollow versions.
-
-		I would say that all "action-succeed" icons should be less-prioritized than all "action-fail" icons.  In particular, one could order as follows:
-	 * nothing-to-do
-	 * action-succeed hollow
-	 * action-succeed unsaturated
-	 * action-succeed solid
-	 * action-fail hollow
-	 * action-fail unsaturated
-	 * action-fail solid
-	 *
-	 * Depricated because only images are now compared 
-	private int getIntRepresentation() {
-		int answer;
-		// 0 -- 3
-		if (getIconShape() <= 3)
-			answer = getIconShape();
-		// 4 -- 12
-		else if (getIconShape() <= 6)
-			answer = getIconShape() + getIconFill() * 3;
-		// 13 --
-		else // getIconShape() is 7 -- 9
-			answer = 2 * 3 + getIconShape() + getIconFill() * 3;
-		return answer;
-	}
-	*/
 	
 	/**
 	 * Convert a relationship into an int, observing relationship priority
