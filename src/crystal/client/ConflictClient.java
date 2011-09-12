@@ -394,7 +394,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
         SpringLayoutUtility.formGridInColumn(grid, prefs.getProjectPreference().size(), 1);
 
         _frame.getContentPane().add(grid);
-    }    
+    }
 
 	
 	/**
