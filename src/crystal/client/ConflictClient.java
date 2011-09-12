@@ -372,7 +372,6 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
                     imageLabel.setVerticalTextPosition(JLabel.TOP);
                     imageLabel.setHorizontalTextPosition(JLabel.CENTER);
                     iconGrid.add(imageLabel);
-                    //              imageLabel.setToolTipText("Action: hg fetch\nConsequences: new relationship will be AHEAD \nCommiters: David and Yuriy");
                 }
             }
 
