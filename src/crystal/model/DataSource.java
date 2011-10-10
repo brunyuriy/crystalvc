@@ -65,7 +65,7 @@ public class DataSource implements Cloneable{
 		assert repoKind != null;
 
 		_enabled = true;
-		_shortName = shortName;
+		_shortName = shortName.replace(' ', '_').replace('\\', '_').replace('/', '_').replace(':', '_');
 		_cloneString = cloneString;
 		_repoKind = repoKind;
 		_hide = hide;
@@ -265,7 +265,7 @@ public class DataSource implements Cloneable{
 	 */
 	public void setShortName(String name) {
 		ValidInputChecker.checkValidStringInput(name);
-		_shortName = name;
+		_shortName = name.replace(' ', '_').replace('\\', '_').replace('/', '_').replace(':', '_');
 	}
 
 	/**
