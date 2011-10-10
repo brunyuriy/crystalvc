@@ -178,7 +178,8 @@ public class ProjectPanel extends JPanel {
 		
 		changedComponents.put(address, false);
 
-		boolean addressValid = ValidInputChecker.checkDirectoryPath(address.getText());
+		boolean addressValid = (address.getText().startsWith("http")) || (address.getText().startsWith("ssh")) ||		        
+		        ValidInputChecker.checkDirectoryPath(address.getText());
 		validText.put(address, addressValid);
 		setState(addressState, addressValid);
 
@@ -195,7 +196,8 @@ public class ProjectPanel extends JPanel {
 					changedComponents.put(address, 
 							!address.getText().equals(pref.getEnvironment().getCloneString()));
 				}
-				boolean valid = ValidInputChecker.checkDirectoryPath(address.getText());
+				boolean valid = (address.getText().startsWith("http")) || (address.getText().startsWith("ssh")) ||              
+		                ValidInputChecker.checkDirectoryPath(address.getText()); 
 				validText.put(address, valid);
 				setState(addressState, valid);
 			}
