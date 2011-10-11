@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
+
+import crystal.client.ConflictDaemon;
 import crystal.util.ValidInputChecker;
 
 /**
@@ -113,9 +116,9 @@ public abstract class AbstractLogParser {
 	 *
 	 */
 	public enum CheckpointLabels {
-		CHANGESET, TAG, PARENT, USER, DATE, SUMMARY, EMPTY, OTHER;
+		CHANGESET, TAG, PARENT, USER, DATE, SUMMARY, EMPTY, OTHER, FILES;
 	}
-	
+		
 	/**
 	 * Parses the output of "log" into a mapping of hexes to Checkpoints
 	 * @param log: the output of "log"
@@ -172,8 +175,12 @@ public abstract class AbstractLogParser {
 							summary = currentLine;
 						else 
 							summary = summary + "\n" + currentLine;
-					} else 
-						throw new RuntimeException("Unexpected line in the log file: " + currentLine);
+					} else if (checkpointLabel.get(CheckpointLabels.FILES) != null
+                            && currentLine.startsWith(checkpointLabel.get(CheckpointLabels.FILES))) {
+					    // Ignore the files line
+					} else {
+					    Logger.getLogger(ConflictDaemon.getInstance().getClass()).error("Unexpected line in the log file: " + currentLine);
+					}
 				}
 				if (summary == null)
 					summary = "";

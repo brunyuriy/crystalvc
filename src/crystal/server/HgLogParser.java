@@ -22,6 +22,7 @@ public class HgLogParser extends AbstractLogParser{
 		hgCheckpoint.put(CheckpointLabels.USER, "user:");
 		hgCheckpoint.put(CheckpointLabels.DATE, "date:");
 		hgCheckpoint.put(CheckpointLabels.SUMMARY, "summary:");
+		hgCheckpoint.put(CheckpointLabels.FILES, "files:");
 	}
 	
 	/**
