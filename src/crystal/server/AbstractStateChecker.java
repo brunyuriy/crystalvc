@@ -24,7 +24,7 @@ import crystal.util.TimeUtility;
 import crystal.util.RunIt.Output;
 
 public abstract class AbstractStateChecker {
-
+    
 	/**
 	 * @param String pathToGit: the path to the executable
 	 * @param String pathToRepo: the full path to the remote repo
