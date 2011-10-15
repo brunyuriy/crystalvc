@@ -178,8 +178,10 @@ public abstract class AbstractLogParser {
 					} else if (checkpointLabel.get(CheckpointLabels.FILES) != null
                             && currentLine.startsWith(checkpointLabel.get(CheckpointLabels.FILES))) {
 					    // Ignore the files line
+					} else if (currentLine.trim().isEmpty()) {
+					 // Ignore the files line
 					} else {
-					    Logger.getLogger(ConflictDaemon.getInstance().getClass()).error("Unexpected line in the log file: " + currentLine);
+					    Logger.getLogger(ConflictDaemon.getInstance().getClass()).info("Tried to parse a line with an unexpected prefix: " + currentLine);
 					}
 				}
 				if (summary == null)
