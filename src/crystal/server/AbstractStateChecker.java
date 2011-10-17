@@ -24,7 +24,7 @@ import crystal.util.TimeUtility;
 import crystal.util.RunIt.Output;
 
 public abstract class AbstractStateChecker {
-    
+
 	/**
 	 * @param String pathToGit: the path to the executable
 	 * @param String pathToRepo: the full path to the remote repo
@@ -122,6 +122,11 @@ public abstract class AbstractStateChecker {
 		
 		//TODO only for hg
 		if (pathExecutable.contains("hg") && (output.getOutput().indexOf("files updated") < 0) && (output.getOutput().indexOf("no changes found") < 0)) {
+			throw new OperationException(command, pathToLocalRepo, output.toString());
+		}
+		
+		// for git
+		if (pathExecutable.contains("git") && (output.getOutput().indexOf("Fast-forward") < 0) && (output.getOutput().indexOf("Already up-to-date.") < 0)) {
 			throw new OperationException(command, pathToLocalRepo, output.toString());
 		}
 	}
@@ -365,18 +370,21 @@ public abstract class AbstractStateChecker {
 		} catch (IOException e2) {
             return Relationship.ERROR + " Couldn't pull into my temp clone: " + e2.getMessage();
         }
-		
+
 		if (output.getOutput().indexOf("(run '" + kind.toString().toLowerCase() 
-				+ " heads' to see heads, '" + kind.toString().toLowerCase() + " merge' to merge)") >= 0) {
+				+ " heads' to see heads, '" + kind.toString().toLowerCase() + " merge' to merge)") >= 0
+				|| output.getOutput().indexOf("Auto-merging") >= 0){
 			// there are two heads, so let's see if they merge cleanly
 			String[] mergeArgs = { "merge", "--noninteractive" };
 			try {
-			    output = RunIt.execute(executablePath, mergeArgs, tempWorkPath + tempMyName, false);
+				if (kind.equals(RepoKind.HG))
+					output = RunIt.execute(executablePath, mergeArgs, tempWorkPath + tempMyName, false);
 			} catch (IOException e2) {
 	            return Relationship.ERROR + " Couldn't execute merge: " + e2.getMessage();
 	        }
 			// if the merge goes through cleanly, we can try to compile and test
-			if (output.getOutput().indexOf("(branch merge, don't forget to commit)") >= 0) {
+			if (output.getOutput().indexOf("(branch merge, don't forget to commit)") >= 0
+					|| output.getOutput().indexOf("Merge made by recursive.") >= 0) {
 				// try to compile
 				String compileCommand = prefs.getEnvironment().getCompileCommand();
 				if (compileCommand != null) {
