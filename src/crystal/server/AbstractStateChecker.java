@@ -25,6 +25,9 @@ import crystal.util.RunIt.Output;
 
 public abstract class AbstractStateChecker {
 
+	/** using for comparing output */
+    private static Logger _log = Logger.getLogger(AbstractStateChecker.class);
+	
 	/**
 	 * @param String pathToGit: the path to the executable
 	 * @param String pathToRepo: the full path to the remote repo
@@ -58,7 +61,7 @@ public abstract class AbstractStateChecker {
 		Assert.assertNotNull(pathToRemoteRepo);
 		Assert.assertNotNull(pathToLocalRepo);
 		Assert.assertNotNull(tempWorkPath);
-
+		//_log.info("create local repository");
 		// String git = prefs.getClientPreferences().getGitPath();
 
 		// String tempWorkPath = prefs.getClientPreferences().getTempDirectory();
@@ -78,9 +81,11 @@ public abstract class AbstractStateChecker {
 		myArgsList.add(pathToRemoteRepo);
 		myArgsList.add(pathToLocalRepo);
 		command += " " + pathToRemoteRepo + " " + pathToLocalRepo; 
-		
+		//if (pathExecutable.contains("git"))
+		//	_log.info("command: " + command);
 		Output output = RunIt.execute(pathExecutable, myArgsList.toArray(new String[0]), tempWorkPath, false);
-
+		//if (pathExecutable.contains("git"))
+		//	_log.info("output: \n" + output.getOutput() + "\n error \n" + output.getError());
 		if (output.getOutput().indexOf("updating to branch") < 0) {
 			String errorMsg = "Crystal tried to execute command:\n" +
 			"\"" + pathExecutable + " clone " + pathToRemoteRepo + " " + pathToLocalRepo + "\"\n" +
@@ -94,7 +99,7 @@ public abstract class AbstractStateChecker {
 	}
 
 	/**
-	 * @param String pathToGit: the path to the git executable
+	 * @param String pathExecutable: the path to the executable
 	 * @param String pathToLocalRepo: the path to the local repo which this method creates
 	 * @param String tempWorkPath: path to a temp directory
 	 * @return 
@@ -106,6 +111,8 @@ public abstract class AbstractStateChecker {
 		Assert.assertNotNull(pathToLocalRepo);
 		Assert.assertNotNull(tempWorkPath);
 
+		//_log.info("update local repository");
+		
 		String command = pathExecutable + " pull -u " + pathToRemoteRepo;
 		List<String> myArgsList = new ArrayList<String>();
 		myArgsList.add("pull");
@@ -116,7 +123,8 @@ public abstract class AbstractStateChecker {
 			myArgsList.add(remoteCmd);
 			command += "--remotecmd " + remoteCmd; 
 		}
-
+		//if (pathExecutable.contains("git"))
+		//	_log.info("command: " + command);
 //		String[] myArgs = { "pull", "-u" };
 		Output output = RunIt.execute(pathExecutable, myArgsList.toArray(new String[0]), pathToLocalRepo, false);
 		
@@ -129,6 +137,10 @@ public abstract class AbstractStateChecker {
 		if (pathExecutable.contains("git") && (output.getOutput().indexOf("Fast-forward") < 0) && (output.getOutput().indexOf("Already up-to-date.") < 0)) {
 			throw new OperationException(command, pathToLocalRepo, output.toString());
 		}
+		
+		/*if (pathExecutable.contains("git")) {
+			_log.info("output: \n" + output.getOutput() + "\n error: \n" + output.getError());
+		}*/
 	}
 	
 	/**
@@ -145,6 +157,7 @@ public abstract class AbstractStateChecker {
 	 */
 	protected static void updateLocalRepositoryAndCheckCacheError(DataSource ds, String pathExecutable, String localRepo, String tempWorkPath, String remoteCmd, 
 																String repoName, String projectName) throws OperationException, IOException {
+		//_log.info("update local repository and check cache error");
 		Logger log = Logger.getLogger(AbstractStateChecker.class);
 		if (new File(localRepo).exists()) {
 			try {
@@ -170,6 +183,7 @@ public abstract class AbstractStateChecker {
 	 * @throws IOException
 	 */
 	public static String getLocalState(ProjectPreferences prefs) throws IOException {
+		//_log.info("get local state");
 		Assert.assertNotNull(prefs);
 		
 		// if source are disabled, return null.
@@ -218,6 +232,8 @@ public abstract class AbstractStateChecker {
 		// Step 2. Get the log from the local clone and set the history
 		String[] logArgs = { "log" };
 		Output output = RunIt.execute(executablePath, logArgs, mine, false);
+		//if (kind.equals(RepoKind.GIT))
+		//	_log.info("log output: \n" + output.getOutput());
 		prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput(), kind));
 		
 		// TODO Step 2.5.  If the history has changed, find out if build or test fails.
@@ -229,6 +245,7 @@ public abstract class AbstractStateChecker {
 			String[] statusArgs = { "status" };
 			output = RunIt.execute(executablePath, statusArgs , prefs.getEnvironment().getCloneString(), false);
 			// check if any of the lines in the output don't start with "?"
+			
 			StringTokenizer tokens = new StringTokenizer(output.getOutput().trim(), "\n");
 			while (tokens.hasMoreTokens()) {
 				String nextToken = tokens.nextToken();
@@ -284,6 +301,7 @@ public abstract class AbstractStateChecker {
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);
 
+		_log.info("get relationship");
 		Logger log = Logger.getLogger(AbstractStateChecker.class);
 
 		// if project or source are disabled, return null.
@@ -292,7 +310,7 @@ public abstract class AbstractStateChecker {
 
 		String mine = prefs.getProjectCheckoutLocation(prefs.getEnvironment());
 		String yours = prefs.getProjectCheckoutLocation(source);
-
+		
 		String executablePath = null;
 		if (kind.equals(RepoKind.HG)) 
 			executablePath = prefs.getClientPreferences().getHgPath();
@@ -321,7 +339,7 @@ public abstract class AbstractStateChecker {
 		String[] logArgs = { "log" };
 		Output logOutput;
 		try {
-		    logOutput = RunIt.execute(executablePath, logArgs, yours, false);
+		    logOutput = RunIt.execute(executablePath, logArgs, yours, false);		    	
 		} catch (IOException e2) {
             return Relationship.ERROR + " Couldn't get the log: " + e2.getMessage();
         }
@@ -337,20 +355,40 @@ public abstract class AbstractStateChecker {
 		// TODO figure out if we need to check for compile and test whenever histories change: 
 		// one of (source.hasHistoryChanged()) or (prefs.getEnvironment.hasHistoryChanged()) are true
 
-		if (myHistory.equals(yourHistory))
+		if (myHistory.equals(yourHistory)) {
+			if (kind.equals(RepoKind.GIT)) {
+				_log.info("\n yours: " + yours + "\nlog output: \n" + logOutput.getOutput());
+				_log.info("same");
+			}
 			return Relationship.SAME;
-		
-		else if (myHistory.superHistory(yourHistory))
+		}
+		else if (myHistory.superHistory(yourHistory)) {
+			if (kind.equals(RepoKind.GIT)) {
+				_log.info("\n yours: " + yours + "\nlog output: \n" + logOutput.getOutput());
+				_log.info("ahead");
+			}
+				
 			return Relationship.AHEAD;
-		
-		else if (myHistory.subHistory(yourHistory))
+		}
+			
+		else if (myHistory.subHistory(yourHistory)) {
+			if (kind.equals(RepoKind.GIT)) {
+				_log.info("\n yours: " + yours + "\nlog output: \n" + logOutput.getOutput());
+				_log.info("behind");
+			}
 			return Relationship.BEHIND;
-		
+		}
+		else if (kind.equals(RepoKind.GIT)) {
+			_log.info("\n yours: " + yours + "\nlog output: \n" + logOutput.getOutput());
+			_log.info("not same, ahead, or behind");
+		}
 		// Well, we in one of {MERGE, CONFLICT, COMPILECONFLICT, TESTCONFLICT} relationships, so we are going to have to bite the bullet and make local clones.  
 		
 		// First, check if anything has changed.
 		if (!(prefs.getEnvironment().hasHistoryChanged() || source.hasHistoryChanged())) {
 			// Nothing has changed.  Keep old status.
+			if (kind.equals(RepoKind.GIT)) 
+				_log.info("same with old relationship");
 			return oldRelationship;
 		}
 		// OK, things have changed.  We have to recompute.  
@@ -367,6 +405,10 @@ public abstract class AbstractStateChecker {
 		String[] pullArgs = { "pull", yours };
 		try {
 		    output = RunIt.execute(executablePath, pullArgs, tempWorkPath + tempMyName, false);
+		    if (kind.equals(RepoKind.GIT)) {
+		    	_log.info("\n path: " + tempWorkPath + tempMyName);
+		    	_log.info("\n pull output: " + output.getOutput());
+		    }
 		} catch (IOException e2) {
             return Relationship.ERROR + " Couldn't pull into my temp clone: " + e2.getMessage();
         }
@@ -431,6 +473,8 @@ public abstract class AbstractStateChecker {
 			return Relationship.ERROR + " " + errorMsg;
 		}
 		// Clean up temp directories:
+		if (kind.equals(RepoKind.GIT))
+			_log.info("the relationship: " + answer);
 		RunIt.deleteDirectory(new File(tempWorkPath + tempMyName));
 		return answer;
 	}
