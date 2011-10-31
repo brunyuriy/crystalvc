@@ -365,13 +365,20 @@ public abstract class AbstractStateChecker {
         }
 
 		RevisionHistory yourHistory = new RevisionHistory(logOutput.getOutput(), kind);
+		if (kind.equals(RepoKind.GIT)) {
+			_log.info("your history\n" + yourHistory.toString());
+			
+		}
 		source.setHistory(yourHistory);
 
 		RevisionHistory myHistory = prefs.getEnvironment().getHistory();
-
+		
+		
 		if (myHistory == null)
 		    return Relationship.ERROR + " Could not parse the history of your repository.";
-				
+		
+		if (kind.equals(RepoKind.GIT))
+			_log.info("my history\n" + myHistory.toString());
 		// TODO figure out if we need to check for compile and test whenever histories change: 
 		// one of (source.hasHistoryChanged()) or (prefs.getEnvironment.hasHistoryChanged()) are true
 
