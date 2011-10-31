@@ -3,6 +3,8 @@ package crystal.server;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 
 /**
  * GitLogParser parses the result of an "git log" command into a mapping of hexes into Checkpoint objects.
@@ -11,6 +13,7 @@ import java.util.Map;
  */
 public class GitLogParser extends AbstractLogParser{
 
+    private static Logger _log = Logger.getLogger(GitLogParser.class);
 	/**
 	 * Actual label representation for "git log"
 	 */
@@ -29,6 +32,11 @@ public class GitLogParser extends AbstractLogParser{
 	 * @return a mapping of hexes to Checkpoints in the log.
 	 */
 	public static HashMap<String, Checkpoint> parseLog(String log) {
-		return abstractParseLog(log, gitCheckpoint);
+		HashMap<String, Checkpoint> checkpoints = abstractParseLog(log, gitCheckpoint);
+		_log.info("\ncheck points with log:\n" + log);
+		for (String s : checkpoints.keySet()) {
+			_log.info("\nlog:\n" + s + "\ncheck points:\n" + checkpoints.get(s).toString());
+		}
+		return checkpoints;
 	}
 }
