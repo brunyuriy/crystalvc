@@ -146,7 +146,7 @@ public class ProjectPanel extends JPanel {
 		//TODO change HG and GIT to hg and git.
 		type.addItem(DataSource.RepoKind.HG);
 		// Don't allow users to select GIT until it is ready
-//		type.addItem(DataSource.RepoKind.GIT);
+		type.addItem(DataSource.RepoKind.GIT);
 		type.setSelectedItem(copyPref.getEnvironment().getKind());
 		prefEnvironmentPanel.add(type);
 		prefEnvironmentPanel.add(typeState);
