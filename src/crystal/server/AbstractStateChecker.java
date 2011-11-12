@@ -86,10 +86,14 @@ public abstract class AbstractStateChecker {
 		if (pathExecutable.contains("git")) {
 			_log.info("create local repository");
 			_log.info("run command: " + command);
-			_log.info("output: \n" + output.getOutput() + "\n error \n" + output.getError());
+			_log.info("output: " + output.getOutput());
+			if (output.getError().length() > 0) {
+				_log.info("error: " + output.getError());
+			}
 			
 		}
-		if (output.getOutput().indexOf("updating to branch") < 0) {
+		if (output.getOutput().indexOf("updating to branch") < 0
+				&& output.getOutput().indexOf("done.") < 0) {
 			String errorMsg = "Crystal tried to execute command:\n" +
 			"\"" + pathExecutable + " clone " + pathToRemoteRepo + " " + pathToLocalRepo + "\"\n" +
 			"from \"" + tempWorkPath + "\"\n" +
@@ -132,7 +136,10 @@ public abstract class AbstractStateChecker {
 		if (pathExecutable.contains("git")) {
 			_log.info("update local repository");
 			_log.info("run command: " + command);
-			_log.info("output: \n" + output.getOutput() + "\n error \n" + output.getError());
+			_log.info("output: \n" + output.getOutput());
+			if (output.getError().length() > 0) {
+				_log.info("error: " + output.getError());
+			}
 		}
 		//TODO only for hg
 		if (pathExecutable.contains("hg") && (output.getOutput().indexOf("files updated") < 0) && (output.getOutput().indexOf("no changes found") < 0)) {
@@ -161,13 +168,17 @@ public abstract class AbstractStateChecker {
 	 * @throws GitOperationException
 	 * @throws IOException
 	 */
-	protected static void updateLocalRepositoryAndCheckCacheError(DataSource ds, String pathExecutable, String localRepo, String tempWorkPath, String remoteCmd, 
+	protected static synchronized void updateLocalRepositoryAndCheckCacheError(DataSource ds, String pathExecutable, String localRepo, String tempWorkPath, String remoteCmd, 
 																String repoName, String projectName) throws OperationException, IOException {
 		//_log.info("update local repository and check cache error");
 		Logger log = Logger.getLogger(AbstractStateChecker.class);
+		_log.info("call update local repository and check cache error");
+		_log.info("local repository: " + localRepo + ", exist?: " + (new File(localRepo).exists()));
 		if (new File(localRepo).exists()) {
 			try {
+				_log.info("trying to update local repository: " + localRepo);
 				updateLocalRepository(pathExecutable, localRepo, ds.getCloneString(), tempWorkPath, remoteCmd);
+				_log.info("successfully finished updating local repository: " + localRepo);
 			} catch (OperationException e) {
 				_log.info("operation exception in running update local repository");
 				_log.info("command: " + e.getCommand() + "\n path: " + e.getPath() + "\n repo name: " + repoName + "\n output: " + e.getOutput()
@@ -182,8 +193,9 @@ public abstract class AbstractStateChecker {
 				throw new OperationException(errorMsg, e.getPath(), e.getOutput());
 			}
 		} else {
-			
+			_log.info("trying to create local repository: " + localRepo);
 			createLocalRepository(pathExecutable, ds.getCloneString(), localRepo, tempWorkPath, remoteCmd);
+			_log.info("finished creating local repository: " + localRepo);
 		}
 	}
 	
@@ -234,16 +246,13 @@ public abstract class AbstractStateChecker {
 			updateLocalRepositoryAndCheckCacheError(prefs.getEnvironment(), executablePath, mine, tempWorkPath, prefs.getEnvironment().getRemoteCmd(), 
 					"your own", prefs.getEnvironment().getShortName());
 		} catch (OperationException e) {
-			if (kind.equals(RepoKind.GIT))
-				_log.info("failed to update local repository and check cache error in get local state");			
+			_log.info("failed to update local repository and check cache error in get local state");			
 			return LocalStateResult.ERROR + " " + e.getMessage();
 		} catch (IOException e) {
-			if (kind.equals(RepoKind.GIT))
-				_log.info("failed to update local repository and check cache error in get local state");
+			_log.info("failed to update local repository and check cache error in get local state");
 			return LocalStateResult.ERROR + " " + e.getMessage();
 		}
-		if (kind.equals(RepoKind.GIT))
-			_log.info("successfully update local repository and check cache error in get local state");
+		_log.info("successfully update local repository and check cache error in get local state");
 		// Step 2. Get the log from the local clone and set the history
 		String[] logArgs = { "log" };
 		Output output = RunIt.execute(executablePath, logArgs, mine, false);

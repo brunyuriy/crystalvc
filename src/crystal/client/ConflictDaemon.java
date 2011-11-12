@@ -133,6 +133,7 @@ public class ConflictDaemon {
 			_log.info("Computed relationship for: " + source + " in: " + TimeUtility.msToHumanReadableDelta(start));
 
 			Relationship result = getRelationship(source);
+			// TODO getRelationship never return null
 			if (result != null) {
 				result = new Relationship(relationship, result.getIcon(), result.getImage());
 			} else {
@@ -201,6 +202,7 @@ public class ConflictDaemon {
 			_log.info("Computed local state for: " + source + " in: " + TimeUtility.msToHumanReadableDelta(start));
 
 			LocalStateResult result = getLocalState(source);
+			// TODO getLocalState never return null
 			if (result != null) {
 				result = new LocalStateResult(prefs.getEnvironment(), localState, result.getLastLocalState(), result.getLastAction(), result.getLastErrorMessage());
 			} else {
