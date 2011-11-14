@@ -52,7 +52,7 @@ public class TestGitStateChecker {
 		String projectPath = TestConstants.PROJECT_PATH;
 
 		// clear the output location
-		File repoDir = new File(projectPath + TestConstants.TEST_REPOS);
+		File repoDir = new File(projectPath + TestConstants.GIT_TEST_REPOS);
 		if (repoDir.exists()) {
 			Assert.assertTrue(repoDir.isDirectory());
 			RunIt.deleteDirectory(repoDir);
@@ -60,7 +60,7 @@ public class TestGitStateChecker {
 		}
 
 		// clean the temp space
-		File testTempDir = new File(projectPath + TestConstants.TEST_TEMP);
+		File testTempDir = new File(projectPath + TestConstants.GIT_TEST_TEMP);
 		if (testTempDir.exists()) {
 			RunIt.deleteDirectory(testTempDir);
 			Assert.assertFalse(testTempDir.exists());
@@ -85,9 +85,9 @@ public class TestGitStateChecker {
 		// make sure the repo zip file exists
 		File repoZipFile = null;
 		for (File f : files) {
-			if (f.getAbsolutePath().endsWith("test-repos.zip"))
+			if (f.getAbsolutePath().endsWith("gittestproject.zip"))
 				repoZipFile = f;
-			if (f.getAbsolutePath().endsWith(TestConstants.TEST_REPOS) && f.isDirectory()) {
+			if (f.getAbsolutePath().endsWith(TestConstants.GIT_TEST_REPOS) && f.isDirectory()) {
 				// not sure what the significance of this test is anymore
 			}
 
@@ -95,7 +95,7 @@ public class TestGitStateChecker {
 		Assert.assertNotNull(repoZipFile);
 
 		// clear the output location
-		File repoDir = new File(projectPath + TestConstants.TEST_REPOS);
+		File repoDir = new File(projectPath + TestConstants.GIT_TEST_REPOS);
 		if (repoDir.exists()) {
 			Assert.assertTrue(repoDir.isDirectory());
 			RunIt.deleteDirectory(repoDir);
@@ -108,7 +108,7 @@ public class TestGitStateChecker {
 		Assert.assertTrue(repoDir.exists());
 
 		// clean the temp space
-		File testTempDir = new File(projectPath + TestConstants.TEST_TEMP);
+		File testTempDir = new File(projectPath + TestConstants.GIT_TEST_TEMP);
 		if (testTempDir.exists()) {
 			RunIt.deleteDirectory(testTempDir);
 			Assert.assertFalse(testTempDir.exists());
@@ -168,29 +168,29 @@ public class TestGitStateChecker {
 
 	@Before
 	public void generatePreferences() {
-		String path = TestConstants.PROJECT_PATH + TestConstants.TEST_REPOS;
+		String path = TestConstants.PROJECT_PATH + TestConstants.GIT_TEST_REPOS;
 
-		DataSource myEnvironment = new DataSource("myRepository", path + "one", RepoKind.GIT, false, null);
-		String tempDirectory = TestConstants.PROJECT_PATH + TestConstants.TEST_TEMP;
+		DataSource me = new DataSource("me", path + "me", RepoKind.GIT, false, null);
+		String tempDirectory = TestConstants.PROJECT_PATH + TestConstants.GIT_TEST_TEMP;
 
-		DataSource twoSource = new DataSource("twoRepository", path + "two", RepoKind.GIT, false, null);
-		DataSource threeSource = new DataSource("threeRepository", path + "three", RepoKind.GIT, false, null);
-		DataSource fourSource = new DataSource("fourRepository", path + "four", RepoKind.GIT, false, null);
-		DataSource fiveSource = new DataSource("fiveRepository", path + "five", RepoKind.GIT, false, null);
-		DataSource sixSource = new DataSource("sixRepository", path + "six", RepoKind.GIT, false, null);
+		DataSource ahead = new DataSource("ahead", path + "ahead", RepoKind.GIT, false, null);
+		DataSource behind = new DataSource("behind", path + "behind", RepoKind.GIT, false, null);
+		DataSource conflict = new DataSource("conflict", path + "conflict", RepoKind.GIT, false, null);
+		DataSource merge = new DataSource("merge", path + "merge", RepoKind.GIT, false, null);
+		DataSource same = new DataSource("same", path + "same", RepoKind.GIT, false, null);
 
 		ClientPreferences prefs = new ClientPreferences(tempDirectory, "hgPath", TestConstants.GIT_COMMAND, Constants.DEFAULT_REFRESH);
 
-		_prefs = new ProjectPreferences(myEnvironment, prefs);
+		_prefs = new ProjectPreferences(me, prefs);
 
-		_prefs.addDataSource(twoSource);
-		_prefs.addDataSource(threeSource);
-		_prefs.addDataSource(fourSource);
-		_prefs.addDataSource(fiveSource);
-		_prefs.addDataSource(sixSource);
+		_prefs.addDataSource(ahead);
+		_prefs.addDataSource(behind);
+		_prefs.addDataSource(conflict);
+		_prefs.addDataSource(merge);
+		_prefs.addDataSource(same);
 
 		try {
-			HgStateChecker.getLocalState(_prefs);
+			GitStateChecker.getLocalState(_prefs);
 		} catch (IOException e) {
 			Assert.fail();
 		}
@@ -198,31 +198,31 @@ public class TestGitStateChecker {
 
 	@Test
 	public void testBasicMergeConflict() {
-		String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("twoRepository"), null);
+		String answer = GitStateChecker.getRelationship(_prefs, _prefs.getDataSource("conflict"), null);
 		Assert.assertEquals(Relationship.MERGECONFLICT, answer);
 	}
 
 	@Test
 	public void testBasicCleanMerge() {
-		String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("sixRepository"), null);
+		String answer = GitStateChecker.getRelationship(_prefs, _prefs.getDataSource("merge"), null);
 		Assert.assertEquals(Relationship.MERGECLEAN, answer);
 	}
 
 	@Test
 	public void testBasicAhead() {
-		String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("threeRepository"), null);
+		String answer = GitStateChecker.getRelationship(_prefs, _prefs.getDataSource("ahead"), null);
 		Assert.assertEquals(Relationship.AHEAD, answer);
 	}
 
 	@Test
 	public void testBasicBehind() {
-		String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("fourRepository"), null);
+		String answer = GitStateChecker.getRelationship(_prefs, _prefs.getDataSource("behind"), null);
 		Assert.assertEquals(Relationship.BEHIND, answer);
 	}
 
 	@Test
 	public void testBasicSame() {
-		String answer = HgStateChecker.getRelationship(_prefs, _prefs.getDataSource("fiveRepository"), null);
+		String answer = GitStateChecker.getRelationship(_prefs, _prefs.getDataSource("same"), null);
 		Assert.assertEquals(Relationship.SAME, answer);
 	}
 
