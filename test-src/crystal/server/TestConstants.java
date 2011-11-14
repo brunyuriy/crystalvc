@@ -67,6 +67,28 @@ public class TestConstants {
 		System.out.println("Constants::<clinit> - HG path: " + HG_COMMAND);
 	}
 
+	public static String GIT_COMMAND = null;
+	static {
+		/**
+		 * This should contain the path to your git binary.
+		 */
+		Vector<String> possiblePaths = new Vector<String>();
+		//TODO add paths
+		possiblePaths.add("C:\\Program Files\\Git\\bin\\\\git.exe");
+		possiblePaths.add("C:\\Program Files (x86)\\Git\\cmd\\\\git.cmd");
+		
+		
+		for (String possiblePath : possiblePaths){
+			if (new File(possiblePath).exists()) {
+				GIT_COMMAND = possiblePath;
+				break;
+			}
+		}
+		
+		
+		
+	}
+	
 	public static final String TEST_REPOS = "test-repos" + File.separator;
 	public static final String TEST_TEMP = "test-temp" + File.separator;
 }
