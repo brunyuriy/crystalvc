@@ -23,22 +23,26 @@ import crystal.client.ProjectPreferences;
 import crystal.model.DataSource;
 import crystal.model.Relationship;
 import crystal.model.DataSource.RepoKind;
+import crystal.util.LSMRLogger;
 import crystal.util.RunIt;
 
 /**
  * 
  * @author Haochen
- *
+ * 
  */
 
 public class TestGitStateChecker {
 	private ProjectPreferences _prefs;
-	
+
+	static {
+		LSMRLogger.startLog4J();
+	}
+
 	public TestGitStateChecker() {
 		ConflictSystemTray.startLogging();
-		generatePreferences();	
+		generatePreferences();
 	}
-	
 
 	public ProjectPreferences getPreferences() {
 		return _prefs;
@@ -143,8 +147,7 @@ public class TestGitStateChecker {
 					continue;
 				}
 
-				copyInputStream(zipFile.getInputStream(entry),
-						new BufferedOutputStream(new FileOutputStream(outPath + entry.getName())));
+				copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(outPath + entry.getName())));
 			}
 
 			zipFile.close();
@@ -226,5 +229,4 @@ public class TestGitStateChecker {
 		Assert.assertEquals(Relationship.SAME, answer);
 	}
 
-	
 }
