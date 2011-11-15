@@ -17,6 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import crystal.Constants;
+import crystal.CrystalTest;
 import crystal.client.ClientPreferences;
 import crystal.client.ConflictSystemTray;
 import crystal.client.ProjectPreferences;
@@ -32,7 +33,7 @@ import crystal.util.RunIt;
  * 
  */
 
-public class TestGitStateChecker {
+public class TestGitStateChecker extends CrystalTest {
 	private ProjectPreferences _prefs;
 
 	static {

@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import crystal.Constants;
+import crystal.CrystalTest;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
 
@@ -15,7 +16,7 @@ import crystal.model.DataSource.RepoKind;
  * @author Haochen
  *
  */
-public class ProjectPreferencesTest {
+public class ProjectPreferencesTest extends CrystalTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullInputConstructor(){

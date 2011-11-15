@@ -4,7 +4,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class PreferencesGUIEditorFrameTest {
+import crystal.CrystalTest;
+
+public class PreferencesGUIEditorFrameTest extends CrystalTest {
 
 	@Test
 	public void testGetPreferencesGUIEditorFrameClientPreferences() {

@@ -7,6 +7,7 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
+import crystal.CrystalTest;
 import crystal.model.DataSource.RepoKind;
 import crystal.model.RevisionHistory.Action;
 
@@ -17,7 +18,7 @@ import crystal.model.RevisionHistory.Action;
  *
  */
 
-public class RelationshipTest {
+public class RelationshipTest extends CrystalTest {
 	public static final String ERROR = "ERROR error message";
 	
 	

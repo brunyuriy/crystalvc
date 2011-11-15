@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
+import crystal.CrystalTest;
 import crystal.model.DataSource.RepoKind;
 
 /**
@@ -17,7 +18,7 @@ import crystal.model.DataSource.RepoKind;
  * 
  */
 
-public class DataSourceTest {
+public class DataSourceTest extends CrystalTest {
 
 	public static final int TIMEOUT = 20000;
 	public static DataSource data;

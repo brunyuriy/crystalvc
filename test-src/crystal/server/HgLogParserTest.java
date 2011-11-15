@@ -11,6 +11,7 @@ import java.util.Scanner;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
+import crystal.CrystalTest;
 import crystal.server.AbstractLogParser.Checkpoint;
 
 /**
@@ -18,7 +19,7 @@ import crystal.server.AbstractLogParser.Checkpoint;
  * @author Haochen
  *
  */
-public class HgLogParserTest {
+public class HgLogParserTest extends CrystalTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testParseNullLog() {
