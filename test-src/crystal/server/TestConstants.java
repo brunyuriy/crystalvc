@@ -3,6 +3,7 @@ package crystal.server;
 import java.io.File;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.junit.Ignore;
 
 import crystal.client.ConflictSystemTray;
@@ -12,7 +13,10 @@ public class TestConstants {
 
 	static {
 		ConflictSystemTray.startLogging();
+
 	}
+
+	private static Logger _log = Logger.getLogger(TestConstants.class);
 
 	public static String PROJECT_PATH = null;
 	static {
@@ -40,6 +44,7 @@ public class TestConstants {
 			PROJECT_PATH += File.separator;
 		}
 
+		_log.info("TestConstants::<clinit> - PROJECT_PATH: " + PROJECT_PATH);
 		System.out.println("Constants::<clinit> - working path: " + PROJECT_PATH);
 	}
 
@@ -58,6 +63,7 @@ public class TestConstants {
 
 		for (String possiblePath : possiblePaths) {
 			if (new File(possiblePath).exists()) {
+
 				HG_COMMAND = possiblePath;
 				break;
 			}
@@ -66,6 +72,7 @@ public class TestConstants {
 		assert HG_COMMAND != null : "Make sure your hg binary is in possiblePaths above.";
 		assert new File(HG_COMMAND).exists() : "Cannot find hg executable; this must be defined";
 
+		_log.info("TestConstants::<clinit> -HG_COMMAND: " + HG_COMMAND);
 		System.out.println("Constants::<clinit> - HG path: " + HG_COMMAND);
 	}
 
@@ -79,7 +86,7 @@ public class TestConstants {
 		possiblePaths.add("C:\\Program Files\\Git\\bin\\\\git.exe");
 		possiblePaths.add("C:\\Program Files (x86)\\Git\\cmd\\\\git.cmd");
 		possiblePaths.add("/usr/local/git/bin/git"); // os x default
-		possiblePaths.add("/user/bin/git"); // linux default, jenkins
+		possiblePaths.add("/usr/bin/git"); // linux default, jenkins
 
 		for (String possiblePath : possiblePaths) {
 			if (new File(possiblePath).exists()) {
@@ -91,6 +98,7 @@ public class TestConstants {
 		assert GIT_COMMAND != null : "Make sure your git binary is in possiblePaths above.";
 		assert new File(GIT_COMMAND).exists() : "Cannot find git executable; this must be defined";
 
+		_log.info("TestConstants::<clinit> - GIT_COMMAND: " + GIT_COMMAND);
 		System.out.println("Constants::<clinit> - GIT path: " + GIT_COMMAND);
 	}
 
