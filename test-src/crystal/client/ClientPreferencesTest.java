@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import crystal.client.ClientPreferences.DuplicateProjectNameException;
 import crystal.client.ClientPreferences.NonexistentProjectException;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
+import crystal.server.TestConstants;
 import crystal.util.XMLTools;
 
 /**
@@ -25,6 +27,8 @@ import crystal.util.XMLTools;
  * 
  */
 public class ClientPreferencesTest extends CrystalTest {
+
+	private Logger _log = Logger.getLogger(this.getClass());
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullInputConstructor() {
@@ -316,14 +320,14 @@ public class ClientPreferencesTest extends CrystalTest {
 		assertTrue("Clone method return cllientPreferences with same content", cp.equals(cp.clone()));
 		ClientPreferences copy = cp.clone();
 		for (ProjectPreferences pref : cp.getProjectPreference()) {
-			System.out.println(pref.getEnvironment().getShortName());
+			_log.debug("ClientPreferencesTest::testClone() - " + pref.getEnvironment().getShortName());
 		}
 		for (ProjectPreferences pref : copy.getProjectPreference()) {
 			pref.getEnvironment().setShortName("a");
 		}
 
 		for (ProjectPreferences pref : cp.getProjectPreference()) {
-			System.out.println(pref.getEnvironment().getShortName());
+			_log.debug("ClientPreferencesTest::testClone() - " + pref.getEnvironment().getShortName());
 		}
 		try {
 			assertFalse("Changed short name for project preferences",
@@ -332,16 +336,16 @@ public class ClientPreferencesTest extends CrystalTest {
 
 			try {
 				copy.getProjectPreferences("a");
-				System.out.println("myProject does not exist");
+				_log.debug("ClientPreferencesTest::testClone() - " + "myProject does not exist");
 			} catch (NonexistentProjectException e1) {
-				System.out.println("a does not exist");
+				_log.debug("ClientPreferencesTest::testClone() - " + "a does not exist");
 			}
 
 			try {
 				cp.getProjectPreferences("a");
-				System.out.println("that is a");
+				_log.debug("ClientPreferencesTest::testClone() - " + "that is a");
 			} catch (Exception e1) {
-				System.out.println("that's not a either");
+				_log.debug("ClientPreferencesTest::testClone() - " + "that's not a either");
 			}
 
 			System.out.println("exception");

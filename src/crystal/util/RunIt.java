@@ -199,9 +199,9 @@ public class RunIt {
         }
         boolean answer = path.delete();
         if (answer)
-            _log.info("RunIt::deleteDirectory(..) - " + path + " deleted successfully");
+            _log.trace("RunIt::deleteDirectory(..) - " + path + " deleted successfully");
         else
-            _log.info("RunIt::deleteDirectory(..) - deleting " + path + " failed");
+            _log.debug("RunIt::deleteDirectory(..) - deleting " + path + " failed");
         return answer;
     }
     
