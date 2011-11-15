@@ -1,5 +1,7 @@
 package crystal;
 
+import org.junit.Ignore;
+
 import crystal.client.ConflictSystemTray;
 
 /**
@@ -8,7 +10,8 @@ import crystal.client.ConflictSystemTray;
  * @author rtholmes
  * 
  */
-public class CrystalTest {
+@Ignore
+public abstract class CrystalTest {
 
 	static {
 		ConflictSystemTray.startLogging();
