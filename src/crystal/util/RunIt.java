@@ -186,7 +186,7 @@ public class RunIt {
      * @return true iff path is successfully deleted
      */
     static public boolean deleteDirectory(File path) {
-        _log.info("RunIt::deleteDirectory(..) - deleting " + path);
+        _log.trace("RunIt::deleteDirectory(..) - deleting " + path);
         if (path.exists()) {
             File[] files = path.listFiles();
             for (int i = 0; i < files.length; i++) {
@@ -201,7 +201,7 @@ public class RunIt {
         if (answer)
             _log.trace("RunIt::deleteDirectory(..) - " + path + " deleted successfully");
         else
-            _log.debug("RunIt::deleteDirectory(..) - deleting " + path + " failed");
+            _log.warn("RunIt::deleteDirectory(..) - deleting " + path + " failed");
         return answer;
     }
     

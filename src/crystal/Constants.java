@@ -46,7 +46,7 @@ public class Constants {
 	/**
 	 * The level of logging.
 	 */
-	public static final Level LOG_LEVEL = Level.INFO;
+	public static final Level LOG_LEVEL = Level.DEBUG;
 
 	/**
 	 * HOME is the string that designates the home directory in the local file system.
