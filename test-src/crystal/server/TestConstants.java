@@ -6,15 +6,10 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
 
-import crystal.client.ConflictSystemTray;
+import crystal.CrystalTest;
 
 @Ignore
-public class TestConstants {
-
-	static {
-		ConflictSystemTray.startLogging();
-
-	}
+public class TestConstants extends CrystalTest {
 
 	private static Logger _log = Logger.getLogger(TestConstants.class);
 

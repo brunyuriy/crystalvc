@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import crystal.CrystalTest;
 import crystal.model.DataSource.RepoKind;
 
 /**
@@ -14,7 +15,7 @@ import crystal.model.DataSource.RepoKind;
  * @author Haochen
  *
  */
-public class LocalStateResultTest {
+public class LocalStateResultTest extends CrystalTest {
 
 
 	public static LocalStateResult localState;

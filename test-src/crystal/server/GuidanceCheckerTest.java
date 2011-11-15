@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
+import crystal.CrystalTest;
 import crystal.model.Relationship;
 import crystal.model.RevisionHistory.When;
 import crystal.server.AbstractLogParser.Checkpoint;
@@ -23,7 +24,7 @@ import crystal.server.AbstractLogParser.Checkpoint;
  * @author Haochen
  *
  */
-public class GuidanceCheckerTest {
+public class GuidanceCheckerTest extends CrystalTest {
 
 	@Test
 	public void testGetCommitters() {

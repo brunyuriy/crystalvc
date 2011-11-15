@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import crystal.Constants;
+import crystal.CrystalTest;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
 import crystal.model.LocalStateResult;
@@ -21,8 +22,9 @@ import crystal.server.HgStateChecker;
  * @author Haochen
  *
  */
-public class ConflictDaemonTest {
+public class ConflictDaemonTest extends CrystalTest {
 
+	
 	@Test
 	public void testGetInstance() {
 		ConflictDaemon instance = ConflictDaemon.getInstance();

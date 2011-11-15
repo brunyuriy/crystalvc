@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import crystal.CrystalTest;
 import crystal.model.DataSource.RepoKind;
 /**
  * Class RevisionHistoryTest will test the performance of class RevisionHistory
@@ -16,7 +17,7 @@ import crystal.model.DataSource.RepoKind;
  * @author Haochen
  *
  */
-public class RevisionHistoryTest {
+public class RevisionHistoryTest extends CrystalTest {
 
 	public RevisionHistory history;
 	
