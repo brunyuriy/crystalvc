@@ -77,7 +77,7 @@ public class TestConstants {
 		//TODO add paths
 		possiblePaths.add("C:\\Program Files\\Git\\bin\\\\git.exe");
 		possiblePaths.add("C:\\Program Files (x86)\\Git\\cmd\\\\git.cmd");
-		
+		possiblePaths.add("/user/bin/git.exe");
 		
 		for (String possiblePath : possiblePaths){
 			if (new File(possiblePath).exists()) {
