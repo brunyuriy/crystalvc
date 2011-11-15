@@ -261,14 +261,14 @@ public class RunIt {
             }
             if ((new File(token + File.separator + execPart + ".exe")).exists()) {
                 if (!(token.endsWith(File.separator)))
-                    token += File.separator;    
+                    token += File.separator;  
                 return token + File.separator + execPart + ".exe" + arguments;
             }
             if ((token.endsWith("cmd")) || (token.endsWith("cmd" + File.separator))) {
                 token = token.replace("cmd","bin");
                 if ((new File(token + File.separator + execPart + ".exe")).exists()) {
                     if (!(token.endsWith(File.separator)))
-                        token += File.separator;    
+                        token += File.separator;  
                     return token + File.separator + execPart + ".exe" + arguments;
                 }
             }
