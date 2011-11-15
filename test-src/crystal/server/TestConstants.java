@@ -22,10 +22,11 @@ public class TestConstants {
 		Vector<String> possiblePaths = new Vector<String>();
 		possiblePaths.add("/var/lib/jenkins/jobs/crystalvc/workspace/"); // for ci server
 		possiblePaths.add("/Users/rtholmes/Workspaces/inconsistencyworkspace/crystalvc/"); // MBA
+		possiblePaths.add("/Users/rtholmes/Workspaces/speculation-inconsistency/crystalvc/"); // craigleith
 		possiblePaths.add("C:\\Users\\Yuriy\\Desktop\\work\\crystalSource");
 		possiblePaths.add("C:\\Users\\brun\\work\\crystalCode");
 		possiblePaths.add("C:\\Users\\Haochen\\Dropbox\\crystal\\haochen\\crystalvc");
-		
+
 		for (String possiblePath : possiblePaths) {
 			if (new File(possiblePath).exists()) {
 				PROJECT_PATH = possiblePath;
@@ -41,7 +42,7 @@ public class TestConstants {
 
 		System.out.println("Constants::<clinit> - working path: " + PROJECT_PATH);
 	}
-	
+
 	public static String HG_COMMAND = null;
 	static {
 		/**
@@ -74,27 +75,28 @@ public class TestConstants {
 		 * This should contain the path to your git binary.
 		 */
 		Vector<String> possiblePaths = new Vector<String>();
-		//TODO add paths
+		// TODO add paths
 		possiblePaths.add("C:\\Program Files\\Git\\bin\\\\git.exe");
 		possiblePaths.add("C:\\Program Files (x86)\\Git\\cmd\\\\git.cmd");
-		possiblePaths.add("/user/bin/git");
-		
-		for (String possiblePath : possiblePaths){
+		possiblePaths.add("/usr/local/git/bin/git"); // os x default
+		possiblePaths.add("/user/bin/git"); // linux default, jenkins
+
+		for (String possiblePath : possiblePaths) {
 			if (new File(possiblePath).exists()) {
 				GIT_COMMAND = possiblePath;
 				break;
 			}
 		}
-		
+
 		assert GIT_COMMAND != null : "Make sure your git binary is in possiblePaths above.";
 		assert new File(GIT_COMMAND).exists() : "Cannot find git executable; this must be defined";
 
 		System.out.println("Constants::<clinit> - GIT path: " + GIT_COMMAND);
 	}
-	
+
 	public static final String TEST_REPOS = "test-repos" + File.separator;
 	public static final String TEST_TEMP = "test-temp" + File.separator;
 	public static final String GIT_TEST_REPOS = "gittestproject" + File.separator;
 	public static final String GIT_TEST_TEMP = "git-test-temp" + File.separator;
-	
+
 }
