@@ -8,12 +8,16 @@ import java.net.URLConnection;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import crystal.client.ClientPreferences;
 import crystal.client.ProjectPreferences;
 import crystal.model.DataSource;
 
 
 public class ValidInputChecker {
+	
+	private static Logger _log = Logger.getLogger(ValidInputChecker.class);
 	
 	/**
 	 * Check if input url path is valid.
@@ -165,7 +169,7 @@ public class ValidInputChecker {
 	 */
 	private static void checkValidPath(String path, boolean isFile){
 		File f = new File(path);
-		System.out.println(f.exists());
+		_log.debug("ValidInputChecker::checkValidFilePath( "+path+", "+isFile+" ) - "+f.exists());
 		if(isFile && !f.isFile()){
 			throw new IllegalArgumentException("Given path is not path to file.");
 		} else if (!isFile && !f.isDirectory()){

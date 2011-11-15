@@ -7,12 +7,14 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
+import crystal.CrystalTest;
+
 /**
  * Class SetOperationsTest will test the performance of class SetOperations
  * @author Haochen
  *
  */
-public class SetOperationsTest {
+public class SetOperationsTest extends CrystalTest {
 
 	
 	@Test (expected = IllegalArgumentException.class)
