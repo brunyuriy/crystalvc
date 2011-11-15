@@ -82,7 +82,6 @@ public class TestGitStateChecker {
 		File[] files = pp.listFiles();
 		Assert.assertNotNull(files);
 
-
 		// make sure the repo zip file exists
 		File repoZipFile = null;
 		for (File f : files) {
@@ -179,8 +178,8 @@ public class TestGitStateChecker {
 		DataSource conflict = new DataSource("conflict", path + "conflict", RepoKind.GIT, false, null);
 		DataSource merge = new DataSource("merge", path + "merge", RepoKind.GIT, false, null);
 		DataSource same = new DataSource("same", path + "same", RepoKind.GIT, false, null);
-		String gitCommand = RunIt.getExecutable("git");
-		ClientPreferences prefs = new ClientPreferences(tempDirectory, "hgPath", gitCommand, Constants.DEFAULT_REFRESH);
+
+		ClientPreferences prefs = new ClientPreferences(tempDirectory, "hgPath", TestConstants.GIT_COMMAND, Constants.DEFAULT_REFRESH);
 
 		_prefs = new ProjectPreferences(me, prefs);
 
