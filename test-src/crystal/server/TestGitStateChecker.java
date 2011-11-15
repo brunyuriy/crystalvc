@@ -128,7 +128,7 @@ public class TestGitStateChecker {
 			if (!outPath.endsWith(File.separator))
 				outPath += File.separator;
 
-			System.out.println("Unzipping repository to: " + outPath);
+			System.out.println("TestGitStateChecker::unzipTestRepositories(..) - Unzipping repository to: " + outPath);
 
 			ZipFile zipFile = new ZipFile(repoZipFile);
 
@@ -152,7 +152,7 @@ public class TestGitStateChecker {
 			ioe.printStackTrace();
 			Assert.fail(ioe.getMessage());
 		}
-		System.out.println("Unzipping repository complete.");
+		System.out.println("TestGitStateChecker::unzipTestRepositories(..) - Unzipping repository complete.");
 	}
 
 	private static final void copyInputStream(InputStream in, OutputStream out) throws IOException {

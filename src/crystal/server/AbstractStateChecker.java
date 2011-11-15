@@ -325,8 +325,7 @@ public abstract class AbstractStateChecker {
 		Assert.assertNotNull(prefs);
 		Assert.assertNotNull(source);
 
-		_log.info("get relationship");
-		Logger log = Logger.getLogger(AbstractStateChecker.class);
+		_log.info("AbstractStateChecker::getRelationship(..)");
 
 		// if project or source are disabled, return null.
 		if ((!prefs.getEnvironment().isEnabled()) || (!source.isEnabled()))
@@ -355,15 +354,15 @@ public abstract class AbstractStateChecker {
 					source.getShortName(), prefs.getEnvironment().getShortName());
 		} catch (OperationException e1) {
 			if (kind.equals(RepoKind.GIT)) 
-				_log.info("failed to update local repo and check cache error in get relationship");
+				_log.info("AbstractStateChecker::getRelationship(..) - ERROR: failed to update local repo and check cache error in get relationship");
 			return Relationship.ERROR + " " + e1.getMessage();
 		} catch (IOException e2) {
 			if (kind.equals(RepoKind.GIT)) 
-				_log.info("failed to update local repo and check cache error in get relationship");
+				_log.info("AbstractStateChecker::getRelationship(..) - ERROR: failed to update local repo and check cache error in get relationship");
 		    return Relationship.ERROR + " " + e2.getMessage();
 		}
 		if (kind.equals(RepoKind.GIT)) 
-			_log.info("successfully update local repo and check cache error in get relationship");
+			_log.info("AbstractStateChecker::getRelationship(..) - successfully update local repo and check cache error in get relationship");
 		// Get your log and set your history
 		String[] logArgs = { "log" };
 		Output logOutput;
@@ -500,7 +499,7 @@ public abstract class AbstractStateChecker {
 				answer = Relationship.MERGECONFLICT;
 		} else {
 			// something went wrong
-			log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output.toString());
+			_log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output.toString());
 			String errorMsg = "Crystal is having trouble comparing\n" + 
 			mine + " and " + yours + "\n" + 
 			"for the repository " + source.getShortName() + " in project " + prefs.getEnvironment().getShortName() + ".\n";
