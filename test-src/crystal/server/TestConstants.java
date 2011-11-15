@@ -90,7 +90,6 @@ public class TestConstants {
 		assert new File(GIT_COMMAND).exists() : "Cannot find git executable; this must be defined";
 
 		System.out.println("Constants::<clinit> - GIT path: " + GIT_COMMAND);
-		
 	}
 	
 	public static final String TEST_REPOS = "test-repos" + File.separator;
