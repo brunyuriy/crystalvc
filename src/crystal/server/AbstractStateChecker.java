@@ -19,19 +19,14 @@ import crystal.model.LocalStateResult;
 import crystal.model.Relationship;
 import crystal.model.RevisionHistory;
 import crystal.server.AbstractLogParser.CheckpointLabels;
-import crystal.util.LSMRLogger;
 import crystal.util.RunIt;
-import crystal.util.TimeUtility;
 import crystal.util.RunIt.Output;
+import crystal.util.TimeUtility;
 
 public abstract class AbstractStateChecker {
 
 	/** using for comparing output */
 	private static Logger _log = Logger.getLogger(AbstractStateChecker.class);
-
-	static {
-		LSMRLogger.startLog4J();
-	}
 
 	/**
 	 * @param String
