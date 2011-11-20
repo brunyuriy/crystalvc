@@ -42,7 +42,7 @@ public class Constants {
 	/**
 	 * When false the Log4J console appender is quiet only reporting ERROR and above.
 	 */
-	public static final boolean QUIET_CONSOLE = false;
+	public static final boolean QUIET_CONSOLE = true;
 	/**
 	 * The level of logging.
 	 */
