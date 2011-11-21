@@ -22,9 +22,9 @@ public class TestConstants extends CrystalTest {
 		possiblePaths.add("/var/lib/jenkins/jobs/crystalvc/workspace/"); // for ci server
 		possiblePaths.add("/Users/rtholmes/Workspaces/inconsistencyworkspace/crystalvc/"); // MBA
 		possiblePaths.add("/Users/rtholmes/Workspaces/speculation-inconsistency/crystalvc/"); // craigleith
-		possiblePaths.add("C:\\Users\\Yuriy\\Desktop\\work\\My Dropbox\\crystal\\yuriy\\crystalvc");
-		possiblePaths.add("C:\\Users\\brun\\work\\crystalCode");
+		possiblePaths.add("C:\\Users\\Yuriy\\Desktop\\work\\My Dropbox\\crystal\\yuriy\\crystalvc"); // for yuriy's laptop
 		possiblePaths.add("C:\\Users\\Haochen\\Dropbox\\crystal\\haochen\\crystalvc");
+		possiblePaths.add("/homes/gws/brun/Dropbox/crystal/yuriy/crystalvc"); // for yuriy's horseradish machine
 
 		for (String possiblePath : possiblePaths) {
 			if (new File(possiblePath).exists()) {
