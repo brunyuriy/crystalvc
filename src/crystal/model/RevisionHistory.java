@@ -195,6 +195,7 @@ public class RevisionHistory implements Cloneable{
 		for (String s : _changesets.keySet()) {
 			answer += s + ", ";
 		}
+		
 		return answer.substring(0, answer.length() - 1);
 	}
 
