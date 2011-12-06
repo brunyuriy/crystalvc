@@ -93,7 +93,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		final Map<JComponent, Boolean> changedComponents = new HashMap<JComponent, Boolean>();
 		final Map<JTextField, Boolean> validText = new HashMap<JTextField, Boolean>();
 		final JFrame frame = this;
-		frame.setIconImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.jpg"))).getImage());
+		frame.setIconImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.png"))).getImage());
 
 		if (copyPrefs.getProjectPreference().isEmpty()) {
 			// ClientPreferences client = new ClientPreferences("/usr/bin/hg/", "/tmp/crystalClient/");
