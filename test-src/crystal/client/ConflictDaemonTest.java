@@ -71,7 +71,8 @@ public class ConflictDaemonTest extends CrystalTest {
 		DataSource source1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent");
 		Relationship relationship1 = instance.getRelationship(source1);
 		assertNotNull("When input data source is not contained", relationship1);
-		assertTrue("It's relationship is pending", relationship1.getName().equals(Relationship.PENDING));
+		assertTrue("When input data source is not contained, it's relationship is pending", 
+				relationship1.getName().equals(Relationship.PENDING));
 		
 		assertEquals("non listeners", 0, instance._listeners.size());
 		

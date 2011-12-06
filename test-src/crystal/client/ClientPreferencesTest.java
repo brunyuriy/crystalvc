@@ -99,11 +99,9 @@ public class ClientPreferencesTest extends CrystalTest {
 		assertEquals("Before adding project preferences ", 0, cp.getProjectPreference().size());
 
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent");
-
 		ProjectPreferences pp_1 = new ProjectPreferences(data_1, cp);
 
 		DataSource data_2 = new DataSource("shortName_2", "cloneString", RepoKind.HG, false, "parent");
-
 		ProjectPreferences pp_2 = new ProjectPreferences(data_2, cp);
 
 		cp.addProjectPreferences(pp_1);
@@ -265,7 +263,7 @@ public class ClientPreferencesTest extends CrystalTest {
 	@Test
 	public void testSavePreferencesToXML() throws NonexistentProjectException {
 		ClientPreferences cp = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
-		((List<DataSource>) cp.getProjectPreferences("myProject").getDataSources()).get(0).setRemoteCmd("setRemoteHg");
+		((List<DataSource>) cp.getProjectPreferences("myProject").getDataSources()).get(0).setRemoteCmd("RemoteHG");
 
 		String path = "testDataFile\\testSave.xml";
 		File f = new File(path);
@@ -309,7 +307,6 @@ public class ClientPreferencesTest extends CrystalTest {
 		assertTrue("Compare short name", source1.getAttributeValue("ShortName").equals(data1.getShortName()));
 		assertNull("Clone doesn't exist", source1.getAttributeValue("clone"));
 		assertTrue("Compare common parent", source1.getAttributeValue("commonParent").equals(data1.getParent()));
-		assertTrue("Check remote hg" + data1.getRemoteCmd(), data1.getRemoteCmd().equals(source1.getAttributeValue("RemoteHG")));
 		assertTrue("hide", source1.getAttributeValue("Hidden").equals(String.valueOf(data1.isHidden())));
 
 	}

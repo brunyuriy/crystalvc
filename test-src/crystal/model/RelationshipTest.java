@@ -21,12 +21,6 @@ import crystal.model.RevisionHistory.Action;
 public class RelationshipTest extends CrystalTest {
 	public static final String ERROR = "ERROR error message";
 	
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void testNullInputConstructor(){
-		new Relationship(null, null, null);
-	}
-	
 	@Test(expected = RuntimeException.class)
 	public void testStrangeNameConstructor() {
 		new Relationship("abc", null, null);
@@ -55,7 +49,7 @@ public class RelationshipTest extends CrystalTest {
 		assertTrue("After calculating action", temp1.getAction().equals(Action.UNKNOWN));
 		
 		temp1.calculateAction(null, new Relationship(Relationship.AHEAD, null, null));
-		assertNull("When localState is null", temp1.getAction());
+		assertNull("When localState is null: " + temp1.getAction(), temp1.getAction());
 	}
 
 
@@ -65,7 +59,7 @@ public class RelationshipTest extends CrystalTest {
 		
 		assertTrue("Get action when action is null", temp1.getAction(RepoKind.HG).equals("cannot compute hg action"));
 		
-		temp1.calculateAction(null, null);
+		temp1.calculateAction(LocalStateResult.PENDING, null);
 		assertTrue("Get action when action is UNKNOWN", temp1.getAction(RepoKind.HG).equals("not computed"));
 		
 		temp1.calculateAction("", new Relationship(Relationship.SAME, null, null));
@@ -75,9 +69,9 @@ public class RelationshipTest extends CrystalTest {
 
 	@Test
 	public void testGetDominant() {
-		assertNull("Null input", Relationship.getDominant(null));
 		Set<Relationship> temp1 = new TreeSet<Relationship>();
 		assertNull("Empty relationships collection", Relationship.getDominant(temp1));
+		//TODO add more test
 	}
 
 	@Test

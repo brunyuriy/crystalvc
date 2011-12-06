@@ -372,15 +372,17 @@ public class Relationship implements Result {
 	 * @param parent: the Relationship with the common parent
 	 */
 	public void calculateAction(String localState, Relationship parent) {
-		if ((parent == null) || (localState == LocalStateResult.PENDING))
+		if (localState == null)
+			_action = null;
+		else if ((parent == null) || (localState == LocalStateResult.PENDING))
 			_action = Action.UNKNOWN;
 		else if (parent.getName().equals(Relationship.SAME))
 			_action = Action.NOTHING;
-		else if (localState.equals(LocalStateResult.HG_MUST_RESOLVE) 
-				|| localState.equals(LocalStateResult.GIT_MUST_RESOLVE))
+		else if (localState == (LocalStateResult.HG_MUST_RESOLVE) 
+				|| localState == (LocalStateResult.GIT_MUST_RESOLVE))
 			_action = Action.RESOLVE;
-		else if (localState.equals(LocalStateResult.HG_UNCHECKPOINTED)
-				|| localState.equals(LocalStateResult.GIT_UNCHECKPOINTED))
+		else if (localState == (LocalStateResult.HG_UNCHECKPOINTED)
+				|| localState == (LocalStateResult.GIT_UNCHECKPOINTED))
 			_action = Action.CHECKPOINT;
 		else if (parent.getName().equals(Relationship.AHEAD))
 			_action = Action.PUBLISH;
@@ -499,6 +501,10 @@ public class Relationship implements Result {
 		Relationship dominant = null;
 		for (Relationship currentRelationship : relationships)
 			dominant = compareImages(currentRelationship, dominant);
+		
+		if (dominant == null) {
+			return null;
+		}
 		return dominant.getImage();
 	}
 

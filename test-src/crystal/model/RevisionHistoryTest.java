@@ -99,7 +99,7 @@ public class RevisionHistoryTest extends CrystalTest {
 		RevisionHistory history_3 = new RevisionHistory(log_3, RepoKind.HG);
 		System.out.println(history.getCommitters(history_3));
 		assertTrue("One different name"
-				, history.getCommitters(history_3).equals("Kenneth Reitz <me@kennethreitz.com>"));
+				, history.getCommitters(history_3).equals("Kenneth Reitz <me@kennethreitz.com> and Georg Brandl <georg@python.org>"));
 	}
 
 

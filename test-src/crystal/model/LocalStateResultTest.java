@@ -38,16 +38,16 @@ public class LocalStateResultTest extends CrystalTest {
 				name, lastState, lastAction, lastErrorMessage);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testStrangeActionName(){
 		String name = "abc";
 		String lastState = "lastState";
 		String lastAction = "lastAction";
 		String lastErrorMessage = "lastErrorMessage";
 		
-		new LocalStateResult(new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"), 
+		LocalStateResult temp = new LocalStateResult(new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"), 
 				name, lastState, lastAction, lastErrorMessage);
-	
+		assertNull("strange action", temp.getAction());
 	}
 	
 	@Test

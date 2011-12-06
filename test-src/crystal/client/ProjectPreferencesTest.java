@@ -18,11 +18,6 @@ import crystal.model.DataSource.RepoKind;
  */
 public class ProjectPreferencesTest extends CrystalTest {
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void testNullInputConstructor(){
-		new ProjectPreferences(null, null);
-	}
-	
 	@Test
 	public void testProjectPreferences() {
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
@@ -70,14 +65,14 @@ public class ProjectPreferencesTest extends CrystalTest {
 		
 		pp.getDataSource("shortName_2").setShortName("shortName");
 		
-		assertEquals("Still have 3 data sources", 3, pp.getDataSources().size());
+		assertEquals("should have only 2 data sources", 2, pp.getDataSources().size());
 		
 		assertNull("Don't contain second added data source", pp.getDataSource("shortName_2"));
 		
 		pp.getDataSource("shortName").setShortName("shortName_2");
 		
 		assertEquals("Still have 3 data sources", 3, pp.getDataSources().size());
-		
+
 		assertNull("Don't contain first added data source", pp.getDataSource("shortName"));
 		
 	}
@@ -118,14 +113,11 @@ public class ProjectPreferencesTest extends CrystalTest {
 		DataSource ds_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent");
 		DataSource ds_2 = new DataSource("shortName_2", "cloneString_2", RepoKind.HG, false, "parent_2");
 		DataSource ds_3 = new DataSource("shortName_3", "cloneString_3", RepoKind.HG, false, "parent_3");
-		pp.removeDataSource(ds_1);
+		pp.removeDataSource(data_1);
 		
 		pp.addDataSource(ds_1);
 		
 		pp.removeDataSource(new DataSource("shortName", "cloneString", RepoKind.HG, true, "parent"));
-		assertEquals("Cannot remove data source", 1, pp.getDataSources().size());
-		
-		pp.removeDataSource(new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"));
 		assertEquals("Removed data source", 0, pp.getDataSources().size());
 		
 		pp.addDataSource(ds_1);

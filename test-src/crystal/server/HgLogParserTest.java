@@ -51,7 +51,6 @@ public class HgLogParserTest extends CrystalTest {
 			
 		}
 
-		
 		while(input.hasNextLine()){
 			String line = input.nextLine();
 			if(line.startsWith("changeset")){
@@ -66,7 +65,8 @@ public class HgLogParserTest extends CrystalTest {
 		Checkpoint c1 = checkPoints.get("ce4bb37a1409");
 		assertNotNull(c1);
 		assertTrue("compare changeset", c1.getChangeset().equals("ce4bb37a1409"));
-		assertTrue("compare user", c1.getCommitter().equals("Daniel Neuhäuser <dasdasich@gmail.com>"));
+		System.out.println(c1.getParents());
+		assertTrue("compare user", c1.getCommitter().equals("Daniel NeuhÃ¤user <dasdasich@gmail.com>"));
 		assertTrue("comepare date", c1.getDate().equals("Sat Feb 05 21:48:54 2011 +0100"));
 		assertTrue("compare summary", c1.getSummary().equals("Change redirected URLs to the new locations"));
 		assertTrue("compare parent", c1.getParents().contains("96b7b2b849c3"));
