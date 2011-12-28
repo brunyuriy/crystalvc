@@ -63,7 +63,7 @@ public class ProjectPanel extends JPanel {
 
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		_name = copyPref.getEnvironment().getShortName();
+		_name = copyPref.getName();
 		
 		JPanel prefEnvironmentPanel = new JPanel(new SpringLayout());
 
@@ -73,7 +73,7 @@ public class ProjectPanel extends JPanel {
 		prefEnvironmentPanel.add(new JLabel("Valid?"));
 		
 		prefEnvironmentPanel.add(new JLabel("Project Name: "));
-		final JTextField shortName = new JTextField(copyPref.getEnvironment().getShortName());
+		final JTextField shortName = new JTextField(copyPref.getName());
 		final JLabel nameState = new JLabel("  valid");
 		nameState.setForeground(Color.GREEN.darker());
 		changedComponents.put(shortName, false);
@@ -90,13 +90,13 @@ public class ProjectPanel extends JPanel {
 
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-				copyPref.getEnvironment().setShortName(shortName.getText());
+				copyPref.setName(shortName.getText());
 				_name = shortName.getText();
 				((JLabel)((JPanel)tabbedPane.getTabComponentAt(tabbedPane.getSelectedIndex())).getComponent(0)).setText(_name);
 				
 				if (pref != null) {
 					changedComponents.put(shortName, 
-							!shortName.getText().equals(pref.getEnvironment().getShortName()));
+							!shortName.getText().equals(pref.getName()));
 				}
 				boolean valid = ValidInputChecker.checkProjectPreferencesNameDuplicate(copyPrefs, copyPref);
 				validText.put(shortName, valid);

@@ -276,7 +276,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			ProjectPanel current;
 			try {
 				current = new ProjectPanel(copyPref, copyPrefs, frame, projectsTabs, 
-						changedComponents, prefs.getProjectPreferences(copyPref.getEnvironment().getShortName()), validText);
+						changedComponents, prefs.getProjectPreferences(copyPref.getName()), validText);
 				projectsTabs.addTab(current.getName(), current);
 				JPanel pnl = new JPanel();
 				JLabel tabName = new JLabel(current.getName());
@@ -299,7 +299,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 				//deleteProjectButton.setEnabled(true);
 				HashSet<String> shortNameLookup = new HashSet<String>();
 				for (ProjectPreferences current : copyPrefs.getProjectPreference()) {
-					shortNameLookup.add(current.getEnvironment().getShortName());
+					shortNameLookup.add(current.getName());
 				}
 				int count = 1;
 				while (shortNameLookup.contains("New Project " + count++))
@@ -318,7 +318,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 				final ProjectPanel newGuyPanel = new ProjectPanel(newGuy, copyPrefs, frame, projectsTabs, changedComponents, null, validText);
 				projectsTabs.addTab("New Project " + count, newGuyPanel);
 				JPanel pnl = new JPanel();
-				JLabel tabName = new JLabel(newGuy.getEnvironment().getShortName());
+				JLabel tabName = new JLabel(newGuy.getName());
 
 				pnl.setOpaque(false);
 				pnl.add(tabName);
@@ -476,7 +476,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 						JPanel tabPanel = (JPanel) projectsTabs.getTabComponentAt(i);
 						JLabel nameLabel = (JLabel) tabPanel.getComponent(0);
 						String tabName = nameLabel.getText();
-						if (tabName.equals(newGuy.getEnvironment().getShortName())) {
+						if (tabName.equals(newGuy.getName())) {
 							targetProject = tabName;
 						}
 					}	

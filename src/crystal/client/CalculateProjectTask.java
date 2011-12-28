@@ -74,9 +74,9 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 		//		publish(localStatePlaceholder);
 
 		// Now calculate the new state:
-		_log.trace("Stating computing local state computed for " + _prefs.getEnvironment().getShortName());
+		_log.trace("Stating computing local state computed for " + _prefs.getName());
 		LocalStateResult localStateResult = ConflictDaemon.getInstance().calculateLocalState(_prefs);
-		_log.trace("Local state computed for " + _prefs.getEnvironment().getShortName() + ": " + localStateResult);
+		_log.trace("Local state computed for " + _prefs.getName() + ": " + localStateResult);
 		
 		// UPDATE: turns out we don't have to do this.
 		// And update the GUI
@@ -106,19 +106,19 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 		//		}
 
 		// And then perform the calculations for all the relationships:
-		_log.trace("Stating computing relationships for the " + _prefs.getEnvironment().getShortName() + "project");
+		_log.trace("Stating computing relationships for the " + _prefs.getName() + "project");
 		for (DataSource source : _prefs.getDataSources()) {
-			_log.trace("Stating computing relationships for the " + _prefs.getEnvironment().getShortName() + "project " + 
+			_log.trace("Stating computing relationships for the " + _prefs.getName() + "project " + 
 					source.getShortName() + " repository");
 			Relationship relationshipResult = ConflictDaemon.getInstance().calculateRelationship(source, _prefs);
-			_log.trace("Relationship computed for the " + _prefs.getEnvironment().getShortName() + "project " + 
+			_log.trace("Relationship computed for the " + _prefs.getName() + "project " + 
 					source.getShortName() + " repository: " + relationshipResult);
 			relationships.put(source, relationshipResult);
 		}
-		_log.trace("Finished computing relationships for the " + _prefs.getEnvironment().getShortName() + "project");
+		_log.trace("Finished computing relationships for the " + _prefs.getName() + "project");
 
 		// And then calculate the Guidance and update the relationships:
-		_log.trace("Stating computing the guidance for the " + _prefs.getEnvironment().getShortName() + "project");
+		_log.trace("Stating computing the guidance for the " + _prefs.getName() + "project");
 		RevisionHistory mine = _prefs.getEnvironment().getHistory();
 		try {
 		    if (mine != null) {
@@ -151,13 +151,13 @@ public class CalculateProjectTask extends SwingWorker<Void, Result> {
 		                ourRelationship.setEase(mine.getEase());
 		            }
 
-		            _log.trace("Relationship and guidance computed for the " + _prefs.getEnvironment().getShortName() + "project " + 
+		            _log.trace("Relationship and guidance computed for the " + _prefs.getName() + "project " + 
 		                    source.getShortName() + " repository: " + relationships.get(source));
 		            // And finally, set the relationship to ready and update the GUI:
 		        }
-		        _log.trace("Finished computing the guidance for the " + _prefs.getEnvironment().getShortName() + "project");
+		        _log.trace("Finished computing the guidance for the " + _prefs.getName() + "project");
 		    } else {
-		        _log.trace("My repo history couldn't be parsed, so I did not cimpute guidance for the " + _prefs.getEnvironment().getShortName() + "project");
+		        _log.trace("My repo history couldn't be parsed, so I did not cimpute guidance for the " + _prefs.getName() + "project");
 		    }
 		} catch (Exception e) {
 		    _log.error("Error while computing the guidance.  (This message is expected if there is an X error icon.)\nCaught a " + e.getClass().getName() + " with the message \"" + e.getMessage() + "\"");		  

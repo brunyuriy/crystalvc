@@ -213,8 +213,8 @@ public class ClientPreferences implements Cloneable {
     public void addProjectPreferences(ProjectPreferences pref) throws DuplicateProjectNameException {
         // String shortName = pref.getEnvironment().getShortName();
         for (ProjectPreferences pp : _projectPreferences) {
-            if (pp.getEnvironment().getShortName().equals(pref.getEnvironment().getShortName())) {
-                throw new DuplicateProjectNameException("Duplicate project name: " + pp.getEnvironment().getShortName());
+            if (pp.getName().equals(pref.getName())) {
+                throw new DuplicateProjectNameException("Duplicate project name: " + pp.getName());
             }
         }
         _projectPreferences.add(pref);
@@ -259,7 +259,7 @@ public class ClientPreferences implements Cloneable {
      */
     public ProjectPreferences getProjectPreferences(String shortName) throws NonexistentProjectException {
         for (ProjectPreferences pp : _projectPreferences) {
-            if (pp.getEnvironment().getShortName().equals(shortName)) {
+            if (pp.getName().equals(shortName)) {
                 return pp;
             }
         }
@@ -647,7 +647,7 @@ public class ClientPreferences implements Cloneable {
         for (ProjectPreferences pp : prefs.getProjectPreference()) {
             Element projectElem = new Element(IPrefXML.PROJECT[0]);
             projectElem.setAttribute(IPrefXML.KIND[0], pp.getEnvironment().getKind().name());
-            projectElem.setAttribute(IPrefXML.LABEL[0], pp.getEnvironment().getShortName());
+            projectElem.setAttribute(IPrefXML.LABEL[0], pp.getName());
             projectElem.setAttribute(IPrefXML.CLONE[0], pp.getEnvironment().getCloneString());
             if (pp.getEnvironment().getParent() != null)
                 projectElem.setAttribute(IPrefXML.PARENT[0], pp.getEnvironment().getParent());

@@ -55,7 +55,6 @@ public class ProjectPreferences implements Cloneable {
 		}
 	}
 
-	//TODO
     /**
      * Compare this object with another object
      * @param o target object
@@ -113,6 +112,20 @@ public class ProjectPreferences implements Cloneable {
 	public DataSource getEnvironment() {
 		return _myEnvironment;
 	}
+	
+	/**
+	 * @ return the name of the project
+	 */
+	public String getName() {
+	    return _myEnvironment.getShortName();
+	}
+	
+	/**
+	 * 
+	 */
+	public void setName(String name) {
+	    _myEnvironment.setShortName(name);
+	}
 
 	/**
 	 * @return a specific repository configuration
@@ -151,6 +164,6 @@ public class ProjectPreferences implements Cloneable {
 		if (!basePath.endsWith(File.separator))
 			basePath += File.separator;
 
-		return basePath + getEnvironment().getShortName() + "_" + source.getShortName();
+		return basePath + getName() + "_" + source.getShortName();
 	}
 }
