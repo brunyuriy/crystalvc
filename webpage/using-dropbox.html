@@ -1,0 +1,224 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>Sharing repositories using Dropbox</title>
+  <META HTTP-EQUIV="Refresh" CONTENT="1;URL=http://crystalvc.googlecode.com" />
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<style type="text/css">
+body
+{
+background-color:#FFFF99
+}
+
+</style>
+
+</head>
+<body>
+<h1>Sharing repositories using Dropbox</h1>
+
+<p>
+<a href="./">Crystal</a> requires read-access to your co-workers' repositories.
+This document describes how to do this via
+<a href="http://www.dropbox.com/">Dropbox</a>.  There are four steps:
+</p>
+<!-- start toc.  do not edit; run html-update-toc instead -->
+    <ul>
+      <li><a href="#install-dropbox">1. Install Dropbox</a>
+        <ul>
+          <li><a href="#install-dropbox">1.1 Installing Dropbox without root privileges</a></li>
+        </ul></li>
+      <li><a href="#create-dropbox-folder">2. Create the Dropbox folder</a></li>
+      <li><a href="#link">3. Link your repository to Dropbox</a></li>
+      <li><a href="#using-crystal">4. Use Crystal with Dropbox</a></li>
+    </ul>
+<!-- end toc -->
+
+
+<h2 id="install-dropbox">1. Install Dropbox</h2>
+
+<p>
+Sign up for <a href="http://www.dropbox.com/">Dropbox</a> and install the
+application.
+</p>
+
+<p>
+We will call the Dropbox folder <em>MY_DROPBOX_FOLDER</em>.
+It defaults to <tt>~/Dropbox/</tt> under Unix-like environments, and to
+<tt>My Dropbox</tt> under Windows.
+</p>
+
+
+<h3 id="install-dropbox">1.1 Installing Dropbox without root privileges</h3>
+
+<p>
+Here are instructions for installing dropbox on Linux, whether or not you
+are a root user (an administrator).  For instance, these instructions
+should work on a centrally-administered computer cluster.
+(You don't need the "Nautilus integration" which does not provide or affect Dropbox
+functionality, just modifies the icons when you open a Dropbox folder in
+the graphical file browser Nautilus.)
+</p>
+
+<pre>
+# Install the command-line Dropbox frontend script, in ~/bin/share, and run
+dropbox.  Adjust the directory to your liking.
+mkdir -p ~/bin/share
+cd ~/bin/share
+wget -O dropbox.py "http://www.dropbox.com/download?dl=packages/dropbox.py"
+chmod 755 dropbox.py
+# For a usage message:  ./dropbox.py help
+./dropbox.py start -i
+./dropbox.py autostart y
+</pre>
+
+<p>
+You may also want to add the following to your
+crontab, because the daemon crashes sometimes.
+</p>
+<pre>
+# Ensure that Dropbox daemon is running
+0 * * * *	if [ "`$HOME/bin/share/dropbox.py status`" = 'Dropbox isn'"'"'t running!' ] ; then $HOME/bin/share/dropbox.py start ; fi
+</pre>
+
+
+
+<h2 id="create-dropbox-folder">2. Create the Dropbox folder</h2>
+
+<p>
+Only one person has to perform this step, but it must be performed before
+anyone can use Dropbox.  If you are not responsible for this step, then you
+should have already received an invitation to use the shared Dropbox
+folder.  In that case, skip to <a href="#link">Link your repository to
+Dropbox</a>.  <b>If you are not the person performing this state and you 
+have not received an invitation, do not proceed until you get one!</b>
+</p>
+
+<p>
+In MY_DROPBOX_FOLDER, create a folder called PROJECT.
+</p>
+
+<p>
+Follow the instructions at
+<a href="#link">Link your repository to Dropbox</a> for the master
+repository, using the folder name "master" and the location of the master
+repository.
+</p>
+
+<p>
+At <a href="http://www.dropbox.com/">www.dropbox.com</a>, select the
+PROJECT folder and click on "shared folder options".  Share the folder with
+the other relevant users.  (You may also use the "Invite to Dropbox" link
+from the "get started" tab on
+<a href="http://www.dropbox.com/">www.dropbox.com</a> to send them an
+official invite to Dropbox, but this is not necessary.)
+</p>
+
+<p>
+Send email to your collaborators with a link to this document, and telling
+them the name of the Dropbox folder.
+</p>
+
+
+<h2 id="link">3. Link your repository to Dropbox</h2>
+
+<ol>
+<li>
+
+For each of your repositories, create a folder.
+
+<p>
+If your username is jsmith, and you have only have one clone
+of the master, then you might create
+<tt>MY_DROPBOX_FOLDER/PROJECT/jsmith</tt>.
+</p>
+
+<p>
+If you have multiple clones, then create a directory for each one.  Here
+are possible names:
+</p>
+<pre>
+  MY_DROPBOX_FOLDER/PROJECT/jsmith-desktop
+  MY_DROPBOX_FOLDER/PROJECT/jsmith-laptop
+  MY_DROPBOX_FOLDER/PROJECT/jsmith-experimentalbranch
+</pre>
+
+</li>
+
+<li>
+Clone the master, or link an existing clone.  This step depends on your
+operating system.
+
+<ul>
+  <li>
+If you use Windows, then you must clone your 
+repository from the master to MY_DROPBOX_FOLDER/PROJECT/jsmith, and use
+that for all your work.
+  </li>
+
+  <li>
+If you use a Unix-like system (Linux/Mac), then you can clone the
+repository from the master to wherever you want.  Then, create a symbolic
+link to the repository
+to that location in MY_DROPBOX_FOLDER/PROJECT/jsmith.  For example:
+<pre>
+  ln -s <em>WORKING_COPY</em>/.hg ~/Dropbox/<em>PROJECT</em>/jsmith/<em>PROJECT</em>/.hg
+</pre>
+where WORKING_COPY is the "working copy" or "repository root" &mdash the
+directory that contains a <tt>.hg/</tt> subdirectory, which is the
+repository itself.
+<!--
+It's also possible to just link the whole working directory, but then
+Dropbox will do extra work for every change to a file, such as when compiling
+your source code.  So, linking just to the repository is better.
+
+The extra level of indirection is for consistency with coworkers who clone
+directly into the Mercurial repository.  It lets them have a logical name for
+their working copy, rather than their username.
+-->
+
+  </li>
+</ul>
+
+</li>
+
+<li>
+Tell your collaborators about the new MY_DROPBOX_FOLDER/PROJECT/jsmith/PROJECT
+folder, so that they can add it to their <a href="#using-crystal">Crystal
+    configuration file</a>.
+</li>
+
+</ol>
+
+
+<h2 id="using-crystal">4. Use Crystal with Dropbox</h2>
+
+<p>
+Download and set up Crystal, as described at
+<a href="http://www.cs.washington.edu/homes/brun/research/crystal">http://www.cs.washington.edu/homes/brun/research/crystal</a>.
+</p>
+
+<p>
+When you set up the configuration file, use each of your collaborators'
+directories, such as
+</p>
+
+<pre>
+  MY_DROPBOX_FOLDER/PROJECT/jdoe/PROJECT
+  MY_DROPBOX_FOLDER/PROJECT/jqpublic/PROJECT
+</pre>
+
+<p>
+If more users add their repositories to Dropbox after you set up Crystal,
+then you will need to update the configuration file.
+</p>
+
+
+
+</body>
+</html>
+
+
+<!--  LocalWords:  Dropbox jsmith ln REPO hg FFFF
+ -->
