@@ -159,10 +159,9 @@ public class ProjectPreferencesTest extends CrystalTest {
 		
 		ProjectPreferences copy = pp.clone();
 		
-		DataSource copyEnv = copy.getEnvironment();
-		copyEnv.setShortName("a");
+		copy.setName("a");
 		assertFalse("Changed short name of clone environment", 
-				copyEnv.getShortName().equals(pp.getEnvironment().getShortName()));
+				copy.getName().equals(pp.getName()));
 		
 		for(DataSource source : copy.getDataSources()) {
 			source.setShortName("a");

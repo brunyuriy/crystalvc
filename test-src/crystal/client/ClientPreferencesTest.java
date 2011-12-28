@@ -108,12 +108,12 @@ public class ClientPreferencesTest extends CrystalTest {
 		cp.addProjectPreferences(pp_2);
 
 		ProjectPreferences temp_pp = cp.getProjectPreferences("shortName_2");
-		temp_pp.getEnvironment().setShortName("shortName");
+		temp_pp.setName("shortName");
 
 		int count = 0;
 
 		for (ProjectPreferences pp : cp.getProjectPreference()) {
-			if (pp.getEnvironment().getShortName().equals("shortName"))
+			if (pp.getName().equals("shortName"))
 				count++;
 		}
 		assertEquals("There exists duplicate project name", 1, count);
@@ -226,7 +226,7 @@ public class ClientPreferencesTest extends CrystalTest {
 		DataSource environment1 = pp1.getEnvironment();
 
 		assertTrue("Compare environment kind", environment1.getKind().equals(RepoKind.HG));
-		assertTrue("Compare short name for the environment", environment1.getShortName().equals("Crystal"));
+		assertTrue("Compare short name for the environment", pp1.getName().equals("Crystal"));
 		assertTrue("Compare clone", environment1.getCloneString().equals("C:/Users/Haochen/Dropbox/crystal/haochen/crystalvc/"));
 		assertTrue("Compare common parent", environment1.getParent().equals("MASTER"));
 
@@ -317,18 +317,18 @@ public class ClientPreferencesTest extends CrystalTest {
 		assertTrue("Clone method return cllientPreferences with same content", cp.equals(cp.clone()));
 		ClientPreferences copy = cp.clone();
 		for (ProjectPreferences pref : cp.getProjectPreference()) {
-			_log.debug("ClientPreferencesTest::testClone() - " + pref.getEnvironment().getShortName());
+			_log.debug("ClientPreferencesTest::testClone() - " + pref.getName());
 		}
 		for (ProjectPreferences pref : copy.getProjectPreference()) {
-			pref.getEnvironment().setShortName("a");
+			pref.setName("a");
 		}
 
 		for (ProjectPreferences pref : cp.getProjectPreference()) {
-			_log.debug("ClientPreferencesTest::testClone() - " + pref.getEnvironment().getShortName());
+			_log.debug("ClientPreferencesTest::testClone() - " + pref.getName());
 		}
 		try {
 			assertFalse("Changed short name for project preferences",
-					copy.getProjectPreferences("a").getEnvironment().getShortName().equals(cp.getProjectPreferences("myProject").getEnvironment().getShortName()));
+					copy.getProjectPreferences("a").getName().equals(cp.getProjectPreferences("myProject").getName()));
 		} catch (NonexistentProjectException e) {
 
 			try {
