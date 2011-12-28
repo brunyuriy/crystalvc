@@ -181,7 +181,7 @@ public class DataSource implements Cloneable{
     /**
      * @return the name of this repository
      */
-    private String getShortName() {
+    public String getShortName() {
         return _shortName;
     }
 
@@ -189,7 +189,7 @@ public class DataSource implements Cloneable{
      * Sets this repository's name
      * @param name: this repository's name
      */
-    private void setShortName(String name) {
+    public void setShortName(String name) {
         ValidInputChecker.checkValidStringInput(name);
         _shortName = name.replace(' ', '_').replace('\\', '_').replace('/', '_').replace(':', '_').replace(';', '_');
     }
