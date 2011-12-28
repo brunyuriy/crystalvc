@@ -114,17 +114,24 @@ public class ProjectPreferences implements Cloneable {
 	}
 	
 	/**
-	 * @ return the name of the project
+	 * @return the name of the project
 	 */
 	public String getName() {
 	    return _myEnvironment.getShortName();
 	}
 	
 	/**
-	 * 
+	 * @return true iff no other project in this project's client preferences has the name name.  
+	 * @effect sets the name of this project to be name unless another project in this project's 
+	 *          client preferences already has that name.  
 	 */
-	public void setName(String name) {
+	public boolean setName(String name) {
+	    for (ProjectPreferences pp : _clientPreferences.getProjectPreference()) {
+	        if ((pp.getName().equals(name)) && (pp != this))
+	            return false;
+	    }
 	    _myEnvironment.setShortName(name);
+	    return true;
 	}
 
 	/**
