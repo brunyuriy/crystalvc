@@ -63,18 +63,21 @@ public class ProjectPreferencesTest extends CrystalTest {
 		assertNotNull("Contain second added data source", pp.getDataSource("shortName_2"));
 		assertNotNull("Contain third added data source", pp.getDataSource("shortName_3"));
 		
+		/* this code is supposed to test that no two DataSources in one project have the same name.  
+		 * However, this has to be ensured at a higher level because DataSources have no knowledge of each other.  
+		 * So this testing code is irrelevant for the current Crystal design.  
 		pp.getDataSource("shortName_2").setShortName("shortName");
-		
+
 		assertEquals("should have only 2 data sources", 2, pp.getDataSources().size());
-		
+
 		assertNull("Don't contain second added data source", pp.getDataSource("shortName_2"));
-		
+
 		pp.getDataSource("shortName").setShortName("shortName_2");
-		
+
 		assertEquals("Still have 3 data sources", 3, pp.getDataSources().size());
 
 		assertNull("Don't contain first added data source", pp.getDataSource("shortName"));
-		
+		 */		
 	}
 
 	@Test
