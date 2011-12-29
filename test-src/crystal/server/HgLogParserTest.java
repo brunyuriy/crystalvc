@@ -65,7 +65,6 @@ public class HgLogParserTest extends CrystalTest {
 		Checkpoint c1 = checkPoints.get("ce4bb37a1409");
 		assertNotNull(c1);
 		assertTrue("compare changeset", c1.getChangeset().equals("ce4bb37a1409"));
-		System.out.println(c1.getParents());
 		assertTrue("compare user", c1.getCommitter().equals("Daniel NeuhÃ¤user <dasdasich@gmail.com>"));
 		assertTrue("comepare date", c1.getDate().equals("Sat Feb 05 21:48:54 2011 +0100"));
 		assertTrue("compare summary", c1.getSummary().equals("Change redirected URLs to the new locations"));
@@ -78,8 +77,6 @@ public class HgLogParserTest extends CrystalTest {
 		assertTrue("compare summary", c2.getSummary().equals("merge with 1.0"));
 		assertTrue("have parent", c2.getParents().contains("3224:86e6811aec45"));
 		assertTrue("have another parent", c2.getParents().contains("3228:e718cc9843bc"));
-		
-		System.out.println(c2.getParents());
 	}
 	
 	@Test
