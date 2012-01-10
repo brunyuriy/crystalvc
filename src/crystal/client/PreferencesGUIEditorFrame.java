@@ -302,21 +302,21 @@ public class PreferencesGUIEditorFrame extends JFrame {
 					shortNameLookup.add(current.getName());
 				}
 				int count = 1;
-				while (shortNameLookup.contains("New Project " + count++))
+				while (shortNameLookup.contains("New_Project_" + count++))
 					;
 
-				final ProjectPreferences newGuy = new ProjectPreferences(new DataSource("New Project " + --count, "", DataSource.RepoKind.HG, false, null), copyPrefs);
+				final ProjectPreferences newGuy = new ProjectPreferences(new DataSource("New_Project_" + --count, "", DataSource.RepoKind.HG, false, null), copyPrefs);
 				try {
 					copyPrefs.addProjectPreferences(newGuy);
 				} catch (DuplicateProjectNameException e1) {
 					// This should never happen because we just found a clean project name to use.
 					throw new RuntimeException("When I tried to create a new project, I found a nice, clean, unused name:\n" + 
-							"New Project " + count + "\nbut then the preferences told me that name was in use.  \n" + 
+							"New_Project_" + count + "\nbut then the preferences told me that name was in use.  \n" + 
 							"This should never happen!");
 				}
 				
 				final ProjectPanel newGuyPanel = new ProjectPanel(newGuy, copyPrefs, frame, projectsTabs, changedComponents, null, validText);
-				projectsTabs.addTab("New Project " + count, newGuyPanel);
+				projectsTabs.addTab("New_Project_" + count, newGuyPanel);
 				JPanel pnl = new JPanel();
 				JLabel tabName = new JLabel(newGuy.getName());
 

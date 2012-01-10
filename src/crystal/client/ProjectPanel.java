@@ -90,17 +90,21 @@ public class ProjectPanel extends JPanel {
 
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-				copyPref.setName(shortName.getText());
+				boolean nameChanged = copyPref.setName(shortName.getText());
+				if (nameChanged) {
+					
+				
 				_name = shortName.getText();
 				((JLabel)((JPanel)tabbedPane.getTabComponentAt(tabbedPane.getSelectedIndex())).getComponent(0)).setText(_name);
 				
-				if (pref != null) {
-					changedComponents.put(shortName, 
-							!shortName.getText().equals(pref.getName()));
+					if (pref != null) {
+						changedComponents.put(shortName, 
+								!shortName.getText().equals(pref.getName()));
+					}
 				}
-				boolean valid = ValidInputChecker.checkProjectPreferencesNameDuplicate(copyPrefs, copyPref);
-				validText.put(shortName, valid);
-				setState(nameState, valid);
+				//boolean valid = ValidInputChecker.checkProjectPreferencesNameDuplicate(copyPrefs, copyPref);
+				validText.put(shortName, nameChanged);
+				setState(nameState, nameChanged);
 				//prefs.setChanged(true);
 			}
 
