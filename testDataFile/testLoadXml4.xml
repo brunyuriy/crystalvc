@@ -1,0 +1,9 @@
+<ccConfig tempDirectory="C:/temp/conflictClient/" refresh="60">
+  <project Kind="HG" ShortName="Crystal" Clone="C:/Users/Haochen/Dropbox/crystal/haochen/crystalvc/" commonParent="MASTER">
+    <source ShortName="MASTER" Clone="http://crystalvc.googlecode.com/hg/" Hidden="false" commonParent="MASTER" />
+    <source ShortName="Yuriy" Clone="C:/Users/Haochen/Dropbox/crystal/yuriy hp laptop/Crystal/crystalSource/" Hidden="false" commonParent="MASTER" />
+	<source ShortName="Yuriy" Clone="C:/Users/Haochen/Dropbox/crystal/yuriy hp laptop/Crystal/crystalSource/" Hidden="false" commonParent="MASTER" />
+    <source ShortName="David" Clone="C:/Users/Haochen/Dropbox/crystal/david office repo/" Hidden="false" commonParent="MASTER" />
+    <source ShortName="Alice" Clone="C:/Users/Haochen/Dropbox/crystal/alice_laptop/" Hidden="false" commonParent="MASTER" />
+  </project>
+</ccConfig>
