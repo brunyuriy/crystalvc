@@ -91,7 +91,8 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 		final ClientPreferences copyPrefs = prefs.clone();
 		final Map<JComponent, Boolean> changedComponents = new HashMap<JComponent, Boolean>();
-		final Map<JTextField, Boolean> validText = new HashMap<JTextField, Boolean>();
+		final Map<JTextField, Boolean> validEditorText = new HashMap<JTextField, Boolean>();
+		final Map<ProjectPreferences, Map<JTextField, Boolean>> validTextSet = new HashMap<ProjectPreferences, Map<JTextField, Boolean>>();
 		final JFrame frame = this;
 		frame.setIconImage((new ImageIcon(Constants.class.getResource("/crystal/client/images/crystal-ball_blue_128.png"))).getImage());
 
@@ -169,7 +170,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 			tempPathState.setText("invalid");
 			tempPathState.setForeground(Color.RED.darker());
 		}
-		validText.put(tempPath, pathValid);
+		validEditorText.put(tempPath, pathValid);
 		
 		tempPath.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {
@@ -185,7 +186,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 				
 				boolean pathValid = ValidInputChecker.checkDirectoryPath(tempPath.getText())
 										|| ValidInputChecker.checkUrl(tempPath.getText());
-				validText.put(tempPath, pathValid);
+				validEditorText.put(tempPath, pathValid);
 				if (pathValid) {
 					tempPathState.setText("  valid");
 					tempPathState.setForeground(Color.GREEN.darker());
@@ -231,7 +232,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		topPanel.add(refreshRate);
 		topPanel.add(rateState);
 		changedComponents.put(refreshRate, false);
-		validText.put(refreshRate, true);
+		validEditorText.put(refreshRate, true);
 		
 		refreshRate.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent arg0) {
@@ -249,7 +250,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 					
 				}
 				boolean valid = ValidInputChecker.checkStringToLong(refreshRate.getText());
-				validText.put(refreshRate, valid);
+				validEditorText.put(refreshRate, valid);
 				
 				if (valid) {
 					rateState.setText("  valid");
@@ -275,14 +276,16 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		for (final ProjectPreferences copyPref : copyPrefs.getProjectPreference()) {
 			ProjectPanel current;
 			try {
+				Map<JTextField, Boolean> validPanel = new HashMap<JTextField, Boolean>();
+				validTextSet.put(copyPref, validPanel);
 				current = new ProjectPanel(copyPref, copyPrefs, frame, projectsTabs, 
-						changedComponents, prefs.getProjectPreferences(copyPref.getEnvironment().getShortName()), validText);
+						changedComponents, prefs.getProjectPreferences(copyPref.getName()), validPanel);
 				projectsTabs.addTab(current.getName(), current);
 				JPanel pnl = new JPanel();
 				JLabel tabName = new JLabel(current.getName());
 				pnl.setOpaque(false);
 				pnl.add(tabName);
-				pnl.add(new DeleteProjectButton(copyPrefs, projectsTabs, frame, current, copyPref));
+				pnl.add(new DeleteProjectButton(copyPrefs, projectsTabs, frame, current, copyPref, validTextSet));
 				projectsTabs.setTabComponentAt(projectsTabs.getTabCount() - 1, pnl);
 				// projectsTabs.setTitleAt(projectsTabs.getTabCount() - 1, current.getName());
 			} catch (NonexistentProjectException e1) {
@@ -299,30 +302,31 @@ public class PreferencesGUIEditorFrame extends JFrame {
 				//deleteProjectButton.setEnabled(true);
 				HashSet<String> shortNameLookup = new HashSet<String>();
 				for (ProjectPreferences current : copyPrefs.getProjectPreference()) {
-					shortNameLookup.add(current.getEnvironment().getShortName());
+					shortNameLookup.add(current.getName());
 				}
 				int count = 1;
-				while (shortNameLookup.contains("New Project " + count++))
+				while (shortNameLookup.contains("New_Project_" + count++))
 					;
 
-				final ProjectPreferences newGuy = new ProjectPreferences(new DataSource("New Project " + --count, "", DataSource.RepoKind.HG, false, null), copyPrefs);
+				final ProjectPreferences newGuy = new ProjectPreferences(new DataSource("New_Project_" + --count, "", DataSource.RepoKind.HG, false, null), copyPrefs);
 				try {
 					copyPrefs.addProjectPreferences(newGuy);
 				} catch (DuplicateProjectNameException e1) {
 					// This should never happen because we just found a clean project name to use.
 					throw new RuntimeException("When I tried to create a new project, I found a nice, clean, unused name:\n" + 
-							"New Project " + count + "\nbut then the preferences told me that name was in use.  \n" + 
+							"New_Project_" + count + "\nbut then the preferences told me that name was in use.  \n" + 
 							"This should never happen!");
 				}
-				
-				final ProjectPanel newGuyPanel = new ProjectPanel(newGuy, copyPrefs, frame, projectsTabs, changedComponents, null, validText);
-				projectsTabs.addTab("New Project " + count, newGuyPanel);
+				Map<JTextField, Boolean> validPanel = new HashMap<JTextField, Boolean>();
+				validTextSet.put(newGuy, validPanel);
+				final ProjectPanel newGuyPanel = new ProjectPanel(newGuy, copyPrefs, frame, projectsTabs, changedComponents, null, validPanel);
+				projectsTabs.addTab("New_Project_" + count, newGuyPanel);
 				JPanel pnl = new JPanel();
-				JLabel tabName = new JLabel(newGuy.getEnvironment().getShortName());
+				JLabel tabName = new JLabel(newGuy.getName());
 
 				pnl.setOpaque(false);
 				pnl.add(tabName);
-				pnl.add(new DeleteProjectButton(copyPrefs, projectsTabs, frame, newGuyPanel, newGuy));
+				pnl.add(new DeleteProjectButton(copyPrefs, projectsTabs, frame, newGuyPanel, newGuy, validTextSet));
 				projectsTabs.setTabComponentAt(projectsTabs.getTabCount() - 1, pnl);
 				projectsTabs.setSelectedIndex(projectsTabs.getTabCount() - 1);
 				copyPrefs.setChanged(true);
@@ -364,8 +368,13 @@ public class PreferencesGUIEditorFrame extends JFrame {
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {			
 				if (copyPrefs.hasChanged() || changedComponents.values().contains(true)) {
-
-					if(!validText.values().contains(false)){
+					boolean validPanelText = true;
+					for (Map<JTextField, Boolean> map : validTextSet.values()) {
+						if (map.values().contains(false)) {
+							validPanelText = false;
+						}
+					}
+					if(!validEditorText.values().contains(false) && validPanelText){
 						try {
                             ClientPreferences.savePreferencesToDefaultXML(copyPrefs);
 						} catch (FileNotFoundException fnfe) {
@@ -402,15 +411,14 @@ public class PreferencesGUIEditorFrame extends JFrame {
 					int n = JOptionPane.showConfirmDialog(null, "Do you want to save your data?", 
 							"Saving data", JOptionPane.YES_NO_CANCEL_OPTION);
 					if (n == JOptionPane.YES_OPTION) {
-						/*for (JTextField field : validText.keySet()) {
-							if(validText.get(field) == false) {
-								System.out.println(field.getText() + ": bad");
-							} else {
-								System.out.println(field.getText() + ": good");
-							}
-						}*/
 						
-						if(!validText.values().contains(false)){
+						boolean validPanelText = true;
+						for (Map<JTextField, Boolean> map : validTextSet.values()) {
+							if (map.values().contains(false)) {
+								validPanelText = false;
+							}
+						}
+						if(!validEditorText.values().contains(false) && validPanelText){
 							try {
                                 ClientPreferences.savePreferencesToDefaultXML(copyPrefs);
 		                    } catch (FileNotFoundException fnfe) {
@@ -463,7 +471,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 
 		public DeleteProjectButton(final ClientPreferences prefs, 
 				final JTabbedPane projectsTabs, final JFrame frame, final ProjectPanel newGuyPanel,
-				final ProjectPreferences newGuy) {
+				final ProjectPreferences newGuy, final Map<ProjectPreferences, Map<JTextField, Boolean>> validTextSet) {
 			super("X");
 			setToolTipText("delete this project ");
 			addActionListener(new ActionListener() {
@@ -476,7 +484,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 						JPanel tabPanel = (JPanel) projectsTabs.getTabComponentAt(i);
 						JLabel nameLabel = (JLabel) tabPanel.getComponent(0);
 						String tabName = nameLabel.getText();
-						if (tabName.equals(newGuy.getEnvironment().getShortName())) {
+						if (tabName.equals(newGuy.getName())) {
 							targetProject = tabName;
 						}
 					}	
@@ -484,6 +492,7 @@ public class PreferencesGUIEditorFrame extends JFrame {
 							"Delete Project", JOptionPane.YES_NO_OPTION);
 
 					if(option == JOptionPane.YES_OPTION) {
+						validTextSet.remove(newGuy);
 						prefs.removeProjectPreferences(newGuy);
 						projectsTabs.remove(newGuyPanel);
 						prefs.setChanged(true);

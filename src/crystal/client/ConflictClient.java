@@ -252,7 +252,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
             JPanel name = new JPanel();
             name.setLayout(new BoxLayout(name, BoxLayout.Y_AXIS));
                         
-            JLabel projectName = new JLabel(projPref.getEnvironment().getShortName() + " ");
+            JLabel projectName = new JLabel(projPref.getName() + " ");
             final JPopupMenu projectMenu = new JPopupMenu("Project menu");
 
             projectMenu.add(getClearCacheItem(projPref));
@@ -421,11 +421,11 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 	 * @return
 	 */
 	private JMenuItem getClearCacheItem(final ProjectPreferences projPref){
-		JMenuItem clearProjectCacheMenu = new JMenuItem("Clear " + projPref.getEnvironment().getShortName() + " project cache");
+		JMenuItem clearProjectCacheMenu = new JMenuItem("Clear " + projPref.getName() + " project cache");
 		clearProjectCacheMenu.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent action) {
-				int option = JOptionPane.showConfirmDialog(null, "Do you want to empty the " + projPref.getEnvironment().getShortName() + " cache?", 
+				int option = JOptionPane.showConfirmDialog(null, "Do you want to empty the " + projPref.getName() + " cache?", 
 						"Warning", JOptionPane.YES_NO_OPTION);
 				// TODO wait for the current refresh to finish or kill it
 				if(option == JOptionPane.YES_OPTION) {
@@ -435,10 +435,10 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 
 					Set<String> target = new TreeSet<String>();
 					
-					target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + projPref.getEnvironment().getShortName());
+					target.add(_preferences.getTempDirectory() + projPref.getName() + "_" + projPref.getName());
 					for(DataSource ds : projPref.getDataSources()){
 						
-						target.add(_preferences.getTempDirectory() + projPref.getEnvironment().getShortName() + "_" + ds.getShortName());
+						target.add(_preferences.getTempDirectory() + projPref.getName() + "_" + ds.getShortName());
       					}
 					
 					for(String path : target){
@@ -446,7 +446,7 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 						_log.info("Deleting " + path);
 					}
 
-					_log.info("Cleared the " + projPref.getEnvironment().getShortName() + " project's cache.");
+					_log.info("Cleared the " + projPref.getName() + " project's cache.");
 					if (hadToDisable)
 					    ConflictSystemTray.getInstance().daemonAbleAction();
 				}

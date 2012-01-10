@@ -251,8 +251,8 @@ public abstract class AbstractStateChecker {
 		// Step 1. Update the local clone. If cloning fails, return ERROR state
 		// TODO: The errors on the local state are not reported as toottips yet (need to make LocalState not interned)
 		try {
-			updateLocalRepositoryAndCheckCacheError(prefs.getEnvironment(), executablePath, mine, tempWorkPath, prefs.getEnvironment().getRemoteCmd(), "your own", prefs
-					.getEnvironment().getShortName());
+			updateLocalRepositoryAndCheckCacheError(prefs.getEnvironment(), executablePath, mine, tempWorkPath, prefs.getEnvironment().getRemoteCmd(), "your own", 
+			        prefs.getName());
 		} catch (OperationException e) {
 			_log.info("failed to update local repository and check cache error in get local state");
 			return LocalStateResult.ERROR + " " + e.getMessage();
@@ -364,8 +364,7 @@ public abstract class AbstractStateChecker {
 		// My local copy has already been updated when we checked the local status
 		// So we are just going to update yours
 		try {
-			updateLocalRepositoryAndCheckCacheError(source, executablePath, yours, tempWorkPath, source.getRemoteCmd(), source.getShortName(), prefs.getEnvironment()
-					.getShortName());
+			updateLocalRepositoryAndCheckCacheError(source, executablePath, yours, tempWorkPath, source.getRemoteCmd(), source.getShortName(), prefs.getName());
 		} catch (OperationException e1) {
 			if (kind.equals(RepoKind.GIT))
 				_log.info("AbstractStateChecker::getRelationship(..) - ERROR: failed to update local repo and check cache error in get relationship");
@@ -508,7 +507,7 @@ public abstract class AbstractStateChecker {
 			// something went wrong
 			_log.error("Crystal is having trouble comparing" + mine + " and " + yours + "\n" + output.toString());
 			String errorMsg = "Crystal is having trouble comparing\n" + mine + " and " + yours + "\n" + "for the repository " + source.getShortName() + " in project "
-					+ prefs.getEnvironment().getShortName() + ".\n";
+					+ prefs.getName() + ".\n";
 			// JOptionPane.showConfirmDialog(null, dialogMsg);
 			// source.setEnabled(false);
 			return Relationship.ERROR + " " + errorMsg;
