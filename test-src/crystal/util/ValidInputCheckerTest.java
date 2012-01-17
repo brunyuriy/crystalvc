@@ -1,6 +1,7 @@
 package crystal.util;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -11,8 +12,8 @@ public class ValidInputCheckerTest extends CrystalTest {
 
 	@Test
 	public void testCheckUrl() {
-		assertFalse("Check invalid url", ValidInputChecker.checkUrl("http://hahaha"));
-		assertFalse("Check invalid url", ValidInputChecker.checkUrl("http://code.google.com/hg/aaa"));
+		assertFalse("Check invalid url", ValidInputChecker.checkUrl("http://does not exist"));
+		assertTrue("Check invalid url", ValidInputChecker.checkUrl("http://code.google.com/hg/does not exist"));
 
 	}
 

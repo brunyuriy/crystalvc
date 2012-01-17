@@ -32,7 +32,7 @@ public class ConflictDaemonTest extends CrystalTest {
 	}
 
 
-	@Test
+	/*@Test
 	public void testPrePerformCalculations() {
 		ConflictDaemon instance = ConflictDaemon.getInstance();
 		ClientPreferences cp_1 = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
@@ -40,7 +40,7 @@ public class ConflictDaemonTest extends CrystalTest {
 		instance.prePerformCalculations(cp_1);
 		assertEquals(cp_1.getProjectPreference().size(), instance.getLocalStates().size());
 		
-	}
+	}*/
 	
 	@Test
 	public void testLocalState() throws IOException {
@@ -84,8 +84,9 @@ public class ConflictDaemonTest extends CrystalTest {
 
 		String relation = HgStateChecker.getRelationship(pp, data_1, Relationship.PENDING);
 
+		instance.getRelationship(data_1);
 		instance.calculateRelationship(data_1, pp);
-		
+
 		assertTrue("After calculating a relation with data source not contained in relationship map.", 
 				instance.getRelationships().contains(new Relationship(relation, null, null)));
 		
@@ -99,9 +100,9 @@ public class ConflictDaemonTest extends CrystalTest {
 		DataSource data_Git = new DataSource("shortName", "cloneString", RepoKind.GIT, false, "parent");
 		ProjectPreferences pp_Git = new ProjectPreferences(data_Git, cp_1);
 
-		
+		instance.getRelationship(data_Git);
 		Relationship relationship_Git = instance.calculateRelationship(data_Git, pp_Git);
-		assertNull("Git repository kind", relationship_Git);
+		assertNotNull("Git repository kind", relationship_Git);
 		
 	}
 

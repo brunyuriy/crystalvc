@@ -294,7 +294,7 @@ public class ConflictDaemon {
 	 * 
 	 * @param prefs: the configuration over which to do the computations
 	 */
-	public void prePerformCalculations(ClientPreferences prefs) {
+	/*public void prePerformCalculations(ClientPreferences prefs) {
 	    
 	    if(!_enabled)
 	        return;
@@ -312,6 +312,6 @@ public class ConflictDaemon {
 				_relationshipMap.put(ds, new Relationship(Relationship.PENDING, _relationshipMap.get(ds).getIcon(), _relationshipMap.get(ds).getImage()));
 			}
 		}
-	}
+	}*/
 	
 }
