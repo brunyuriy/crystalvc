@@ -25,6 +25,7 @@ public class TestConstants extends CrystalTest {
 		possiblePaths.add("C:\\Users\\Yuriy\\Desktop\\work\\My Dropbox\\crystal\\yuriy\\crystalvc"); // for yuriy's laptop
 		possiblePaths.add("C:\\Users\\Haochen\\Dropbox\\crystal\\haochen\\crystalvc");
 		possiblePaths.add("/homes/gws/brun/Dropbox/crystal/yuriy/crystalvc"); // for yuriy's horseradish machine
+		possiblePaths.add("Z:\\Dropbox\\crystal\\yuriy\\crystalvc"); // for yuriy's nomar machine
 
 		for (String possiblePath : possiblePaths) {
 			if (new File(possiblePath).exists()) {
