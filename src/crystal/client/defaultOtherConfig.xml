@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is the default Conflict Client configuration file for non Windows OSes -->
+<!--                                                                             -->
+<!-- Provided values are for example only.                                       -->
+<!--                                                                             -->
+<!-- See http://www.cs.washington.edu/homes/brun/research/crystal/#Configuration_File_Format for full file description -->
+<ccConfig tempDirectory="/scratch/conflictClient/" refresh="60">
+  <!-- First project uses dropbox to share repositories -->
+  <project ShortName="MyFirstProject" Kind="HG" Clone="$HOME/Dropbox/projects/MyLocalFirstProjectRepo/" parent="MASTER">
+    <source ShortName="MASTER" Clone="$HOME/Dropbox/projects/MASTER/MyLocalFirstProjectRepo/" commonParent="MASTER" />
+    <source ShortName="Friend" Clone="$HOME/Dropbox/projects/Friend/MyLocalFirstProjectRepo/" commonParent="MASTER" />
+    <source ShortName="Enemy" Clone="$HOME/Dropbox/projects/Enemy/MyLocalFirstProjectRepo/" commonParent="MASTER" />
+  </project>
+	<!-- Second project does not use dropbox to share repositories -->
+  <project ShortName="MySecondProject" Kind="HG" Clone="$HOME/projects/MyLocalSecondProjectRepo/" parent="MASTER" compile="make" test="make test">
+    <source ShortName="MASTER" Clone="ssh://user@host/path/to/second/project/repo/" commonParent="MASTER" />
+    <source ShortName="Friend" Clone="https://user@host/path/to/friend/second/repo/" commonParent="MASTER" />
+  </project>
+</ccConfig>
