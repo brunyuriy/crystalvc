@@ -1,23 +1,38 @@
 package crystal.util;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
 import crystal.CrystalTest;
-
+/**
+ * Test ValidInputChecker class
+ * 
+ * @author Haochen
+ *
+ */
 public class ValidInputCheckerTest extends CrystalTest {
 
+	/**
+	 * test checkUrl
+	 */
 	@Test
 	public void testCheckUrl() {
-		assertFalse("Check invalid url", ValidInputChecker.checkUrl("http://hahaha"));
-		assertFalse("Check invalid url", ValidInputChecker.checkUrl("http://code.google.com/hg/aaa"));
+		// test invalid url
+		assertFalse("Check invalid url", ValidInputChecker.checkUrl("http://does not exist"));
+		// test valid url
+		assertTrue("Check invalid url", ValidInputChecker.checkUrl("http://code.google.com/hg/does not exist"));
 
 	}
 
+	/**
+	 * test checkValidFilePath
+	 */
 	@Test
 	public void testCheckValidFilePath() {
+		// invalid path
 		String path = "abc";
 		try {
 			ValidInputChecker.checkValidFilePath(path);
@@ -26,8 +41,12 @@ public class ValidInputCheckerTest extends CrystalTest {
 		}
 	}
 
+	/**
+	 * test checkValidDirectoryPath
+	 */
 	@Test
 	public void testCheckValidDirectoryPath() {
+		// invalid path
 		String path = "abc";
 		try {
 			ValidInputChecker.checkValidDirectoryPath(path);

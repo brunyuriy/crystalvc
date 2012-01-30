@@ -28,6 +28,7 @@ import crystal.util.LSMRLogger;
 import crystal.util.RunIt;
 
 /**
+ * Test GitStateChecker class
  * 
  * @author Haochen
  * 

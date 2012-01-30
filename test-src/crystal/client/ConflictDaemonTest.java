@@ -24,24 +24,21 @@ import crystal.server.HgStateChecker;
  */
 public class ConflictDaemonTest extends CrystalTest {
 
-	
+	/**
+	 * test get instance. check if it return not null
+	 */
 	@Test
 	public void testGetInstance() {
 		ConflictDaemon instance = ConflictDaemon.getInstance();
 		assertNotNull(instance);
 	}
-
-
-	@Test
-	public void testPrePerformCalculations() {
-		ConflictDaemon instance = ConflictDaemon.getInstance();
-		ClientPreferences cp_1 = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
-		
-		instance.prePerformCalculations(cp_1);
-		assertEquals(cp_1.getProjectPreference().size(), instance.getLocalStates().size());
-		
-	}
 	
+	/**
+	 * test the functionality of local state
+	 * test the method getLocalState and calculateLocalState
+	 * 
+	 * @throws IOException
+	 */
 	@Test
 	public void testLocalState() throws IOException {
 		ConflictDaemon instance = ConflictDaemon.getInstance();
@@ -65,6 +62,10 @@ public class ConflictDaemonTest extends CrystalTest {
 				instance.getLocalStates().contains(new LocalStateResult(pp.getEnvironment(), localState, null, null, null)));
 	}
 
+	/**
+	 * test the functionality of relathionship
+	 * test the method getRelationship and calculateRelationship
+	 */
 	@Test
 	public void testRelationship() {
 		ConflictDaemon instance = ConflictDaemon.getInstance();
@@ -84,8 +85,9 @@ public class ConflictDaemonTest extends CrystalTest {
 
 		String relation = HgStateChecker.getRelationship(pp, data_1, Relationship.PENDING);
 
+		instance.getRelationship(data_1);
 		instance.calculateRelationship(data_1, pp);
-		
+
 		assertTrue("After calculating a relation with data source not contained in relationship map.", 
 				instance.getRelationships().contains(new Relationship(relation, null, null)));
 		
@@ -99,13 +101,17 @@ public class ConflictDaemonTest extends CrystalTest {
 		DataSource data_Git = new DataSource("shortName", "cloneString", RepoKind.GIT, false, "parent");
 		ProjectPreferences pp_Git = new ProjectPreferences(data_Git, cp_1);
 
-		
+		instance.getRelationship(data_Git);
 		Relationship relationship_Git = instance.calculateRelationship(data_Git, pp_Git);
-		assertNull("Git repository kind", relationship_Git);
+		assertNotNull("Git repository kind", relationship_Git);
 		
 	}
 
-
+	/**
+	 * Test addListener method
+	 * Just check the size of listeners
+	 * 
+	 */
 	@Test
 	public void testAddListener() {
 		ConflictDaemon instance = ConflictDaemon.getInstance();

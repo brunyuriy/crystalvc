@@ -37,6 +37,9 @@ public class RevisionHistoryTest extends CrystalTest {
 		assertNotNull(history);
 	}
 
+	/**
+	 * test equals
+	 */
 	@Test
 	public void testEqualsObject() {
 		File f1 = new File("testDataFile/testLogVersion1.txt");
@@ -51,14 +54,20 @@ public class RevisionHistoryTest extends CrystalTest {
 		} catch (IOException e) {
 			System.err.println("File not found");
 		}
+		
 		RevisionHistory history_1 = new RevisionHistory(log_1, RepoKind.HG);
 		RevisionHistory history_2 = new RevisionHistory(log_2, RepoKind.HG);
+		// equal
 		assertTrue("Same log text", history.equals(history_1));
+		// not equal
 		assertFalse("Different log files", history_2.equals(history_1));
 		assertFalse("Different log files", history_1.equals(history_2));
 		
 	}
 
+	/**
+	 * test super/sub history
+	 */
 	@Test
 	public void testSuperSubHistory() {
 		File f1 = new File("testDataFile/testLogVersion1.txt");
@@ -78,13 +87,16 @@ public class RevisionHistoryTest extends CrystalTest {
 		RevisionHistory history_2 = new RevisionHistory(log_2, RepoKind.HG);
 		
 		
-		
+		// check if one history is super/sub history of another history
 		assertTrue("Super history", history.superHistory(history_2));
 		assertTrue("Sub history", history_2.subHistory(history));
 		assertTrue("Same history", history.subHistory(history_1));
 		assertTrue("Same history", history.superHistory(history_1));
 	}
 
+	/**
+	 * test getComitters
+	 */
 	@Test
 	public void testGetCommitters() {
 		File f3 = new File("testDataFile/testLogVersion3.txt");
@@ -97,8 +109,8 @@ public class RevisionHistoryTest extends CrystalTest {
 			System.err.println("File not found");
 		}
 		RevisionHistory history_3 = new RevisionHistory(log_3, RepoKind.HG);
-		System.out.println(history.getCommitters(history_3));
-		assertTrue("One different name"
+		// histories have 2 different committers
+		assertTrue("Two different name"
 				, history.getCommitters(history_3).equals("Kenneth Reitz <me@kennethreitz.com> and Georg Brandl <georg@python.org>"));
 	}
 
