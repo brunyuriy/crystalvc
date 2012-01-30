@@ -18,6 +18,9 @@ import crystal.model.DataSource.RepoKind;
  */
 public class ProjectPreferencesTest extends CrystalTest {
 	
+	/**
+	 * test if the constructor set up variables correctly
+	 */
 	@Test
 	public void testProjectPreferences() {
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
@@ -30,6 +33,10 @@ public class ProjectPreferencesTest extends CrystalTest {
 		assertEquals("empty data sources", pp.getDataSources().size(), 0);
 	}
 	
+	/**
+	 * test adding two data sources with same name to a project
+	 * 
+	 */
 	@Test(expected = RuntimeException.class)
 	public void testDuplicateAddDataSource(){
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
@@ -43,6 +50,9 @@ public class ProjectPreferencesTest extends CrystalTest {
 		pp.addDataSource(ds_2);
 	}
 
+	/**
+	 * test adding data sources to the project
+	 */
 	@Test
 	public void testAddDataSource() {
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
@@ -80,6 +90,9 @@ public class ProjectPreferencesTest extends CrystalTest {
 		 */		
 	}
 
+	/**
+	 * test the method getNumOfVisibleSources
+	 */
 	@Test
 	public void testGetNumOfVisibleSources() {
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
@@ -95,16 +108,19 @@ public class ProjectPreferencesTest extends CrystalTest {
 		
 		pp.addDataSource(ds_1);
 		assertEquals("Number of data source", 1, pp.getDataSources().size());
-		
+		// after adding hidden source
 		assertEquals("After adding one hidden source", 0, pp.getNumOfVisibleSources());
 		
 		pp.addDataSource(ds_2);
 		assertEquals("Number of data source", 2, pp.getDataSources().size());
-		
+		// after adding visible source
 		assertEquals("After adding one nonhidden source", 1, pp.getNumOfVisibleSources());
 		
 	}
 
+	/**
+	 * test removing data source from the project
+	 */
 	@Test
 	public void testRemoveDataSource() {
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
@@ -135,6 +151,9 @@ public class ProjectPreferencesTest extends CrystalTest {
 		
 	}
 	
+	/**
+	 * test the method getProjectCheckoutLocation
+	 */
 	@Test
 	public void testGetProjectCheckoutLocation() {
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
@@ -149,6 +168,9 @@ public class ProjectPreferencesTest extends CrystalTest {
 		
 	}
 
+	/**
+	 * test if clone method returns deep copy of this class
+	 */
 	@Test
 	public void testClone() {
 		DataSource data_1 = new DataSource("shortName", "cloneString", RepoKind.HG, false, "parent"); 
@@ -161,8 +183,10 @@ public class ProjectPreferencesTest extends CrystalTest {
 		
 		
 		ProjectPreferences copy = pp.clone();
-		
+		// change name of copy
 		copy.setName("a");
+		
+		// check the original name is not changed
 		assertFalse("Changed short name of clone environment", 
 				copy.getName().equals(pp.getName()));
 		

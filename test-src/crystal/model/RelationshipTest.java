@@ -21,11 +21,17 @@ import crystal.model.RevisionHistory.Action;
 public class RelationshipTest extends CrystalTest {
 	public static final String ERROR = "ERROR error message";
 	
+	/**
+	 * test constructor when name is not in the list of icon addresses
+	 */
 	@Test(expected = RuntimeException.class)
 	public void testStrangeNameConstructor() {
 		new Relationship("abc", null, null);
 	}
 	
+	/**
+	 * test if the constructor set up fields correctly
+	 */
 	@Test
 	public void testConstructor(){
 		Relationship errorName = new Relationship(Relationship.ERROR + " error message", null, null);
@@ -40,6 +46,9 @@ public class RelationshipTest extends CrystalTest {
 		assertNotNull("Set Image", sameName.getImage());
 	}
 
+	/**
+	 * test calculateAction 
+	 */
 	@Test
 	public void testCalculateAction() {
 		Relationship temp1 = new Relationship(Relationship.AHEAD, null, null);
@@ -53,10 +62,14 @@ public class RelationshipTest extends CrystalTest {
 	}
 
 
+	/**
+	 * test getActionRepoKind
+	 */
 	@Test
 	public void testGetActionRepoKind() {
 		Relationship temp1 = new Relationship(Relationship.AHEAD, null, null);
 		
+		// if action is null
 		assertTrue("Get action when action is null", temp1.getAction(RepoKind.HG).equals("cannot compute hg action"));
 		
 		temp1.calculateAction(LocalStateResult.PENDING, null);
@@ -66,14 +79,16 @@ public class RelationshipTest extends CrystalTest {
 		assertNull("Get action when action is NOTHING", temp1.getAction(RepoKind.HG));
 	}
 
-
 	@Test
 	public void testGetDominant() {
 		Set<Relationship> temp1 = new TreeSet<Relationship>();
 		assertNull("Empty relationships collection", Relationship.getDominant(temp1));
 		//TODO add more test
 	}
-
+	
+	/**
+	 * test equal
+	 */
 	@Test
 	public void testEqualsObject() {
 		Relationship temp = new Relationship(Relationship.AHEAD, null, null);

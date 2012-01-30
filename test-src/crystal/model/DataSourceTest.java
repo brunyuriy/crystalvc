@@ -22,13 +22,10 @@ public class DataSourceTest extends CrystalTest {
 
 	public static final int TIMEOUT = 20000;
 	public static DataSource data;
-	
-	/*
-	@Test(expected = IllegalArgumentException.class)
-	public void testIllegalInputConstructor() {
-		new DataSource(null, null, null, false, null);
-	}
-	*/
+
+	/**
+	 * test setting fields in constructor
+	 */
 	@Test
 	public void testSetField(){
 		String short_name = "Repository";
@@ -46,6 +43,9 @@ public class DataSourceTest extends CrystalTest {
 		assertNull("history", data.getHistory());
 	}
 
+	/**
+	 * test setHistory
+	 */
 	@Test
 	public void testSetHistory() {
 		File f1 = new File("testDataFile/testLogVersion1.txt");
@@ -59,11 +59,13 @@ public class DataSourceTest extends CrystalTest {
 		} catch (IOException e) {
 			System.err.println("File not found");
 		}
-		
+		// make two histories from input files
 		RevisionHistory history1 = new RevisionHistory(log_version1, RepoKind.HG);
 		RevisionHistory history2 = new RevisionHistory(log_version2, RepoKind.HG);
 
+		// check if the history is changed
 		assertTrue("Not change history", data.hasHistoryChanged());
+		// check data after setting histories
 		data.setHistory(history1);
 		assertTrue("Changed history", data.hasHistoryChanged());
 		assertTrue("Same history", data.getHistory().equals(history1));
@@ -75,6 +77,9 @@ public class DataSourceTest extends CrystalTest {
 		
 	}
 
+	/**
+	 * test method setRemoteCmd
+	 */
 	@Test
 	public void testSetRemoteCmd() {
 		assertNull("Get default remote hg", data.getRemoteCmd());
@@ -82,6 +87,9 @@ public class DataSourceTest extends CrystalTest {
 		assertTrue("Set remote hg", data.getRemoteCmd().equals("remoteHg"));
 	}
 
+	/**
+	 * test setCompileCommand
+	 */
 	@Test
 	public void testSetCompileCommand() {
 		assertNull("Get default compile command", data.getCompileCommand());
@@ -90,6 +98,9 @@ public class DataSourceTest extends CrystalTest {
 
 	}
 
+	/**
+	 * test setEnabled
+	 */
 	@Test
 	public void testSetEnabled() {
 		assertTrue("Default enable setting", data.isEnabled());
@@ -97,6 +108,9 @@ public class DataSourceTest extends CrystalTest {
 		assertFalse("Is not enabled", data.isEnabled());
 	}
 
+	/**
+	 * test isHidden
+	 */
 	@Test
 	public void testIsHidden() {
 		assertFalse("Default hidden setting", data.isHidden());
@@ -104,6 +118,9 @@ public class DataSourceTest extends CrystalTest {
 		assertTrue("Hidden", data.isHidden());
 	}
 
+	/**
+	 * test setParent
+	 */
 	@Test
 	public void testSetParent() {
 		assertTrue("Default parent", data.getParent().equals("parent"));
@@ -114,6 +131,9 @@ public class DataSourceTest extends CrystalTest {
 
 	}
 
+	/**
+	 * test setKind
+	 */
 	@Test
 	public void testSetKind() {
 		assertTrue("Default repo kind", data.getKind().equals(RepoKind.HG));
@@ -121,7 +141,9 @@ public class DataSourceTest extends CrystalTest {
 		assertTrue("Git kind", data.getKind().equals(RepoKind.GIT));
 	}
 
-
+	/**
+	 * test setCloneString
+	 */
 	@Test
 	public void testSetCloneString() {
 		assertTrue("Default clone string", data.getCloneString().equals("path"));
@@ -129,6 +151,9 @@ public class DataSourceTest extends CrystalTest {
 		assertTrue("Set path", data.getCloneString().equals("path_2"));
 	}
 
+	/**
+	 * test toString to correct format
+	 */
 	@Test
 	public void testToString() {
 		String short_name = "short_name";
@@ -142,6 +167,9 @@ public class DataSourceTest extends CrystalTest {
 		
 	}
 
+	/**
+	 * test if clone method return deep copy of this class
+	 */
 	@Test
 	public void testClone() {
 		DataSource ds = new DataSource("shortname", "cloneString"

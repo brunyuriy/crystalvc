@@ -20,13 +20,9 @@ public class LocalStateResultTest extends CrystalTest {
 
 	public static LocalStateResult localState;
 	
-	/*
-	@Test(expected = IllegalArgumentException.class)
-	public void testNullInputConstructor() {
-		new LocalStateResult(null, null, null, null, null);
-	}
-	*/
-	
+	/**
+	 * set up 
+	 */
 	@Before
 	public void testLocalStateResult() {
 		String name = LocalStateResult.TEST;
@@ -38,6 +34,9 @@ public class LocalStateResultTest extends CrystalTest {
 				name, lastState, lastAction, lastErrorMessage);
 	}
 	
+	/**
+	 * test if the name of action is not in the list of actions
+	 */
 	@Test
 	public void testStrangeActionName(){
 		String name = "abc";
@@ -50,6 +49,9 @@ public class LocalStateResultTest extends CrystalTest {
 		assertNull("strange action", temp.getAction());
 	}
 	
+	/**
+	 * test if the action name is ERROR
+	 */
 	@Test
 	public void testErrorActionNameConstructor(){
 		String name = LocalStateResult.ERROR;
@@ -64,45 +66,68 @@ public class LocalStateResultTest extends CrystalTest {
 		assertNull("action with error name", temp.getAction());
 	}
 
+	/**
+	 * test getAction method
+	 */
 	@Test
 	public void testGetAction() {
 		assertTrue("Action", localState.getAction().equals(""));
 		
 	}
 
+	/**
+	 * test getLastAction
+	 */
 	@Test
 	public void testGetLastAction() {
 		assertTrue("last action", localState.getLastAction().equals("lastAction"));
 	}
 
+	/**
+	 * test getName
+	 */
 	@Test
 	public void testGetName() {
 		assertTrue("name", localState.getName().equals(LocalStateResult.TEST));
 	}
 
+	/**
+	 * test getErrorMessage 
+	 */
 	@Test
 	public void testGetNoErrorMessage() {
 		assertNull("no error message", localState.getErrorMessage());
 	}
 	
 	
-
+	/**
+	 * test getLastErrorMessage
+	 */
 	@Test
 	public void testGetLastErrorMessage() {
 		assertTrue("last error message", localState.getLastErrorMessage().equals("lastErrorMessage"));
 	}
 
+	/**
+	 * test toString format
+	 */
 	@Test
 	public void testToString() {
 		assertTrue("string representation", localState.toString().equals("LocalStateResult - "
 				+ "shortName" + " state: " + LocalStateResult.TEST + " and last state: " + "lastState" + "."));
 	}
 
+	/**
+	 * test getLocalState
+	 */
 	@Test
 	public void testGetLocalState() {
 		assertTrue("local state", localState.getLocalState().equals(LocalStateResult.TEST));
 	}
 
+	/**
+	 * test getLastLocalState
+	 */
 	@Test
 	public void testGetLastLocalState() {
 		assertTrue("last state", localState.getLastLocalState().equals("lastState"));

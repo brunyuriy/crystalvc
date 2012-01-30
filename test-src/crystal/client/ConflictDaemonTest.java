@@ -24,24 +24,21 @@ import crystal.server.HgStateChecker;
  */
 public class ConflictDaemonTest extends CrystalTest {
 
-	
+	/**
+	 * test get instance. check if it return not null
+	 */
 	@Test
 	public void testGetInstance() {
 		ConflictDaemon instance = ConflictDaemon.getInstance();
 		assertNotNull(instance);
 	}
-
-
-	/*@Test
-	public void testPrePerformCalculations() {
-		ConflictDaemon instance = ConflictDaemon.getInstance();
-		ClientPreferences cp_1 = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
-		
-		instance.prePerformCalculations(cp_1);
-		assertEquals(cp_1.getProjectPreference().size(), instance.getLocalStates().size());
-		
-	}*/
 	
+	/**
+	 * test the functionality of local state
+	 * test the method getLocalState and calculateLocalState
+	 * 
+	 * @throws IOException
+	 */
 	@Test
 	public void testLocalState() throws IOException {
 		ConflictDaemon instance = ConflictDaemon.getInstance();
@@ -65,6 +62,10 @@ public class ConflictDaemonTest extends CrystalTest {
 				instance.getLocalStates().contains(new LocalStateResult(pp.getEnvironment(), localState, null, null, null)));
 	}
 
+	/**
+	 * test the functionality of relathionship
+	 * test the method getRelationship and calculateRelationship
+	 */
 	@Test
 	public void testRelationship() {
 		ConflictDaemon instance = ConflictDaemon.getInstance();
@@ -106,7 +107,11 @@ public class ConflictDaemonTest extends CrystalTest {
 		
 	}
 
-
+	/**
+	 * Test addListener method
+	 * Just check the size of listeners
+	 * 
+	 */
 	@Test
 	public void testAddListener() {
 		ConflictDaemon instance = ConflictDaemon.getInstance();

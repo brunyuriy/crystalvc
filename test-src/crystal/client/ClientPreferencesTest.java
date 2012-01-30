@@ -17,7 +17,6 @@ import crystal.client.ClientPreferences.DuplicateProjectNameException;
 import crystal.client.ClientPreferences.NonexistentProjectException;
 import crystal.model.DataSource;
 import crystal.model.DataSource.RepoKind;
-import crystal.server.TestConstants;
 import crystal.util.XMLTools;
 
 /**
@@ -30,11 +29,17 @@ public class ClientPreferencesTest extends CrystalTest {
 
 	private Logger _log = Logger.getLogger(this.getClass());
 
+	/**
+	 * Test null input for constructor
+	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullInputConstructor() {
 		new ClientPreferences(null, null, null, -1);
 	}
 
+	/**
+	 * Check the initial size of clientPreferences.
+	 */
 	@Test
 	public void testClientPreferences() {
 		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
@@ -42,6 +47,9 @@ public class ClientPreferencesTest extends CrystalTest {
 
 	}
 
+	/**
+	 * Check the default setting for clientPreferences
+	 */
 	@Test
 	public void testDefaultSetting() {
 		ClientPreferences cpd = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
@@ -59,6 +67,10 @@ public class ClientPreferencesTest extends CrystalTest {
 
 	}
 
+	/**
+	 * Test if the class will thrown DuplicateProjectNameException when user add two projectPreferences with same names
+	 * @throws DuplicateProjectNameException
+	 */
 	@Test(expected = DuplicateProjectNameException.class)
 	public void testDuplicateAddProjectPreferences() throws DuplicateProjectNameException {
 		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
@@ -68,11 +80,17 @@ public class ClientPreferencesTest extends CrystalTest {
 
 		ProjectPreferences pp = new ProjectPreferences(data, cp);
 
+		// add two project preferences with same name
 		cp.addProjectPreferences(pp);
 		cp.addProjectPreferences(pp);
 
 	}
 
+	/**
+	 * Test if the class is adding projectPreferences correctly.
+	 * @throws DuplicateProjectNameException
+	 * @throws NonexistentProjectException
+	 */
 	@Test
 	public void testAddProjectPreferences() throws DuplicateProjectNameException, NonexistentProjectException {
 		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
@@ -86,13 +104,21 @@ public class ClientPreferencesTest extends CrystalTest {
 
 		ProjectPreferences pp_2 = new ProjectPreferences(data_2, cp);
 
+		// add new project preferences
 		cp.addProjectPreferences(pp_1);
 		cp.addProjectPreferences(pp_2);
+		// check if the new project preferences exist
 		assertEquals("After adding two project preferences", 2, cp.getProjectPreference().size());
 		assertNotNull("Get first added project preference", cp.getProjectPreferences("shortName"));
 		assertNotNull("Get second added project preference", cp.getProjectPreferences("shortName_2"));
 	}
 
+	/**
+	 * Check duplicate project in the class 
+	 * 
+	 * @throws DuplicateProjectNameException
+	 * @throws NonexistentProjectException
+	 */
 	@Test
 	public void testDuplicateProject() throws DuplicateProjectNameException, NonexistentProjectException {
 		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
@@ -104,21 +130,30 @@ public class ClientPreferencesTest extends CrystalTest {
 		DataSource data_2 = new DataSource("shortName_2", "cloneString", RepoKind.HG, false, "parent");
 		ProjectPreferences pp_2 = new ProjectPreferences(data_2, cp);
 
+		// add two project with different names
 		cp.addProjectPreferences(pp_1);
 		cp.addProjectPreferences(pp_2);
 
+		// change one project's name to be same as another project
 		ProjectPreferences temp_pp = cp.getProjectPreferences("shortName_2");
 		temp_pp.setName("shortName");
 
 		int count = 0;
-
+		// check how many project has same name
 		for (ProjectPreferences pp : cp.getProjectPreference()) {
 			if (pp.getName().equals("shortName"))
 				count++;
 		}
+		// there only exist one project named "shortName"
 		assertEquals("There exists duplicate project name", 1, count);
 	}
 
+	/**
+	 * Test removing project from the class
+	 * 
+	 * @throws DuplicateProjectNameException
+	 * @throws NonexistentProjectException
+	 */
 	@Test
 	public void testRemoveProjectPreferences() throws DuplicateProjectNameException, NonexistentProjectException {
 		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
@@ -132,18 +167,22 @@ public class ClientPreferencesTest extends CrystalTest {
 
 		ProjectPreferences pp_2 = new ProjectPreferences(data_2, cp);
 
+		// add two projects with different names
 		cp.addProjectPreferences(pp_1);
 		cp.addProjectPreferences(pp_2);
+		// make sure those projects are in the client preferences
 		assertEquals("After adding two project preferences", 2, cp.getProjectPreference().size());
 		assertNotNull("Get first added project preference", cp.getProjectPreferences("shortName"));
 		assertNotNull("Get socend added project preference", cp.getProjectPreferences("shortName_2"));
 
+		
 		DataSource remove_ds_1 = new DataSource("shortName_3", "cloneString", RepoKind.HG, false, "parent");
-
+		// non exist project to be removed
 		ProjectPreferences remove_pp_1 = new ProjectPreferences(remove_ds_1, cp);
 
 		cp.removeProjectPreferences(remove_pp_1);
-
+		
+		// after trying to remove a non exist project preference
 		assertEquals("After removing non exist project preference", 2, cp.getProjectPreference().size());
 
 		DataSource remove_ds_2 = new DataSource("shortName_2", "cloneString", RepoKind.HG, false, "parent");
@@ -151,14 +190,17 @@ public class ClientPreferencesTest extends CrystalTest {
 		ProjectPreferences remove_pp_2 = new ProjectPreferences(remove_ds_2, cp);
 
 		cp.removeProjectPreferences(remove_pp_2);
-
+		
+		// after removing project preference which was already added into the client preferences
 		assertEquals("After removing second added project preference", 1, cp.getProjectPreference().size());
 
 		cp.removeProjectPreferences(remove_pp_2);
 
+		// after removing the same project preferences, there will be no change in client preferences
 		assertEquals("Repeat to remove same project preference", 1, cp.getProjectPreference().size());
 
 		try {
+			// check if the removed project is really removed from client preferences
 			cp.getProjectPreferences("shortName_2");
 			fail("Removed project preference still exist");
 		} catch (NonexistentProjectException e) {
@@ -166,6 +208,12 @@ public class ClientPreferencesTest extends CrystalTest {
 
 	}
 
+	/**
+	 * check the performance of "removeProjectPreferencesAtIndex" method
+	 * 
+	 * @throws DuplicateProjectNameException
+	 * @throws NonexistentProjectException
+	 */
 	@Test
 	public void testRemoveProjectPreferencesAtIndex() throws DuplicateProjectNameException, NonexistentProjectException {
 		ClientPreferences cp = new ClientPreferences("tempDirectory", "hgPath", "gitPath", Constants.DEFAULT_REFRESH);
@@ -183,15 +231,18 @@ public class ClientPreferencesTest extends CrystalTest {
 
 		ProjectPreferences pp_3 = new ProjectPreferences(data_3, cp);
 
+		// add 3 new project preferences
 		cp.addProjectPreferences(pp_1);
 		cp.addProjectPreferences(pp_2);
 		cp.addProjectPreferences(pp_3);
 
 		assertEquals("After adding three project preferences", 3, cp.getProjectPreference().size());
 
+		// remove the preference in the second index
 		cp.removeProjectPreferencesAtIndex(1);
 
 		try {
+			// check if the second added project is really removed
 			cp.getProjectPreferences("shortName_2");
 			fail("Did not remove from correct place");
 		} catch (NonexistentProjectException e) {
@@ -199,25 +250,34 @@ public class ClientPreferencesTest extends CrystalTest {
 
 		assertEquals("After removing project preference at index 1", 2, cp.getProjectPreference().size());
 
+		// remove the project at the index 1 in current client preferences
 		cp.removeProjectPreferencesAtIndex(1);
 
 		try {
+			// check if the project is really removed
 			cp.getProjectPreferences("shortName_3");
 			fail("Did not remove from correct place");
 		} catch (NonexistentProjectException e) {
 		}
 
+		
 		assertEquals("After removing project preference at index 1 again", 1, cp.getProjectPreference().size());
 
 		assertNotNull("First added project preference still exist", cp.getProjectPreferences("shortName"));
 	}
 
+	/**
+	 * Check if the class can load preferences from XML correctly
+	 * @throws NonexistentProjectException
+	 */
 	@Test
 	public void testLoadPreferencesFromXML() throws NonexistentProjectException {
+		// load from non existing file
 		File notExist = new File("");
 		ClientPreferences fileNotExist = ClientPreferences.loadPreferencesFromXML(notExist);
 		assertNull("Load from not existing file", fileNotExist);
 
+		// load from test xml file and check if the it could load correctly
 		File testXml1 = new File("testDataFile\\testLoadXml1.xml");
 		ClientPreferences cp1 = ClientPreferences.loadPreferencesFromXML(testXml1);
 		assertTrue("Compare tempDirectory", cp1.getTempDirectory().equals("C:/temp/conflictClient/"));
@@ -236,12 +296,13 @@ public class ClientPreferencesTest extends CrystalTest {
 		assertTrue("Compare MASTER data source hidden", dataSources.get(0).isHidden() == false);
 		assertTrue("Comapre MASTER data source common parent", dataSources.get(0).getParent().equals("MASTER"));
 
+		// load from a empty file
 		File emptyFile = new File("testDataFile\\testLoadXml2.xml");
 		ClientPreferences fileEmpty = ClientPreferences.loadPreferencesFromXML(emptyFile);
 		assertNull("Load empty file", fileEmpty);
 
+		// load from a file with duplicate project names
 		File testXml3 = new File("testDataFile\\testLoadXml3.xml");
-
 		try {
 			ClientPreferences cp3 = ClientPreferences.loadPreferencesFromXML(testXml3);
 			assertEquals("ClientPreferences should remove the duplicate project names", 1, cp3.getProjectPreference().size());
@@ -249,8 +310,9 @@ public class ClientPreferencesTest extends CrystalTest {
 		} catch (Exception e) {
 		}
 
+		
+		// load from a file with duplicate data source names
 		File testXml4 = new File("testDataFile\\testLoadXml4.xml");
-
 		try {
 			ClientPreferences cp4 = ClientPreferences.loadPreferencesFromXML(testXml4);
 			assertEquals("ClientPreferences should remove the data sources with same names", 4, cp4.getProjectPreferences("Crystal").getDataSources().size());
@@ -260,6 +322,10 @@ public class ClientPreferencesTest extends CrystalTest {
 
 	}
 
+	/**
+	 * check if the class can save preferences to xml file correctly
+	 * @throws NonexistentProjectException
+	 */
 	@Test
 	public void testSavePreferencesToXML() throws NonexistentProjectException {
 		ClientPreferences cp = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
@@ -270,15 +336,16 @@ public class ClientPreferencesTest extends CrystalTest {
 		if (f.exists()) {
 			f.delete();
 		}
+		// check the xml file doesnt exist at first
 		assertFalse("File does not exist before", f.exists());
 		try {
 			ClientPreferences.savePreferencesToXML(cp, path);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		// make sure that the xml file is created into correct place
 		assertTrue("File exist after saving it", f.exists());
 
+		// check the content in the xml file is correct
 		Document doc = XMLTools.readXMLDocument(path);
 		Element root = doc.getRootElement();
 		String tempDirectory = root.getAttributeValue("tempDirectory");
@@ -311,26 +378,38 @@ public class ClientPreferencesTest extends CrystalTest {
 
 	}
 
+	/**
+	 * test clone method will create a deep copy
+	 */
 	@Test
 	public void testClone() {
+		// make sure the clone is copying correct content
 		ClientPreferences cp = ClientPreferences.DEFAULT_CLIENT_PREFERENCES;
 		assertTrue("Clone method return cllientPreferences with same content", cp.equals(cp.clone()));
+		
+		
 		ClientPreferences copy = cp.clone();
+		// check the project names in the original client preference
 		for (ProjectPreferences pref : cp.getProjectPreference()) {
 			_log.debug("ClientPreferencesTest::testClone() - " + pref.getName());
 		}
+		
+		// change project name of copy projects
 		for (ProjectPreferences pref : copy.getProjectPreference()) {
 			pref.setName("a");
 		}
 
+		
 		for (ProjectPreferences pref : cp.getProjectPreference()) {
 			_log.debug("ClientPreferencesTest::testClone() - " + pref.getName());
 		}
 		try {
+			// check if copy project and original project have different names
 			assertFalse("Changed short name for project preferences",
 					copy.getProjectPreferences("a").getName().equals(cp.getProjectPreferences("myProject").getName()));
 		} catch (NonexistentProjectException e) {
 
+			
 			try {
 				copy.getProjectPreferences("a");
 				_log.debug("ClientPreferencesTest::testClone() - " + "myProject does not exist");

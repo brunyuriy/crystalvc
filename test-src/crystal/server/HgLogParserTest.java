@@ -21,12 +21,18 @@ import crystal.server.AbstractLogParser.Checkpoint;
  */
 public class HgLogParserTest extends CrystalTest {
 
+	/**
+	 * null input for parseLog
+	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void testParseNullLog() {
 		HgLogParser.parseLog(null);
 
 	}
 	
+	/**
+	 * test parseLog
+	 */
 	@Test
 	public void testParseLog(){
 		
@@ -39,6 +45,7 @@ public class HgLogParserTest extends CrystalTest {
 			System.err.println("File not found");
 		}
 		
+		// get log from input file
 		Map<String, Checkpoint> checkPoints = HgLogParser.parseLog(log);
 		
 		Scanner input;
@@ -62,6 +69,7 @@ public class HgLogParserTest extends CrystalTest {
 		}
 		assertEquals(count, checkPoints.keySet().size());
 		
+		// check the content for each checkpoint is correct
 		Checkpoint c1 = checkPoints.get("ce4bb37a1409");
 		assertNotNull(c1);
 		assertTrue("compare changeset", c1.getChangeset().equals("ce4bb37a1409"));
@@ -79,6 +87,9 @@ public class HgLogParserTest extends CrystalTest {
 		assertTrue("have another parent", c2.getParents().contains("3228:e718cc9843bc"));
 	}
 	
+	/**
+	 * test only one log
+	 */
 	@Test
 	public void testSingleLog(){
 		File f1 = new File("testDataFile/oneLog.txt");
@@ -101,6 +112,9 @@ public class HgLogParserTest extends CrystalTest {
 		
 	}
 	
+	/**
+	 * test two logs
+	 */
 	@Test
 	public void testTwoLogs(){
 		File f1 = new File("testDataFile/threeLogs.txt");
@@ -111,7 +125,7 @@ public class HgLogParserTest extends CrystalTest {
 		} catch (IOException e) {
 			System.err.println("File not found");
 		}
-		
+		// input from a file with three checkpoints
 		Map<String, Checkpoint> checkPoints = HgLogParser.parseLog(log);
 		Checkpoint c1 = checkPoints.get("ae6decc968d5");
 		Checkpoint c2 = checkPoints.get("face29593d75");
@@ -120,6 +134,7 @@ public class HgLogParserTest extends CrystalTest {
 		assertNotNull(c2);
 		assertNotNull(c3);
 
+		// test the correctness of each checkpoint
 		assertTrue("compare changeset", c1.getChangeset().equals("ae6decc968d5"));
 		assertTrue("compare user", c1.getCommitter().equals("Robert Lehmann <mail@robertlehmann.de>"));
 		assertTrue("comepare date", c1.getDate().equals("Sat Nov 13 12:59:12 2010 +0100"));

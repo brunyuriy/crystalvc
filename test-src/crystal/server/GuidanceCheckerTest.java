@@ -26,6 +26,9 @@ import crystal.server.AbstractLogParser.Checkpoint;
  */
 public class GuidanceCheckerTest extends CrystalTest {
 
+	/**
+	 * test getCommitters
+	 */
 	@Test
 	public void testGetCommitters() {
 		File f1 = new File("testDataFile/oneLog.txt");
@@ -49,10 +52,12 @@ public class GuidanceCheckerTest extends CrystalTest {
 		Map<String, Checkpoint> checkpoints_2 = HgLogParser.parseLog(log_2);
 		Map<String, Checkpoint> checkpoints_3 = HgLogParser.parseLog(log_3);
 		
+		// get 3 sets of checkpoints
 		Set<Checkpoint> points_1 = new HashSet<Checkpoint>(checkpoints_1.values());
 		Set<Checkpoint> points_2 = new HashSet<Checkpoint>(checkpoints_2.values());
 		Set<Checkpoint> points_3 = new HashSet<Checkpoint>(checkpoints_3.values());
 		
+		// get committers from each checkpoints set
 		String output_1 = GuidanceChecker.getCommitters(points_1);
 		String output_2 = GuidanceChecker.getCommitters(points_2);
 		String output_3 = GuidanceChecker.getCommitters(points_3);
@@ -62,6 +67,9 @@ public class GuidanceCheckerTest extends CrystalTest {
 		assertTrue("three logs", output_3.equals("Robert Lehmann <mail@robertlehmann.de>, DasIch <dasdasich@gmail.com>, and georg.brandl"));
 	}
 
+	/**
+	 * test getWhen
+	 */
 	@Test
 	public void testGetWhen() {
 		Set<String> me = new TreeSet<String>();
@@ -69,7 +77,6 @@ public class GuidanceCheckerTest extends CrystalTest {
 		Set<String> parent = new TreeSet<String>();
 		
 		Relationship same = new Relationship(Relationship.SAME, null, null);
-		
 		Relationship behind = new Relationship(Relationship.BEHIND, null, null);
 		Relationship ahead = new Relationship(Relationship.AHEAD, null, null);
 		
@@ -80,10 +87,11 @@ public class GuidanceCheckerTest extends CrystalTest {
 		you.add("b");
 		parent.add("a");
 		parent.add("b");
-		
+		// if "you" have more than me
 		assertTrue("Relationship behind, you have more", GuidanceChecker.getWhen(me, you, parent, behind).equals(When.NOW));
 		
 		me.add("c");
+		// if "me" have more than you
 		assertTrue("Relationship ahead, I have more", GuidanceChecker.getWhen(me, you, parent, ahead).equals(When.NOW));
 		
 		

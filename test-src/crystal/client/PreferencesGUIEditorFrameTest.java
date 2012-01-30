@@ -5,6 +5,14 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import crystal.CrystalTest;
+/**
+ * Test the PreferencesGuiEditorFrame class
+ * 
+ * (this test class is not completed)
+ * 
+ * @author Haochen
+ *
+ */
 
 public class PreferencesGUIEditorFrameTest extends CrystalTest {
 
