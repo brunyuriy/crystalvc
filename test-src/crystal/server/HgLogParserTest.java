@@ -70,13 +70,14 @@ public class HgLogParserTest extends CrystalTest {
 		assertEquals(count, checkPoints.keySet().size());
 		
 		// check the content for each checkpoint is correct
-		Checkpoint c1 = checkPoints.get("ce4bb37a1409");
+		Checkpoint c1 = checkPoints.get("00913921613e");
 		assertNotNull(c1);
-		assertTrue("compare changeset", c1.getChangeset().equals("ce4bb37a1409"));
-		assertTrue("compare user", c1.getCommitter().equals("Daniel NeuhÃ¤user <dasdasich@gmail.com>"));
-		assertTrue("comepare date", c1.getDate().equals("Sat Feb 05 21:48:54 2011 +0100"));
-		assertTrue("compare summary", c1.getSummary().equals("Change redirected URLs to the new locations"));
+		assertTrue("compare changeset", c1.getChangeset().equals("00913921613e"));
+		assertTrue("compare user", c1.getCommitter().equals("Georg Brandl <georg@python.org>"));
+		assertTrue("comepare date", c1.getDate().equals("Tue Jan 25 22:58:18 2011 +0100"));
+		assertTrue("compare summary", c1.getSummary().equals("Disable raw directive."));
 		assertTrue("compare parent", c1.getParents().contains("96b7b2b849c3"));
+		System.out.println("compare parents:" + c1.getParents());
 		
 		Checkpoint c2 = checkPoints.get("825c5438dfd3");
 		assertNotNull(c2);

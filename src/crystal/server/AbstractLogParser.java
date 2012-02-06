@@ -128,6 +128,7 @@ public abstract class AbstractLogParser {
 	protected static HashMap<String, Checkpoint> abstractParseLog(String log, Map<CheckpointLabels, String> checkpointLabel) {
 		ValidInputChecker.checkNullInput(log);
 		HashMap<String, Checkpoint> answer = new HashMap<String, Checkpoint>();
+		String prevChangeset = null;
 		for (String current : log.split("\n" + checkpointLabel.get(CheckpointLabels.CHANGESET))) {
 			
 			if (!(current.trim().isEmpty())) {
@@ -191,7 +192,18 @@ public abstract class AbstractLogParser {
 				if (date == null)
 					date = "";
 				if (changeset != null) {
+					// if it is empty parent
+					if(parents.isEmpty()){
+						// if this is not the top of the history
+						if(prevChangeset != null) {
+							// set parent as previous changeset
+							parents.add(prevChangeset);
+						}
+					}
 					answer.put(changeset.intern(), new Checkpoint(changeset.intern(), user.intern(), date.intern(), summary.intern(), parents));
+					// update change set to current change set
+					prevChangeset = changeset.intern();
+
 				} else
 					throw new RuntimeException("Log contained a changeset description that did not start with \"changeset:\"");
 			}
