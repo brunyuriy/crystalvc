@@ -262,8 +262,19 @@ public abstract class AbstractStateChecker {
 		}
 		_log.info("successfully update local repository and check cache error in get local state");
 		// Step 2. Get the log from the local clone and set the history
-		String[] logArgs = { "log" };
-		Output output = RunIt.execute(executablePath, logArgs, mine, false);
+		
+		
+		//String[] logArgs = { "log" };
+		String[] hgLogArgs = { "log", "-r", "0:tip" };
+		String[] gitLogArgs = { "log", "--reverse" };
+		Output output;
+		if (kind.equals(RepoKind.HG)) {
+			output = RunIt.execute(executablePath, hgLogArgs, mine, false);
+			//System.out.println(output);
+		} else if (kind.equals(RepoKind.GIT))
+			output = RunIt.execute(executablePath, gitLogArgs, mine, false);
+		else
+			output = null;
 		// if (kind.equals(RepoKind.GIT))
 		// _log.info("log output: \n" + output.getOutput());
 		prefs.getEnvironment().setHistory(new RevisionHistory(output.getOutput(), kind));
