@@ -270,7 +270,6 @@ public abstract class AbstractStateChecker {
 		Output output;
 		if (kind.equals(RepoKind.HG)) {
 			output = RunIt.execute(executablePath, hgLogArgs, mine, false);
-			//System.out.println(output);
 		} else if (kind.equals(RepoKind.GIT))
 			output = RunIt.execute(executablePath, gitLogArgs, mine, false);
 		else
@@ -388,10 +387,15 @@ public abstract class AbstractStateChecker {
 		if (kind.equals(RepoKind.GIT))
 			_log.info("AbstractStateChecker::getRelationship(..) - successfully update local repo and check cache error in get relationship");
 		// Get your log and set your history
-		String[] logArgs = { "log" };
-		Output logOutput;
+		//String[] logArgs = { "log" };
+		String[] hgLogArgs = { "log", "-r", "0:tip" };
+		String[] gitLogArgs = { "log", "--reverse" };
+		Output logOutput = null;
 		try {
-			logOutput = RunIt.execute(executablePath, logArgs, yours, false);
+			if (kind.equals(RepoKind.HG)) {
+				logOutput = RunIt.execute(executablePath, hgLogArgs, yours, false);
+			} else if (kind.equals(RepoKind.GIT))
+				logOutput = RunIt.execute(executablePath, gitLogArgs, yours, false);
 		} catch (IOException e2) {
 			return Relationship.ERROR + " Couldn't get the log: " + e2.getMessage();
 		}
