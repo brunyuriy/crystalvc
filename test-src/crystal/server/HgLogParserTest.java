@@ -36,7 +36,7 @@ public class HgLogParserTest extends CrystalTest {
 	@Test
 	public void testParseLog(){
 		
-		File f1 = new File("testDataFile/testLogVersion1.txt");
+		File f1 = new File("testDataFile/reversedLog.txt");
 	
 		String log = "";
 		try {
@@ -70,22 +70,22 @@ public class HgLogParserTest extends CrystalTest {
 		assertEquals(count, checkPoints.keySet().size());
 		
 		// check the content for each checkpoint is correct
-		Checkpoint c1 = checkPoints.get("00913921613e");
+		Checkpoint c1 = checkPoints.get("790cc36697aa");
 		assertNotNull(c1);
-		assertTrue("compare changeset", c1.getChangeset().equals("00913921613e"));
-		assertTrue("compare user", c1.getCommitter().equals("Georg Brandl <georg@python.org>"));
-		assertTrue("comepare date", c1.getDate().equals("Tue Jan 25 22:58:18 2011 +0100"));
-		assertTrue("compare summary", c1.getSummary().equals("Disable raw directive."));
-		assertTrue("compare parent", c1.getParents().contains("96b7b2b849c3"));
-		System.out.println("compare parents:" + c1.getParents());
+		assertTrue("compare changeset", c1.getChangeset().equals("790cc36697aa"));
+		assertTrue("compare user", c1.getCommitter().equals("Yuriy Brun <brun@cs.washington.edu>"));
+		assertTrue("comepare date", c1.getDate().equals("Sun Jun 27 13:16:15 2010 -0700"));
+		assertTrue("compare summary", c1.getSummary().equals("Created the skeleton code for a project that has multiple clones and basic clone/repository set up."));
+		// first changeset should not have any parent
+		assertTrue("compare parent", c1.getParents().isEmpty());
 		
-		Checkpoint c2 = checkPoints.get("825c5438dfd3");
+		Checkpoint c2 = checkPoints.get("703f0cd325c3");
 		assertNotNull(c2);
-		assertTrue("compare user", c2.getCommitter().equals("Georg Brandl <georg@python.org>"));
-		assertTrue("compare date", c2.getDate().equals("Sat Jan 15 17:22:13 2011 +0100"));
-		assertTrue("compare summary", c2.getSummary().equals("merge with 1.0"));
-		assertTrue("have parent", c2.getParents().contains("3224:86e6811aec45"));
-		assertTrue("have another parent", c2.getParents().contains("3228:e718cc9843bc"));
+		assertTrue("compare user", c2.getCommitter().equals("Yuriy Brun <brun@cs.washington.edu>"));
+		assertTrue("compare date", c2.getDate().equals("Sun Jun 27 14:52:08 2010 -0700"));
+		assertTrue("compare summary", c2.getSummary().equals("Merged in the notificationEmails file"));
+		assertTrue("have parent", c2.getParents().contains("790cc36697aa"));
+		assertTrue("have another parent", c2.getParents().contains("b8a65626740e"));
 	}
 	
 	/**

@@ -155,6 +155,7 @@ public abstract class AbstractLogParser {
 						// put all parents in the line to list of parents
 						while (parentTokens.hasMoreTokens()) {
 							String nextParent = parentTokens.nextToken();
+							nextParent = nextParent.substring(nextParent.indexOf(":")+1);
 							parents.add(nextParent);
 						}
 						
