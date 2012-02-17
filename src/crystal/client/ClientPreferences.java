@@ -346,7 +346,7 @@ public class ClientPreferences implements Cloneable {
         		prefsChanged = true;
         	}
 
-        	String temptempDirectory = tempDirectory.replace('\\', '/');
+        	String temptempDirectory = tempDirectory.replace("\\\\", "/");
         	if (!temptempDirectory.equals(tempDirectory)) {
         		prefsChanged = true;
         		tempDirectory = temptempDirectory;
@@ -450,6 +450,9 @@ public class ClientPreferences implements Cloneable {
         	List<Element> projectElements = getChildren(rootElement, IPrefXML.PROJECT);
         	for (Element projectElement : projectElements) {
         		String projectKind = getValue(projectElement, IPrefXML.KIND);
+        		if(!projectKind.equals("HG") && !projectKind.equals("GIT") || projectKind == null) continue;
+        		if(projectKind.equals("HG") && hgPath == null) continue;
+        		if(projectKind.equals("GIT") && gitPath == null) continue;
         		String projectLabel = getValue(projectElement, IPrefXML.LABEL);
         		String projectClone = getValue(projectElement, IPrefXML.CLONE);
         		String projectRemoteCmd = getValue(projectElement, IPrefXML.REMOTE_CMD);
@@ -458,9 +461,9 @@ public class ClientPreferences implements Cloneable {
         		String testCommand = getValue(projectElement, IPrefXML.TEST);
 
 
-        		if (projectKind == null) {
+        		/*if (projectKind == null) {
         			throw new RuntimeException("Kind attribute must be set for project element.");
-        		}
+        		}*/
         		if (projectLabel == null) {
         			throw new RuntimeException("ShortName attribute must be set for project element.");
         		}
