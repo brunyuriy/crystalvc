@@ -172,8 +172,6 @@ public class ClientPreferences implements Cloneable {
      * @param hgPath
      */
     public ClientPreferences(String tempDirectory, String hgPath, String gitPath, long refresh) {
-    	ValidInputChecker.checkValidStringInput(tempDirectory);
-    	ValidInputChecker.checkValidStringInput(hgPath);
     	if(refresh < 0){
     		throw new IllegalArgumentException("Negative number for time");
     	}
@@ -383,6 +381,9 @@ public class ClientPreferences implements Cloneable {
         	String hgPath = RunIt.getExecutable("hg");
         	String gitPath = RunIt.getExecutable("git");
         	
+        	hgPath = null;
+        	gitPath = null;
+        	
         	// check hg path
         	boolean happyHgPath = false;
         	while (!happyHgPath) {
@@ -405,10 +406,10 @@ public class ClientPreferences implements Cloneable {
         				}
         			}
         			
-        			if (need) {
-        				hgPath = JOptionPane.showInputDialog("The current path to hg is invalid.\nPlease select a proper path.", hgPath);
-        				prefsChanged = true;
-        			} else
+        			//if (need) {
+        				//hgPath = JOptionPane.showInputDialog("The current path to hg is invalid.\nPlease select a proper path.", hgPath);
+        				//prefsChanged = true;
+        			//} else
                         happyHgPath = true;
         		}
         	}
@@ -434,10 +435,10 @@ public class ClientPreferences implements Cloneable {
         					need = true;
         				}
         			}
-        			if (need) {
-        				gitPath = JOptionPane.showInputDialog("The current path to git is invalid.\nPlease select a proper path.", gitPath);
-        				prefsChanged = true;
-        			} else
+        			//if (need) {
+        				//gitPath = JOptionPane.showInputDialog("The current path to git is invalid.\nPlease select a proper path.", gitPath);
+        				//prefsChanged = true;
+        			//} else
                         happyGitPath = true;        			    
         		}
         	}
@@ -450,9 +451,6 @@ public class ClientPreferences implements Cloneable {
         	List<Element> projectElements = getChildren(rootElement, IPrefXML.PROJECT);
         	for (Element projectElement : projectElements) {
         		String projectKind = getValue(projectElement, IPrefXML.KIND);
-        		if(!projectKind.equals("HG") && !projectKind.equals("GIT") || projectKind == null) continue;
-        		if(projectKind.equals("HG") && hgPath == null) continue;
-        		if(projectKind.equals("GIT") && gitPath == null) continue;
         		String projectLabel = getValue(projectElement, IPrefXML.LABEL);
         		String projectClone = getValue(projectElement, IPrefXML.CLONE);
         		String projectRemoteCmd = getValue(projectElement, IPrefXML.REMOTE_CMD);
@@ -461,9 +459,9 @@ public class ClientPreferences implements Cloneable {
         		String testCommand = getValue(projectElement, IPrefXML.TEST);
 
 
-        		/*if (projectKind == null) {
+        		if (projectKind == null) {
         			throw new RuntimeException("Kind attribute must be set for project element.");
-        		}*/
+        		}
         		if (projectLabel == null) {
         			throw new RuntimeException("ShortName attribute must be set for project element.");
         		}
@@ -676,7 +674,6 @@ public class ClientPreferences implements Cloneable {
                 projectElem.addContent(sourceElem);
             }
         }
-
         XMLTools.writeXMLDocument(doc, fName);
     }
 
@@ -696,7 +693,6 @@ public class ClientPreferences implements Cloneable {
         // assert fName != null;
         // assert new File(fName).exists();
         // assert new File(fName).isFile();
-
         if (fName == null)
             throw new NullPointerException("Null path checked");
         if (!new File(fName).exists())
