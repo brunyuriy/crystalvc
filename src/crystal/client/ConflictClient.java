@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 
 import crystal.Constants;
 import crystal.model.DataSource;
+import crystal.model.DataSource.RepoKind;
 import crystal.model.LocalStateResult;
 import crystal.model.Relationship;
 import crystal.util.JMultiLineToolTip;
@@ -524,7 +525,16 @@ public class ConflictClient implements ConflictDaemon.ComputationListener {
 					Relationship result = ConflictDaemon.getInstance().getRelationship(source);
 					
 					String tip = result.getToolTipText();
-					current.setIcon(result.getIcon());
+					ImageIcon icon = result.getIcon();
+					
+					
+					RepoKind kind = source.getKind();
+					if((kind.equals(RepoKind.HG) && _preferences.getHgPath() == null)
+							|| (kind.equals(RepoKind.GIT) && _preferences.getGitPath() == null)) {
+						Relationship errorRelation = new Relationship(Relationship.ERROR, null, null);
+						icon = errorRelation.getIcon();
+					}
+					current.setIcon(icon);
 /*
 					
 					Relationship relationship = result.getRelationship();

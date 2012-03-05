@@ -192,7 +192,7 @@ public class ConflictSystemTray implements ComputationListener {
 
 		// Check that we have a recent-enough version of hg
 		try {
-			if (!(RunIt.validHG(Constants.MIN_HG_VERSION, _prefs.getHgPath(), _prefs.getTempDirectory()))) {
+			if (_prefs.getHgPath() != null && !(RunIt.validHG(Constants.MIN_HG_VERSION, _prefs.getHgPath(), _prefs.getTempDirectory()))) {
 				JOptionPane.showMessageDialog(null, "Your computer is running an outdated version of hg.\nThe must be running at least version " + Constants.MIN_HG_VERSION,
 						"outdated hg", JOptionPane.ERROR_MESSAGE);
 				quit(1);
