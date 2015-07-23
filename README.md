@@ -1,4 +1,4 @@
-<a href='https://github.com/brunyuriy/crystalvc/raw/master/releases/crystal_2.0.20111120.jar'><img src='https://raw.githubusercontent.com/brunyuriy/crystalvc/master/download.png' alt='download Crystal' height='75' /></a>
+<a href='https://github.com/brunyuriy/crystalvc/raw/master/releases/crystal_2.0.20111120.jar'><img src='https://raw.githubusercontent.com/brunyuriy/crystalvc/master/webpage/download.png' alt='download Crystal' height='75' /></a>
 
 ## Crystal helps developers learn about and prevent collaborative conflicts. ##
 
