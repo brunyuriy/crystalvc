@@ -1,7 +1,3 @@
-ConflictClient
+Welcome page: https://github.com/brunyuriy/crystalvc/wiki
 
-To run ConflictClient:  java -jar crystal.jar
-
-For user documentation:  see webpage/index.html .
-
-For design documentation:  see design.txt.
+Crystal user manual: https://github.com/brunyuriy/crystalvc/wiki/CrystalUserManual
